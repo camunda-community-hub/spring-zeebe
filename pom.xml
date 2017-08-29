@@ -2,21 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.zeebe</groupId>
-        <artifactId>zb-parent</artifactId>
-        <version>0.1.0</version>
-        <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
-        <relativePath/>
-    </parent>
-
-    <groupId>io.zeebe.spring</groupId>
-    <artifactId>zeebe-spring-boot-root</artifactId>
+    <groupId>io.zeebe.spring.project</groupId>
+    <artifactId>spring-zeebe-root</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>starter</module>
+        <module>broker</module>
+        <module>client</module>
+
         <module>examples/broker</module>
         <module>examples/deployer</module>
         <module>examples/starter</module>
@@ -24,6 +18,13 @@
     </modules>
 
     <properties>
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
         <zeebe.version>${project.version}</zeebe.version>
         <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
     </properties>
@@ -53,6 +54,18 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-broker</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.zeebe</groupId>
                 <artifactId>zeebe-client-java</artifactId>
@@ -60,10 +73,11 @@
             </dependency>
 
             <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>zeebe-spring-boot-starter</artifactId>
-                <version>${project.version}</version>
+                <groupId>io.zeebe</groupId>
+                <artifactId>zeebe-broker-core</artifactId>
+                <version>${zeebe.version}</version>
             </dependency>
+
         </dependencies>
 
     </dependencyManagement>

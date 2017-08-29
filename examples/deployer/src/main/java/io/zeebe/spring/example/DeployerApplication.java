@@ -2,7 +2,7 @@ package io.zeebe.spring.example;
 
 import io.zeebe.client.WorkflowsClient;
 import io.zeebe.client.event.DeploymentEvent;
-import io.zeebe.spring.EnableZeebeClient;
+import io.zeebe.spring.client.annotation.EnableZeebeClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

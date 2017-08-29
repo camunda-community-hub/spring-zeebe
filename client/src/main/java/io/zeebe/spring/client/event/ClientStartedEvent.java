@@ -1,6 +1,6 @@
 package io.zeebe.spring.client.event;
 
-import io.zeebe.spring.ZeebeTemplate;
+import io.zeebe.spring.client.ZeebeTemplate;
 
 public class ClientStartedEvent {
 

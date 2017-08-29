@@ -1,4 +1,4 @@
-package io.zeebe.spring.client;
+package io.zeebe.spring.client.config;
 
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
@@ -6,7 +6,6 @@ import io.zeebe.client.WorkflowsClient;
 import io.zeebe.client.ZeebeClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 
 public class ZeebeClientConfiguration {
 
@@ -14,7 +13,7 @@ public class ZeebeClientConfiguration {
 
     @Bean
     public ZeebeClient zeebeClient(ApplicationEventPublisher publisher) {
-        return new ZeebeClientLifecycle(publisher);
+        return new ClientLifecycle(publisher);
     }
 
 

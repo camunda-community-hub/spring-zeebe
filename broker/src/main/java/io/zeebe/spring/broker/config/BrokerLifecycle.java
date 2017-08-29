@@ -1,9 +1,12 @@
-package io.zeebe.spring.broker;
+package io.zeebe.spring.broker.config;
 
 import io.zeebe.broker.Broker;
 import org.springframework.context.SmartLifecycle;
 
-public class BrokerLifecycle implements SmartLifecycle {
+public class BrokerLifecycle implements SmartLifecycle
+{
+
+    public static final int PHASE = 1000;
 
     private Broker broker;
 
@@ -34,6 +37,6 @@ public class BrokerLifecycle implements SmartLifecycle {
 
     @Override
     public int getPhase() {
-        return 1000;
+        return PHASE;
     }
 }

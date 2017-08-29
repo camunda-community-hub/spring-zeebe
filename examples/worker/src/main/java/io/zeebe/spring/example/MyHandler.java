@@ -1,9 +1,9 @@
 package io.zeebe.spring.example;
 
+import io.zeebe.client.TasksClient;
 import io.zeebe.client.event.TaskEvent;
-import io.zeebe.client.task.TaskController;
 import io.zeebe.client.task.TaskHandler;
-import io.zeebe.spring.ZeebeTaskSubscription;
+import io.zeebe.spring.client.annotation.ZeebeTaskSubscription;
 import org.springframework.stereotype.Component;
 
 @ZeebeTaskSubscription(
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class MyHandler implements TaskHandler {
 
     @Override
-    public void handle(TaskController controller, TaskEvent task) {
+    public void handle(TasksClient client, TaskEvent task) {
         System.out.println(String.format(">>> [type: %s, key: %s, lockExpirationTime: %s]\n[headers: %s]\n[payload: %s]\n===",
                 task.getType(),
                 task.getMetadata().getKey(),
@@ -24,6 +24,6 @@ public class MyHandler implements TaskHandler {
                 task.getHeaders(),
                 task.getPayload()));
 
-        controller.completeTaskWithoutPayload();
+        client.complete(task).withoutPayload();
     }
 }

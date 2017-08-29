@@ -1,4 +1,4 @@
-package io.zeebe.spring.client;
+package io.zeebe.spring.client.event;
 
 
 import io.zeebe.client.event.TopicSubscription;

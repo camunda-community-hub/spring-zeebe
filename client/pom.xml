@@ -7,21 +7,21 @@
         <artifactId>spring-zeebe-root</artifactId>
         <groupId>io.zeebe.spring.project</groupId>
         <version>0.2.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.zeebe.spring.example</groupId>
-    <artifactId>spring-zeebe-example-deployer</artifactId>
+    <groupId>io.zeebe.spring</groupId>
+    <artifactId>spring-zeebe-client</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.zeebe.spring</groupId>
-            <artifactId>spring-zeebe-client</artifactId>
+            <groupId>io.zeebe</groupId>
+            <artifactId>zeebe-client-java</artifactId>
         </dependency>
-    </dependencies>
 
+
+    </dependencies>
 </project>

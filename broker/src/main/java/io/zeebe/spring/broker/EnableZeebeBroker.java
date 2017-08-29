@@ -1,6 +1,6 @@
-package io.zeebe.spring;
+package io.zeebe.spring.broker;
 
-import io.zeebe.spring.broker.ZeebeBrokerConfiguration;
+import io.zeebe.spring.broker.config.ZeebeBrokerConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;
@@ -10,10 +10,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation that enables the broker config.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(ZeebeBrokerConfiguration.class)
 @Documented
 @Inherited
-public @interface EnableZeebeBroker {
+public @interface EnableZeebeBroker
+{
 }

@@ -1,4 +1,4 @@
-package io.zeebe.spring;
+package io.zeebe.spring.client;
 
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;

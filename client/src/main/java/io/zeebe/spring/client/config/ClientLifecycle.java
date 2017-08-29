@@ -1,11 +1,11 @@
-package io.zeebe.spring.client;
+package io.zeebe.spring.client.config;
 
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.client.task.TaskHandler;
 import io.zeebe.client.task.TaskSubscription;
 import io.zeebe.client.task.TaskSubscriptionBuilder;
-import io.zeebe.spring.ZeebeTaskSubscription;
-import io.zeebe.spring.ZeebeTemplate;
+import io.zeebe.spring.client.ZeebeTemplate;
+import io.zeebe.spring.client.annotation.ZeebeTaskSubscription;
 import io.zeebe.spring.client.event.ClientStartedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +19,11 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecycle, ZeebeTemplate {
+public class ClientLifecycle extends ZeebeClientImpl implements SmartLifecycle, ZeebeTemplate {
 
-    private final Logger logger = LoggerFactory.getLogger(ZeebeClientLifecycle.class);
+    public static final int PHASE = 3000;
+
+    private final Logger logger = LoggerFactory.getLogger(ClientLifecycle.class);
     private final ApplicationEventPublisher publisher;
 
     @Autowired(required = false)
@@ -32,7 +34,7 @@ public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecy
     private List<TaskSubscription> taskSubscriptions;
 
 
-    public ZeebeClientLifecycle(ApplicationEventPublisher publisher) {
+    public ClientLifecycle(ApplicationEventPublisher publisher) {
         super(new Properties());
         this.publisher = publisher;
     }
@@ -92,6 +94,6 @@ public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecy
 
     @Override
     public int getPhase() {
-        return 3000;
+        return PHASE;
     }
 }

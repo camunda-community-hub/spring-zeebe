@@ -4,29 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>zeebe-spring-boot-root</artifactId>
-        <groupId>io.zeebe.spring</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <artifactId>spring-zeebe-root</artifactId>
+        <groupId>io.zeebe.spring.project</groupId>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
 
     <groupId>io.zeebe.spring</groupId>
-    <artifactId>zeebe-spring-boot-starter</artifactId>
-
+    <artifactId>spring-zeebe-broker</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>io.zeebe</groupId>
             <artifactId>zeebe-broker-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.zeebe</groupId>
-            <artifactId>zeebe-client-java</artifactId>
-        </dependency>
-
-
     </dependencies>
 </project>
