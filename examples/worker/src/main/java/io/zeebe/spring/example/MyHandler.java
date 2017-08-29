@@ -24,5 +24,6 @@ public class MyHandler implements TaskHandler {
                 task.getHeaders(),
                 task.getPayload()));
 
+        controller.completeTaskWithoutPayload();
     }
 }

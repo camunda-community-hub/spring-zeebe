@@ -4,7 +4,7 @@ import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.spring.client.fn.CreateTaskSubscriptionBuilder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 
@@ -13,8 +13,8 @@ public class ZeebeClientConfiguration {
 
 
     @Bean
-    public ZeebeClient zeebeClient() {
-        return new ZeebeClientLifecycle();
+    public ZeebeClient zeebeClient(ApplicationEventPublisher publisher) {
+        return new ZeebeClientLifecycle(publisher);
     }
 
 

@@ -5,21 +5,24 @@ import io.zeebe.client.task.TaskHandler;
 import io.zeebe.client.task.TaskSubscription;
 import io.zeebe.client.task.TaskSubscriptionBuilder;
 import io.zeebe.spring.ZeebeTaskSubscription;
+import io.zeebe.spring.ZeebeTemplate;
+import io.zeebe.spring.client.event.ClientStartedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecycle {
+public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecycle, ZeebeTemplate {
 
     private final Logger logger = LoggerFactory.getLogger(ZeebeClientLifecycle.class);
+    private final ApplicationEventPublisher publisher;
 
     @Autowired(required = false)
     private List<TaskHandler> taskHandlers;
@@ -29,8 +32,9 @@ public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecy
     private List<TaskSubscription> taskSubscriptions;
 
 
-    public ZeebeClientLifecycle() {
+    public ZeebeClientLifecycle(ApplicationEventPublisher publisher) {
         super(new Properties());
+        this.publisher = publisher;
     }
 
     @Override
@@ -42,6 +46,9 @@ public class ZeebeClientLifecycle extends ZeebeClientImpl implements SmartLifecy
     public void start() {
         logger.info("start client-template");
         connect();
+
+        publisher.publishEvent(new ClientStartedEvent(this));
+
 
 
         taskSubscriptionBuilders = Optional.ofNullable(taskHandlers).orElseGet(ArrayList::new).stream().map(taskHandler -> {
