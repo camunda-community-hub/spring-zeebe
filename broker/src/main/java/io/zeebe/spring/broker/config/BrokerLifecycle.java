@@ -3,8 +3,7 @@ package io.zeebe.spring.broker.config;
 import io.zeebe.broker.Broker;
 import org.springframework.context.SmartLifecycle;
 
-public class BrokerLifecycle implements SmartLifecycle
-{
+public class BrokerLifecycle implements SmartLifecycle {
 
     public static final int PHASE = 1000;
 
@@ -26,8 +25,9 @@ public class BrokerLifecycle implements SmartLifecycle
     }
 
     @Override
-    public void stop(Runnable _unused) {
+    public void stop(final Runnable callback) {
         stop();
+        callback.run();
     }
 
     @Override

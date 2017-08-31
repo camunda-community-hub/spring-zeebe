@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>io.zeebe.spring</groupId>
-            <artifactId>spring-zeebe-client</artifactId>
+            <artifactId>spring-zeebe-client-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

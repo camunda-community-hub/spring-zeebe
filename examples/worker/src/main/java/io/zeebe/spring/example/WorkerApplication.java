@@ -1,6 +1,6 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.spring.client.annotation.EnableZeebeClient;
+import io.zeebe.spring.client.EnableZeebeClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

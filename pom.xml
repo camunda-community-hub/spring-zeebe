@@ -10,11 +10,13 @@
     <modules>
         <module>broker</module>
         <module>client</module>
+        <module>client-starter</module>
 
         <module>examples/broker</module>
         <module>examples/deployer</module>
         <module>examples/starter</module>
         <module>examples/worker</module>
+        <module>spike</module>
     </modules>
 
     <properties>
@@ -67,11 +69,17 @@
             </dependency>
 
             <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-client-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- zeebe -->
+            <dependency>
                 <groupId>io.zeebe</groupId>
                 <artifactId>zeebe-client-java</artifactId>
                 <version>${zeebe.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.zeebe</groupId>
                 <artifactId>zeebe-broker-core</artifactId>

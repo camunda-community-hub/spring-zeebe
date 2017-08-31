@@ -1,4 +1,4 @@
-package io.zeebe.spring.client.annotation;
+package io.zeebe.spring.client;
 
 import io.zeebe.spring.client.config.ZeebeClientConfiguration;
 import org.springframework.context.annotation.Import;

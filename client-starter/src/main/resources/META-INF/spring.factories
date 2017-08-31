@@ -1,0 +1,2 @@
+# AutoConfigurations
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.zeebe.spring.client.starter.ZeebeClientStarterAutoConfiguration
