@@ -6,16 +6,17 @@
     <parent>
         <artifactId>spring-zeebe-root</artifactId>
         <groupId>io.zeebe.spring.project</groupId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.zeebe.spring.example</groupId>
     <artifactId>spring-zeebe-example-starter</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>io.zeebe.spring</groupId>
-            <artifactId>spring-zeebe-client-starter</artifactId>
+            <artifactId>spring-zeebe-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

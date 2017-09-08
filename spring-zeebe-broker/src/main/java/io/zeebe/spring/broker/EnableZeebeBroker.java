@@ -18,6 +18,5 @@ import java.lang.annotation.Target;
 @Import(ZeebeBrokerConfiguration.class)
 @Documented
 @Inherited
-public @interface EnableZeebeBroker
-{
+public @interface EnableZeebeBroker {
 }

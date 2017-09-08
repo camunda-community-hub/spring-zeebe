@@ -6,7 +6,7 @@
     <parent>
         <artifactId>spring-zeebe-root</artifactId>
         <groupId>io.zeebe.spring.project</groupId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <groupId>io.zeebe.spring.spike</groupId>

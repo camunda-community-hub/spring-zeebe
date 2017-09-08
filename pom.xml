@@ -4,14 +4,18 @@
 
     <groupId>io.zeebe.spring.project</groupId>
     <artifactId>spring-zeebe-root</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>broker</module>
-        <module>client</module>
-        <module>client-starter</module>
+        <!-- BROKER -->
+        <module>spring-zeebe-broker</module>
 
+        <!-- CLIENT -->
+        <module>spring-zeebe</module>
+        <module>spring-zeebe-starter</module>
+
+        <!-- EXAMPLES -->
         <module>examples/broker</module>
         <module>examples/deployer</module>
         <module>examples/starter</module>
@@ -31,6 +35,7 @@
         <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
     </properties>
 
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -39,6 +44,31 @@
                 <version>${spring-boot.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-broker</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- zeebe -->
+            <dependency>
+                <groupId>io.zeebe</groupId>
+                <artifactId>zeebe-client-java</artifactId>
+                <version>${zeebe.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.zeebe</groupId>
@@ -57,38 +87,10 @@
                 </exclusions>
             </dependency>
 
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-broker</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-client</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-client-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- zeebe -->
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zeebe-client-java</artifactId>
-                <version>${zeebe.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zeebe-broker-core</artifactId>
-                <version>${zeebe.version}</version>
-            </dependency>
-
         </dependencies>
 
     </dependencyManagement>
+
 
     <repositories>
         <repository>
@@ -103,5 +105,18 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <licenses>
+        <license>
+            <name>Apache License</name>
+        </license>
+    </licenses>
+
+    <contributors>
+        <contributor>
+            <name>Jan Galinski</name>
+            <organization>Holisticon AG</organization>
+        </contributor>
+    </contributors>
 
 </project>
