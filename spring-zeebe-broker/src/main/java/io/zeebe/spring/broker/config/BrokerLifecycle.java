@@ -26,13 +26,14 @@ public class BrokerLifecycle implements SmartLifecycle {
 
     @Override
     public void stop(final Runnable callback) {
-        stop();
+        broker.close();
         callback.run();
     }
 
     @Override
     public void stop() {
-        broker.close();
+        this.stop(() -> {
+        });
     }
 
     @Override

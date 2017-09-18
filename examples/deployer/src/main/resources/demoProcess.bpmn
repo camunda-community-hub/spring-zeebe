@@ -15,7 +15,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="foo" />
         <zeebe:ioMapping>
-          <zeebe:input source="$.a" target="$.foo" />
+          <zeebe:input source="$.withDeploymentAnnotation" target="$.foo" />
           <zeebe:output source="$.foo" target="$.bar" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>

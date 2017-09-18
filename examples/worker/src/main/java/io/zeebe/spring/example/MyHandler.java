@@ -2,10 +2,8 @@ package io.zeebe.spring.example;
 
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.event.TaskEvent;
-import io.zeebe.client.task.TaskHandler;
 import io.zeebe.spring.client.annotation.ZeebeTaskListener;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class MyHandler {

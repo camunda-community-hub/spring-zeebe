@@ -3,6 +3,8 @@ package io.zeebe.spring.client.config;
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
+import io.zeebe.spring.client.config.processor.DeploymentPostProcessor;
+import io.zeebe.spring.client.config.processor.TaskhandlerPostProcessor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +20,16 @@ public class ZeebeClientConfiguration {
     @Bean
     public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher) {
         return new SpringZeebeClient(properties, publisher);
+    }
+
+    @Bean
+    public DeploymentPostProcessor deploymentPostProcessor() {
+        return new DeploymentPostProcessor();
+    }
+
+    @Bean
+    public TaskhandlerPostProcessor taskhandlerPostProcessor() {
+        return new TaskhandlerPostProcessor();
     }
 
     @Bean
