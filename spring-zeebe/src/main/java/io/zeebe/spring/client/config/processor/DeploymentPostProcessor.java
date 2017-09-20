@@ -20,13 +20,14 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
 
     @Override
     public Consumer<SpringZeebeClient> apply(final ClassInfo beanInfo) {
-        log.info("deployment: {}", beanInfo);
-        final ZeebeDeployment annotation = beanInfo.getTargetClass().getAnnotation(ZeebeDeployment.class);
+        final ZeebeDeployment.Annotated annotated = ZeebeDeployment.Annotated.of(beanInfo);
+
+        log.info("deployment: {}", annotated);
 
         return client -> {
             final DeploymentEvent deploymentResult = client.workflows()
-                    .deploy(annotation.topicName())
-                    .resourceFromClasspath(annotation.classPathResource())
+                    .deploy(annotated.getTopicName())
+                    .resourceFromClasspath(annotated.getClassPathResource())
                     .execute();
 
             log.info("Deployed: {}",

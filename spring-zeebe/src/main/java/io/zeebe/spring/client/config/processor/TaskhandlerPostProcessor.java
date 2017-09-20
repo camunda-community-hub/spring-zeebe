@@ -3,6 +3,7 @@ package io.zeebe.spring.client.config.processor;
 import io.zeebe.spring.client.annotation.ZeebeTaskListener;
 import io.zeebe.spring.client.bean.BeanInfo;
 import io.zeebe.spring.client.bean.ClassInfo;
+import io.zeebe.spring.client.bean.MethodInfo;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
@@ -32,13 +33,15 @@ public class TaskhandlerPostProcessor extends BeanInfoPostProcessor {
 
         doWithMethods(
                 beanInfo.getTargetClass(),
-                method -> Optional.ofNullable(findAnnotation(method, ZeebeTaskListener.class))
-                                .ifPresent(a -> annotatedMethods.add(ZeebeTaskListener.Annotated.of(beanInfo.toMethodInfo(method), a))),
+                method -> {
+                    MethodInfo m = beanInfo.toMethodInfo(method);
+                    Optional.ofNullable(findAnnotation(method, ZeebeTaskListener.class))
+                            .ifPresent(a -> annotatedMethods.add(ZeebeTaskListener.Annotated.of(beanInfo.toMethodInfo(method), a)));
+                },
                 ReflectionUtils.USER_DECLARED_METHODS
         );
 
         return client -> annotatedMethods.forEach(m -> {
-            log.info("register taskHandler: {}", m);
             client.tasks().newTaskSubscription(m.getTopicName())
                     .lockOwner(m.getLockOwner())
                     .handler((tasksClient, taskEvent) -> m.getBeanInfo().invoke( tasksClient, taskEvent))
@@ -46,6 +49,7 @@ public class TaskhandlerPostProcessor extends BeanInfoPostProcessor {
                     .taskFetchSize(m.getTaskFetchSize())
                     .taskType(m.getTaskType())
                     .open();
+            log.info("register taskHandler: {}", m);
         });
     }
 }

@@ -1,5 +1,6 @@
 package io.zeebe.spring.client.annotation;
 
+import io.zeebe.spring.client.bean.BeanInfo;
 import io.zeebe.spring.client.bean.ClassInfo;
 import lombok.Builder;
 import lombok.Value;
@@ -23,6 +24,14 @@ public @interface ZeebeDeployment {
     @Builder
     class Annotated {
 
+        public static Annotated of(final ClassInfo classInfo) {
+            return of(
+                    classInfo,
+                    classInfo.getAnnotation(ZeebeDeployment.class)
+                            .orElseThrow(BeanInfo.noAnnotationFound(ZeebeDeployment.class))
+            );
+        }
+
         public static Annotated of(final ClassInfo classInfo, final ZeebeDeployment annotation) {
             return Annotated.builder().beanInfo(classInfo)
                     .topicName(annotation.topicName())
@@ -30,12 +39,11 @@ public @interface ZeebeDeployment {
                     .build();
         }
 
-        ClassInfo beanInfo;
-
         String topicName;
 
         String classPathResource;
 
+        ClassInfo beanInfo;
     }
 
     String topicName();

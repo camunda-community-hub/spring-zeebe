@@ -3,11 +3,16 @@ package io.zeebe.spring.client.bean;
 import org.springframework.aop.support.AopUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.springframework.util.ReflectionUtils.getAllDeclaredMethods;
 
 public interface BeanInfo {
+
+    static Supplier<IllegalStateException> noAnnotationFound(Class<? extends Annotation> type) {
+        return () -> new IllegalStateException("no annotation found - " + type);
+    }
 
     Object getBean();
 

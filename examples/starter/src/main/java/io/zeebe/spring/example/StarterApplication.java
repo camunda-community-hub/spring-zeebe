@@ -5,6 +5,7 @@ import io.zeebe.client.event.WorkflowInstanceEvent;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import io.zeebe.spring.client.event.ClientStartedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,8 @@ import java.util.UUID;
 @SpringBootApplication
 @EnableZeebeClient
 @EnableScheduling
+@Slf4j
 public class StarterApplication {
-
-    private final Logger log = LoggerFactory.getLogger(StarterApplication.class);
 
     public static void main(String... args) {
         SpringApplication.run(StarterApplication.class, args);
@@ -42,6 +42,5 @@ public class StarterApplication {
                 .execute();
 
         log.info("started: {} {}", event.getActivityId(), event.getPayload());
-
     }
 }

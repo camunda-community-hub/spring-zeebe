@@ -41,8 +41,6 @@ public class SpringZeebeClient extends ZeebeClientImpl implements SmartLifecycle
         log.info("SpringZeebeClient connected");
         publisher.publishEvent(new ClientStartedEvent());
 
-
-
         onStart.forEach(c -> c.accept(this));
     }
 

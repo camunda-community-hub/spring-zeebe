@@ -1,6 +1,7 @@
 package io.zeebe.spring.client.annotation;
 
 import io.zeebe.client.task.impl.subscription.TaskSubscriptionBuilderImpl;
+import io.zeebe.spring.client.bean.BeanInfo;
 import io.zeebe.spring.client.bean.MethodInfo;
 import lombok.Builder;
 import lombok.Value;
@@ -12,6 +13,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static io.zeebe.spring.client.bean.BeanInfo.noAnnotationFound;
+
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -21,6 +24,15 @@ public @interface ZeebeTaskListener {
     @Slf4j
     @Builder
     class Annotated {
+
+        public static Annotated of(final MethodInfo methodInfo) {
+            return of(
+                    methodInfo,
+                    methodInfo.getAnnotation(ZeebeTaskListener.class)
+                            .orElseThrow(noAnnotationFound(ZeebeTaskListener.class))
+            );
+        }
+
 
         public static Annotated of(final MethodInfo methodInfo, final ZeebeTaskListener annotation) {
             return Annotated.builder().beanInfo(methodInfo)
@@ -32,8 +44,6 @@ public @interface ZeebeTaskListener {
                     .build();
         }
 
-        private MethodInfo beanInfo;
-
         private String topicName;
 
         private String taskType;
@@ -43,6 +53,8 @@ public @interface ZeebeTaskListener {
         private long lockTime;
 
         private int taskFetchSize;
+
+        private MethodInfo beanInfo;
     }
 
     String topicName();
@@ -51,7 +63,7 @@ public @interface ZeebeTaskListener {
 
     String lockOwner();
 
-    long lockTime();
+    long lockTime() default 10000L;
 
     int taskFetchSize() default TaskSubscriptionBuilderImpl.DEFAULT_TASK_FETCH_SIZE;
 

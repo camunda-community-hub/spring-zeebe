@@ -4,7 +4,11 @@ import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Optional;
+
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 @Value
 @Builder
@@ -26,5 +30,9 @@ public class MethodInfo implements BeanInfo {
     @SneakyThrows
     public Object invoke(final Object... args) {
         return method.invoke(getBean(), args);
+    }
+
+    public <T extends Annotation> Optional<T> getAnnotation(final Class<T> type) {
+        return Optional.ofNullable(findAnnotation(method, type));
     }
 }
