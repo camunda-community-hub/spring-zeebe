@@ -17,7 +17,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @EnableZeebeClient
 @Slf4j
-public class WorkerApplication implements CommandLineRunner {
+public class WorkerApplication  {
+
+    public static final String DEFAULT_TOPIC = "default-topic";
 
     public static void main(String... args) {
         SpringApplication.run(WorkerApplication.class, args);
@@ -41,7 +43,7 @@ public class WorkerApplication implements CommandLineRunner {
      *
      * @param event
      */
-    @ZeebeTopicListener(name = "workerLogger", topic = "default-topic")
+    @ZeebeTopicListener(name = "workerLogger", topic = DEFAULT_TOPIC)
     public void logEvents(GeneralEvent event) {
         final EventMetadata metadata = event.getMetadata();
 
@@ -55,9 +57,9 @@ public class WorkerApplication implements CommandLineRunner {
     }
 
     @ZeebeTaskListener(
-            topicName = "default-topic",
+            topicName = DEFAULT_TOPIC,
             lockOwner = "worker-1",
-            taskType = "taskA"
+            taskType = "foo"
     )
     public void handleTaskA(final TasksClient client, final TaskEvent task) {
         logTask(task);
@@ -65,61 +67,15 @@ public class WorkerApplication implements CommandLineRunner {
     }
 
     @ZeebeTaskListener(
-            topicName = "default-topic",
+            topicName = DEFAULT_TOPIC,
             lockOwner = "worker-1",
-            taskType = "taskB"
+            taskType = "bar"
     )
     public void handleTaskB(final TasksClient client, final TaskEvent task) {
         logTask(task);
         completeTask(client, task);
     }
 
-    @ZeebeTaskListener(
-            topicName = "default-topic",
-            lockOwner = "worker-1",
-            taskType = "taskC"
-    )
-    public void handleTaskC(final TasksClient client, final TaskEvent task) {
-        logTask(task);
-        completeTask(client, task);
-    }
 
-    @Autowired
-    private SpringZeebeClient client;
 
-    @Override
-    public void run(String... strings) throws Exception {
-        client.tasks().newTaskSubscription("default-topic")
-                .lockOwner("me")
-                .handler((tasksClient, taskEvent) -> {
-                    log.info("{}", taskEvent);
-                    tasksClient.complete(taskEvent).withoutPayload();
-                })
-                .lockTime(10000L)
-                .taskFetchSize(32)
-                .taskType("taskA")
-                .open();
-
-        client.tasks().newTaskSubscription("default-topic")
-                .lockOwner("me")
-                .handler((tasksClient, taskEvent) -> {
-                    log.info("{}", taskEvent);
-                    tasksClient.complete(taskEvent).withoutPayload();
-                })
-                .lockTime(10000L)
-                .taskFetchSize(32)
-                .taskType("taskB")
-                .open();
-
-        client.tasks().newTaskSubscription("default-topic")
-                .lockOwner("me")
-                .handler((tasksClient, taskEvent) -> {
-                    log.info("{}", taskEvent);
-                    tasksClient.complete(taskEvent).withoutPayload();
-                })
-                .lockTime(10000L)
-                .taskFetchSize(32)
-                .taskType("taskC    ")
-                .open();
-    }
 }

@@ -17,7 +17,6 @@
 
         <!-- EXAMPLES -->
         <module>examples/broker</module>
-        <module>examples/deployer</module>
         <module>examples/starter</module>
         <module>examples/worker</module>
     </modules>

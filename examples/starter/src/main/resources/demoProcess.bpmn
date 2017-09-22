@@ -14,10 +14,6 @@
     <bpmn:serviceTask id="taskA" name="task A">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="foo" />
-        <zeebe:ioMapping>
-          <zeebe:input source="$.withDeploymentAnnotation" target="$.foo" />
-          <zeebe:output source="$.foo" target="$.bar" />
-        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1sz6737</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_06ytcxw</bpmn:outgoing>

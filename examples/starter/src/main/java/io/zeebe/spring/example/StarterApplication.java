@@ -3,6 +3,7 @@ package io.zeebe.spring.example;
 import io.zeebe.client.WorkflowsClient;
 import io.zeebe.client.event.WorkflowInstanceEvent;
 import io.zeebe.spring.client.EnableZeebeClient;
+import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import io.zeebe.spring.client.event.ClientStartedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,10 @@ import java.util.UUID;
 @SpringBootApplication
 @EnableZeebeClient
 @EnableScheduling
+@ZeebeDeployment(
+        topicName = "default-topic",
+        classPathResource = "demoProcess.bpmn"
+)
 @Slf4j
 public class StarterApplication {
 
