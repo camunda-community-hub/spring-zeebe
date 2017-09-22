@@ -18,7 +18,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 @Slf4j
-public class TaskhandlerPostProcessor extends BeanInfoPostProcessor {
+public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
 
     @Override
     public boolean test(final ClassInfo beanInfo) {

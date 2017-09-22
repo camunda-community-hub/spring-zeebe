@@ -20,7 +20,6 @@
         <module>examples/deployer</module>
         <module>examples/starter</module>
         <module>examples/worker</module>
-        <module>spike</module>
     </modules>
 
     <properties>

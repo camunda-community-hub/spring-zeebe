@@ -4,7 +4,8 @@ import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
 import io.zeebe.spring.client.config.processor.DeploymentPostProcessor;
-import io.zeebe.spring.client.config.processor.TaskhandlerPostProcessor;
+import io.zeebe.spring.client.config.processor.TaskHandlerPostProcessor;
+import io.zeebe.spring.client.config.processor.TopicHandlerPostProcessor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,8 +29,13 @@ public class ZeebeClientConfiguration {
     }
 
     @Bean
-    public TaskhandlerPostProcessor taskhandlerPostProcessor() {
-        return new TaskhandlerPostProcessor();
+    public TaskHandlerPostProcessor taskhandlerPostProcessor() {
+        return new TaskHandlerPostProcessor();
+    }
+
+    @Bean
+    public TopicHandlerPostProcessor topicHandlerPostProcessor() {
+        return new TopicHandlerPostProcessor();
     }
 
     @Bean
