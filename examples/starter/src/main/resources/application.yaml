@@ -1,3 +1,2 @@
 zeebe:
   topic: default-topic
-  name: worker-name

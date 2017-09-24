@@ -3,15 +3,19 @@ package io.zeebe.spring.client.config;
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
-import io.zeebe.spring.client.config.processor.DeploymentPostProcessor;
-import io.zeebe.spring.client.config.processor.TaskHandlerPostProcessor;
-import io.zeebe.spring.client.config.processor.TopicHandlerPostProcessor;
+import io.zeebe.spring.client.config.processor.PostProcessorConfiguration;
+import io.zeebe.spring.client.config.resolver.ZeebeExpressionResolver;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
-@ComponentScan
+@Import(PostProcessorConfiguration.class)
 public class ZeebeClientConfiguration {
+
+    @Bean
+    public ZeebeExpressionResolver zeebeExpressionResolver() {
+        return new ZeebeExpressionResolver();
+    }
 
     @Bean
     public ZeebeClientProperties properties() {
@@ -21,21 +25,6 @@ public class ZeebeClientConfiguration {
     @Bean
     public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher) {
         return new SpringZeebeClient(properties, publisher);
-    }
-
-    @Bean
-    public DeploymentPostProcessor deploymentPostProcessor() {
-        return new DeploymentPostProcessor();
-    }
-
-    @Bean
-    public TaskHandlerPostProcessor taskhandlerPostProcessor() {
-        return new TaskHandlerPostProcessor();
-    }
-
-    @Bean
-    public TopicHandlerPostProcessor topicHandlerPostProcessor() {
-        return new TopicHandlerPostProcessor();
     }
 
     @Bean

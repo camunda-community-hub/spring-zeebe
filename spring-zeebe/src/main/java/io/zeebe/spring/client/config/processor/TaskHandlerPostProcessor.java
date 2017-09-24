@@ -1,24 +1,26 @@
 package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.spring.client.annotation.ZeebeTaskListener;
-import io.zeebe.spring.client.bean.BeanInfo;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.MethodInfo;
+import io.zeebe.spring.client.bean.ZeebeTaskListenerValue;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
+/**
+ * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to
+ * add Handler subscriptions for {@link ZeebeTaskListener} method-annotations.
+ */
 @Slf4j
-public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
+public class TaskHandlerPostProcessor extends BeanInfoPostProcessor<MethodInfo, ZeebeTaskListener, ZeebeTaskListenerValue> {
 
     @Override
     public boolean test(final ClassInfo beanInfo) {
@@ -29,22 +31,18 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
     public Consumer<SpringZeebeClient> apply(final ClassInfo beanInfo) {
         log.info("taskhandling: {}", beanInfo);
 
-        final List<ZeebeTaskListener.Annotated> annotatedMethods = new ArrayList<>();
+        final List<ZeebeTaskListenerValue> annotatedMethods = new ArrayList<>();
 
         doWithMethods(
                 beanInfo.getTargetClass(),
-                method -> {
-                    MethodInfo m = beanInfo.toMethodInfo(method);
-                    Optional.ofNullable(findAnnotation(method, ZeebeTaskListener.class))
-                            .ifPresent(a -> annotatedMethods.add(ZeebeTaskListener.Annotated.of(beanInfo.toMethodInfo(method), a)));
-                },
+                method -> create(beanInfo.toMethodInfo(method)).ifPresent(annotatedMethods::add),
                 ReflectionUtils.USER_DECLARED_METHODS
         );
 
         return client -> annotatedMethods.forEach(m -> {
             client.tasks().newTaskSubscription(m.getTopicName())
                     .lockOwner(m.getLockOwner())
-                    .handler((tasksClient, taskEvent) -> m.getBeanInfo().invoke( tasksClient, taskEvent))
+                    .handler((tasksClient, taskEvent) -> m.getBeanInfo().invoke(tasksClient, taskEvent))
                     .lockTime(m.getLockTime())
                     .taskFetchSize(m.getTaskFetchSize())
                     .taskType(m.getTaskType())
@@ -52,4 +50,24 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
             log.info("register taskHandler: {}", m);
         });
     }
+
+    @Override
+    public Class<ZeebeTaskListener> annotationType() {
+        return ZeebeTaskListener.class;
+    }
+
+    @Override
+    public Optional<ZeebeTaskListenerValue> create(MethodInfo beanInfo) {
+        return beanInfo.getAnnotation(annotationType()).map(annotation ->
+                ZeebeTaskListenerValue.builder()
+                        .beanInfo(beanInfo)
+                        .topicName(resolver.resolve(annotation.topicName()))
+                        .taskType(resolver.resolve(annotation.taskType()))
+                        .lockOwner(resolver.resolve(annotation.lockOwner()))
+                        .lockTime(annotation.lockTime())
+                        .taskFetchSize(annotation.taskFetchSize())
+                        .build()
+        );
+    }
 }
+

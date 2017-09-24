@@ -19,8 +19,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class WorkerApplication  {
 
-    public static final String DEFAULT_TOPIC = "default-topic";
-
     public static void main(String... args) {
         SpringApplication.run(WorkerApplication.class, args);
     }
@@ -43,7 +41,7 @@ public class WorkerApplication  {
      *
      * @param event
      */
-    @ZeebeTopicListener(name = "workerLogger", topic = DEFAULT_TOPIC)
+    @ZeebeTopicListener
     public void logEvents(GeneralEvent event) {
         final EventMetadata metadata = event.getMetadata();
 
@@ -56,21 +54,13 @@ public class WorkerApplication  {
                 event.getJson()));
     }
 
-    @ZeebeTaskListener(
-            topicName = DEFAULT_TOPIC,
-            lockOwner = "worker-1",
-            taskType = "foo"
-    )
+    @ZeebeTaskListener(taskType = "foo")
     public void handleTaskA(final TasksClient client, final TaskEvent task) {
         logTask(task);
         completeTask(client, task);
     }
 
-    @ZeebeTaskListener(
-            topicName = DEFAULT_TOPIC,
-            lockOwner = "worker-1",
-            taskType = "bar"
-    )
+    @ZeebeTaskListener(taskType = "bar")
     public void handleTaskB(final TasksClient client, final TaskEvent task) {
         logTask(task);
         completeTask(client, task);

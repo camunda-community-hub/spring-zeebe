@@ -20,48 +20,11 @@ import static io.zeebe.spring.client.bean.BeanInfo.noAnnotationFound;
 @Documented
 public @interface ZeebeTaskListener {
 
-    @Value
-    @Slf4j
-    @Builder
-    class Annotated {
-
-        public static Annotated of(final MethodInfo methodInfo) {
-            return of(
-                    methodInfo,
-                    methodInfo.getAnnotation(ZeebeTaskListener.class)
-                            .orElseThrow(noAnnotationFound(ZeebeTaskListener.class))
-            );
-        }
-
-
-        public static Annotated of(final MethodInfo methodInfo, final ZeebeTaskListener annotation) {
-            return Annotated.builder().beanInfo(methodInfo)
-                    .topicName(annotation.topicName())
-                    .taskType(annotation.taskType())
-                    .lockOwner(annotation.lockOwner())
-                    .lockTime(annotation.lockTime())
-                    .taskFetchSize(annotation.taskFetchSize())
-                    .build();
-        }
-
-        private String topicName;
-
-        private String taskType;
-
-        private String lockOwner;
-
-        private long lockTime;
-
-        private int taskFetchSize;
-
-        private MethodInfo beanInfo;
-    }
-
-    String topicName();
+    String topicName() default "${zeebe.topic}";
 
     String taskType();
 
-    String lockOwner();
+    String lockOwner()  default "${zeebe.name}";
 
     long lockTime() default 10000L;
 

@@ -1,6 +1,7 @@
-package io.zeebe.spring.client.config;
+package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.spring.client.bean.ClassInfo;
+import io.zeebe.spring.client.config.SpringZeebeClient;
 import io.zeebe.spring.client.config.processor.BeanInfoPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -9,8 +10,8 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-@Component
 @Slf4j
 public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Ordered {
 
@@ -35,11 +36,14 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
                 .beanName(beanName)
                 .build();
 
-        processors.stream()
-                .filter(p -> p.test(beanInfo))
-                .peek(p -> log.info("processing: {}", beanInfo))
-                .map(p -> p.apply(beanInfo))
-                .forEach(client::onStart);
+        for (BeanInfoPostProcessor p : processors) {
+            if (!p.test(beanInfo)) {
+                continue;
+            }
+
+            Consumer<SpringZeebeClient> c = (Consumer<SpringZeebeClient>) p.apply(beanInfo);
+            client.onStart(c);
+        }
 
         return bean;
     }
