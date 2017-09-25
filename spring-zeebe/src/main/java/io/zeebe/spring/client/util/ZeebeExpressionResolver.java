@@ -1,4 +1,4 @@
-package io.zeebe.spring.client.config.resolver;
+package io.zeebe.spring.client.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;

@@ -1,5 +1,6 @@
-package io.zeebe.spring.client.bean;
+package io.zeebe.spring.client.bean.value;
 
+import io.zeebe.spring.client.bean.MethodInfo;
 import lombok.Builder;
 import lombok.Value;
 

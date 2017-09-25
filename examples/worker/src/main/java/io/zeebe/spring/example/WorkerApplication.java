@@ -33,7 +33,7 @@ public class WorkerApplication  {
     }
 
     private static void completeTask(final TasksClient client, final TaskEvent task) {
-        client.complete(task).withoutPayload();
+        client.complete(task).withoutPayload().execute();
     }
 
     /**
@@ -44,7 +44,6 @@ public class WorkerApplication  {
     @ZeebeTopicListener
     public void logEvents(GeneralEvent event) {
         final EventMetadata metadata = event.getMetadata();
-
 
         log.info(String.format(">>> [topic: %d, position: %d, key: %d, type: %s]\n%s\n===",
                 metadata.getPartitionId(),

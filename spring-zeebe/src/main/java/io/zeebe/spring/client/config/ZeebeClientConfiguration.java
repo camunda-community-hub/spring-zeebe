@@ -3,19 +3,17 @@ package io.zeebe.spring.client.config;
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
+import io.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.zeebe.spring.client.config.processor.PostProcessorConfiguration;
-import io.zeebe.spring.client.config.resolver.ZeebeExpressionResolver;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import(PostProcessorConfiguration.class)
+@Import({
+        PostProcessorConfiguration.class,
+        ReadAnnotationValueConfiguration.class,
+})
 public class ZeebeClientConfiguration {
-
-    @Bean
-    public ZeebeExpressionResolver zeebeExpressionResolver() {
-        return new ZeebeExpressionResolver();
-    }
 
     @Bean
     public ZeebeClientProperties properties() {
