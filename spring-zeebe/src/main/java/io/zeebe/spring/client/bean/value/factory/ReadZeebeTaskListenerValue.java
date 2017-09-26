@@ -18,7 +18,7 @@ public class ReadZeebeTaskListenerValue extends ReadAnnotationValue<MethodInfo, 
         return methodInfo.getAnnotation(annotationType).map(annotation ->
                 ZeebeTaskListenerValue.builder()
                         .beanInfo(methodInfo)
-                        .topicName(resolver.resolve(annotation.topicName()))
+                        .topicName(resolver.resolve(annotation.topic()))
                         .taskType(resolver.resolve(annotation.taskType()))
                         .lockOwner(resolver.resolve(annotation.lockOwner()))
                         .lockTime(annotation.lockTime())

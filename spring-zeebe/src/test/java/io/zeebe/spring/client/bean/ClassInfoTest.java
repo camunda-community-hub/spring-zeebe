@@ -21,7 +21,7 @@ public class ClassInfoTest {
 
     public static class WithTaskListener {
 
-        @ZeebeTaskListener(topicName = "foo", taskType = "bar", lockTime = 100L, lockOwner = "kermit")
+        @ZeebeTaskListener(topic = "foo", taskType = "bar", lockTime = 100L, lockOwner = "kermit")
         public void handle() {
 
         }

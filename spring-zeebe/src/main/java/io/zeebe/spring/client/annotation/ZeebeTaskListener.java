@@ -20,11 +20,11 @@ import static io.zeebe.spring.client.bean.BeanInfo.noAnnotationFound;
 @Documented
 public @interface ZeebeTaskListener {
 
-    String topicName() default "${zeebe.topic}";
+    String topic() default "${zeebe.topic}";
 
     String taskType();
 
-    String lockOwner()  default "${zeebe.name}";
+    String lockOwner()  default "${zeebe.lockOwner}";
 
     long lockTime() default 10000L;
 
