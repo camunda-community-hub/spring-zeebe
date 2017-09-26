@@ -8,12 +8,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <!-- BROKER -->
-        <module>spring-zeebe-broker</module>
+        <module>broker/spring-zeebe-broker</module>
 
-        <!-- CLIENT -->
-        <module>spring-zeebe</module>
-        <module>spring-zeebe-starter</module>
+        <module>client/spring-zeebe</module>
+        <module>client/spring-zeebe-starter</module>
 
         <!-- EXAMPLES -->
         <module>examples/broker</module>
