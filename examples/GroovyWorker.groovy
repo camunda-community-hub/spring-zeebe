@@ -21,7 +21,9 @@ class Application {
     @ZeebeTaskListener(topicName = "default-topic", taskType = "foo", lockOwner = "groovy-worker")
     void workOnTaskFoo(final TasksClient client, final TaskEvent task) {
         log.info("completing task: {}", task)
-        client.complete(task).withoutPayload().execute();
+        client.complete(task)
+                .withoutPayload()
+                .execute()
     }
 
 }

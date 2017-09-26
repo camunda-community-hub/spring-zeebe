@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ZeebeTopicListener {
 
-    String name()  default "${zeebe.name}";
+    String name();
 
     String topic() default "${zeebe.topic}";
 }

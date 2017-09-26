@@ -9,6 +9,7 @@
 
     <modules>
         <module>broker/spring-zeebe-broker</module>
+        <module>broker/spring-zeebe-broker-starter</module>
 
         <module>client/spring-zeebe</module>
         <module>client/spring-zeebe-starter</module>
@@ -31,7 +32,6 @@
         <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
     </properties>
 
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,6 +42,7 @@
                 <type>pom</type>
             </dependency>
 
+            <!-- BROKER -->
             <dependency>
                 <groupId>io.zeebe.spring</groupId>
                 <artifactId>spring-zeebe-broker</artifactId>
@@ -49,17 +50,24 @@
             </dependency>
             <dependency>
                 <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe</artifactId>
+                <artifactId>spring-zeebe-broker-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
+
+            <!-- CLIENT -->
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.zeebe.spring</groupId>
                 <artifactId>spring-zeebe-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- zeebe -->
+            <!-- ZEEBE -->
             <dependency>
                 <groupId>io.zeebe</groupId>
                 <artifactId>zeebe-client-java</artifactId>
@@ -74,18 +82,14 @@
                         <groupId>org.apache.logging.log4j</groupId>
                         <artifactId>log4j-slf4j-impl</artifactId>
                     </exclusion>
-
                     <exclusion>
                         <groupId>org.apache.logging.log4j</groupId>
                         <artifactId>log4j-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
-
         </dependencies>
-
     </dependencyManagement>
-
 
     <repositories>
         <repository>
@@ -113,5 +117,4 @@
             <organization>Holisticon AG</organization>
         </contributor>
     </contributors>
-
 </project>

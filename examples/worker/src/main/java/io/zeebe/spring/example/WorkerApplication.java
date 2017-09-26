@@ -21,7 +21,7 @@ public class WorkerApplication  {
     }
 
     private static void logTask(TaskEvent task) {
-        log.info(">>> [type: {}, key: {}, lockExpirationTime: {}]\n[headers: {}]\n[payload: {}]\n===",
+        log.info("complete task\n>>> [type: {}, key: {}, lockExpirationTime: {}]\n[headers: {}]\n[payload: {}]\n===",
                 task.getType(),
                 task.getMetadata().getKey(),
                 task.getLockExpirationTime().toString(),
@@ -29,16 +29,12 @@ public class WorkerApplication  {
                 task.getPayload());
     }
 
-    private static void completeTask(final TasksClient client, final TaskEvent task) {
-        client.complete(task).withoutPayload().execute();
-    }
-
     /**
      * logs every event.
      *
      * @param event
      */
-    @ZeebeTopicListener
+    @ZeebeTopicListener(name = "log-events")
     public void logEvents(GeneralEvent event) {
         final EventMetadata metadata = event.getMetadata();
 
@@ -53,13 +49,17 @@ public class WorkerApplication  {
     @ZeebeTaskListener(taskType = "foo")
     public void handleTaskA(final TasksClient client, final TaskEvent task) {
         logTask(task);
-        completeTask(client, task);
+        client.complete(task)
+                .withoutPayload()
+                .execute();
     }
 
     @ZeebeTaskListener(taskType = "bar")
     public void handleTaskB(final TasksClient client, final TaskEvent task) {
         logTask(task);
-        completeTask(client, task);
+        client.complete(task)
+                .withoutPayload()
+                .execute();
     }
 
 
