@@ -39,6 +39,8 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
      */
     private ZeebeClientImpl client;
 
+    private boolean  hasBeenClosed = false;
+
     public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher) {
         this.properties = properties;
         this.publisher = publisher;
@@ -113,7 +115,10 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
 
     @Override
     public void close() {
-        get().close();
+        if (!hasBeenClosed) {
+            get().close();
+            hasBeenClosed = true;
+        }
     }
 
 

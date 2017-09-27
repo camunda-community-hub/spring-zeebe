@@ -1,7 +1,5 @@
 #!/usr/bin/env groovy
 
-// left here beause its linked in tweet ... have a look at examples/groovy
-// simple worker example using groovy+grab
 package io.zeebe.spring.groovy
 
 @Grab("io.zeebe.spring:spring-zeebe-starter:0.3.0-SNAPSHOT")
