@@ -1,17 +1,15 @@
 package io.zeebe.spring.client.config.processor;
 
+import io.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeTaskListener;
 import io.zeebe.spring.client.bean.ClassInfo;
-import io.zeebe.spring.client.bean.MethodInfo;
 import io.zeebe.spring.client.bean.value.ZeebeTaskListenerValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeTaskListenerValue;
-import io.zeebe.spring.client.config.SpringZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.springframework.util.ReflectionUtils.doWithMethods;
@@ -35,7 +33,7 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
     }
 
     @Override
-    public Consumer<SpringZeebeClient> apply(final ClassInfo beanInfo) {
+    public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
         log.info("taskhandling: {}", beanInfo);
 
         final List<ZeebeTaskListenerValue> annotatedMethods = new ArrayList<>();

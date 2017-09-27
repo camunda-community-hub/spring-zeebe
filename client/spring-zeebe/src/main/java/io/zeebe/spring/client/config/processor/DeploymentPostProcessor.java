@@ -1,5 +1,6 @@
 package io.zeebe.spring.client.config.processor;
 
+import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.event.DeploymentEvent;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
@@ -26,7 +27,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
     }
 
     @Override
-    public Consumer<SpringZeebeClient> apply(final ClassInfo beanInfo) {
+    public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
         final ZeebeDeploymentValue value = reader.applyOrThrow(beanInfo);
 
         log.info("deployment: {}", value);

@@ -3,14 +3,20 @@ package io.zeebe.spring.broker.config;
 import io.zeebe.broker.Broker;
 import org.springframework.context.SmartLifecycle;
 
-public class BrokerLifecycle implements SmartLifecycle {
+import java.util.function.Supplier;
+
+public class SpringZeebeBroker implements SmartLifecycle, Supplier<Broker> {
 
     public static final int PHASE = 1000;
 
+    /**
+     * Late init during {@link #start()}.
+     */
     private Broker broker;
 
     @Override
     public void start() {
+        // FIXME: initialize with toml file path! currently only defaults are used!
         broker = new Broker((String) null);
     }
 
@@ -39,5 +45,14 @@ public class BrokerLifecycle implements SmartLifecycle {
     @Override
     public int getPhase() {
         return PHASE;
+    }
+
+    @Override
+    public Broker get() {
+        if (!isRunning()) {
+            throw new IllegalStateException("broker is not running!");
+        }
+
+        return broker;
     }
 }

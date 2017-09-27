@@ -1,10 +1,10 @@
 package io.zeebe.spring.client.config.processor;
 
+import io.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeTopicListener;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeTopicListenerValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeTopicListenerValue;
-import io.zeebe.spring.client.config.SpringZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
@@ -17,7 +17,6 @@ import static org.springframework.util.ReflectionUtils.doWithMethods;
 @Slf4j
 public class TopicHandlerPostProcessor extends BeanInfoPostProcessor {
 
-
     private final ReadZeebeTopicListenerValue reader;
 
     public TopicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader) {
@@ -25,7 +24,7 @@ public class TopicHandlerPostProcessor extends BeanInfoPostProcessor {
     }
 
     @Override
-    public Consumer<SpringZeebeClient> apply(ClassInfo beanInfo) {
+    public Consumer<ZeebeClient> apply(ClassInfo beanInfo) {
         log.info("topic handling: {}", beanInfo);
 
         final List<ZeebeTopicListenerValue> annotatedMethods = new ArrayList<>();

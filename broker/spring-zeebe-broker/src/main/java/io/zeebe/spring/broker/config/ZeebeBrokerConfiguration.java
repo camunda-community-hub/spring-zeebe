@@ -5,13 +5,12 @@ import org.springframework.context.annotation.Bean;
 /**
  * Included by {@link io.zeebe.spring.broker.EnableZeebeBroker} annotation.
  */
-public class ZeebeBrokerConfiguration
-{
+public class ZeebeBrokerConfiguration {
 
     @Bean
-    public BrokerLifecycle springBroker()
+    public SpringZeebeBroker springBroker()
     {
-        return new BrokerLifecycle();
+        return new SpringZeebeBroker();
     }
 
 }

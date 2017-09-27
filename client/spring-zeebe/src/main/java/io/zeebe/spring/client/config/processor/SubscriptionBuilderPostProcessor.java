@@ -1,5 +1,6 @@
 package io.zeebe.spring.client.config.processor;
 
+import io.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import io.zeebe.spring.client.config.processor.BeanInfoPostProcessor;
@@ -41,7 +42,7 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
                 continue;
             }
 
-            Consumer<SpringZeebeClient> c = (Consumer<SpringZeebeClient>) p.apply(beanInfo);
+            Consumer<ZeebeClient> c = (Consumer<ZeebeClient>) p.apply(beanInfo);
             client.onStart(c);
         }
 
