@@ -1,4 +1,4 @@
-package io.zeebe.spring.client.config;
+package io.zeebe.spring.client.properties;
 
 import io.zeebe.client.ClientProperties;
 import io.zeebe.client.task.TaskHandler;
@@ -120,7 +120,8 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
         final Properties properties = new Properties();
         ClientProperties.setDefaults(properties);
 
-        BiConsumer<String, Supplier<String>> set = (key, supplier) -> {
+        // only set property if configured value is not null
+        final BiConsumer<String, Supplier<String>> set = (key, supplier) -> {
             if (supplier.get() != null) {
                 properties.setProperty(key, supplier.get());
             }

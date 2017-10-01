@@ -8,12 +8,12 @@ import io.zeebe.client.clustering.impl.TopologyResponse;
 import io.zeebe.client.cmd.Request;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
+import io.zeebe.spring.client.properties.ZeebeClientProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
