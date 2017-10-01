@@ -9,7 +9,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public class ZeebeExpressionResolver implements BeanFactoryAware {
@@ -20,6 +19,7 @@ public class ZeebeExpressionResolver implements BeanFactoryAware {
 
     /**
      * Resolve the specified value if possible.
+     *
      * @see ConfigurableBeanFactory#resolveEmbeddedValue
      */
     private final UnaryOperator<String> resolve = value -> {
@@ -27,7 +27,7 @@ public class ZeebeExpressionResolver implements BeanFactoryAware {
             return ((ConfigurableBeanFactory) this.beanFactory).resolveEmbeddedValue(value);
         }
         return value;
-    } ;
+    };
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

@@ -33,34 +33,35 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
         }
 
         @Override
-        public String getClientMaxRequests() {
+        public String getMaxRequests() {
             return properties.getProperty(CLIENT_MAXREQUESTS);
         }
 
         @Override
-        public String getClientSendbufferSize() {
+        public String getSendBufferSize() {
             return properties.getProperty(CLIENT_SENDBUFFER_SIZE);
         }
 
         @Override
-        public String getClientThreadingmode() {
+        public String getThreadingMode() {
             return properties.getProperty(CLIENT_THREADINGMODE);
         }
 
         @Override
-        public String getClientTaskExecutionThreads() {
+        public String getTaskExecutionThreads() {
             return properties.getProperty(CLIENT_TASK_EXECUTION_THREADS);
         }
 
         @Override
-        public String getClientTopicSubscriptionPrefetchCapacity() {
+        public String getTopicSubscriptionPrefetchCapacity() {
             return properties.getProperty(CLIENT_TOPIC_SUBSCRIPTION_PREFETCH_CAPACITY);
         }
 
         @Override
-        public String getClientTcpChannelKeepAlivePeriod() {
+        public String getTcpChannelKeepAlivePeriod() {
             return properties.getProperty(CLIENT_TCP_CHANNEL_KEEP_ALIVE_PERIOD);
         }
+        
     };
 
 
@@ -72,34 +73,34 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
     /**
      * The maximum count of concurrently in flight requests.
      */
-    String getClientMaxRequests();
+    String getMaxRequests();
 
 
     /**
      * the size of the client's send buffer in MB
      */
-    String getClientSendbufferSize();
+    String getSendBufferSize();
 
     /**
      * Possible values:
      * SHARED: a single thread is used by the client for network communication
      * DEDICATED: a dedicated thread is used for running the sender, receive and conductor agent.
      */
-    String getClientThreadingmode();
+    String getThreadingMode();
 
 
     /**
      * The number of threads for invocation of {@link TaskHandler}. Setting this value to 0 effectively disables
      * managed task execution via {@link TaskSubscription}s.
      */
-    String getClientTaskExecutionThreads();
+    String getTaskExecutionThreads();
 
 
     /**
      * Determines the maximum amount of topic events are prefetched and buffered at a time
      * before they are handled to the event handler. Default value is 32.
      */
-    String getClientTopicSubscriptionPrefetchCapacity();
+    String getTopicSubscriptionPrefetchCapacity();
 
 
     /**
@@ -109,7 +110,7 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
     /*
      * Optional property; Default is defined by transport
      */
-    String getClientTcpChannelKeepAlivePeriod();
+    String getTcpChannelKeepAlivePeriod();
 
     default boolean isAutoStartup() {
         return true;
@@ -128,12 +129,12 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
         };
 
         set.accept(BROKER_CONTACTPOINT, this::getBrokerContactPoint);
-        set.accept(CLIENT_MAXREQUESTS, this::getClientMaxRequests);
-        set.accept(CLIENT_SENDBUFFER_SIZE, this::getClientSendbufferSize);
-        set.accept(CLIENT_THREADINGMODE, this::getClientThreadingmode);
-        set.accept(CLIENT_TASK_EXECUTION_THREADS, this::getClientTaskExecutionThreads);
-        set.accept(CLIENT_TOPIC_SUBSCRIPTION_PREFETCH_CAPACITY, this::getClientTopicSubscriptionPrefetchCapacity);
-        set.accept(CLIENT_TCP_CHANNEL_KEEP_ALIVE_PERIOD, this::getClientTcpChannelKeepAlivePeriod);
+        set.accept(CLIENT_MAXREQUESTS, this::getMaxRequests);
+        set.accept(CLIENT_SENDBUFFER_SIZE, this::getSendBufferSize);
+        set.accept(CLIENT_THREADINGMODE, this::getThreadingMode);
+        set.accept(CLIENT_TASK_EXECUTION_THREADS, this::getTaskExecutionThreads);
+        set.accept(CLIENT_TOPIC_SUBSCRIPTION_PREFETCH_CAPACITY, this::getTopicSubscriptionPrefetchCapacity);
+        set.accept(CLIENT_TCP_CHANNEL_KEEP_ALIVE_PERIOD, this::getTcpChannelKeepAlivePeriod);
 
         return properties;
     }
