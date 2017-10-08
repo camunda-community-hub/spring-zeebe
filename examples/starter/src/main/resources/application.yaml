@@ -1,4 +1,4 @@
 zeebe:
   topic: default-topic
   client:
-    brokerContactPoint: "127.0.0.1:51020"
+    brokerContactPoint: "127.0.0.1:51015"
