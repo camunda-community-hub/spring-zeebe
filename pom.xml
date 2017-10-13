@@ -7,19 +7,6 @@
     <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>broker/spring-zeebe-broker</module>
-        <module>broker/spring-zeebe-broker-starter</module>
-
-        <module>client/spring-zeebe</module>
-        <module>client/spring-zeebe-starter</module>
-
-        <!-- EXAMPLES -->
-        <module>examples/broker</module>
-        <module>examples/starter</module>
-        <module>examples/worker</module>
-    </modules>
-
     <properties>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
@@ -32,6 +19,15 @@
         <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
     </properties>
 
+    <modules>
+        <module>bom</module>
+        <module>broker/spring-zeebe-broker</module>
+        <module>broker/spring-zeebe-broker-starter</module>
+
+        <module>client/spring-zeebe</module>
+        <module>client/spring-zeebe-starter</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,29 +38,12 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- BROKER -->
             <dependency>
                 <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-broker</artifactId>
+                <artifactId>spring-zeebe-bom</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-broker-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-
-            <!-- CLIENT -->
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-starter</artifactId>
-                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
 
             <!-- ZEEBE -->
@@ -92,7 +71,6 @@
     </dependencyManagement>
 
     <dependencies>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -116,6 +94,16 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!-- Optional examples, include via `-Pexamples`. *Not* included in release! -->
+        <profile>
+            <id>examples</id>
+            <modules>
+                <module>examples</module>
+            </modules>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>zeebe-snapshots</id>
@@ -130,16 +118,20 @@
         </repository>
     </repositories>
 
+    <developers>
+        <developer>
+            <name>Jan Galinski</name>
+            <organization>Holisticon AG</organization>
+            <url>https://jangalinski.github.io</url>
+            <roles>
+                <role>initiator</role>
+            </roles>
+        </developer>
+    </developers>
+
     <licenses>
         <license>
             <name>Apache License</name>
         </license>
     </licenses>
-
-    <contributors>
-        <contributor>
-            <name>Jan Galinski</name>
-            <organization>Holisticon AG</organization>
-        </contributor>
-    </contributors>
 </project>

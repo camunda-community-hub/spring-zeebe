@@ -4,13 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.zeebe.spring</groupId>
-        <artifactId>spring-zeebe-root</artifactId>
+        <groupId>io.zeebe.spring.example</groupId>
+        <artifactId>spring-zeebe-example-root</artifactId>
         <version>0.3.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.zeebe.spring.example</groupId>
     <artifactId>spring-zeebe-example-worker</artifactId>
 
     <dependencies>

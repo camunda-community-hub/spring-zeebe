@@ -38,6 +38,7 @@ public class ZeebeExpressionResolver implements BeanFactoryAware {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T resolve(String value) {
         final String resolvedValue = resolve.apply(value);
 
