@@ -20,7 +20,6 @@
     </properties>
 
     <modules>
-        <module>bom</module>
         <module>broker/spring-zeebe-broker</module>
         <module>broker/spring-zeebe-broker-starter</module>
 
@@ -38,12 +37,28 @@
                 <type>pom</type>
             </dependency>
 
+            <!-- BROKER -->
             <dependency>
                 <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-bom</artifactId>
+                <artifactId>spring-zeebe-broker</artifactId>
                 <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-broker-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- CLIENT -->
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.zeebe.spring</groupId>
+                <artifactId>spring-zeebe-starter</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- ZEEBE -->
