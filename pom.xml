@@ -2,20 +2,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>io.zeebe</groupId>
+        <artifactId>zb-parent</artifactId>
+        <version>0.2.0</version>
+        <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
+        <relativePath />
+    </parent>
+
     <groupId>io.zeebe.spring</groupId>
     <artifactId>spring-zeebe-root</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
-        <encoding>UTF-8</encoding>
-        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
-        <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
+        <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <zeebe.version>0.3.0</zeebe.version>
+        <zeebe.version>0.4.0</zeebe.version>
         <spring-boot.version>1.5.8.RELEASE</spring-boot.version>
     </properties>
 
@@ -108,6 +114,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+    </build>
 
     <profiles>
         <!-- Optional examples, include via `-Pexamples`. *Not* included in release! -->
