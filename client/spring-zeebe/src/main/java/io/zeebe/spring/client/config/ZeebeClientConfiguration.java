@@ -11,15 +11,18 @@ import org.springframework.context.annotation.Import;
         PostProcessorConfiguration.class,
         ReadAnnotationValueConfiguration.class,
 })
-public class ZeebeClientConfiguration {
+public class ZeebeClientConfiguration
+{
 
     @Bean
-    public ZeebeClientProperties properties() {
+    public ZeebeClientProperties properties()
+    {
         return ZeebeClientProperties.DEFAULT;
     }
 
     @Bean
-    public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher) {
+    public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher)
+    {
         return new SpringZeebeClient(properties, publisher);
     }
 }

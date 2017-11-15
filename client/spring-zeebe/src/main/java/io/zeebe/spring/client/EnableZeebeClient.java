@@ -15,5 +15,6 @@ import java.lang.annotation.Target;
 @Import(ZeebeClientConfiguration.class)
 @Documented
 @Inherited
-public @interface EnableZeebeClient {
+public @interface EnableZeebeClient
+{
 }

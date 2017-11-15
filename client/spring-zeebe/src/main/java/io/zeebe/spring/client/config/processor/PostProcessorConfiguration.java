@@ -11,25 +11,30 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 @Import(ReadAnnotationValueConfiguration.class)
-public class PostProcessorConfiguration {
+public class PostProcessorConfiguration
+{
 
     @Bean
-    public SubscriptionBuilderPostProcessor subscriptionBuilderPostProcessor(final List<BeanInfoPostProcessor> processors, final SpringZeebeClient client) {
+    public SubscriptionBuilderPostProcessor subscriptionBuilderPostProcessor(final List<BeanInfoPostProcessor> processors, final SpringZeebeClient client)
+    {
         return new SubscriptionBuilderPostProcessor(processors, client);
     }
 
     @Bean
-    public DeploymentPostProcessor deploymentPostProcessor(final ReadZeebeDeploymentValue reader) {
+    public DeploymentPostProcessor deploymentPostProcessor(final ReadZeebeDeploymentValue reader)
+    {
         return new DeploymentPostProcessor(reader);
     }
 
     @Bean
-    public TaskHandlerPostProcessor taskhandlerPostProcessor(final ReadZeebeTaskListenerValue reader) {
+    public TaskHandlerPostProcessor taskhandlerPostProcessor(final ReadZeebeTaskListenerValue reader)
+    {
         return new TaskHandlerPostProcessor(reader);
     }
 
     @Bean
-    public TopicHandlerPostProcessor topicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader) {
+    public TopicHandlerPostProcessor topicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader)
+    {
         return new TopicHandlerPostProcessor(reader);
     }
 

@@ -11,7 +11,8 @@ import org.springframework.context.expression.StandardBeanExpressionResolver;
 
 import java.util.function.UnaryOperator;
 
-public class ZeebeExpressionResolver implements BeanFactoryAware {
+public class ZeebeExpressionResolver implements BeanFactoryAware
+{
 
     private BeanExpressionResolver resolver = new StandardBeanExpressionResolver();
     private BeanFactory beanFactory;
@@ -23,26 +24,31 @@ public class ZeebeExpressionResolver implements BeanFactoryAware {
      * @see ConfigurableBeanFactory#resolveEmbeddedValue
      */
     private final UnaryOperator<String> resolve = value -> {
-        if (this.beanFactory != null && this.beanFactory instanceof ConfigurableBeanFactory) {
+        if (this.beanFactory != null && this.beanFactory instanceof ConfigurableBeanFactory)
+        {
             return ((ConfigurableBeanFactory) this.beanFactory).resolveEmbeddedValue(value);
         }
         return value;
     };
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    public void setBeanFactory(final BeanFactory beanFactory) throws BeansException
+    {
         this.beanFactory = beanFactory;
-        if (beanFactory instanceof ConfigurableListableBeanFactory) {
+        if (beanFactory instanceof ConfigurableListableBeanFactory)
+        {
             this.resolver = ((ConfigurableListableBeanFactory) beanFactory).getBeanExpressionResolver();
             this.expressionContext = new BeanExpressionContext((ConfigurableListableBeanFactory) beanFactory, null);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T resolve(String value) {
+    public <T> T resolve(final String value)
+    {
         final String resolvedValue = resolve.apply(value);
 
-        if (!(resolvedValue.startsWith("#{") && value.endsWith("}"))) {
+        if (!(resolvedValue.startsWith("#{") && value.endsWith("}")))
+        {
             return (T) resolvedValue;
         }
 

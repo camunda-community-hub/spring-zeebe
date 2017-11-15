@@ -18,13 +18,14 @@ import static io.zeebe.spring.client.bean.BeanInfo.noAnnotationFound;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ZeebeTaskListener {
+public @interface ZeebeTaskListener
+{
 
     String topic() default "${zeebe.topic}";
 
     String taskType();
 
-    String lockOwner()  default "${zeebe.lockOwner}";
+    String lockOwner() default "${zeebe.lockOwner}";
 
     long lockTime() default 10000L;
 

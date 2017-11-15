@@ -14,35 +14,41 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
-public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Ordered {
+public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Ordered
+{
 
     private final List<BeanInfoPostProcessor> processors;
 
     private final SpringZeebeClient client;
 
-    public SubscriptionBuilderPostProcessor(final List<BeanInfoPostProcessor> processors, final SpringZeebeClient client) {
+    public SubscriptionBuilderPostProcessor(final List<BeanInfoPostProcessor> processors, final SpringZeebeClient client)
+    {
         this.processors = processors;
         this.client = client;
     }
 
     @Override
-    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(final Object bean, final String beanName) throws BeansException
+    {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException
+    {
         final ClassInfo beanInfo = ClassInfo.builder()
                 .bean(bean)
                 .beanName(beanName)
                 .build();
 
-        for (BeanInfoPostProcessor p : processors) {
-            if (!p.test(beanInfo)) {
+        for (final BeanInfoPostProcessor p : processors)
+        {
+            if (!p.test(beanInfo))
+            {
                 continue;
             }
 
-            Consumer<ZeebeClient> c = (Consumer<ZeebeClient>) p.apply(beanInfo);
+            final Consumer<ZeebeClient> c = (Consumer<ZeebeClient>) p.apply(beanInfo);
             client.onStart(c);
         }
 
@@ -51,7 +57,8 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
 
 
     @Override
-    public int getOrder() {
+    public int getOrder()
+    {
         return LOWEST_PRECEDENCE;
     }
 }

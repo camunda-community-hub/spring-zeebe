@@ -15,16 +15,19 @@ import java.util.function.Consumer;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 @Slf4j
-public class TopicHandlerPostProcessor extends BeanInfoPostProcessor {
+public class TopicHandlerPostProcessor extends BeanInfoPostProcessor
+{
 
     private final ReadZeebeTopicListenerValue reader;
 
-    public TopicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader) {
+    public TopicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader)
+    {
         this.reader = reader;
     }
 
     @Override
-    public Consumer<ZeebeClient> apply(ClassInfo beanInfo) {
+    public Consumer<ZeebeClient> apply(final ClassInfo beanInfo)
+    {
         log.info("topic handling: {}", beanInfo);
 
         final List<ZeebeTopicListenerValue> annotatedMethods = new ArrayList<>();
@@ -48,7 +51,8 @@ public class TopicHandlerPostProcessor extends BeanInfoPostProcessor {
     }
 
     @Override
-    public boolean test(ClassInfo beanInfo) {
+    public boolean test(final ClassInfo beanInfo)
+    {
         return beanInfo.hasMethodAnnotation(ZeebeTopicListener.class);
     }
 

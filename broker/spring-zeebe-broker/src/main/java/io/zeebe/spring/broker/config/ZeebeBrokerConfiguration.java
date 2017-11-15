@@ -1,3 +1,18 @@
+/*
+ * Copyright © 2017 camunda services GmbH (info@camunda.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.zeebe.spring.broker.config;
 
 import io.zeebe.broker.system.ConfigurationManager;
@@ -13,23 +28,30 @@ import java.util.function.Function;
  * Included by {@link io.zeebe.spring.broker.EnableZeebeBroker} annotation.
  */
 @Slf4j
-public class ZeebeBrokerConfiguration {
+public class ZeebeBrokerConfiguration
+{
 
     static Function<Environment, Optional<String>> tomlFileFromEnv = environment -> {
-        String[] args = environment.getProperty("nonOptionArgs", String[].class, new String[0]);
-        if (args == null || args.length == 0) {
+        final String[] args = environment.getProperty("nonOptionArgs", String[].class, new String[0]);
+        if (args == null || args.length == 0)
+        {
             return Optional.empty();
-        } else if (args.length > 1) {
+        }
+        else if (args.length > 1)
+        {
             throw new IllegalArgumentException("requires exactly one cli argument, the tomlFile.");
-        } else {
+        }
+        else
+        {
             return Optional.of(args[0]);
         }
 
     };
 
     @Bean
-    public ConfigurationManager configurationManager(final Environment environment) {
-        Optional<String> tomlFile = tomlFileFromEnv.apply(environment);
+    public ConfigurationManager configurationManager(final Environment environment)
+    {
+        final Optional<String> tomlFile = tomlFileFromEnv.apply(environment);
 
         log.info("building broker from tomlFile={}", tomlFile);
 
@@ -37,7 +59,8 @@ public class ZeebeBrokerConfiguration {
     }
 
     @Bean
-    public SpringZeebeBroker springBroker(final ConfigurationManager configurationManager) {
+    public SpringZeebeBroker springBroker(final ConfigurationManager configurationManager)
+    {
         return new SpringZeebeBroker(configurationManager);
     }
 

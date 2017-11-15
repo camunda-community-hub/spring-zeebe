@@ -16,17 +16,20 @@ import java.util.function.Function;
  * @param <A> type of Annotation to read
  * @param <V> pojo representation of the annotation properties and method/class context
  */
-abstract class ReadAnnotationValue<B extends BeanInfo, A extends Annotation, V extends ZeebeAnnotationValue<B>> implements Function<B, Optional<V>> {
+abstract class ReadAnnotationValue<B extends BeanInfo, A extends Annotation, V extends ZeebeAnnotationValue<B>> implements Function<B, Optional<V>>
+{
 
     protected final ZeebeExpressionResolver resolver;
     protected final Class<A> annotationType;
 
-    protected ReadAnnotationValue(final ZeebeExpressionResolver resolver, final Class<A> annotationType) {
+    protected ReadAnnotationValue(final ZeebeExpressionResolver resolver, final Class<A> annotationType)
+    {
         this.resolver = resolver;
         this.annotationType = annotationType;
     }
 
-    public V applyOrThrow(B beanInfo) {
+    public V applyOrThrow(final B beanInfo)
+    {
         return apply(beanInfo).orElseThrow(BeanInfo.noAnnotationFound(annotationType));
     }
 }

@@ -8,9 +8,11 @@ import java.util.stream.Stream;
 
 import static org.springframework.util.ReflectionUtils.getAllDeclaredMethods;
 
-public interface BeanInfo {
+public interface BeanInfo
+{
 
-    static Supplier<IllegalStateException> noAnnotationFound(Class<? extends Annotation> type) {
+    static Supplier<IllegalStateException> noAnnotationFound(final Class<? extends Annotation> type)
+    {
         return () -> new IllegalStateException("no annotation found - " + type);
     }
 
@@ -18,15 +20,18 @@ public interface BeanInfo {
 
     String getBeanName();
 
-    default Class<?> getTargetClass() {
+    default Class<?> getTargetClass()
+    {
         return AopUtils.getTargetClass(getBean());
     }
 
-    default boolean hasClassAnnotation(final Class<? extends Annotation> type) {
+    default boolean hasClassAnnotation(final Class<? extends Annotation> type)
+    {
         return getTargetClass().isAnnotationPresent(type);
     }
 
-    default boolean hasMethodAnnotation(final Class<? extends Annotation> type) {
+    default boolean hasMethodAnnotation(final Class<? extends Annotation> type)
+    {
         return Stream.of(getAllDeclaredMethods(getTargetClass())).anyMatch(m -> m.isAnnotationPresent(type));
     }
 }

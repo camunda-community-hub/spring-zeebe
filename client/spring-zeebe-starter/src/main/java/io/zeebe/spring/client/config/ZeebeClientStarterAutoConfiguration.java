@@ -10,14 +10,16 @@ import org.springframework.context.annotation.Primary;
 
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
-public class ZeebeClientStarterAutoConfiguration {
+public class ZeebeClientStarterAutoConfiguration
+{
 
     @Autowired
     private ZeebeClientConfigurationProperties configurationProperties;
 
     @Bean
     @Primary
-    public ZeebeClientProperties zeebeClientProperties() {
+    public ZeebeClientProperties zeebeClientProperties()
+    {
         return configurationProperties;
     }
 }

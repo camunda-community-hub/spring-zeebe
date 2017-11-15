@@ -16,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
         "zeebe.isSomething=true",
 })
 @ContextConfiguration(classes = ZeebeExpressionResolver.class)
-public class ZeebeExpressionResolverTest {
+public class ZeebeExpressionResolverTest
+{
 
     @Autowired
     private ZeebeExpressionResolver resolver;
@@ -28,24 +29,28 @@ public class ZeebeExpressionResolverTest {
     private boolean isSomethingNotSet;
 
     @Test
-    public void resolve_topic() throws Exception {
-        String topic = resolver.resolve("${zeebe.topic}");
+    public void resolveTopic() throws Exception
+    {
+        final String topic = resolver.resolve("${zeebe.topic}");
         assertThat(topic).isEqualTo("foo");
     }
 
     @Test
-    public void resolve_isSomething() throws Exception {
+    public void resolveIsSomething() throws Exception
+    {
         assertThat(isSomeThing).isTrue();
     }
 
     @Test
-    public void resolve_default_value_for_isSomethingNotSet() throws Exception {
+    public void resolveDefaultValueForIsSomethingNotSet() throws Exception
+    {
         assertThat(isSomethingNotSet).isTrue();
     }
 
     @Test
-    public void use_value_if_no_expression() throws Exception {
-        String normalString = resolver.resolve("normalString");
+    public void useValueIfNoExpression() throws Exception
+    {
+        final String normalString = resolver.resolve("normalString");
         assertThat(normalString).isEqualTo("normalString");
     }
 }

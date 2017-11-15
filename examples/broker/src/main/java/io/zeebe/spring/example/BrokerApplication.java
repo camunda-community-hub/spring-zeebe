@@ -6,9 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableZeebeBroker
-public class BrokerApplication {
+public class BrokerApplication
+{
 
-    public static void main(String... args) {
+    public static void main(String... args)
+    {
         SpringApplication.run(BrokerApplication.class, args);
     }
 }

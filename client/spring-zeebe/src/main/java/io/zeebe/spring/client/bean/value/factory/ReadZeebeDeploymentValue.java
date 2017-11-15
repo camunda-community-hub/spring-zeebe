@@ -7,14 +7,17 @@ import io.zeebe.spring.client.util.ZeebeExpressionResolver;
 
 import java.util.Optional;
 
-public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, ZeebeDeployment, ZeebeDeploymentValue> {
+public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, ZeebeDeployment, ZeebeDeploymentValue>
+{
 
-    public ReadZeebeDeploymentValue(final ZeebeExpressionResolver resolver) {
+    public ReadZeebeDeploymentValue(final ZeebeExpressionResolver resolver)
+    {
         super(resolver, ZeebeDeployment.class);
     }
 
     @Override
-    public Optional<ZeebeDeploymentValue> apply(ClassInfo classInfo) {
+    public Optional<ZeebeDeploymentValue> apply(final ClassInfo classInfo)
+    {
         return classInfo.getAnnotation(annotationType)
                 .map(annotation -> ZeebeDeploymentValue.builder()
                         .beanInfo(classInfo)

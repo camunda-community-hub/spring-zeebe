@@ -17,9 +17,11 @@ import static io.zeebe.client.ClientProperties.CLIENT_THREADINGMODE;
 import static io.zeebe.client.ClientProperties.CLIENT_TOPIC_SUBSCRIPTION_PREFETCH_CAPACITY;
 
 
-public interface ZeebeClientProperties extends Supplier<Properties> {
+public interface ZeebeClientProperties extends Supplier<Properties>
+{
 
-    ZeebeClientProperties DEFAULT = new ZeebeClientProperties() {
+    ZeebeClientProperties DEFAULT = new ZeebeClientProperties()
+    {
 
         private final Properties properties = new Properties();
 
@@ -28,40 +30,47 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
         }
 
         @Override
-        public String getBrokerContactPoint() {
+        public String getBrokerContactPoint()
+        {
             return properties.getProperty(BROKER_CONTACTPOINT);
         }
 
         @Override
-        public String getMaxRequests() {
+        public String getMaxRequests()
+        {
             return properties.getProperty(CLIENT_MAXREQUESTS);
         }
 
         @Override
-        public String getSendBufferSize() {
+        public String getSendBufferSize()
+        {
             return properties.getProperty(CLIENT_SENDBUFFER_SIZE);
         }
 
         @Override
-        public String getThreadingMode() {
+        public String getThreadingMode()
+        {
             return properties.getProperty(CLIENT_THREADINGMODE);
         }
 
         @Override
-        public String getTaskExecutionThreads() {
+        public String getTaskExecutionThreads()
+        {
             return properties.getProperty(CLIENT_TASK_EXECUTION_THREADS);
         }
 
         @Override
-        public String getTopicSubscriptionPrefetchCapacity() {
+        public String getTopicSubscriptionPrefetchCapacity()
+        {
             return properties.getProperty(CLIENT_TOPIC_SUBSCRIPTION_PREFETCH_CAPACITY);
         }
 
         @Override
-        public String getTcpChannelKeepAlivePeriod() {
+        public String getTcpChannelKeepAlivePeriod()
+        {
             return properties.getProperty(CLIENT_TCP_CHANNEL_KEEP_ALIVE_PERIOD);
         }
-        
+
     };
 
 
@@ -112,18 +121,21 @@ public interface ZeebeClientProperties extends Supplier<Properties> {
      */
     String getTcpChannelKeepAlivePeriod();
 
-    default boolean isAutoStartup() {
+    default boolean isAutoStartup()
+    {
         return true;
     }
 
     @Override
-    default Properties get() {
+    default Properties get()
+    {
         final Properties properties = new Properties();
         ClientProperties.setDefaults(properties);
 
         // only set property if configured value is not null
         final BiConsumer<String, Supplier<String>> set = (key, supplier) -> {
-            if (supplier.get() != null) {
+            if (supplier.get() != null)
+            {
                 properties.setProperty(key, supplier.get());
             }
         };

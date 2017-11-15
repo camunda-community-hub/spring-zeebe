@@ -11,7 +11,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class BeanInfoPostProcessor implements BeanNameAware, Predicate<ClassInfo>,
-        Function<ClassInfo, Consumer<ZeebeClient>> {
+        Function<ClassInfo, Consumer<ZeebeClient>>
+{
 
     @Getter
     @Setter

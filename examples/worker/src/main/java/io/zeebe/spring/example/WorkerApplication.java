@@ -14,13 +14,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @EnableZeebeClient
 @Slf4j
-public class WorkerApplication  {
+public class WorkerApplication
+{
 
-    public static void main(String... args) {
+    public static void main(String... args)
+    {
         SpringApplication.run(WorkerApplication.class, args);
     }
 
-    private static void logTask(TaskEvent task) {
+    private static void logTask(TaskEvent task)
+    {
         log.info("complete task\n>>> [type: {}, key: {}, lockExpirationTime: {}]\n[headers: {}]\n[payload: {}]\n===",
                 task.getType(),
                 task.getMetadata().getKey(),
@@ -35,7 +38,8 @@ public class WorkerApplication  {
      * @param event
      */
     @ZeebeTopicListener(name = "log-events")
-    public void logEvents(GeneralEvent event) {
+    public void logEvents(GeneralEvent event)
+    {
         final EventMetadata metadata = event.getMetadata();
 
         log.info(String.format(">>> [topic: %d, position: %d, key: %d, type: %s]\n%s\n===",
@@ -47,7 +51,8 @@ public class WorkerApplication  {
     }
 
     @ZeebeTaskListener(taskType = "foo")
-    public void handleTaskA(final TasksClient client, final TaskEvent task) {
+    public void handleTaskA(final TasksClient client, final TaskEvent task)
+    {
         logTask(task);
         client.complete(task)
                 .withoutPayload()
@@ -55,13 +60,13 @@ public class WorkerApplication  {
     }
 
     @ZeebeTaskListener(taskType = "bar")
-    public void handleTaskB(final TasksClient client, final TaskEvent task) {
+    public void handleTaskB(final TasksClient client, final TaskEvent task)
+    {
         logTask(task);
         client.complete(task)
                 .withoutPayload()
                 .execute();
     }
-
 
 
 }

@@ -19,21 +19,25 @@ import static org.springframework.util.ReflectionUtils.doWithMethods;
  * add Handler subscriptions for {@link ZeebeTaskListener} method-annotations.
  */
 @Slf4j
-public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
+public class TaskHandlerPostProcessor extends BeanInfoPostProcessor
+{
 
     private final ReadZeebeTaskListenerValue reader;
 
-    public TaskHandlerPostProcessor(final ReadZeebeTaskListenerValue reader) {
+    public TaskHandlerPostProcessor(final ReadZeebeTaskListenerValue reader)
+    {
         this.reader = reader;
     }
 
     @Override
-    public boolean test(final ClassInfo beanInfo) {
+    public boolean test(final ClassInfo beanInfo)
+    {
         return beanInfo.hasMethodAnnotation(ZeebeTaskListener.class);
     }
 
     @Override
-    public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
+    public Consumer<ZeebeClient> apply(final ClassInfo beanInfo)
+    {
         log.info("taskhandling: {}", beanInfo);
 
         final List<ZeebeTaskListenerValue> annotatedMethods = new ArrayList<>();

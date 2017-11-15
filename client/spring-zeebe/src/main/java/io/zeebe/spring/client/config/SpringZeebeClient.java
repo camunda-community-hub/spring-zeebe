@@ -23,7 +23,8 @@ import java.util.function.Supplier;
  * Uses delegate for {@link ZeebeClientImpl} internally.
  */
 @Slf4j
-public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<ZeebeClientImpl> {
+public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<ZeebeClientImpl>
+{
 
     public static final int PHASE = 22222;
     private final ZeebeClientProperties properties;
@@ -39,21 +40,24 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
      */
     private ZeebeClientImpl client;
 
-    private boolean  hasBeenClosed = false;
+    private boolean hasBeenClosed = false;
 
-    public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher) {
+    public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher)
+    {
         this.properties = properties;
         this.publisher = publisher;
         log.info("SpringZeebeClient created");
     }
 
     @Override
-    public boolean isAutoStartup() {
+    public boolean isAutoStartup()
+    {
         return properties.isAutoStartup();
     }
 
     @Override
-    public void start() {
+    public void start()
+    {
         client = new ZeebeClientImpl(properties.get());
         log.info("SpringZeebeClient connected");
         publisher.publishEvent(new ClientStartedEvent());
@@ -62,60 +66,73 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
     }
 
     @Override
-    public void stop(final Runnable runnable) {
+    public void stop(final Runnable runnable)
+    {
         close();
         log.info("SpringZeebeClient closed");
         runnable.run();
     }
 
-    public SpringZeebeClient onStart(final Consumer<ZeebeClient> consumer) {
+    public SpringZeebeClient onStart(final Consumer<ZeebeClient> consumer)
+    {
         onStart.add(consumer);
         return this;
     }
 
     @Override
-    public void stop() {
-        this.stop(() -> {});
+    public void stop()
+    {
+        this.stop(() -> {
+        });
     }
 
     @Override
-    public boolean isRunning() {
+    public boolean isRunning()
+    {
         return client != null;
     }
 
     @Override
-    public int getPhase() {
+    public int getPhase()
+    {
         return PHASE;
     }
 
     @Override
-    public TasksClient tasks() {
+    public TasksClient tasks()
+    {
         return get().tasks();
     }
 
     @Override
-    public WorkflowsClient workflows() {
+    public WorkflowsClient workflows()
+    {
         return get().workflows();
     }
 
     @Override
-    public TopicsClient topics() {
+    public TopicsClient topics()
+    {
         return get().topics();
     }
 
     @Override
-    public Request<TopologyResponse> requestTopology() {
+    public Request<TopologyResponse> requestTopology()
+    {
         return get().requestTopology();
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect()
+    {
         get().disconnect();
     }
 
     @Override
-    public void close() {
-        if (!hasBeenClosed) {
+    public void close()
+    {
+        if (!hasBeenClosed)
+        {
             get().close();
             hasBeenClosed = true;
         }
@@ -123,8 +140,10 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
 
 
     @Override
-    public ZeebeClientImpl get() {
-        if (!isRunning()) {
+    public ZeebeClientImpl get()
+    {
+        if (!isRunning())
+        {
             throw new IllegalStateException("client is not running!");
         }
         return client;

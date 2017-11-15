@@ -8,30 +8,36 @@ import java.beans.Introspector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClassInfoTest {
+public class ClassInfoTest
+{
 
     @ZeebeDeployment(topicName = "t", classPathResource = "/1.bpmn")
-    public static class WithDeploymentAnnotation {
+    public static class WithDeploymentAnnotation
+    {
 
     }
 
-    public static class WithoutDeploymentAnnotation {
+    public static class WithoutDeploymentAnnotation
+    {
 
     }
 
-    public static class WithTaskListener {
+    public static class WithTaskListener
+    {
 
         @ZeebeTaskListener(topic = "foo", taskType = "bar", lockTime = 100L, lockOwner = "kermit")
-        public void handle() {
+        public void handle()
+        {
 
         }
     }
 
     @Test
-    public void getBeanInfo() throws Exception {
-        WithDeploymentAnnotation withDeploymentAnnotation = new WithDeploymentAnnotation();
+    public void getBeanInfo() throws Exception
+    {
+        final WithDeploymentAnnotation withDeploymentAnnotation = new WithDeploymentAnnotation();
 
-        ClassInfo beanInfo = beanInfo(withDeploymentAnnotation);
+        final ClassInfo beanInfo = beanInfo(withDeploymentAnnotation);
 
         assertThat(beanInfo.getBean()).isEqualTo(withDeploymentAnnotation);
         assertThat(beanInfo.getBeanName()).isEqualTo("withDeploymentAnnotation");
@@ -39,26 +45,31 @@ public class ClassInfoTest {
     }
 
     @Test
-    public void hasZeebeeDeploymentAnnotation() throws Exception {
+    public void hasZeebeeDeploymentAnnotation() throws Exception
+    {
         assertThat(beanInfo(new WithDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class)).isTrue();
     }
 
     @Test
-    public void hasNoZeebeeDeploymentAnnotation() throws Exception {
+    public void hasNoZeebeeDeploymentAnnotation() throws Exception
+    {
         assertThat(beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class)).isFalse();
     }
 
     @Test
-    public void hasTaskListenerMethod() throws Exception {
+    public void hasTaskListenerMethod() throws Exception
+    {
         assertThat(beanInfo(new WithTaskListener()).hasMethodAnnotation(ZeebeTaskListener.class)).isTrue();
     }
 
     @Test
-    public void hasNotTaskListenerMethod() throws Exception {
+    public void hasNotTaskListenerMethod() throws Exception
+    {
         assertThat(beanInfo("normal String").hasMethodAnnotation(ZeebeTaskListener.class)).isFalse();
     }
 
-    private ClassInfo beanInfo(Object bean) {
+    private ClassInfo beanInfo(final Object bean)
+    {
         return new ClassInfo(
                 bean,
                 Introspector.decapitalize(bean.getClass().getSimpleName())

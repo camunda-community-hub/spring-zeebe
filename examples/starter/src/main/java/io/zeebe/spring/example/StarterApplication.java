@@ -19,9 +19,11 @@ import java.util.UUID;
 @EnableScheduling
 @ZeebeDeployment(classPathResource = "demoProcess.bpmn")
 @Slf4j
-public class StarterApplication {
+public class StarterApplication
+{
 
-    public static void main(String... args) {
+    public static void main(String... args)
+    {
         SpringApplication.run(StarterApplication.class, args);
     }
 
@@ -32,8 +34,10 @@ public class StarterApplication {
     private String topic;
 
     @Scheduled(fixedDelay = 15000L)
-    public void startProcesses() throws Exception {
-        if (!client.isRunning()) {
+    public void startProcesses() throws Exception
+    {
+        if (!client.isRunning())
+        {
             return;
         }
         WorkflowInstanceEvent event = client.workflows()

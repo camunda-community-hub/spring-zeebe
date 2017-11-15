@@ -7,7 +7,8 @@ import io.zeebe.spring.client.bean.BeanInfo;
  *
  * @param <B> either {@link io.zeebe.spring.client.bean.ClassInfo} or {@link io.zeebe.spring.client.bean.MethodInfo}.
  */
-public interface ZeebeAnnotationValue<B extends BeanInfo> {
+public interface ZeebeAnnotationValue<B extends BeanInfo>
+{
 
     /**
      * @return the context of this annotation.

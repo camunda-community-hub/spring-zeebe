@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "zeebe.client")
-public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
+public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
+{
 
     private String brokerContactPoint;
 
@@ -20,5 +21,5 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     private String topicSubscriptionPrefetchCapacity;
 
     private String tcpChannelKeepAlivePeriod;
-    
+
 }
