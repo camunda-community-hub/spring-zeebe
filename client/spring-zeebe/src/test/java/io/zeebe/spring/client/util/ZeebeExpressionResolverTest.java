@@ -12,7 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = {
-        "zeebe.topic=foo",
+        "zeebe.topic.name=foo",
+        "zeebe.topic.partitions",
         "zeebe.isSomething=true",
     })
 @ContextConfiguration(classes = ZeebeExpressionResolver.class)
@@ -28,10 +29,13 @@ public class ZeebeExpressionResolverTest
     @Value("${zeebe.isSomethingNotSet:true}")
     private boolean isSomethingNotSet;
 
+    @Value("${zeebe.defaultEmpty:}")
+    private String empty;
+
     @Test
     public void resolveTopic() throws Exception
     {
-        final String topic = resolver.resolve("${zeebe.topic}");
+        final String topic = resolver.resolve("${zeebe.topic.name}");
         assertThat(topic).isEqualTo("foo");
     }
 
@@ -52,5 +56,11 @@ public class ZeebeExpressionResolverTest
     {
         final String normalString = resolver.resolve("normalString");
         assertThat(normalString).isEqualTo("normalString");
+    }
+
+    @Test
+    public void defaultsToEmptyString() throws Exception
+    {
+        assertThat(empty).isNotNull().isEmpty();
     }
 }
