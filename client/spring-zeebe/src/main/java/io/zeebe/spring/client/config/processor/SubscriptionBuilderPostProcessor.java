@@ -3,12 +3,10 @@ package io.zeebe.spring.client.config.processor;
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.config.SpringZeebeClient;
-import io.zeebe.spring.client.config.processor.BeanInfoPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.function.Consumer;

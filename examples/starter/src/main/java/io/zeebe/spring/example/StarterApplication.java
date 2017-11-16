@@ -40,7 +40,7 @@ public class StarterApplication
         {
             return;
         }
-        WorkflowInstanceEvent event = client.workflows()
+        final WorkflowInstanceEvent event = client.workflows()
                 .create(topic)
                 .bpmnProcessId("demoProcess")
                 .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")

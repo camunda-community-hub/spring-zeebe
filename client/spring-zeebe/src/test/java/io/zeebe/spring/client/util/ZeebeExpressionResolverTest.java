@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = {
         "zeebe.topic=foo",
         "zeebe.isSomething=true",
-})
+    })
 @ContextConfiguration(classes = ZeebeExpressionResolver.class)
 public class ZeebeExpressionResolverTest
 {

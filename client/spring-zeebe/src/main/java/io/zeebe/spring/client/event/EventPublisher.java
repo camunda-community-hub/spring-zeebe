@@ -1,7 +1,6 @@
 package io.zeebe.spring.client.event;
 
 
-import io.zeebe.client.event.TopicSubscription;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class EventPublisher

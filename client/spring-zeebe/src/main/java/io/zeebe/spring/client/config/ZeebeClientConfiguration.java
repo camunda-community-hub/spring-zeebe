@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 @Import({
         PostProcessorConfiguration.class,
         ReadAnnotationValueConfiguration.class,
-})
+    })
 public class ZeebeClientConfiguration
 {
 
