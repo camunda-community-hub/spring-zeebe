@@ -43,9 +43,9 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor
         final List<ZeebeTaskListenerValue> annotatedMethods = new ArrayList<>();
 
         doWithMethods(
-                beanInfo.getTargetClass(),
-                method -> reader.apply(beanInfo.toMethodInfo(method)).ifPresent(annotatedMethods::add),
-                ReflectionUtils.USER_DECLARED_METHODS
+            beanInfo.getTargetClass(),
+            method -> reader.apply(beanInfo.toMethodInfo(method)).ifPresent(annotatedMethods::add),
+            ReflectionUtils.USER_DECLARED_METHODS
         );
 
         return client -> annotatedMethods.forEach(m -> {

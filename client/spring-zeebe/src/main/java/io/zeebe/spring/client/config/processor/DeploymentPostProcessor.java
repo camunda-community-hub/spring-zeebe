@@ -6,7 +6,6 @@ import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
-import io.zeebe.spring.client.config.SpringZeebeClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Consumer;
