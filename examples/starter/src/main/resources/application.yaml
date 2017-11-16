@@ -1,4 +1,8 @@
 zeebe:
+  defaultTopic:
+    name: default-topic
+    partitions: 1
+    create: true
   topic: default-topic
   client:
     brokerContactPoint: "127.0.0.1:51015"

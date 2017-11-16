@@ -7,10 +7,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import({
-        PostProcessorConfiguration.class,
-        ReadAnnotationValueConfiguration.class,
-    })
+@Import({ PostProcessorConfiguration.class, ReadAnnotationValueConfiguration.class, })
 public class ZeebeClientConfiguration
 {
 
@@ -21,8 +18,14 @@ public class ZeebeClientConfiguration
     }
 
     @Bean
-    public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher)
+    public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher, CreateDefaultTopic createDefaultTopic)
     {
-        return new SpringZeebeClient(properties, publisher);
+        return new SpringZeebeClient(properties, publisher, createDefaultTopic);
+    }
+
+    @Bean
+    public CreateDefaultTopic defaultTopic()
+    {
+        return new CreateDefaultTopic();
     }
 }

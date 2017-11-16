@@ -1,5 +1,10 @@
 package io.zeebe.spring.client.config;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import io.zeebe.client.TasksClient;
 import io.zeebe.client.TopicsClient;
 import io.zeebe.client.WorkflowsClient;
@@ -12,11 +17,6 @@ import io.zeebe.spring.client.properties.ZeebeClientProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Spring managed lifecycle implementation of {@link ZeebeClient}.
@@ -42,10 +42,12 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
 
     private boolean hasBeenClosed = false;
 
-    public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher)
+    public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher, CreateDefaultTopic createDefaultTopic)
     {
         this.properties = properties;
         this.publisher = publisher;
+
+        onStart(createDefaultTopic);
         log.info("SpringZeebeClient created");
     }
 
