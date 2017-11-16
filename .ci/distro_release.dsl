@@ -42,6 +42,29 @@ else
 fi
 '''
 
+def githubRelease = '''\
+#!/bin/bash
+
+REPO=spring-zeebe
+
+BROKER_JAR=broker/spring-zeebe-broker/target/spring-zeebe-broker-${RELEASE_VERSION}.jar
+BROKER_STARTER_JAR=broker/spring-zeebe-broker-starter/target/spring-zeebe-broker-starter-${RELEASE_VERSION}.jar
+CLIENT_JAR=client/spring-zeebe/target/spring-zeebe-${RELEASE_VERSION}.jar
+CLIENT_STARTER_JAR=client/spring-zeebe-starter/target/spring-zeebe-starter-${RELEASE_VERSION}.jar
+
+# do github release
+curl -sL https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar xjvf - --strip 3
+
+./github-release release --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "Spring Zeebe ${RELEASE_VERSION}" --description ""
+
+for f in BROKER_JAR BROKER_STARTER_JAR CLIENT_JAR CLIENT_STARTER_JAR; do
+    # create checksum file
+    sha1sum ${f} > ${f}.sha1sum
+    ./github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${f}" --file "${f}"
+    ./github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${f}.sha1sum" --file "${f}.sha1sum"
+done
+'''
+
 // properties used by the release build
 def releaseProperties = [
     resume: 'false',
@@ -120,6 +143,8 @@ mavenJob(jobName)
           string('GPG_PASSPHRASE', 'password_maven_central_gpg_signing_key')
           file('MVN_CENTRAL_GPG_KEY_SEC', 'maven_central_gpg_signing_key')
           file('MVN_CENTRAL_GPG_KEY_PUB', 'maven_central_gpg_signing_key_pub')
+          // github token for release upload
+          string('GITHUB_TOKEN', 'github-camunda-jenkins-token')
         }
 
         release
@@ -153,6 +178,8 @@ mavenJob(jobName)
                     properties releaseProperties
                     localRepository LocalRepositoryLocation.LOCAL_TO_WORKSPACE
                 }
+
+                shell githubRelease
 
             }
         }
