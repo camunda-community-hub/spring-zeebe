@@ -10,8 +10,7 @@ cache:
     - "$HOME/.m2"
 
 script:
-  - "./mvnw verify -B -q"
-  - "./mvnw clean install"
+  - "./mvnw clean package verify -B -q"
   - "./mvnw -Danimal.sniffer.skip=true cobertura:cobertura"
 
 after_success:
