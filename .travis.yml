@@ -1,5 +1,5 @@
-sudo: false
 language: java
+sudo: false # faster builds
 
 jdk:
   - oraclejdk8
@@ -11,7 +11,6 @@ cache:
 
 script:
   - "./mvnw clean package verify -B -q"
-  - "./mvnw -Danimal.sniffer.skip=true cobertura:cobertura"
 
 after_success:
   - "bash <(curl -s https://codecov.io/bash)"
