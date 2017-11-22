@@ -7,7 +7,12 @@ jdk:
 install: true
 cache:
   directories:
-    - $HOME/.m2
+    - "$HOME/.m2"
 
-script: ./mvnw clean install
+script:
+  - "./mvnw verify -B -q"
+  - "./mvnw clean install"
+  - "./mvnw -Danimal.sniffer.skip=true cobertura:cobertura"
 
+after_success:
+  - "bash <(curl -s https://codecov.io/bash)"
