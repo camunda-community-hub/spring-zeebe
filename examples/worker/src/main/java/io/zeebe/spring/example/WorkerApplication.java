@@ -55,7 +55,7 @@ public class WorkerApplication
     {
         logTask(task);
         client.complete(task)
-                .withoutPayload()
+                .payload("{\"foo\": 1}")
                 .execute();
     }
 
