@@ -12,7 +12,7 @@
 
     <groupId>io.zeebe.spring</groupId>
     <artifactId>spring-zeebe-root</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -21,7 +21,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <zeebe.version>0.4.0</zeebe.version>
+        <zeebe.version>0.5.0</zeebe.version>
         <spring-boot.version>1.5.8.RELEASE</spring-boot.version>
     </properties>
 
@@ -31,6 +31,8 @@
 
         <module>client/spring-zeebe</module>
         <module>client/spring-zeebe-starter</module>
+
+        <module>examples</module>
     </modules>
 
     <dependencyManagement>
@@ -39,6 +41,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>io.zeebe</groupId>
+                <artifactId>zb-bom</artifactId>
+                <version>${zeebe.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -65,28 +74,6 @@
                 <groupId>io.zeebe.spring</groupId>
                 <artifactId>spring-zeebe-starter</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <!-- ZEEBE -->
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zeebe-client-java</artifactId>
-                <version>${zeebe.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zeebe-broker-core</artifactId>
-                <version>${zeebe.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-slf4j-impl</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -150,18 +137,7 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
-
-    <profiles>
-        <!-- Optional examples, include via `-Pexamples`. *Not* included in release! -->
-        <profile>
-            <id>examples</id>
-            <modules>
-                <module>examples</module>
-            </modules>
-        </profile>
-    </profiles>
 
     <repositories>
         <repository>

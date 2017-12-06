@@ -10,7 +10,7 @@ cache:
     - $HOME/.m2
 
 script:
-  - ./mvnw verify package -Pexamples
+  - ./mvnw verify package
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

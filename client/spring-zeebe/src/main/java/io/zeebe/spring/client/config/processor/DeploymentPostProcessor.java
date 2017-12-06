@@ -38,7 +38,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor
         return client -> {
             final DeploymentEvent deploymentResult = client.workflows()
                     .deploy(value.getTopicName())
-                    .resourceFromClasspath(value.getClassPathResource())
+                    .addResourceFromClasspath(value.getClassPathResource())
                     .execute();
 
             log.info("Deployed: {}",

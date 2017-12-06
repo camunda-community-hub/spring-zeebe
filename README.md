@@ -1,5 +1,8 @@
 # spring-zeebe
 
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.mockito/camunda-bpm-mockito/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.mockito/camunda-bpm-mockito)
+
 [![Build Status](https://travis-ci.org/zeebe-io/spring-zeebe.svg?branch=master)](https://travis-ci.org/zeebe-io/spring-zeebe)
 [![codecov](https://codecov.io/gh/zeebe-io/spring-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/zeebe-io/spring-zeebe)
 
