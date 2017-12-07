@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DeploymentPostProcessor extends BeanInfoPostProcessor
 {
-
     private final ReadZeebeDeploymentValue reader;
 
     public DeploymentPostProcessor(final ReadZeebeDeploymentValue reader)

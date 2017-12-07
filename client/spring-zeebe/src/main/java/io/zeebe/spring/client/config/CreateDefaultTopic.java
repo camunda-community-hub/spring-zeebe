@@ -19,10 +19,10 @@ public class CreateDefaultTopic implements Consumer<ZeebeClient>
     private String name;
 
     @Value("${zeebe.defaultTopic.partitions:-1}")
-    private int partitions;
+    private Integer partitions;
 
     @Value("${zeebe.defaultTopic.create:false}")
-    private boolean create;
+    private Boolean create;
 
     @Override
     public void accept(final ZeebeClient client)
