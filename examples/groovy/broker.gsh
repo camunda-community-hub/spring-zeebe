@@ -2,12 +2,11 @@
 
 package io.zeebe.spring.groovy
 
-@Grab("io.zeebe.spring:spring-zeebe-broker-starter:0.3.0-SNAPSHOT")
-
 import io.zeebe.spring.broker.EnableZeebeBroker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@Grab("io.zeebe.spring:spring-zeebe-broker-starter:0.1.0")
 @SpringBootApplication
 @EnableZeebeBroker
 class Application {

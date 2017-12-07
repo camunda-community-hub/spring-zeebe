@@ -1,17 +1,15 @@
 #!/usr/bin/env groovy
-
 package io.zeebe.spring.groovy
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.3.0-SNAPSHOT")
-
 import groovy.util.logging.Slf4j
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
+import io.zeebe.client.TasksClient
+import io.zeebe.client.event.TaskEvent
 import io.zeebe.spring.client.EnableZeebeClient
 import io.zeebe.spring.client.annotation.ZeebeTaskListener
-import io.zeebe.client.event.TaskEvent
-import io.zeebe.client.TasksClient
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.1.0")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
