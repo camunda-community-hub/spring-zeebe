@@ -57,7 +57,7 @@ curl -sL https://github.com/aktau/github-release/releases/download/v0.7.2/linux-
 
 ./github-release release --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "Spring Zeebe ${RELEASE_VERSION}" --description ""
 
-for f in BROKER_JAR BROKER_STARTER_JAR CLIENT_JAR CLIENT_STARTER_JAR; do
+for f in ${BROKER_JAR} ${BROKER_STARTER_JAR} ${CLIENT_JAR} ${CLIENT_STARTER_JAR}; do
     # create checksum file
     sha1sum ${f} > ${f}.sha1sum
     ./github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${f}" --file "${f}"
