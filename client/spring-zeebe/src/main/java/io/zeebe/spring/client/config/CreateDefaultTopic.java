@@ -1,9 +1,9 @@
 package io.zeebe.spring.client.config;
 
+import io.zeebe.client.clustering.impl.BrokerPartitionState;
 import java.util.function.Consumer;
 
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.clustering.impl.TopicLeader;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,22 @@ public class CreateDefaultTopic implements Consumer<ZeebeClient>
     @Override
     public void accept(final ZeebeClient client)
     {
-        if (create && !StringUtils.isEmpty(name) && partitions > 0 && !client.requestTopology().execute().getTopicLeaders().stream().map(TopicLeader::getTopicName).anyMatch(t -> name.equals(t)))
+        if (create && !StringUtils.isEmpty(name) && partitions > 0 && !topicExists(client, name))
         {
             client.topics().create(name, partitions).execute();
             log.info("create topic: {}", this);
         }
     }
+
+    private boolean topicExists(final ZeebeClient client, final String topicName)
+    {
+        return
+            client.requestTopology()
+                .execute()
+                .getBrokers()
+                .stream()
+                .flatMap(broker -> broker.getPartitions().stream().map(BrokerPartitionState::getTopicName))
+                .anyMatch(topicName::equals);
+    }
+
 }

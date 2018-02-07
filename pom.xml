@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.zeebe</groupId>
         <artifactId>zb-parent</artifactId>
-        <version>0.2.0</version>
+        <version>0.4.0</version>
         <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
         <relativePath />
     </parent>
@@ -20,7 +20,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <zeebe.version>0.5.0</zeebe.version>
+        <zeebe.version>0.7.0</zeebe.version>
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
     </properties>
 
