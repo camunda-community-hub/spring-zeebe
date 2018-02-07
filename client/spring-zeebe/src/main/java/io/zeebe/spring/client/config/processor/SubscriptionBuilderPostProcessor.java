@@ -46,7 +46,7 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
                 continue;
             }
 
-            final Consumer<ZeebeClient> c = (Consumer<ZeebeClient>) p.apply(beanInfo);
+            final Consumer<ZeebeClient> c = p.apply(beanInfo);
             client.onStart(c);
         }
 
