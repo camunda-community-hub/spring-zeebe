@@ -125,12 +125,6 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
     }
 
     @Override
-    public void disconnect()
-    {
-        get().disconnect();
-    }
-
-    @Override
     public void close()
     {
         if (!hasBeenClosed)

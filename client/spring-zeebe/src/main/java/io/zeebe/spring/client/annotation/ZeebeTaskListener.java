@@ -1,6 +1,6 @@
 package io.zeebe.spring.client.annotation;
 
-import io.zeebe.client.task.impl.subscription.TaskSubscriptionBuilderImpl;
+import io.zeebe.client.task.impl.subscription.TaskSubscriberGroupBuilder;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,6 +22,6 @@ public @interface ZeebeTaskListener
 
     long lockTime() default 10000L;
 
-    int taskFetchSize() default TaskSubscriptionBuilderImpl.DEFAULT_TASK_FETCH_SIZE;
+    int taskFetchSize() default TaskSubscriberGroupBuilder.DEFAULT_TASK_FETCH_SIZE;
 
 }
