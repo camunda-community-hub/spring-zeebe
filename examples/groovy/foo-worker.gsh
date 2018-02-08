@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 @EnableZeebeClient
 class Application {
 
-    @ZeebeTaskListener(topicName = "default-topic", taskType = "foo", lockOwner = "groovy-worker")
+    @ZeebeTaskListener(topic = "default-topic", taskType = "foo", lockOwner = "groovy-worker")
     void workOnTaskFoo(final TasksClient client, final TaskEvent task) {
         log.info("completing task: {}", task)
         client.complete(task)
