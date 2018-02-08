@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.zeebe.spring.root</groupId>
         <artifactId>spring-zeebe-broker-root</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
 
     <groupId>io.zeebe.spring</groupId>
