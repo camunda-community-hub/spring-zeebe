@@ -9,13 +9,13 @@ import io.zeebe.spring.client.annotation.ZeebeTaskListener
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.1.0")
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.2.0")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
 class Application {
 
-    @ZeebeTaskListener(topicName = "default-topic", taskType = "foo", lockOwner = "groovy-worker")
+    @ZeebeTaskListener(topic = "default-topic", taskType = "foo", lockOwner = "groovy-worker")
     void workOnTaskFoo(final TasksClient client, final TaskEvent task) {
         log.info("completing task: {}", task)
         client.complete(task)

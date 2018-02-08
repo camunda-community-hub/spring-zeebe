@@ -52,16 +52,21 @@ BROKER_STARTER_JAR=broker/spring-zeebe-broker-starter/target/spring-zeebe-broker
 CLIENT_JAR=client/spring-zeebe/target/spring-zeebe-${RELEASE_VERSION}.jar
 CLIENT_STARTER_JAR=client/spring-zeebe-starter/target/spring-zeebe-starter-${RELEASE_VERSION}.jar
 
+current_dir=${PWD}
+
 # do github release
 curl -sL https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar xjvf - --strip 3
 
-./github-release release --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "Spring Zeebe ${RELEASE_VERSION}" --description ""
+${current_dir}/github-release release --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "Spring Zeebe ${RELEASE_VERSION}" --description ""
 
 for f in ${BROKER_JAR} ${BROKER_STARTER_JAR} ${CLIENT_JAR} ${CLIENT_STARTER_JAR}; do
+    cd $(dirname $f)
+    jar=$(basename $f)
     # create checksum file
-    sha1sum ${f} > ${f}.sha1sum
-    ./github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${f}" --file "${f}"
-    ./github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${f}.sha1sum" --file "${f}.sha1sum"
+    sha1sum ${jar} > ${jar}.sha1sum
+    ${current_dir}/github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${jar}" --file "${jar}"
+    ${current_dir}/github-release upload --user zeebe-io --repo ${REPO} --tag ${RELEASE_VERSION} --name "${jar}.sha1sum" --file "${jar}.sha1sum"
+    cd ${current_dir}
 done
 '''
 
