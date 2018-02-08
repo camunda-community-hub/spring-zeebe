@@ -11,7 +11,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import io.zeebe.client.event.*
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.1.0")
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.2.0")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
