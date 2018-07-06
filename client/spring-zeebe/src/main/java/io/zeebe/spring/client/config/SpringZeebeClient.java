@@ -5,15 +5,17 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.zeebe.client.TasksClient;
-import io.zeebe.client.TopicsClient;
-import io.zeebe.client.WorkflowsClient;
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.clustering.impl.TopologyResponse;
-import io.zeebe.client.cmd.Request;
+import io.zeebe.client.ZeebeClientBuilder;
+import io.zeebe.client.ZeebeClientConfiguration;
+import io.zeebe.client.api.clients.TopicClient;
+import io.zeebe.client.api.commands.CreateTopicCommandStep1;
+import io.zeebe.client.api.commands.TopicsRequestStep1;
+import io.zeebe.client.api.commands.TopologyRequestStep1;
+import io.zeebe.client.api.record.ZeebeObjectMapper;
+import io.zeebe.client.api.subscription.ManagementSubscriptionBuilderStep1;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
-import io.zeebe.spring.client.properties.ZeebeClientProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
@@ -27,7 +29,7 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
 {
 
     public static final int PHASE = 22222;
-    private final ZeebeClientProperties properties;
+    private final ZeebeClientBuilder builder;
     private final ApplicationEventPublisher publisher;
 
     /**
@@ -42,9 +44,9 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
 
     private boolean hasBeenClosed = false;
 
-    public SpringZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher, CreateDefaultTopic createDefaultTopic)
+    public SpringZeebeClient(final ZeebeClientBuilder builder, final ApplicationEventPublisher publisher, CreateDefaultTopic createDefaultTopic)
     {
-        this.properties = properties;
+        this.builder = builder;
         this.publisher = publisher;
 
         onStart(createDefaultTopic);
@@ -54,13 +56,13 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
     @Override
     public boolean isAutoStartup()
     {
-        return properties.isAutoStartup();
+        return true;
     }
 
     @Override
     public void start()
     {
-        client = new ZeebeClientImpl(properties.get());
+        client = (ZeebeClientImpl) builder.build();
         log.info("SpringZeebeClient connected");
         publisher.publishEvent(new ClientStartedEvent());
 
@@ -100,28 +102,53 @@ public class SpringZeebeClient implements ZeebeClient, SmartLifecycle, Supplier<
         return PHASE;
     }
 
+
     @Override
-    public TasksClient tasks()
+    public TopicClient topicClient(String topicName)
     {
-        return get().tasks();
+        return get().topicClient();
     }
 
     @Override
-    public WorkflowsClient workflows()
+    public TopicClient topicClient()
     {
-        return get().workflows();
+        return get().topicClient();
     }
 
     @Override
-    public TopicsClient topics()
+    public ZeebeObjectMapper objectMapper()
     {
-        return get().topics();
+        return get().objectMapper();
     }
 
     @Override
-    public Request<TopologyResponse> requestTopology()
+    public CreateTopicCommandStep1 newCreateTopicCommand()
     {
-        return get().requestTopology();
+        return get().newCreateTopicCommand();
+    }
+
+    @Override
+    public TopicsRequestStep1 newTopicsRequest()
+    {
+        return get().newTopicsRequest();
+    }
+
+    @Override
+    public TopologyRequestStep1 newTopologyRequest()
+    {
+        return get().newTopologyRequest();
+    }
+
+    @Override
+    public ManagementSubscriptionBuilderStep1 newManagementSubscription()
+    {
+        return get().newManagementSubscription();
+    }
+
+    @Override
+    public ZeebeClientConfiguration getConfiguration()
+    {
+        return get().getConfiguration();
     }
 
     @Override

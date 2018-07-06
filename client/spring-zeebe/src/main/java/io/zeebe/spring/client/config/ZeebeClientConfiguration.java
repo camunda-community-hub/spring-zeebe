@@ -1,8 +1,8 @@
 package io.zeebe.spring.client.config;
 
+import io.zeebe.client.ZeebeClientBuilder;
 import io.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.zeebe.spring.client.config.processor.PostProcessorConfiguration;
-import io.zeebe.spring.client.properties.ZeebeClientProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -12,15 +12,17 @@ public class ZeebeClientConfiguration
 {
 
     @Bean
-    public ZeebeClientProperties properties()
+    public ZeebeClientBuilder builder()
     {
-        return ZeebeClientProperties.DEFAULT;
+        throw new UnsupportedOperationException("implement");
+        //return  ZeebeClientBuilderImpl.fromProperties(new Properties());
     }
 
     @Bean
-    public SpringZeebeClient springZeebeClient(final ZeebeClientProperties properties, final ApplicationEventPublisher publisher, CreateDefaultTopic createDefaultTopic)
+    public SpringZeebeClient springZeebeClient(final ZeebeClientBuilder builder, final ApplicationEventPublisher publisher,
+            final CreateDefaultTopic createDefaultTopic)
     {
-        return new SpringZeebeClient(properties, publisher, createDefaultTopic);
+        return new SpringZeebeClient(builder, publisher, createDefaultTopic);
     }
 
     @Bean

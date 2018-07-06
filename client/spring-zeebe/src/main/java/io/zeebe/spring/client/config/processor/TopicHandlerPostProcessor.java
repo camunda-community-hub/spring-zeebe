@@ -39,12 +39,13 @@ public class TopicHandlerPostProcessor extends BeanInfoPostProcessor
         );
 
         return client -> annotatedMethods.forEach(m -> {
-            client.topics().newSubscription(m.getTopic())
-                    .startAtHeadOfTopic()
-                    .forcedStart()
-                    .name(m.getName())
-                    .handler(event -> m.getBeanInfo().invoke(event))
-                    .open();
+            client.topicClient(m.getTopic())
+                  .newSubscription()
+                  .name(m.getName())
+                  .jobEventHandler(event -> m.getBeanInfo().invoke(event))
+                  .startAtHeadOfTopic()
+                  .forcedStart()
+                  .open();
 
             log.info("register topicHandler: {}", m);
         });

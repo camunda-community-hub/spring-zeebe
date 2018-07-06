@@ -1,12 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>io.zeebe</groupId>
         <artifactId>zb-parent</artifactId>
-        <version>0.4.0</version>
-        <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
-        <relativePath />
+        <version>0.10.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>io.zeebe.spring.root</groupId>
@@ -20,8 +20,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <zeebe.version>0.7.0</zeebe.version>
-        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <zeebe.version>0.11.0</zeebe.version>
+        <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
     </properties>
 
     <modules>
@@ -45,6 +45,12 @@
                 <artifactId>zb-bom</artifactId>
                 <version>${zeebe.version}</version>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.zeebe</groupId>
+                        <artifactId>zb-build-tools</artifactId>
+                    </exclusion>
+                </exclusions>
                 <type>pom</type>
             </dependency>
 
@@ -71,6 +77,12 @@
                 <artifactId>spring-zeebe-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.zeebe</groupId>
+                <artifactId>zb-build-tools</artifactId>
+                <version>${zeebe.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -83,7 +95,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.8.0</version>
+            <version>3.10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

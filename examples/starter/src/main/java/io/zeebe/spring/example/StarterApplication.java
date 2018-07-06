@@ -1,6 +1,6 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.event.WorkflowInstanceEvent;
+import io.zeebe.client.api.events.WorkflowInstanceEvent;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.config.SpringZeebeClient;
@@ -40,11 +40,14 @@ public class StarterApplication
         {
             return;
         }
-        final WorkflowInstanceEvent event = client.workflows()
-                .create(topic)
-                .bpmnProcessId("demoProcess")
-                .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
-                .execute();
+        final WorkflowInstanceEvent event = client.topicClient()
+                                                  .workflowClient()
+                                                  .newCreateInstanceCommand()
+                                                  .bpmnProcessId("demoProcess")
+                                                  .latestVersion()
+                                                  .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
+                                                  .send()
+                                                  .join();
 
         log.info("started: {} {}", event.getActivityId(), event.getPayload());
     }

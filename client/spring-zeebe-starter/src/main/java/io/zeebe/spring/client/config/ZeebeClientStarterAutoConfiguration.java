@@ -1,8 +1,9 @@
 package io.zeebe.spring.client.config;
 
+import io.zeebe.client.ZeebeClientBuilder;
+import io.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
-import io.zeebe.spring.client.properties.ZeebeClientProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,16 +11,18 @@ import org.springframework.context.annotation.Primary;
 
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
+@RequiredArgsConstructor
 public class ZeebeClientStarterAutoConfiguration
 {
 
-    @Autowired
-    private ZeebeClientConfigurationProperties configurationProperties;
+    private final ZeebeClientConfigurationProperties configurationProperties;
 
     @Bean
     @Primary
-    public ZeebeClientProperties zeebeClientProperties()
+    public ZeebeClientBuilder builder()
     {
-        return configurationProperties;
+        final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
+
+        return builder;
     }
 }

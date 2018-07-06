@@ -49,13 +49,15 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor
         );
 
         return client -> annotatedMethods.forEach(m -> {
-            client.tasks().newTaskSubscription(m.getTopicName())
-                    .lockOwner(m.getLockOwner())
-                    .handler((tasksClient, taskEvent) -> m.getBeanInfo().invoke(tasksClient, taskEvent))
-                    .lockTime(m.getLockTime())
-                    .taskFetchSize(m.getTaskFetchSize())
-                    .taskType(m.getTaskType())
-                    .open();
+            client.topicClient(m.getTopicName())
+                  .jobClient()
+                  .newWorker()
+                  .jobType(m.getTaskType())
+                  .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
+                  .name(m.getLockOwner())
+                  .timeout(m.getLockTime())
+                  .bufferSize(m.getTaskFetchSize())
+                  .open();
             log.info("register taskHandler: {}", m);
         });
     }

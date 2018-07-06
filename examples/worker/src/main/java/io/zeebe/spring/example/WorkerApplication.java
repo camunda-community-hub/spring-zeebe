@@ -1,9 +1,9 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.TasksClient;
-import io.zeebe.client.event.EventMetadata;
-import io.zeebe.client.event.GeneralEvent;
-import io.zeebe.client.event.TaskEvent;
+import io.zeebe.client.api.clients.JobClient;
+import io.zeebe.client.api.events.JobEvent;
+import io.zeebe.client.api.record.Record;
+import io.zeebe.client.api.record.RecordMetadata;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeTaskListener;
 import io.zeebe.spring.client.annotation.ZeebeTopicListener;
@@ -22,12 +22,11 @@ public class WorkerApplication
         SpringApplication.run(WorkerApplication.class, args);
     }
 
-    private static void logTask(TaskEvent task)
+    private static void logTask(JobEvent task)
     {
-        log.info("complete task\n>>> [type: {}, key: {}, lockExpirationTime: {}]\n[headers: {}]\n[payload: {}]\n===",
+        log.info("complete task\n>>> [type: {}, key: {}]\n[headers: {}]\n[payload: {}]\n===",
                 task.getType(),
                 task.getMetadata().getKey(),
-                task.getLockExpirationTime().toString(),
                 task.getHeaders(),
                 task.getPayload());
     }
@@ -38,34 +37,31 @@ public class WorkerApplication
      * @param event
      */
     @ZeebeTopicListener(name = "log-events")
-    public void logEvents(GeneralEvent event)
+    public void logEvents(Record event)
     {
-        final EventMetadata metadata = event.getMetadata();
+        final RecordMetadata metadata = event.getMetadata();
 
         log.info(String.format(">>> [topic: %d, position: %d, key: %d, type: %s]\n%s\n===",
                 metadata.getPartitionId(),
                 metadata.getPosition(),
-                metadata.getKey(),
-                metadata.getType(),
-                event.getJson()));
+                metadata.getKey()));
     }
 
     @ZeebeTaskListener(taskType = "foo")
-    public void handleTaskA(final TasksClient client, final TaskEvent task)
+    public void handleTaskA(final JobClient client, final JobEvent task)
     {
         logTask(task);
-        client.complete(task)
+        client.newCompleteCommand(task)
                 .payload("{\"foo\": 1}")
-                .execute();
+                .send();
     }
 
     @ZeebeTaskListener(taskType = "bar")
-    public void handleTaskB(final TasksClient client, final TaskEvent task)
+    public void handleTaskB(final JobClient client, final JobEvent task)
     {
         logTask(task);
-        client.complete(task)
-                .withoutPayload()
-                .execute();
+        client.newCompleteCommand(task)
+              .send();
     }
 
 

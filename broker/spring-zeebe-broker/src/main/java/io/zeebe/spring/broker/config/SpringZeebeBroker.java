@@ -1,32 +1,29 @@
 package io.zeebe.spring.broker.config;
 
 import io.zeebe.broker.Broker;
-import io.zeebe.broker.system.ConfigurationManager;
+import io.zeebe.broker.system.SystemContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.SmartLifecycle;
 
 import java.util.function.Supplier;
 
+@RequiredArgsConstructor
 public class SpringZeebeBroker implements SmartLifecycle, Supplier<Broker>
 {
 
     public static final int PHASE = 1000;
 
-    private final ConfigurationManager configurationManager;
+    private final SystemContext systemContext;
 
     /**
      * Late init during {@link #start()}.
      */
     private Broker broker;
 
-    public SpringZeebeBroker(final ConfigurationManager configurationManager)
-    {
-        this.configurationManager = configurationManager;
-    }
-
     @Override
     public void start()
     {
-        broker = new Broker(configurationManager);
+        broker = new Broker(systemContext);
     }
 
     @Override

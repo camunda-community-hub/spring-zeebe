@@ -1,13 +1,14 @@
 package io.zeebe.spring.broker.config;
 
-import io.zeebe.broker.system.ConfigurationManager;
-import io.zeebe.broker.system.ConfigurationManagerImpl;
+import java.util.Optional;
+import java.util.function.Function;
+
+import io.zeebe.broker.system.SystemContext;
+import io.zeebe.broker.system.configuration.BrokerCfg;
+import io.zeebe.broker.system.configuration.TomlConfigurationReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Included by {@link io.zeebe.spring.broker.EnableZeebeBroker} annotation.
@@ -34,19 +35,21 @@ public class ZeebeBrokerConfiguration
     };
 
     @Bean
-    public ConfigurationManager configurationManager(final Environment environment)
+    public SystemContext systemContext(final Environment environment)
     {
         final Optional<String> tomlFile = tomlFileFromEnv.apply(environment);
 
+        final BrokerCfg cfg = tomlFile.map(f -> new TomlConfigurationReader().read(f)).orElseGet(BrokerCfg::new);
+
         log.info("building broker from tomlFile={}", tomlFile);
 
-        return new ConfigurationManagerImpl(tomlFile.orElse(null));
+        return new SystemContext(cfg, null, null);
     }
 
     @Bean
-    public SpringZeebeBroker springBroker(final ConfigurationManager configurationManager)
+    public SpringZeebeBroker springBroker(final SystemContext systemContext)
     {
-        return new SpringZeebeBroker(configurationManager);
+        return new SpringZeebeBroker(systemContext);
     }
 
 }
