@@ -29,6 +29,7 @@
         <module>client</module>
 
         <module>examples</module>
+        <module>util</module>
     </modules>
 
     <dependencyManagement>
@@ -45,12 +46,6 @@
                 <artifactId>zb-bom</artifactId>
                 <version>${zeebe.version}</version>
                 <scope>import</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.zeebe</groupId>
-                        <artifactId>zb-build-tools</artifactId>
-                    </exclusion>
-                </exclusions>
                 <type>pom</type>
             </dependency>
 
@@ -76,12 +71,6 @@
                 <groupId>io.zeebe.spring</groupId>
                 <artifactId>spring-zeebe-starter</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zb-build-tools</artifactId>
-                <version>${zeebe.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
