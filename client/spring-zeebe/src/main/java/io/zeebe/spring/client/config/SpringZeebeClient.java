@@ -1,7 +1,6 @@
 package io.zeebe.spring.client.config;
 
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.ZeebeClientBuilder;
 import io.zeebe.client.ZeebeClientConfiguration;
 import io.zeebe.client.api.clients.TopicClient;
 import io.zeebe.client.api.commands.CreateTopicCommandStep1;
@@ -26,7 +25,7 @@ import org.springframework.context.ApplicationEventPublisher;
 public class SpringZeebeClient extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl>
     implements ZeebeClient {
 
-  private final ZeebeClientBuilder builder;
+  private final ZeebeClientConfiguration properties;
   private final ApplicationEventPublisher publisher;
 
   /** Holds list of consumers to be notified after the client was started. */
@@ -35,11 +34,11 @@ public class SpringZeebeClient extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl
   private boolean hasBeenClosed = false;
 
   public SpringZeebeClient(
-      final ZeebeClientBuilder builder,
+      final ZeebeClientConfiguration properties,
       final ApplicationEventPublisher publisher,
       final CreateDefaultTopic createDefaultTopic) {
     super(22222);
-    this.builder = builder;
+    this.properties = properties;
     this.publisher = publisher;
 
     addStartListener(createDefaultTopic);
@@ -48,7 +47,7 @@ public class SpringZeebeClient extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl
 
   @Override
   public void onStart() {
-    delegate = (ZeebeClientImpl) builder.build();
+    delegate = new ZeebeClientImpl(properties);
     log.info("SpringZeebeClient connected");
     publisher.publishEvent(new ClientStartedEvent());
 

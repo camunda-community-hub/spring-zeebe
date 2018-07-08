@@ -12,8 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = {"zeebe.client.broker.contactPoint=localhost12345"})
-@ContextConfiguration(classes = ZeebeClientConfigurationPropertiesTest.TestConfig.class)
-public class ZeebeClientConfigurationPropertiesTest {
+@ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
+public class ZeebeClientSpringConfigurationPropertiesTest {
+
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {}
 

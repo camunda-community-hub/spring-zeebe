@@ -29,11 +29,11 @@
   </properties>
 
   <modules>
+    <module>util</module>
     <module>broker</module>
     <module>client</module>
 
     <module>examples</module>
-    <module>util</module>
   </modules>
 
   <dependencyManagement>
@@ -146,6 +146,9 @@
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.5.1</version>
+        <configuration>
+          <displayFiles>true</displayFiles>
+        </configuration>
         <executions>
           <execution>
             <goals>

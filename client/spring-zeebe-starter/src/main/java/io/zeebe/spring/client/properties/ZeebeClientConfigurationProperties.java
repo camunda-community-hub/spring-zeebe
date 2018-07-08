@@ -1,6 +1,6 @@
 package io.zeebe.spring.client.properties;
 
-import static io.zeebe.spring.client.config.ZeebeClientConfiguration.DEFAULT;
+import static io.zeebe.spring.client.config.ZeebeClientSpringConfiguration.DEFAULT;
 
 import java.time.Duration;
 import lombok.Data;
@@ -31,38 +31,45 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Data
   public static class Broker {
+
     private String contactPoint = DEFAULT.getBrokerContactPoint();
   }
 
   @Data
   public static class Request {
+
     private Duration timeOut = DEFAULT.getRequestTimeout();
     private Duration blockTime = DEFAULT.getRequestBlocktime();
   }
 
   @Data
   public static class Sendbuffer {
+
     private Integer size = DEFAULT.getSendBufferSize();
   }
 
   @Data
   public static class Channel {
+
     private Duration keepalive = DEFAULT.getTcpChannelKeepAlivePeriod();
   }
 
   @Data
   public static class Subscription {
+
     private Integer threads = DEFAULT.getNumSubscriptionExecutionThreads();
     private Integer buffersize = DEFAULT.getDefaultTopicSubscriptionBufferSize();
   }
 
   @Data
   public static class Worker {
+
     private Integer buffersize = DEFAULT.getDefaultJobSubscriptionBufferSize();
   }
 
   @Data
   public static class Job {
+
     private String worker = DEFAULT.getDefaultJobWorkerName();
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
   }

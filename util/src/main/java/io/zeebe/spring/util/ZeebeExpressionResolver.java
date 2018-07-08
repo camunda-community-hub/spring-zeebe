@@ -22,12 +22,10 @@ public class ZeebeExpressionResolver implements BeanFactoryAware {
    * @see ConfigurableBeanFactory#resolveEmbeddedValue
    */
   private final UnaryOperator<String> resolve =
-      value -> {
-        if (this.beanFactory != null && this.beanFactory instanceof ConfigurableBeanFactory) {
-          return ((ConfigurableBeanFactory) this.beanFactory).resolveEmbeddedValue(value);
-        }
-        return value;
-      };
+      value ->
+          (this.beanFactory instanceof ConfigurableBeanFactory)
+              ? ((ConfigurableBeanFactory) this.beanFactory).resolveEmbeddedValue(value)
+              : value;
 
   @Override
   public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
