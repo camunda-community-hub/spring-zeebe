@@ -12,17 +12,15 @@ import org.springframework.context.annotation.Primary;
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
 @RequiredArgsConstructor
-public class ZeebeClientStarterAutoConfiguration
-{
+public class ZeebeClientStarterAutoConfiguration {
 
-    private final ZeebeClientConfigurationProperties configurationProperties;
+  private final ZeebeClientConfigurationProperties configurationProperties;
 
-    @Bean
-    @Primary
-    public ZeebeClientBuilder builder()
-    {
-        final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
+  @Bean
+  @Primary
+  public ZeebeClientBuilder builder() {
+    final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
-        return builder;
-    }
+    return builder;
+  }
 }

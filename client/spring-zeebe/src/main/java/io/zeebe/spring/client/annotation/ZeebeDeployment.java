@@ -11,10 +11,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
-public @interface ZeebeDeployment
-{
-    String topicName() default "${zeebe.topic}";
+public @interface ZeebeDeployment {
+  String topicName() default "${zeebe.topic}";
 
-    String classPathResource();
-
+  String classPathResource();
 }

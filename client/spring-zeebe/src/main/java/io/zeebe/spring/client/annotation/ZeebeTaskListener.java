@@ -9,17 +9,15 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ZeebeTaskListener
-{
+public @interface ZeebeTaskListener {
 
-    String topic() default "${zeebe.topic}";
+  String topic() default "${zeebe.topic}";
 
-    String taskType();
+  String taskType();
 
-    String lockOwner() default "${zeebe.lockOwner}";
+  String lockOwner() default "${zeebe.lockOwner}";
 
-    long lockTime() default 10000L;
+  long lockTime() default 10000L;
 
-    int taskFetchSize() default 1; // FIXME: DEFAULT_TASK_FETCH_SIZE
-
+  int taskFetchSize() default 1; // FIXME: DEFAULT_TASK_FETCH_SIZE
 }

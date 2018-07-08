@@ -9,21 +9,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SpringZeebeBrokerITest
-{
-    @SpringBootApplication
-    @EnableZeebeBroker
-    public static class TestBrokerApplication
-    {
-        public static void main(final String[] args)
-        {
-            SpringApplication.run(TestBrokerApplication.class, args);
-        }
+public class SpringZeebeBrokerITest {
+  @SpringBootApplication
+  @EnableZeebeBroker
+  public static class TestBrokerApplication {
+    public static void main(final String[] args) {
+      SpringApplication.run(TestBrokerApplication.class, args);
     }
+  }
 
-    @Test
-    public void canStart()
-    {
-        // ensure the broker can be started
-    }
+  @Test
+  public void canStart() {
+    // ensure the broker can be started
+  }
 }

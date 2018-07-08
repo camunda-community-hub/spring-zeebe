@@ -1,176 +1,197 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.zeebe</groupId>
-        <artifactId>zb-parent</artifactId>
-        <version>0.10.0</version>
-        <relativePath/>
-    </parent>
+  <parent>
+    <groupId>org.camunda</groupId>
+    <artifactId>camunda-release-parent</artifactId>
+    <version>2.5</version>
+    <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
+    <relativePath/>
+  </parent>
 
-    <groupId>io.zeebe.spring.root</groupId>
-    <artifactId>spring-zeebe-root</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+  <groupId>io.zeebe.spring.root</groupId>
+  <artifactId>spring-zeebe-root</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <properties>
-        <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
+  <properties>
+    <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
+    <version.java>1.8</version.java>
+    <java.version>${version.java}</java.version>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <zeebe.version>0.11.0</zeebe.version>
-        <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
-    </properties>
+    <zeebe.version>0.11.0</zeebe.version>
+    <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
+  </properties>
 
-    <modules>
-        <module>broker</module>
-        <module>client</module>
+  <modules>
+    <module>broker</module>
+    <module>client</module>
 
-        <module>examples</module>
-        <module>util</module>
-    </modules>
+    <module>examples</module>
+    <module>util</module>
+  </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe</groupId>
-                <artifactId>zb-bom</artifactId>
-                <version>${zeebe.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- BROKER -->
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-broker</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-broker-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- CLIENT -->
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.zeebe.spring</groupId>
-                <artifactId>spring-zeebe-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.zeebe</groupId>
+        <artifactId>zb-bom</artifactId>
+        <version>${zeebe.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
 
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.10.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <!-- BROKER -->
+      <dependency>
+        <groupId>io.zeebe.spring</groupId>
+        <artifactId>spring-zeebe-broker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zeebe.spring</groupId>
+        <artifactId>spring-zeebe-broker-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- CLIENT -->
+      <dependency>
+        <groupId>io.zeebe.spring</groupId>
+        <artifactId>spring-zeebe</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zeebe.spring</groupId>
+        <artifactId>spring-zeebe-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zeebe.spring</groupId>
+        <artifactId>spring-zeebe-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 
-    <build>
-        <defaultGoal>clean install</defaultGoal>
-        <pluginManagement>
-            <plugins>
-                <!-- Disable adding license header -->
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
 
-    <repositories>
-        <repository>
-            <id>zeebe-snapshots</id>
-            <name>Zeebe Snapshot Repository</name>
-            <url>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.10.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <developers>
-        <developer>
-            <name>Jan Galinski</name>
-            <organization>Holisticon AG</organization>
-            <url>https://jangalinski.github.io</url>
-            <roles>
-                <role>initiator</role>
-            </roles>
-        </developer>
-    </developers>
+  <build>
+    <defaultGoal>clean install</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <!-- Disable adding license header -->
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.coveo</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
+        <version>2.5.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-    <licenses>
-        <license>
-            <name>Apache License</name>
-        </license>
-    </licenses>
+  <repositories>
+    <repository>
+      <id>zeebe-snapshots</id>
+      <name>Zeebe Snapshot Repository</name>
+      <url>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
-    <scm>
-        <url>https://github.com/zeebe-io/spring-zeebe</url>
-        <connection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</connection>
-        <developerConnection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+  <developers>
+    <developer>
+      <name>Jan Galinski</name>
+      <organization>Holisticon AG</organization>
+      <url>https://jangalinski.github.io</url>
+      <roles>
+        <role>initiator</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License</name>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/zeebe-io/spring-zeebe</url>
+    <connection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</connection>
+    <developerConnection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 </project>

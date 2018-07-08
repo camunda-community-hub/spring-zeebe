@@ -6,19 +6,17 @@ import lombok.Value;
 
 @Value
 @Builder
-public class ZeebeTaskListenerValue implements ZeebeAnnotationValue<MethodInfo>
-{
+public class ZeebeTaskListenerValue implements ZeebeAnnotationValue<MethodInfo> {
 
-    private String topicName;
+  private String topicName;
 
-    private String taskType;
+  private String taskType;
 
-    private String lockOwner;
+  private String lockOwner;
 
-    private long lockTime;
+  private long lockTime;
 
-    private int taskFetchSize;
+  private int taskFetchSize;
 
-    private MethodInfo beanInfo;
+  private MethodInfo beanInfo;
 }
-

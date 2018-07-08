@@ -1,47 +1,44 @@
 package io.zeebe.spring.broker.config;
 
-import org.junit.Test;
-import org.springframework.core.env.Environment;
-
 import static io.zeebe.spring.broker.config.ZeebeBrokerConfiguration.tomlFileFromEnv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ZeebeBrokerConfigurationTest
-{
+import org.junit.Test;
+import org.springframework.core.env.Environment;
 
-    private static final String[] EMPTY = new String[0];
+public class ZeebeBrokerConfigurationTest {
 
-    private final Environment environment = mock(Environment.class);
+  private static final String[] EMPTY = new String[0];
 
-    @Test
-    public void tomlFileFromEnvEnvEmpty() throws Exception
-    {
-        assertThat(tomlFileFromEnv.apply(environment)).isEmpty();
-    }
+  private final Environment environment = mock(Environment.class);
 
-    @Test
-    public void tomlFileFromEnvEnvNoArg() throws Exception
-    {
-        when(environment.getProperty("nonOptionArgs", String[].class, EMPTY)).thenReturn(EMPTY);
+  @Test
+  public void tomlFileFromEnvEnvEmpty() throws Exception {
+    assertThat(tomlFileFromEnv.apply(environment)).isEmpty();
+  }
 
-        assertThat(tomlFileFromEnv.apply(environment)).isEmpty();
-    }
+  @Test
+  public void tomlFileFromEnvEnvNoArg() throws Exception {
+    when(environment.getProperty("nonOptionArgs", String[].class, EMPTY)).thenReturn(EMPTY);
 
-    @Test
-    public void tomlFileFromEnEnvSingleArg() throws Exception
-    {
-        when(environment.getProperty("nonOptionArgs", String[].class, EMPTY)).thenReturn(new String[]{"foo"});
+    assertThat(tomlFileFromEnv.apply(environment)).isEmpty();
+  }
 
-        assertThat(tomlFileFromEnv.apply(environment)).hasValue("foo");
-    }
+  @Test
+  public void tomlFileFromEnEnvSingleArg() throws Exception {
+    when(environment.getProperty("nonOptionArgs", String[].class, EMPTY))
+        .thenReturn(new String[] {"foo"});
 
-    @Test(expected = IllegalArgumentException.class)
-    public void tomlFileFromEnvEnvMultiArgs() throws Exception
-    {
-        when(environment.getProperty("nonOptionArgs", String[].class, EMPTY)).thenReturn(new String[]{"foo", "bar"});
+    assertThat(tomlFileFromEnv.apply(environment)).hasValue("foo");
+  }
 
-        tomlFileFromEnv.apply(environment);
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void tomlFileFromEnvEnvMultiArgs() throws Exception {
+    when(environment.getProperty("nonOptionArgs", String[].class, EMPTY))
+        .thenReturn(new String[] {"foo", "bar"});
+
+    tomlFileFromEnv.apply(environment);
+  }
 }
