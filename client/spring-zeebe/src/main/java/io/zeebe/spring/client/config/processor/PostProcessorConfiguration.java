@@ -2,8 +2,8 @@ package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
-import io.zeebe.spring.client.bean.value.factory.ReadZeebeTaskListenerValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeTopicListenerValue;
+import io.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import io.zeebe.spring.client.config.SpringZeebeClient;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class PostProcessorConfiguration {
 
   @Bean
   public TaskHandlerPostProcessor taskhandlerPostProcessor(
-      final ReadZeebeTaskListenerValue reader) {
+      final ReadZeebeWorkerValue reader) {
     return new TaskHandlerPostProcessor(reader);
   }
 

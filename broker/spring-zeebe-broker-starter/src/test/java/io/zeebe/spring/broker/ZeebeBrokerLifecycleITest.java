@@ -9,10 +9,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SpringZeebeBrokerITest {
+public class ZeebeBrokerLifecycleITest {
+
   @SpringBootApplication
   @EnableZeebeBroker
   public static class TestBrokerApplication {
+
     public static void main(final String[] args) {
       SpringApplication.run(TestBrokerApplication.class, args);
     }

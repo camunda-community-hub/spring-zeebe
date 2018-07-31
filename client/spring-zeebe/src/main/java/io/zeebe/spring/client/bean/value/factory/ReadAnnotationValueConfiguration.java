@@ -3,7 +3,9 @@ package io.zeebe.spring.client.bean.value.factory;
 import io.zeebe.spring.util.ZeebeExpressionResolver;
 import org.springframework.context.annotation.Bean;
 
-/** Bean-Definitions for annotation attribute processing. */
+/**
+ * Bean-Definitions for annotation attribute processing.
+ */
 public class ReadAnnotationValueConfiguration {
 
   @Bean
@@ -17,9 +19,9 @@ public class ReadAnnotationValueConfiguration {
   }
 
   @Bean
-  public ReadZeebeTaskListenerValue readZeebeTaskListenerValue(
+  public ReadZeebeWorkerValue readZeebeTaskListenerValue(
       final ZeebeExpressionResolver resolver) {
-    return new ReadZeebeTaskListenerValue(resolver);
+    return new ReadZeebeWorkerValue(resolver);
   }
 
   @Bean

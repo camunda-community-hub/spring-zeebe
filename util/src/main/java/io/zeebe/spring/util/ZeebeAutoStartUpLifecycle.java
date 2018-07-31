@@ -3,6 +3,15 @@ package io.zeebe.spring.util;
 import java.util.function.Supplier;
 import org.springframework.context.SmartLifecycle;
 
+/**
+ * Implementation of {@link SmartLifecycle} that delegates to a delegate of type <code>T</code> and
+ * defaults to <code>autostart</code>.
+ *
+ * Overwrite the {@link #onStart()} and {@link #onStop()} methods and define a phase in constructor
+ * to start/stop any delegate service.
+ *
+ * @param <T> type of delegate to start/stop
+ */
 public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Supplier<T> {
 
   protected boolean autoStartup = true;
@@ -12,6 +21,11 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
 
   protected T delegate;
 
+  /**
+   * Creates a new lifecycle.
+   *
+   * @param phase the phase to run in
+   */
   public ZeebeAutoStartUpLifecycle(final int phase) {
     this.phase = phase;
   }
@@ -35,6 +49,15 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
   }
 
   @Override
+  public void start() {
+    try {
+      onStart();
+    } finally {
+      running = true;
+    }
+  }
+
+  @Override
   public void stop(final Runnable callback) {
     try {
       onStop();
@@ -45,17 +68,9 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
   }
 
   @Override
-  public void start() {
-    try {
-      onStart();
-    } finally {
-      running = true;
-    }
-  }
-
-  @Override
   public void stop() {
-    this.stop(() -> {});
+    this.stop(() -> {
+    });
   }
 
   @Override

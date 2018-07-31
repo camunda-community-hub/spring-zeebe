@@ -1,25 +1,25 @@
 package io.zeebe.spring.client.bean.value.factory;
 
-import io.zeebe.spring.client.annotation.ZeebeTaskListener;
+import io.zeebe.spring.client.annotation.ZeebeWorker;
 import io.zeebe.spring.client.bean.MethodInfo;
-import io.zeebe.spring.client.bean.value.ZeebeTaskListenerValue;
+import io.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.zeebe.spring.util.ZeebeExpressionResolver;
 import java.util.Optional;
 
-public class ReadZeebeTaskListenerValue
-    extends ReadAnnotationValue<MethodInfo, ZeebeTaskListener, ZeebeTaskListenerValue> {
+public class ReadZeebeWorkerValue
+    extends ReadAnnotationValue<MethodInfo, ZeebeWorker, ZeebeWorkerValue> {
 
-  public ReadZeebeTaskListenerValue(final ZeebeExpressionResolver resolver) {
-    super(resolver, ZeebeTaskListener.class);
+  public ReadZeebeWorkerValue(final ZeebeExpressionResolver resolver) {
+    super(resolver, ZeebeWorker.class);
   }
 
   @Override
-  public Optional<ZeebeTaskListenerValue> apply(final MethodInfo methodInfo) {
+  public Optional<ZeebeWorkerValue> apply(final MethodInfo methodInfo) {
     return methodInfo
         .getAnnotation(annotationType)
         .map(
             annotation ->
-                ZeebeTaskListenerValue.builder()
+                ZeebeWorkerValue.builder()
                     .beanInfo(methodInfo)
                     .topicName(resolver.resolve(annotation.topic()))
                     .taskType(resolver.resolve(annotation.taskType()))

@@ -25,7 +25,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>0.11.0</zeebe.version>
-    <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
+    <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
   </properties>
 
   <modules>
@@ -76,6 +76,7 @@
         <artifactId>spring-zeebe-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
+
       <dependency>
         <groupId>io.zeebe.spring</groupId>
         <artifactId>spring-zeebe-util</artifactId>

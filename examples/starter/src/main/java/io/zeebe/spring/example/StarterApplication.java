@@ -20,17 +20,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Slf4j
 public class StarterApplication {
 
-  public static void main(String... args) {
+  public static void main(final String... args) {
     SpringApplication.run(StarterApplication.class, args);
   }
 
-  @Autowired private SpringZeebeClient client;
+  @Autowired
+  private SpringZeebeClient client;
 
   @Value("${zeebe.topic}")
   private String topic;
 
   @Scheduled(fixedDelay = 15000L)
-  public void startProcesses() throws Exception {
+  public void startProcesses() {
     if (!client.isRunning()) {
       return;
     }

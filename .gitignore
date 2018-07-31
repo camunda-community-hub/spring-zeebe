@@ -1,4 +1,7 @@
+# any broker config default directory is ignored!
 null/
+
+# the standard maven ignores
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -12,7 +15,9 @@ buildNumber.properties
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
 
+# idea ignores
 .idea/
 *.iml
 
+# osx ignores
 .DS_Store

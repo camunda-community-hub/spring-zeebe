@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class ZeebeTaskListenerValue implements ZeebeAnnotationValue<MethodInfo> {
+public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private String topicName;
 
