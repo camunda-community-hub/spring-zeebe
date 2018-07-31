@@ -10,19 +10,14 @@ import org.junit.Test;
 public class ClassInfoTest {
 
   @ZeebeDeployment(topicName = "t", classPathResource = "/1.bpmn")
-  public static class WithDeploymentAnnotation {
+  public static class WithDeploymentAnnotation {}
 
-  }
-
-  public static class WithoutDeploymentAnnotation {
-
-  }
+  public static class WithoutDeploymentAnnotation {}
 
   public static class WithTaskListener {
 
     @ZeebeWorker(topic = "foo", taskType = "bar", lockTime = 100L, lockOwner = "kermit")
-    public void handle() {
-    }
+    public void handle() {}
   }
 
   @Test
@@ -45,14 +40,13 @@ public class ClassInfoTest {
   @Test
   public void hasNoZeebeeDeploymentAnnotation() throws Exception {
     assertThat(
-        beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class))
+            beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class))
         .isFalse();
   }
 
   @Test
   public void hasTaskListenerMethod() throws Exception {
-    assertThat(beanInfo(new WithTaskListener()).hasMethodAnnotation(ZeebeWorker.class))
-        .isTrue();
+    assertThat(beanInfo(new WithTaskListener()).hasMethodAnnotation(ZeebeWorker.class)).isTrue();
   }
 
   @Test

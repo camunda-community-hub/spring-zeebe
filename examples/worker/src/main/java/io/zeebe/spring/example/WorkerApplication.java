@@ -29,9 +29,7 @@ public class WorkerApplication {
         task.getPayload());
   }
 
-  /**
-   * logs every event.
-   */
+  /** logs every event. */
   @ZeebeTopicListener(name = "log-events")
   public void logEvents(final Record event) {
     final RecordMetadata metadata = event.getMetadata();

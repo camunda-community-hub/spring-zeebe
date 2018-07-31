@@ -24,8 +24,7 @@ public class PostProcessorConfiguration {
   }
 
   @Bean
-  public TaskHandlerPostProcessor taskhandlerPostProcessor(
-      final ReadZeebeWorkerValue reader) {
+  public TaskHandlerPostProcessor taskhandlerPostProcessor(final ReadZeebeWorkerValue reader) {
     return new TaskHandlerPostProcessor(reader);
   }
 

@@ -24,8 +24,7 @@ public class StarterApplication {
     SpringApplication.run(StarterApplication.class, args);
   }
 
-  @Autowired
-  private SpringZeebeClient client;
+  @Autowired private SpringZeebeClient client;
 
   @Value("${zeebe.topic}")
   private String topic;
