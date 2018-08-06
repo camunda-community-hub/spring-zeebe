@@ -10,17 +10,16 @@ import io.zeebe.spring.client.bean.value.factory.ReadZeebeTopicListenerValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
 @Slf4j
+@RequiredArgsConstructor
 public class TopicHandlerPostProcessor extends BeanInfoPostProcessor {
 
   private final ReadZeebeTopicListenerValue reader;
 
-  public TopicHandlerPostProcessor(final ReadZeebeTopicListenerValue reader) {
-    this.reader = reader;
-  }
 
   @Override
   public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {

@@ -10,6 +10,7 @@ import io.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,13 +19,10 @@ import org.springframework.util.ReflectionUtils;
  * String)} to add Handler subscriptions for {@link ZeebeWorker} method-annotations.
  */
 @Slf4j
-public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
+@RequiredArgsConstructor
+public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
   private final ReadZeebeWorkerValue reader;
-
-  public TaskHandlerPostProcessor(final ReadZeebeWorkerValue reader) {
-    this.reader = reader;
-  }
 
   @Override
   public boolean test(final ClassInfo beanInfo) {
@@ -33,7 +31,7 @@ public class TaskHandlerPostProcessor extends BeanInfoPostProcessor {
 
   @Override
   public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
-    log.info("taskhandling: {}", beanInfo);
+    log.info("zeebeWorker: {}", beanInfo);
 
     final List<ZeebeWorkerValue> annotatedMethods = new ArrayList<>();
 

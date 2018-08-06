@@ -9,10 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
+/**
+ * @deprecated zeebe now has its own way of defining a default property
+ */
 @Getter
 @ToString
 @Slf4j
+@Deprecated
 public class CreateDefaultTopic implements Consumer<ZeebeClient> {
+
   @Value("${zeebe.defaultTopic.name:0}")
   private String name;
 
@@ -25,7 +30,8 @@ public class CreateDefaultTopic implements Consumer<ZeebeClient> {
   @Override
   public void accept(final ZeebeClient client) {
     if (create && !StringUtils.isEmpty(name) && partitions > 0 && !topicExists(client, name)) {
-      client.newCreateTopicCommand().name(name).partitions(partitions).replicationFactor(1);
+      client.newCreateTopicCommand().name(name).partitions(partitions).replicationFactor(1).send()
+          .join();
       log.info("create topic: {}", this);
     }
   }

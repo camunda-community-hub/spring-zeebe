@@ -1,4 +1,4 @@
-package io.zeebe.spring.client.config;
+package io.zeebe.spring.client;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.ZeebeClientConfiguration;
@@ -14,60 +14,50 @@ import io.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 
-/**
- * Spring managed lifecycle implementation of {@link ZeebeClient}. Uses delegate for {@link
- * ZeebeClientImpl} internally.
- */
-@Slf4j
-public class SpringZeebeClient extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl>
-    implements ZeebeClient {
+public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl> implements
+    ZeebeClient {
 
-  private final ZeebeClientConfiguration properties;
+  public static final int PHASE = 22222;
+
   private final ApplicationEventPublisher publisher;
-
-  /** Holds list of consumers to be notified after the client was started. */
   private final Set<Consumer<ZeebeClient>> startListener = new LinkedHashSet<>();
 
-  private boolean hasBeenClosed = false;
-
-  public SpringZeebeClient(
-      final ZeebeClientConfiguration properties,
-      final ApplicationEventPublisher publisher,
-      final CreateDefaultTopic createDefaultTopic) {
-    super(22222);
-    this.properties = properties;
+  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory,
+      final ApplicationEventPublisher publisher) {
+    super(PHASE, factory);
     this.publisher = publisher;
+  }
 
-    addStartListener(createDefaultTopic);
-    log.info("SpringZeebeClient created");
+  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> consumer) {
+    startListener.add(consumer);
+    return this;
   }
 
   @Override
-  public void onStart() {
-    delegate = new ZeebeClientImpl(properties);
-    log.info("SpringZeebeClient connected");
+  public void start() {
+    super.start();
+
     publisher.publishEvent(new ClientStartedEvent());
 
     startListener.forEach(c -> c.accept(this));
   }
 
   @Override
-  public void onStop() {
-    close();
-    log.info("SpringZeebeClient closed");
+  public ZeebeClientConfiguration getConfiguration() {
+    return get().getConfiguration();
   }
 
-  public SpringZeebeClient addStartListener(final Consumer<ZeebeClient> consumer) {
-    startListener.add(consumer);
-    return this;
+  @Override
+  public void close() {
+    // needed to fulfill the ZeebeClient Interface
+    stop();
   }
 
   @Override
   public TopicClient topicClient(final String topicName) {
-    return get().topicClient();
+    return get().topicClient(topicName);
   }
 
   @Override
@@ -98,18 +88,5 @@ public class SpringZeebeClient extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl
   @Override
   public ManagementSubscriptionBuilderStep1 newManagementSubscription() {
     return get().newManagementSubscription();
-  }
-
-  @Override
-  public ZeebeClientConfiguration getConfiguration() {
-    return get().getConfiguration();
-  }
-
-  @Override
-  public void close() {
-    if (!hasBeenClosed) {
-      get().close();
-      hasBeenClosed = true;
-    }
   }
 }

@@ -1,23 +1,23 @@
 package io.zeebe.spring.util;
 
 import java.util.function.Supplier;
+import lombok.SneakyThrows;
 import org.springframework.context.SmartLifecycle;
 
 /**
  * Implementation of {@link SmartLifecycle} that delegates to a delegate of type <code>T</code> and
  * defaults to <code>autostart</code>.
  *
- * <p>Overwrite the {@link #onStart()} and {@link #onStop()} methods and define a phase in
- * constructor to start/stop any delegate service.
- *
  * @param <T> type of delegate to start/stop
  */
-public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Supplier<T> {
+public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> implements SmartLifecycle,
+    Supplier<T> {
 
   protected boolean autoStartup = true;
   protected boolean running = false;
 
   protected final int phase;
+  protected final ZeebeObjectFactory<T> factory;
 
   protected T delegate;
 
@@ -26,13 +26,11 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
    *
    * @param phase the phase to run in
    */
-  public ZeebeAutoStartUpLifecycle(final int phase) {
+  public ZeebeAutoStartUpLifecycle(final int phase,
+      final ZeebeObjectFactory<T> factory) {
     this.phase = phase;
+    this.factory = factory;
   }
-
-  public abstract void onStart();
-
-  public abstract void onStop();
 
   @Override
   public T get() {
@@ -51,16 +49,17 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
   @Override
   public void start() {
     try {
-      onStart();
+      delegate = factory.getObject();
     } finally {
       running = true;
     }
   }
 
+  @SneakyThrows
   @Override
   public void stop(final Runnable callback) {
     try {
-      onStop();
+      delegate.close();
       callback.run();
     } finally {
       running = false;
@@ -69,7 +68,8 @@ public abstract class ZeebeAutoStartUpLifecycle<T> implements SmartLifecycle, Su
 
   @Override
   public void stop() {
-    this.stop(() -> {});
+    this.stop(() -> {
+    });
   }
 
   @Override

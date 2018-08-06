@@ -8,15 +8,14 @@ import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class DeploymentPostProcessor extends BeanInfoPostProcessor {
-  private final ReadZeebeDeploymentValue reader;
 
-  public DeploymentPostProcessor(final ReadZeebeDeploymentValue reader) {
-    this.reader = reader;
-  }
+  private final ReadZeebeDeploymentValue reader;
 
   @Override
   public boolean test(final ClassInfo beanInfo) {

@@ -1,4 +1,4 @@
-package io.zeebe.spring.broker.config;
+package io.zeebe.spring.broker;
 
 import io.zeebe.broker.Broker;
 import io.zeebe.broker.system.SystemContext;
@@ -12,25 +12,11 @@ public class ZeebeBrokerLifecycle extends ZeebeAutoStartUpLifecycle<Broker> {
 
   public static final int PHASE = 1000;
 
-  private final ZeebeBrokerFactory brokerFactory;
-
-  public ZeebeBrokerLifecycle(final ZeebeBrokerFactory brokerFactory) {
-    super(PHASE);
-
-    this.brokerFactory = brokerFactory;
-  }
-
-  @Override
-  public void onStart() {
-    delegate = brokerFactory.create();
-  }
-
-  @Override
-  public void onStop() {
-    delegate.close();
+  public ZeebeBrokerLifecycle(final ZeebeBrokerObjectFactory factory) {
+    super(PHASE, factory);
   }
 
   public SystemContext getBrokerContext() {
-    return delegate.getBrokerContext();
+    return get().getBrokerContext();
   }
 }

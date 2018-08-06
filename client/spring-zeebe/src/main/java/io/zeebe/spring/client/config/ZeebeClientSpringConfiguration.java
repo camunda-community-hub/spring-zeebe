@@ -1,7 +1,9 @@
 package io.zeebe.spring.client.config;
 
-import io.zeebe.client.ZeebeClientConfiguration;
 import io.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.zeebe.client.impl.ZeebeClientImpl;
+import io.zeebe.spring.client.ZeebeClientLifecycle;
+import io.zeebe.spring.client.ZeebeClientObjectFactory;
 import io.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.zeebe.spring.client.config.processor.PostProcessorConfiguration;
 import java.util.Properties;
@@ -10,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import({
-  PostProcessorConfiguration.class,
-  ReadAnnotationValueConfiguration.class,
+    PostProcessorConfiguration.class,
+    ReadAnnotationValueConfiguration.class,
 })
 public class ZeebeClientSpringConfiguration {
 
@@ -19,15 +21,14 @@ public class ZeebeClientSpringConfiguration {
       (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
 
   @Bean
-  public SpringZeebeClient springZeebeClient(
-      final ZeebeClientConfiguration properties,
-      final ApplicationEventPublisher publisher,
-      final CreateDefaultTopic createDefaultTopic) {
-    return new SpringZeebeClient(properties, publisher, createDefaultTopic);
+  public ZeebeClientLifecycle zeebeClientLifecycle(
+      final ZeebeClientObjectFactory factory,
+      final ApplicationEventPublisher publisher) {
+    return new ZeebeClientLifecycle(factory, publisher);
   }
 
   @Bean
-  public CreateDefaultTopic defaultTopic() {
-    return new CreateDefaultTopic();
+  public ZeebeClientObjectFactory zeebeClientObjectFactory() {
+    return () -> (ZeebeClientImpl) DEFAULT.build();
   }
 }
