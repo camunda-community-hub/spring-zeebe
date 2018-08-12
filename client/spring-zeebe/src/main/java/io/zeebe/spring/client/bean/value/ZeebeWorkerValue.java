@@ -10,13 +10,13 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private String topicName;
 
-  private String taskType;
+  private String jobType;
 
   private String lockOwner;
 
   private long lockTime;
 
-  private int taskFetchSize;
+  private int jobFetchSize;
 
   private MethodInfo beanInfo;
 }

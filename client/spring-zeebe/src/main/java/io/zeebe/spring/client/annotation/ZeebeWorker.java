@@ -19,5 +19,5 @@ public @interface ZeebeWorker {
 
   long lockTime() default 10000L;
 
-  int taskFetchSize() default 1; // FIXME: DEFAULT_TASK_FETCH_SIZE
+  int taskFetchSize() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
 }

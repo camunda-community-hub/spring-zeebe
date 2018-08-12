@@ -47,11 +47,11 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
                   .topicClient(m.getTopicName())
                   .jobClient()
                   .newWorker()
-                  .jobType(m.getTaskType())
+                  .jobType(m.getJobType())
                   .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
                   .name(m.getLockOwner())
                   .timeout(m.getLockTime())
-                  .bufferSize(m.getTaskFetchSize())
+                  .bufferSize(m.getJobFetchSize())
                   .open();
               log.info("register taskHandler: {}", m);
             });

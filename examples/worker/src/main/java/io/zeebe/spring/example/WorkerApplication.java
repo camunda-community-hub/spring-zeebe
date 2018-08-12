@@ -20,16 +20,19 @@ public class WorkerApplication {
     SpringApplication.run(WorkerApplication.class, args);
   }
 
-  private static void logTask(final JobEvent task) {
+  private static void logTask(final JobEvent job) {
     log.info(
-        "complete task\n>>> [type: {}, key: {}]\n[headers: {}]\n[payload: {}]\n===",
-        task.getType(),
-        task.getMetadata().getKey(),
-        task.getHeaders(),
-        task.getPayload());
+        "complete task\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[payload: {}]\n===",
+        job.getType(),
+        job.getMetadata().getKey(),
+        job.getDeadline().toString(),
+        job.getHeaders(),
+        job.getPayload());
   }
 
-  /** logs every event. */
+  /**
+   * logs every event.
+   */
   @ZeebeTopicListener(name = "log-events")
   public void logEvents(final Record event) {
     final RecordMetadata metadata = event.getMetadata();
@@ -41,14 +44,14 @@ public class WorkerApplication {
   }
 
   @ZeebeWorker(taskType = "foo")
-  public void handleTaskA(final JobClient client, final JobEvent task) {
-    logTask(task);
-    client.newCompleteCommand(task).payload("{\"foo\": 1}").send();
+  public void handleTaskA(final JobClient client, final JobEvent job) {
+    logTask(job);
+    client.newCompleteCommand(job).payload("{\"foo\": 1}").send().join();
   }
 
   @ZeebeWorker(taskType = "bar")
-  public void handleTaskB(final JobClient client, final JobEvent task) {
-    logTask(task);
-    client.newCompleteCommand(task).send();
+  public void handleTaskB(final JobClient client, final JobEvent job) {
+    logTask(job);
+    client.newCompleteCommand(job).send().join();
   }
 }
