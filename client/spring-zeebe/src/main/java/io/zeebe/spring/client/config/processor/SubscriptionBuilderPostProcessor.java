@@ -21,13 +21,13 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
 
   @Override
   public Object postProcessBeforeInitialization(final Object bean, final String beanName)
-      throws BeansException {
+    throws BeansException {
     return bean;
   }
 
   @Override
   public Object postProcessAfterInitialization(final Object bean, final String beanName)
-      throws BeansException {
+    throws BeansException {
     final ClassInfo beanInfo = ClassInfo.builder().bean(bean).beanName(beanName).build();
 
     for (final BeanInfoPostProcessor p : processors) {

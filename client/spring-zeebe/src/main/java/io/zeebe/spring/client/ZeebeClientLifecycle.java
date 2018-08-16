@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import org.springframework.context.ApplicationEventPublisher;
 
 public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl> implements
-    ZeebeClient {
+  ZeebeClient {
 
   public static final int PHASE = 22222;
 
@@ -25,7 +25,7 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientI
   private final Set<Consumer<ZeebeClient>> startListener = new LinkedHashSet<>();
 
   public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory,
-      final ApplicationEventPublisher publisher) {
+    final ApplicationEventPublisher publisher) {
     super(PHASE, factory);
     this.publisher = publisher;
   }

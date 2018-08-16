@@ -11,19 +11,26 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
 
-  @NestedConfigurationProperty private Broker broker = new Broker();
+  @NestedConfigurationProperty
+  private Broker broker = new Broker();
 
-  @NestedConfigurationProperty private Request request = new Request();
+  @NestedConfigurationProperty
+  private Request request = new Request();
 
-  @NestedConfigurationProperty private Sendbuffer sendbuffer = new Sendbuffer();
+  @NestedConfigurationProperty
+  private Sendbuffer sendbuffer = new Sendbuffer();
 
-  @NestedConfigurationProperty private Channel channel = new Channel();
+  @NestedConfigurationProperty
+  private Channel channel = new Channel();
 
-  @NestedConfigurationProperty private Subscription subscription = new Subscription();
+  @NestedConfigurationProperty
+  private Subscription subscription = new Subscription();
 
-  @NestedConfigurationProperty private Worker worker = new Worker();
+  @NestedConfigurationProperty
+  private Worker worker = new Worker();
 
-  @NestedConfigurationProperty private Job job = new Job();
+  @NestedConfigurationProperty
+  private Job job = new Job();
 
   private Integer threads = DEFAULT.getNumManagementThreads();
 

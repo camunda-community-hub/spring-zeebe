@@ -10,7 +10,9 @@ import lombok.Setter;
 import org.springframework.beans.factory.BeanNameAware;
 
 public abstract class BeanInfoPostProcessor
-    implements BeanNameAware, Predicate<ClassInfo>, Function<ClassInfo, Consumer<ZeebeClient>> {
+  implements BeanNameAware, Predicate<ClassInfo>, Function<ClassInfo, Consumer<ZeebeClient>> {
 
-  @Getter @Setter private String beanName;
+  @Getter
+  @Setter
+  private String beanName;
 }

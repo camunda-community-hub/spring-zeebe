@@ -4,7 +4,9 @@ import io.zeebe.spring.broker.EnableZeebeBroker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** A spring boot application with component scan in <code>io.zeebe.spring.broker.test</code>. */
+/**
+ * A spring boot application with component scan in <code>io.zeebe.spring.broker.test</code>.
+ */
 @SpringBootApplication
 @EnableZeebeBroker
 public class BrokerTestApplication {

@@ -43,20 +43,20 @@ public class StarterApplication {
       return;
     }
     if (client.newTopicsRequest().send().join().getTopics().stream()
-        .noneMatch(t -> t.getName().equals(topic))) {
+      .noneMatch(t -> t.getName().equals(topic))) {
       client.newCreateTopicCommand().name(topic).partitions(1).replicationFactor(1).send();
     }
 
     final WorkflowInstanceEvent event =
-        client
-            .topicClient()
-            .workflowClient()
-            .newCreateInstanceCommand()
-            .bpmnProcessId("demoProcess")
-            .latestVersion()
-            .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
-            .send()
-            .join();
+      client
+        .topicClient()
+        .workflowClient()
+        .newCreateInstanceCommand()
+        .bpmnProcessId("demoProcess")
+        .latestVersion()
+        .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
+        .send()
+        .join();
 
     log.info("started: {} {}", event.getActivityId(), event.getPayload());
   }

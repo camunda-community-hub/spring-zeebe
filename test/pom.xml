@@ -11,6 +11,7 @@
 
   <groupId>io.zeebe.spring</groupId>
   <artifactId>spring-zeebe-test</artifactId>
+  <name>test/spring-zeebe-test</name>
 
   <properties>
     <jgiven.version>0.16.0</jgiven.version>

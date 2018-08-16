@@ -11,6 +11,7 @@
 
   <groupId>io.zeebe.spring.examples</groupId>
   <artifactId>spring-zeebe-example-broker</artifactId>
+  <name>example/spring-zeebe-example-broker</name>
 
   <dependencies>
     <dependency>

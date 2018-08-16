@@ -31,19 +31,19 @@ public class CreateDefaultTopic implements Consumer<ZeebeClient> {
   public void accept(final ZeebeClient client) {
     if (create && !StringUtils.isEmpty(name) && partitions > 0 && !topicExists(client, name)) {
       client.newCreateTopicCommand().name(name).partitions(partitions).replicationFactor(1).send()
-          .join();
+        .join();
       log.info("create topic: {}", this);
     }
   }
 
   private boolean topicExists(final ZeebeClient client, final String topicName) {
     return client
-        .newTopologyRequest()
-        .send()
-        .join()
-        .getBrokers()
-        .stream()
-        .flatMap(broker -> broker.getPartitions().stream().map(PartitionInfo::getTopicName))
-        .anyMatch(topicName::equals);
+      .newTopologyRequest()
+      .send()
+      .join()
+      .getBrokers()
+      .stream()
+      .flatMap(broker -> broker.getPartitions().stream().map(PartitionInfo::getTopicName))
+      .anyMatch(topicName::equals);
   }
 }

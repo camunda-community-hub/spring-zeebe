@@ -12,15 +12,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(
-    properties = {
-      "zeebe.topic.name=foo",
-      "zeebe.topic.partitions",
-      "zeebe.isSomething=true",
-    })
+  properties = {
+    "zeebe.topic.name=foo",
+    "zeebe.topic.partitions",
+    "zeebe.isSomething=true",
+  })
 @ContextConfiguration(classes = ZeebeExpressionResolver.class)
 public class ZeebeExpressionResolverTest {
 
-  @Autowired private ZeebeExpressionResolver resolver;
+  @Autowired
+  private ZeebeExpressionResolver resolver;
 
   @Value("${zeebe.isSomething}")
   private boolean isSomeThing;

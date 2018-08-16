@@ -27,6 +27,6 @@ public interface BeanInfo {
 
   default boolean hasMethodAnnotation(final Class<? extends Annotation> type) {
     return Stream.of(getAllDeclaredMethods(getTargetClass()))
-        .anyMatch(m -> m.isAnnotationPresent(type));
+      .anyMatch(m -> m.isAnnotationPresent(type));
   }
 }

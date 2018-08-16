@@ -11,7 +11,7 @@ import org.springframework.context.SmartLifecycle;
  * @param <T> type of delegate to start/stop
  */
 public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> implements SmartLifecycle,
-    Supplier<T> {
+  Supplier<T> {
 
   protected boolean autoStartup = true;
   protected boolean running = false;
@@ -27,7 +27,7 @@ public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> impleme
    * @param phase the phase to run in
    */
   public ZeebeAutoStartUpLifecycle(final int phase,
-      final ZeebeObjectFactory<T> factory) {
+    final ZeebeObjectFactory<T> factory) {
     this.phase = phase;
     this.factory = factory;
   }

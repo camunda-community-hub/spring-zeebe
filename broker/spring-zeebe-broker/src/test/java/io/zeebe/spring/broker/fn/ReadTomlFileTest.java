@@ -19,6 +19,6 @@ public class ReadTomlFileTest {
 
     assertThat(brokerCfg).isNotNull();
     assertThat(brokerCfg.getNetwork().getClient().getPort())
-        .isEqualTo(51015);
+      .isEqualTo(51015);
   }
 }

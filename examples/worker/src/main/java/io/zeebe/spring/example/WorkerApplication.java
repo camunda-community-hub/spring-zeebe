@@ -22,12 +22,12 @@ public class WorkerApplication {
 
   private static void logTask(final JobEvent job) {
     log.info(
-        "complete task\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[payload: {}]\n===",
-        job.getType(),
-        job.getMetadata().getKey(),
-        job.getDeadline().toString(),
-        job.getHeaders(),
-        job.getPayload());
+      "complete task\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[payload: {}]\n===",
+      job.getType(),
+      job.getMetadata().getKey(),
+      job.getDeadline().toString(),
+      job.getHeaders(),
+      job.getPayload());
   }
 
   /**
@@ -38,9 +38,9 @@ public class WorkerApplication {
     final RecordMetadata metadata = event.getMetadata();
 
     log.info(
-        String.format(
-            ">>> [topic: %d, position: %d, key: %d, type: %s]\n%s\n===",
-            metadata.getPartitionId(), metadata.getPosition(), metadata.getKey()));
+      String.format(
+        ">>> [topic: %d, position: %d, key: %d, type: %s]\n%s\n===",
+        metadata.getPartitionId(), metadata.getPosition(), metadata.getKey()));
   }
 
   @ZeebeWorker(taskType = "foo")

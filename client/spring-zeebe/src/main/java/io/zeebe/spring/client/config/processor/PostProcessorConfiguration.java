@@ -14,7 +14,7 @@ public class PostProcessorConfiguration {
 
   @Bean
   public SubscriptionBuilderPostProcessor subscriptionBuilderPostProcessor(
-      final List<BeanInfoPostProcessor> processors, final ZeebeClientLifecycle clientLifecycle) {
+    final List<BeanInfoPostProcessor> processors, final ZeebeClientLifecycle clientLifecycle) {
     return new SubscriptionBuilderPostProcessor(processors, clientLifecycle);
   }
 
@@ -30,7 +30,7 @@ public class PostProcessorConfiguration {
 
   @Bean
   public TopicHandlerPostProcessor topicHandlerPostProcessor(
-      final ReadZeebeTopicListenerValue reader) {
+    final ReadZeebeTopicListenerValue reader) {
     return new TopicHandlerPostProcessor(reader);
   }
 }

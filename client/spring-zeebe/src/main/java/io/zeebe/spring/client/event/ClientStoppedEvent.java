@@ -1,3 +1,5 @@
 package io.zeebe.spring.client.event;
 
-public class ClientStoppedEvent {}
+public class ClientStoppedEvent {
+
+}

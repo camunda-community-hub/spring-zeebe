@@ -29,7 +29,7 @@ public class TempZeebeBrokerFactory implements ZeebeBrokerObjectFactory {
     }
 
     final String tempFolder =
-        Files.createTempDirectory("zeebe-").toAbsolutePath().normalize().toString();
+      Files.createTempDirectory("zeebe-").toAbsolutePath().normalize().toString();
 
     log.info("broker dir: {}", tempFolder);
 

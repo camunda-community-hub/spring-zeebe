@@ -9,6 +9,6 @@ public class ZeebeBrokerExceptions {
 
   public static IllegalArgumentException tomlFileNotReadable(final File tomlFile) {
     return new IllegalArgumentException(
-        String.format("tomlFile not readable: %s", tomlFile.getAbsolutePath()));
+      String.format("tomlFile not readable: %s", tomlFile.getAbsolutePath()));
   }
 }

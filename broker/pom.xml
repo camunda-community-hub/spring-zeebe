@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>spring-zeebe-broker-root</artifactId>
+  <name>pom/spring-zeebe-broker</name>
   <packaging>pom</packaging>
 
   <modules>

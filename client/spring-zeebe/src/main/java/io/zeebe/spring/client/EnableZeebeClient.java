@@ -14,4 +14,6 @@ import org.springframework.context.annotation.Import;
 @Import(ZeebeClientSpringConfiguration.class)
 @Documented
 @Inherited
-public @interface EnableZeebeClient {}
+public @interface EnableZeebeClient {
+
+}

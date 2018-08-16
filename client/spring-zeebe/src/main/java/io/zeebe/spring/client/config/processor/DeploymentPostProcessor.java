@@ -30,21 +30,21 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
 
     return client -> {
       final DeploymentEvent deploymentResult =
-          client
-              .topicClient(value.getTopicName())
-              .workflowClient()
-              .newDeployCommand()
-              .addResourceFromClasspath(value.getClassPathResource())
-              .send()
-              .join();
+        client
+          .topicClient(value.getTopicName())
+          .workflowClient()
+          .newDeployCommand()
+          .addResourceFromClasspath(value.getClassPathResource())
+          .send()
+          .join();
 
       log.info(
-          "Deployed: {}",
-          deploymentResult
-              .getDeployedWorkflows()
-              .stream()
-              .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion()))
-              .collect(Collectors.joining(",")));
+        "Deployed: {}",
+        deploymentResult
+          .getDeployedWorkflows()
+          .stream()
+          .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion()))
+          .collect(Collectors.joining(",")));
     };
   }
 }

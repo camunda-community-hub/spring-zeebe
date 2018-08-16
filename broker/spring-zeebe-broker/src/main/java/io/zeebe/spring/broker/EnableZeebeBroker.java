@@ -9,10 +9,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
-/** Annotation that enables the broker config. */
+/**
+ * Annotation that enables the broker config.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(ZeebeBrokerConfiguration.class)
 @Documented
 @Inherited
-public @interface EnableZeebeBroker {}
+public @interface EnableZeebeBroker {
+
+}

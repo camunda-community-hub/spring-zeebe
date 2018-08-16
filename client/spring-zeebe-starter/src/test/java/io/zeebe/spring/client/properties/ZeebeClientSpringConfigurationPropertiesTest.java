@@ -16,9 +16,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {}
+  public static class TestConfig {
 
-  @Autowired private ZeebeClientConfigurationProperties properties;
+  }
+
+  @Autowired
+  private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasBrokerContactPoint() throws Exception {

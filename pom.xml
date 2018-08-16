@@ -13,6 +13,7 @@
 
   <groupId>io.zeebe.spring.root</groupId>
   <artifactId>spring-zeebe-root</artifactId>
+  <name>pom/spring-zeebe</name>
   <version>0.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 

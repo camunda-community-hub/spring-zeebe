@@ -36,24 +36,24 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     final List<ZeebeWorkerValue> annotatedMethods = new ArrayList<>();
 
     doWithMethods(
-        beanInfo.getTargetClass(),
-        method -> reader.apply(beanInfo.toMethodInfo(method)).ifPresent(annotatedMethods::add),
-        ReflectionUtils.USER_DECLARED_METHODS);
+      beanInfo.getTargetClass(),
+      method -> reader.apply(beanInfo.toMethodInfo(method)).ifPresent(annotatedMethods::add),
+      ReflectionUtils.USER_DECLARED_METHODS);
 
     return client ->
-        annotatedMethods.forEach(
-            m -> {
-              client
-                  .topicClient(m.getTopicName())
-                  .jobClient()
-                  .newWorker()
-                  .jobType(m.getJobType())
-                  .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
-                  .name(m.getLockOwner())
-                  .timeout(m.getLockTime())
-                  .bufferSize(m.getJobFetchSize())
-                  .open();
-              log.info("register taskHandler: {}", m);
-            });
+      annotatedMethods.forEach(
+        m -> {
+          client
+            .topicClient(m.getTopicName())
+            .jobClient()
+            .newWorker()
+            .jobType(m.getJobType())
+            .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
+            .name(m.getLockOwner())
+            .timeout(m.getLockTime())
+            .bufferSize(m.getJobFetchSize())
+            .open();
+          log.info("register taskHandler: {}", m);
+        });
   }
 }
