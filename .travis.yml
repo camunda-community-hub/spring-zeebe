@@ -2,15 +2,15 @@ language: java
 sudo: false # faster builds
 
 jdk:
-  - oraclejdk8
+- oraclejdk8
 
 install: true
 cache:
   directories:
-    - $HOME/.m2
+  - $HOME/.m2
 
 script:
-  - ./mvnw verify package
+- ./mvnw verify package
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
