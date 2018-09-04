@@ -27,6 +27,10 @@
 
     <zeebe.version>0.11.0</zeebe.version>
     <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
+    
+    <!-- release parent settings for distribution management -->
+    <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/</nexus.snapshot.repository>
+    <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io/</nexus.release.repository>
   </properties>
 
   <modules>
