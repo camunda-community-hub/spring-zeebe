@@ -9,7 +9,6 @@
     <version>0.3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>io.zeebe.spring.root</groupId>
   <artifactId>spring-zeebe-client-root</artifactId>
   <name>pom/spring-zeebe-client</name>
   <packaging>pom</packaging>
@@ -17,5 +16,6 @@
   <modules>
     <module>spring-zeebe</module>
     <module>spring-zeebe-starter</module>
+    <module>api</module>
   </modules>
 </project>

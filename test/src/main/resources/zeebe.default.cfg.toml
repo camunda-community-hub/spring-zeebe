@@ -1,0 +1,11 @@
+bootstrap = 1
+[network]
+[network.client]
+[network.management]
+[network.replication]
+[data]
+[cluster]
+[threads]
+[metrics]
+[gossip]
+[raft]

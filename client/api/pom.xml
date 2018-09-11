@@ -5,23 +5,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.zeebe.spring.root</groupId>
-    <artifactId>spring-zeebe-root</artifactId>
+    <artifactId>spring-zeebe-client-root</artifactId>
     <version>0.3.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>spring-zeebe-broker-root</artifactId>
-  <name>pom/spring-zeebe-broker</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>spring-zeebe-broker</module>
-    <module>spring-zeebe-broker-starter</module>
-  </modules>
+  <groupId>io.zeebe.spring</groupId>
+  <artifactId>spring-zeebe-api</artifactId>
+  <name>lib/spring-zeebe-api</name>
 
   <dependencies>
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
+      <groupId>io.zeebe</groupId>
+      <artifactId>zeebe-client-java</artifactId>
+    </dependency>
+
+    <!-- kotlin -->
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-kotlin</artifactId>
     </dependency>
 
     <dependency>
@@ -30,4 +35,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
 </project>

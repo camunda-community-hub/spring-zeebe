@@ -22,7 +22,14 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>compile</scope>
     </dependency>
+
+    <dependency>
+      <groupId>io.zeebe</groupId>
+      <artifactId>zeebe-test</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>io.zeebe</groupId>
@@ -37,10 +44,12 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

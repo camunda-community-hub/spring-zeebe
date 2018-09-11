@@ -2,6 +2,8 @@ package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.api.events.DeploymentEvent;
+import io.zeebe.spring.api.SpringZeebeApiKt;
+import io.zeebe.spring.api.command.CreateDeployment;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
@@ -29,14 +31,9 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
     log.info("deployment: {}", value);
 
     return client -> {
-      final DeploymentEvent deploymentResult =
-        client
-          .topicClient(value.getTopicName())
-          .workflowClient()
-          .newDeployCommand()
-          .addResourceFromClasspath(value.getClassPathResource())
-          .send()
-          .join();
+      final DeploymentEvent deploymentResult = SpringZeebeApiKt
+        .apply(client, new CreateDeployment(value.getTopicName(), value.getClassPathResource()))
+        .join();
 
       log.info(
         "Deployed: {}",
