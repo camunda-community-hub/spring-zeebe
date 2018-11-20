@@ -12,8 +12,5 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
 public @interface ZeebeDeployment {
-
-  String topicName() default "${zeebe.topic}";
-
   String classPathResource();
 }

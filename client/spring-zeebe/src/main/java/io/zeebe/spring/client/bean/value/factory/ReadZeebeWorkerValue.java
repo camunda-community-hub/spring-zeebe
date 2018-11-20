@@ -21,11 +21,10 @@ public class ReadZeebeWorkerValue
         annotation ->
           ZeebeWorkerValue.builder()
             .beanInfo(methodInfo)
-            .topicName(resolver.resolve(annotation.topic()))
-            .jobType(resolver.resolve(annotation.taskType()))
-            .lockOwner(resolver.resolve(annotation.lockOwner()))
-            .lockTime(annotation.lockTime())
-            .jobFetchSize(annotation.taskFetchSize())
+            .type(resolver.resolve(annotation.type()))
+            .name(resolver.resolve(annotation.name()))
+            .timeout(annotation.timeout())
+            .bufferSize(annotation.bufferSize())
             .build());
   }
 }

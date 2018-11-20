@@ -13,8 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @TestPropertySource(
   properties = {
-    "zeebe.topic.name=foo",
-    "zeebe.topic.partitions",
+    "zeebe.network.client.port=123",
     "zeebe.isSomething=true",
   })
 @ContextConfiguration(classes = ZeebeExpressionResolver.class)
@@ -33,9 +32,9 @@ public class ZeebeExpressionResolverTest {
   private String empty;
 
   @Test
-  public void resolveTopic() throws Exception {
-    final String topic = resolver.resolve("${zeebe.topic.name}");
-    assertThat(topic).isEqualTo("foo");
+  public void resolveNetworkClientPort() throws Exception {
+    final String port = resolver.resolve("${zeebe.network.client.port}");
+    assertThat(port).isEqualTo("123");
   }
 
   @Test

@@ -19,13 +19,8 @@ public class ReadAnnotationValueConfiguration {
   }
 
   @Bean
-  public ReadZeebeWorkerValue readZeebeTaskListenerValue(final ZeebeExpressionResolver resolver) {
+  public ReadZeebeWorkerValue readZeebeWorkerValue(final ZeebeExpressionResolver resolver) {
     return new ReadZeebeWorkerValue(resolver);
   }
 
-  @Bean
-  public ReadZeebeTopicListenerValue readZeebeTopicListenerValue(
-    final ZeebeExpressionResolver resolver) {
-    return new ReadZeebeTopicListenerValue(resolver);
-  }
 }

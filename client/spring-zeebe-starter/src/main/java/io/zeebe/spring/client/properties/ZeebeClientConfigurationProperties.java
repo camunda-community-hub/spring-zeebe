@@ -15,26 +15,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   private Broker broker = new Broker();
 
   @NestedConfigurationProperty
-  private Request request = new Request();
-
-  @NestedConfigurationProperty
-  private Sendbuffer sendbuffer = new Sendbuffer();
-
-  @NestedConfigurationProperty
-  private Channel channel = new Channel();
-
-  @NestedConfigurationProperty
-  private Subscription subscription = new Subscription();
-
-  @NestedConfigurationProperty
   private Worker worker = new Worker();
 
   @NestedConfigurationProperty
-  private Job job = new Job();
-
-  private Integer threads = DEFAULT.getNumManagementThreads();
-
-  private String defaultTopic = DEFAULT.getDefaultTopic();
+  private Message message = new Message();
 
   @Data
   public static class Broker {
@@ -43,42 +27,17 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   }
 
   @Data
-  public static class Request {
-
-    private Duration timeOut = DEFAULT.getRequestTimeout();
-    private Duration blockTime = DEFAULT.getRequestBlocktime();
-  }
-
-  @Data
-  public static class Sendbuffer {
-
-    private Integer size = DEFAULT.getSendBufferSize();
-  }
-
-  @Data
-  public static class Channel {
-
-    private Duration keepalive = DEFAULT.getTcpChannelKeepAlivePeriod();
-  }
-
-  @Data
-  public static class Subscription {
-
-    private Integer threads = DEFAULT.getNumSubscriptionExecutionThreads();
-    private Integer buffersize = DEFAULT.getDefaultTopicSubscriptionBufferSize();
-  }
-
-  @Data
   public static class Worker {
-
-    private Integer buffersize = DEFAULT.getDefaultJobSubscriptionBufferSize();
+    private String name = DEFAULT.getDefaultJobWorkerName();
+    private Duration timeout = DEFAULT.getDefaultJobTimeout();
+    private Integer bufferSize = DEFAULT.getDefaultJobWorkerBufferSize();
+    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
+    private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
   }
 
   @Data
-  public static class Job {
-
-    private String worker = DEFAULT.getDefaultJobWorkerName();
-    private Duration timeout = DEFAULT.getDefaultJobTimeout();
+  public static class Message {
+    private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
   }
 
   @Override
@@ -87,52 +46,32 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   }
 
   @Override
-  public Duration getRequestTimeout() {
-    return request.timeOut;
+  public int getNumJobWorkerExecutionThreads() {
+    return worker.threads;
   }
 
   @Override
-  public Duration getRequestBlocktime() {
-    return request.blockTime;
-  }
-
-  @Override
-  public int getSendBufferSize() {
-    return sendbuffer.getSize();
-  }
-
-  @Override
-  public int getNumManagementThreads() {
-    return threads;
-  }
-
-  @Override
-  public int getNumSubscriptionExecutionThreads() {
-    return subscription.threads;
-  }
-
-  @Override
-  public int getDefaultTopicSubscriptionBufferSize() {
-    return subscription.buffersize;
-  }
-
-  @Override
-  public int getDefaultJobSubscriptionBufferSize() {
-    return worker.buffersize;
-  }
-
-  @Override
-  public Duration getTcpChannelKeepAlivePeriod() {
-    return channel.keepalive;
+  public int getDefaultJobWorkerBufferSize() {
+    return worker.bufferSize;
   }
 
   @Override
   public String getDefaultJobWorkerName() {
-    return job.worker;
+    return worker.name;
   }
 
   @Override
   public Duration getDefaultJobTimeout() {
-    return job.timeout;
+    return worker.timeout;
+  }
+
+  @Override
+  public Duration getDefaultJobPollInterval() {
+    return worker.getPollInterval();
+  }
+
+  @Override
+  public Duration getDefaultMessageTimeToLive() {
+    return message.getTimeToLive();
   }
 }

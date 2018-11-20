@@ -21,7 +21,6 @@ public class ReadZeebeDeploymentValue
         annotation ->
           ZeebeDeploymentValue.builder()
             .beanInfo(classInfo)
-            .topicName(resolver.resolve(annotation.topicName()))
             .classPathResource(resolver.resolve(annotation.classPathResource()))
             .build());
   }

@@ -8,8 +8,6 @@ import lombok.Value;
 @Builder
 public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
 
-  private String topicName;
-
   private String classPathResource;
 
   private ClassInfo beanInfo;

@@ -60,6 +60,13 @@
       <groupId>com.tngtech.jgiven</groupId>
       <artifactId>jgiven-junit</artifactId>
       <version>${jgiven.version}</version>
+      <exclusions>
+        <!-- exclude guava as a different version is provided by grpc from zeebe-gateway -->
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.tngtech.jgiven</groupId>

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class ClassInfoTest {
 
-  @ZeebeDeployment(topicName = "t", classPathResource = "/1.bpmn")
+  @ZeebeDeployment(classPathResource = "/1.bpmn")
   public static class WithDeploymentAnnotation {
 
   }
@@ -18,9 +18,9 @@ public class ClassInfoTest {
 
   }
 
-  public static class WithTaskListener {
+  public static class WithZeebeWorker {
 
-    @ZeebeWorker(topic = "foo", taskType = "bar", lockTime = 100L, lockOwner = "kermit")
+    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit")
     public void handle() {
     }
   }
@@ -50,12 +50,12 @@ public class ClassInfoTest {
   }
 
   @Test
-  public void hasTaskListenerMethod() throws Exception {
-    assertThat(beanInfo(new WithTaskListener()).hasMethodAnnotation(ZeebeWorker.class)).isTrue();
+  public void hasZeebeWorkerMethod() throws Exception {
+    assertThat(beanInfo(new WithZeebeWorker()).hasMethodAnnotation(ZeebeWorker.class)).isTrue();
   }
 
   @Test
-  public void hasNotTaskListenerMethod() throws Exception {
+  public void hasNotZeebeWorkerMethod() throws Exception {
     assertThat(beanInfo("normal String").hasMethodAnnotation(ZeebeWorker.class)).isFalse();
   }
 

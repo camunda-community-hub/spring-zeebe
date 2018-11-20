@@ -11,13 +11,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ZeebeWorker {
 
-  String topic() default "${zeebe.topic}";
+  String type();
 
-  String taskType();
+  String name() default "${zeebe.worker.name}";
 
-  String lockOwner() default "${zeebe.lockOwner}";
+  long timeout() default 10000L;
 
-  long lockTime() default 10000L;
-
-  int taskFetchSize() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
+  int bufferSize() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
 }
