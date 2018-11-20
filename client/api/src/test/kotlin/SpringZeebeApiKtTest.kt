@@ -12,8 +12,6 @@ class SpringZeebeApiKtTest {
 
   @Test
   fun `deploy demo process`() {
-    zeebe.client.apply(CreateDeployment(zeebe.defaultTopic, "demoProcess.bpmn")).join()
-
-    zeebe.client.newManagementSubscription()
+    zeebe.client.apply(CreateDeployment("demoProcess.bpmn")).join()
   }
 }

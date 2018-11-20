@@ -2,17 +2,15 @@ package io.zeebe.spring.api.command
 
 import io.zeebe.client.api.subscription.JobHandler
 
-sealed class Command(open val topic: String)
+sealed class Command()
 
 data class CreateDeployment(
-  override val topic: String,
   val classpathResource: String
-) : Command(topic)
+) : Command()
 
 
 data class CreateJobWorker(
-  override val topic: String,
   val jobType: String,
   val handler: JobHandler
-) : Command(topic)
+) : Command()
 

@@ -3,7 +3,6 @@ package io.zeebe.spring.client.config.processor;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.subscription.JobWorker;
 import io.zeebe.spring.api.SpringZeebeApiKt;
 import io.zeebe.spring.api.command.CreateJobWorker;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
@@ -46,14 +45,13 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     return client ->
       annotatedMethods.forEach(
         m -> {
-          final JobWorker jobWorker = SpringZeebeApiKt.apply(client,
+          SpringZeebeApiKt.apply(client,
             new CreateJobWorker(
-              m.getTopicName(),
-              m.getJobType(),
+              m.getType(),
               (jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
           );
 
-          log.info("register taskHandler: {}", m);
+          log.info("register job worker: {}", m);
         });
   }
 }

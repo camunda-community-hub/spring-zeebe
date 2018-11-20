@@ -11,14 +11,12 @@ public class ReadTomlFileTest {
 
   private final ReadTomlFile readTomlFile = new ReadTomlFile();
 
-  private Environment environment;
-
   @Test
   public void use_default_brokerCfg_when_toml_file_is_not_given() {
     final BrokerCfg brokerCfg = readTomlFile.apply(mock(Environment.class));
 
     assertThat(brokerCfg).isNotNull();
     assertThat(brokerCfg.getNetwork().getClient().getPort())
-      .isEqualTo(51015);
+      .isEqualTo(26501);
   }
 }

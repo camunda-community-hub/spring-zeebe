@@ -32,13 +32,13 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
 
     return client -> {
       final DeploymentEvent deploymentResult = SpringZeebeApiKt
-        .apply(client, new CreateDeployment(value.getTopicName(), value.getClassPathResource()))
+        .apply(client, new CreateDeployment(value.getClassPathResource()))
         .join();
 
       log.info(
         "Deployed: {}",
         deploymentResult
-          .getDeployedWorkflows()
+          .getWorkflows()
           .stream()
           .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion()))
           .collect(Collectors.joining(",")));

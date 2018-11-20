@@ -1,7 +1,7 @@
 package io.zeebe.spring.broker.fn;
 
 import io.zeebe.broker.system.configuration.BrokerCfg;
-import io.zeebe.broker.system.configuration.TomlConfigurationReader;
+import io.zeebe.util.TomlConfigurationReader;
 import java.io.File;
 import java.util.Optional;
 import java.util.function.Function;
@@ -40,7 +40,7 @@ public class ReadTomlFile implements Function<Environment, BrokerCfg> {
 
     if (tomlFile.isPresent()) {
       log.info("read tomlFile config: {}", tomlFile.get());
-      return reader.read(tomlFile.get().getAbsolutePath());
+      return reader.read(tomlFile.get().getAbsolutePath(), BrokerCfg.class);
     } else {
       log.info("no toml file found, using default");
       return new BrokerCfg();

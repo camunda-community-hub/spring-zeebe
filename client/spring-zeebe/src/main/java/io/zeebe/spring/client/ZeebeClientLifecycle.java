@@ -2,12 +2,9 @@ package io.zeebe.spring.client;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.ZeebeClientConfiguration;
-import io.zeebe.client.api.clients.TopicClient;
-import io.zeebe.client.api.commands.CreateTopicCommandStep1;
-import io.zeebe.client.api.commands.TopicsRequestStep1;
+import io.zeebe.client.api.clients.JobClient;
+import io.zeebe.client.api.clients.WorkflowClient;
 import io.zeebe.client.api.commands.TopologyRequestStep1;
-import io.zeebe.client.api.record.ZeebeObjectMapper;
-import io.zeebe.client.api.subscription.ManagementSubscriptionBuilderStep1;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
 import io.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
@@ -56,28 +53,13 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientI
   }
 
   @Override
-  public TopicClient topicClient(final String topicName) {
-    return get().topicClient(topicName);
+  public WorkflowClient workflowClient() {
+    return get().workflowClient();
   }
 
   @Override
-  public TopicClient topicClient() {
-    return get().topicClient();
-  }
-
-  @Override
-  public ZeebeObjectMapper objectMapper() {
-    return get().objectMapper();
-  }
-
-  @Override
-  public CreateTopicCommandStep1 newCreateTopicCommand() {
-    return get().newCreateTopicCommand();
-  }
-
-  @Override
-  public TopicsRequestStep1 newTopicsRequest() {
-    return get().newTopicsRequest();
+  public JobClient jobClient() {
+    return get().jobClient();
   }
 
   @Override
@@ -85,8 +67,4 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientI
     return get().newTopologyRequest();
   }
 
-  @Override
-  public ManagementSubscriptionBuilderStep1 newManagementSubscription() {
-    return get().newManagementSubscription();
-  }
 }

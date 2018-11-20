@@ -8,15 +8,13 @@ import lombok.Value;
 @Builder
 public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
-  private String topicName;
+  private String type;
 
-  private String jobType;
+  private String name;
 
-  private String lockOwner;
+  private long timeout;
 
-  private long lockTime;
-
-  private int jobFetchSize;
+  private int bufferSize;
 
   private MethodInfo beanInfo;
 }
