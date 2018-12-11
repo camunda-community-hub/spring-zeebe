@@ -16,6 +16,5 @@
   <modules>
     <module>spring-zeebe</module>
     <module>spring-zeebe-starter</module>
-    <module>api</module>
   </modules>
 </project>

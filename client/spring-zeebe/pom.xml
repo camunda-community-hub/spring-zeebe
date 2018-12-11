@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.zeebe.spring</groupId>
-      <artifactId>spring-zeebe-api</artifactId>
+      <groupId>io.zeebe</groupId>
+      <artifactId>zeebe-client-java</artifactId>
     </dependency>
 
     <dependency>

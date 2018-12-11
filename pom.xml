@@ -82,11 +82,6 @@
       <!-- CLIENT -->
       <dependency>
         <groupId>io.zeebe.spring</groupId>
-        <artifactId>spring-zeebe-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zeebe.spring</groupId>
         <artifactId>spring-zeebe</artifactId>
         <version>${project.version}</version>
       </dependency>
