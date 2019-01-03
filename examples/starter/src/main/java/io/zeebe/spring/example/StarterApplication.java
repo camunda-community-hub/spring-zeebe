@@ -34,7 +34,6 @@ public class StarterApplication {
 
     final WorkflowInstanceEvent event =
       client
-        .workflowClient()
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
         .latestVersion()
