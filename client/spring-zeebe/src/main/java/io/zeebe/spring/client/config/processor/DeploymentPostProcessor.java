@@ -29,7 +29,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
     log.info("deployment: {}", value);
 
     return client -> {
-      final DeploymentEvent deploymentResult = client.workflowClient()
+      final DeploymentEvent deploymentResult = client
         .newDeployCommand()
         .addResourceFromClasspath(value.getClassPathResource())
         .send()

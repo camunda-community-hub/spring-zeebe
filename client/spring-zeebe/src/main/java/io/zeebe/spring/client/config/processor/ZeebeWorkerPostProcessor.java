@@ -43,7 +43,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     return client ->
       annotatedMethods.forEach(
         m -> {
-          client.jobClient()
+          client
             .newWorker()
             .jobType(m.getType())
             .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))

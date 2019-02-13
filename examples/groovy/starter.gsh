@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.3.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.4.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
@@ -32,7 +32,6 @@ class Application {
 
     final WorkflowInstanceEvent event =
       client
-        .workflowClient()
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
         .latestVersion()
