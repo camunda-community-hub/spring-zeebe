@@ -23,8 +23,9 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
+
     <zeebe.version>0.17.0</zeebe.version>
-    <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
+    <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
 
     <!-- release parent settings for distribution management -->
     <nexus.snapshot.repository>
