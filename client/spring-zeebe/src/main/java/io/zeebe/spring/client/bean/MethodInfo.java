@@ -3,10 +3,10 @@ package io.zeebe.spring.client.bean;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import lombok.Builder;
-import lombok.SneakyThrows;
 import lombok.Value;
 
 @Value
@@ -26,9 +26,20 @@ public class MethodInfo implements BeanInfo {
     return classInfo.getBeanName();
   }
 
-  @SneakyThrows
   public Object invoke(final Object... args) {
-    return method.invoke(getBean(), args);
+    try {
+      return method.invoke(getBean(), args);
+    } catch (InvocationTargetException e) {
+      final Throwable targetException = e.getTargetException();
+      if (targetException instanceof RuntimeException) {
+        throw (RuntimeException) targetException;
+      }
+      else {
+        throw new RuntimeException("Failed to invoke method: " + method.getName(), targetException);
+      }
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("Failed to invoke method: " + method.getName(), e);
+    }
   }
 
   public <T extends Annotation> Optional<T> getAnnotation(final Class<T> type) {
