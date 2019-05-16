@@ -37,7 +37,7 @@ public class StarterApplication {
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
         .latestVersion()
-        .payload("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
+        .variables("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
         .send()
         .join();
 
