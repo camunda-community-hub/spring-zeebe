@@ -48,7 +48,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
             .jobType(m.getType())
             .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
             .name(m.getName())
-            .bufferSize(m.getBufferSize())
+            .maxJobsActive(m.getMaxJobsActive())
             .timeout(m.getTimeout())
             .open();
 

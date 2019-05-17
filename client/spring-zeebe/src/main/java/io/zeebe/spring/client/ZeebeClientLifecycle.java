@@ -10,8 +10,8 @@ import io.zeebe.client.api.commands.DeployWorkflowCommandStep1;
 import io.zeebe.client.api.commands.FailJobCommandStep1;
 import io.zeebe.client.api.commands.PublishMessageCommandStep1;
 import io.zeebe.client.api.commands.ResolveIncidentCommandStep1;
+import io.zeebe.client.api.commands.SetVariablesCommandStep1;
 import io.zeebe.client.api.commands.TopologyRequestStep1;
-import io.zeebe.client.api.commands.UpdatePayloadWorkflowInstanceCommandStep1;
 import io.zeebe.client.api.commands.UpdateRetriesJobCommandStep1;
 import io.zeebe.client.api.commands.WorkflowRequestStep1;
 import io.zeebe.client.api.commands.WorkflowResourceRequestStep1;
@@ -84,9 +84,8 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientI
   }
 
   @Override
-  public UpdatePayloadWorkflowInstanceCommandStep1 newUpdatePayloadCommand(
-    long elementInstanceKey) {
-    return get().newUpdatePayloadCommand(elementInstanceKey);
+  public SetVariablesCommandStep1 newSetVariablesCommand(long elementInstanceKey) {
+    return get().newSetVariablesCommand(elementInstanceKey);
   }
 
   @Override

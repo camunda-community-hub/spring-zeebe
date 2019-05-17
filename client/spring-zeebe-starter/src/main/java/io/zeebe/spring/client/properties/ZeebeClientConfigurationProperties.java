@@ -30,7 +30,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public static class Worker {
     private String name = DEFAULT.getDefaultJobWorkerName();
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
-    private Integer bufferSize = DEFAULT.getDefaultJobWorkerBufferSize();
+    private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
     private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
   }
@@ -51,8 +51,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   }
 
   @Override
-  public int getDefaultJobWorkerBufferSize() {
-    return worker.bufferSize;
+  public int getDefaultJobWorkerMaxJobsActive() {
+    return worker.maxJobsActive;
   }
 
   @Override

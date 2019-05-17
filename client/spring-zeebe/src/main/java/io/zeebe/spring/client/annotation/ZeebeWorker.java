@@ -17,5 +17,5 @@ public @interface ZeebeWorker {
 
   long timeout() default 10000L;
 
-  int bufferSize() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
+  int maxJobsActive() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
 }

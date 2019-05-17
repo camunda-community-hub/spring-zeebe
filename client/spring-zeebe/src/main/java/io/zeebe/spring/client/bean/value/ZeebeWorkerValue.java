@@ -14,7 +14,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private long timeout;
 
-  private int bufferSize;
+  private int maxJobsActive;
 
   private MethodInfo beanInfo;
 }

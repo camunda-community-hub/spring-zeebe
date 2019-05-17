@@ -19,18 +19,18 @@ public class WorkerApplication {
 
   private static void logJob(final ActivatedJob job) {
     log.info(
-      "complete job\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[payload: {}]",
+      "complete job\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
       job.getType(),
       job.getKey(),
       job.getDeadline().toString(),
       job.getHeaders(),
-      job.getPayload());
+      job.getVariables());
   }
 
   @ZeebeWorker(type = "foo")
   public void handleFooJob(final JobClient client, final ActivatedJob job) {
     logJob(job);
-    client.newCompleteCommand(job.getKey()).payload("{\"foo\": 1}").send().join();
+    client.newCompleteCommand(job.getKey()).variables("{\"foo\": 1}").send().join();
   }
 
   @ZeebeWorker(type = "bar")
