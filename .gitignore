@@ -21,3 +21,12 @@ buildNumber.properties
 
 # osx ignores
 .DS_Store
+vscode_workspace.code-workspace
+
+#VSCODE: subprojects settings directory
+**/.settings
+#VSCODE: files
+*.project
+*.classpath
+*.factorypath
+.vscode/launch.json
