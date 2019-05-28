@@ -54,4 +54,9 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   public void hasWorkerThreads() throws Exception {
     assertThat(properties.getWorker().getThreads()).isEqualTo(1);
   }
+
+  @Test
+  public void hasMessageTimeToLeave() throws Exception {
+    assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
+  }
 }

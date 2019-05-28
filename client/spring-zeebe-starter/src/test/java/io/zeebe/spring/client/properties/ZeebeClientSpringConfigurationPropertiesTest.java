@@ -20,7 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
     "zeebe.client.worker.timeout=99s",
     "zeebe.client.worker.maxJobsActive=99",
     "zeebe.client.worker.pollInterval=99s",
-    "zeebe.client.worker.threads=99"
+    "zeebe.client.worker.threads=99",
+    "zeebe.client.message.timeToLive=99s"
   }
 )
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
@@ -64,5 +65,10 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasWorkerThreads() throws Exception {
     assertThat(properties.getWorker().getThreads()).isEqualTo(99);
+  }
+
+  @Test
+  public void hasMessageTimeToLeave() throws Exception {
+    assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(99));
   }
 }
