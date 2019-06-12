@@ -13,8 +13,6 @@ import io.zeebe.client.api.commands.ResolveIncidentCommandStep1;
 import io.zeebe.client.api.commands.SetVariablesCommandStep1;
 import io.zeebe.client.api.commands.TopologyRequestStep1;
 import io.zeebe.client.api.commands.UpdateRetriesJobCommandStep1;
-import io.zeebe.client.api.commands.WorkflowRequestStep1;
-import io.zeebe.client.api.commands.WorkflowResourceRequestStep1;
 import io.zeebe.client.api.subscription.JobWorkerBuilderStep1;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
@@ -91,16 +89,6 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientI
   @Override
   public PublishMessageCommandStep1 newPublishMessageCommand() {
     return get().newPublishMessageCommand();
-  }
-
-  @Override
-  public WorkflowResourceRequestStep1 newResourceRequest() {
-    return get().newResourceRequest();
-  }
-
-  @Override
-  public WorkflowRequestStep1 newWorkflowRequest() {
-    return get().newWorkflowRequest();
   }
 
   @Override
