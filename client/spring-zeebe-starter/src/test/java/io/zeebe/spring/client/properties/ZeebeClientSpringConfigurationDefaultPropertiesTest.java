@@ -9,23 +9,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource(
-  properties = {
-    "zeebe.client.broker.contactPoint=localhost12345",
-    "zeebe.client.worker.name=testName",
-    "zeebe.client.worker.timeout=99s",
-    "zeebe.client.worker.maxJobsActive=99",
-    "zeebe.client.worker.pollInterval=99s",
-    "zeebe.client.worker.threads=99",
-    "zeebe.client.message.timeToLive=99s"
-  }
-)
-@ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
-public class ZeebeClientSpringConfigurationPropertiesTest {
+@ContextConfiguration(classes = ZeebeClientSpringConfigurationDefaultPropertiesTest.TestConfig.class)
+public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
 
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
@@ -37,38 +25,38 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
-    assertThat(properties.getBrokerContactPoint()).isEqualTo("localhost12345");
+    assertThat(properties.getBrokerContactPoint()).isEqualTo("0.0.0.0:26500");
   }
 
   @Test
   public void hasWorkerName() throws Exception {
-    assertThat(properties.getWorker().getName()).isEqualTo("testName");
+    assertThat(properties.getWorker().getName()).isEqualTo("default");
 
   }
 
   @Test
   public void hasWorkerTimeout() throws Exception {
-    assertThat(properties.getWorker().getTimeout()).isEqualTo(Duration.ofSeconds(99));
+    assertThat(properties.getWorker().getTimeout()).isEqualTo(Duration.ofSeconds(300));
   }
 
   @Test
   public void hasWorkerMaxJobsActive() throws Exception {
-    assertThat(properties.getWorker().getMaxJobsActive()).isEqualTo(99);
+    assertThat(properties.getWorker().getMaxJobsActive()).isEqualTo(32);
 
   }
 
   @Test
   public void hasWorkerPollInterval() throws Exception {
-    assertThat(properties.getWorker().getPollInterval()).isEqualTo(Duration.ofSeconds(99));
+    assertThat(properties.getWorker().getPollInterval()).isEqualTo(Duration.ofNanos(100000000));
   }
 
   @Test
   public void hasWorkerThreads() throws Exception {
-    assertThat(properties.getWorker().getThreads()).isEqualTo(99);
+    assertThat(properties.getWorker().getThreads()).isEqualTo(1);
   }
 
   @Test
   public void hasMessageTimeToLeave() throws Exception {
-    assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(99));
+    assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
   }
 }
