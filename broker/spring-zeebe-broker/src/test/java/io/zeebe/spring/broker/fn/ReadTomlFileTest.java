@@ -16,7 +16,7 @@ public class ReadTomlFileTest {
     final BrokerCfg brokerCfg = readTomlFile.apply(mock(Environment.class));
 
     assertThat(brokerCfg).isNotNull();
-    assertThat(brokerCfg.getNetwork().getClient().getPort())
+    assertThat(brokerCfg.getNetwork().getCommandApi().getPort())
       .isEqualTo(26501);
   }
 }
