@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.5.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.6.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
