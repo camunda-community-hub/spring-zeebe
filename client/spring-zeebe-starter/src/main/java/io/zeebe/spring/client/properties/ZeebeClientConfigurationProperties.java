@@ -38,6 +38,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Data
   public static class Message {
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
+    private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
   }
 
   @Override
@@ -73,5 +74,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public Duration getDefaultMessageTimeToLive() {
     return message.getTimeToLive();
+  }
+
+  @Override
+  public Duration getDefaultRequestTimeout() {
+    return message.getRequestTimeout();
   }
 }

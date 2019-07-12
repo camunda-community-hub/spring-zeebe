@@ -21,7 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
     "zeebe.client.worker.maxJobsActive=99",
     "zeebe.client.worker.pollInterval=99s",
     "zeebe.client.worker.threads=99",
-    "zeebe.client.message.timeToLive=99s"
+    "zeebe.client.message.timeToLive=99s",
+    "zeebe.client.message.requestTimeout=99s"
   }
 )
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
@@ -70,5 +71,10 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasMessageTimeToLeave() throws Exception {
     assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(99));
+  }
+
+  @Test
+  public void hasMessageRequestTimeout() throws Exception {
+    assertThat(properties.getMessage().getRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
   }
 }

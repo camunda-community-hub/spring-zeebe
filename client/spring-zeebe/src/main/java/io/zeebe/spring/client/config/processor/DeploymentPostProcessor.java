@@ -1,7 +1,7 @@
 package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.events.DeploymentEvent;
+import io.zeebe.client.api.response.DeploymentEvent;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;

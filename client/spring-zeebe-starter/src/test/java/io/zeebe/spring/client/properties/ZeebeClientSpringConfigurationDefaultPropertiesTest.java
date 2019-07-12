@@ -59,4 +59,9 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   public void hasMessageTimeToLeave() throws Exception {
     assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
   }
+
+  @Test
+  public void hasMessageRequestTimeout() throws Exception {
+    assertThat(properties.getMessage().getRequestTimeout()).isEqualTo(Duration.ofSeconds(20));
+  }
 }
