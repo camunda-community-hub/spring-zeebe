@@ -16,13 +16,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @TestPropertySource(
   properties = {
     "zeebe.client.broker.contactPoint=localhost12345",
+    "zeebe.client.broker.requestTimeout=99s",
     "zeebe.client.worker.name=testName",
     "zeebe.client.worker.timeout=99s",
     "zeebe.client.worker.maxJobsActive=99",
     "zeebe.client.worker.pollInterval=99s",
     "zeebe.client.worker.threads=99",
     "zeebe.client.message.timeToLive=99s",
-    "zeebe.client.message.requestTimeout=99s"
+    
   }
 )
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
@@ -39,6 +40,11 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasBrokerContactPoint() throws Exception {
     assertThat(properties.getBrokerContactPoint()).isEqualTo("localhost12345");
+  }
+
+  @Test
+  public void hasBrokerRequestTimeout() throws Exception {
+    assertThat(properties.getBroker().getRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
   }
 
   @Test
@@ -73,8 +79,4 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
     assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(99));
   }
 
-  @Test
-  public void hasMessageRequestTimeout() throws Exception {
-    assertThat(properties.getMessage().getRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
-  }
 }
