@@ -1,6 +1,6 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.api.events.WorkflowInstanceEvent;
+import io.zeebe.client.api.response.WorkflowInstanceEvent;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;

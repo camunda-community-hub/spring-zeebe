@@ -29,6 +29,11 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   }
 
   @Test
+  public void hasBrokerRequestTimeout() throws Exception {
+    assertThat(properties.getBroker().getRequestTimeout()).isEqualTo(Duration.ofSeconds(20));
+  }
+
+  @Test
   public void hasWorkerName() throws Exception {
     assertThat(properties.getWorker().getName()).isEqualTo("default");
 
@@ -59,4 +64,5 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   public void hasMessageTimeToLeave() throws Exception {
     assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
   }
+
 }

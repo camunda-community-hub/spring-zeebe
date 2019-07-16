@@ -24,6 +24,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public static class Broker {
 
     private String contactPoint = DEFAULT.getBrokerContactPoint();
+    private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
   }
 
   @Data
@@ -42,27 +43,32 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getBrokerContactPoint() {
-    return broker.contactPoint;
+    return broker.getContactPoint();
+  }
+
+  @Override
+  public Duration getDefaultRequestTimeout() {
+    return broker.getRequestTimeout();
   }
 
   @Override
   public int getNumJobWorkerExecutionThreads() {
-    return worker.threads;
+    return worker.getThreads();
   }
 
   @Override
   public int getDefaultJobWorkerMaxJobsActive() {
-    return worker.maxJobsActive;
+    return worker.getMaxJobsActive();
   }
 
   @Override
   public String getDefaultJobWorkerName() {
-    return worker.name;
+    return worker.getName();
   }
 
   @Override
   public Duration getDefaultJobTimeout() {
-    return worker.timeout;
+    return worker.getTimeout();
   }
 
   @Override
@@ -74,4 +80,5 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public Duration getDefaultMessageTimeToLive() {
     return message.getTimeToLive();
   }
+  
 }

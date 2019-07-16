@@ -1,6 +1,6 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.api.clients.JobClient;
+import io.zeebe.client.api.worker.JobClient;
 import io.zeebe.client.api.response.ActivatedJob;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
@@ -22,8 +22,8 @@ public class WorkerApplication {
       "complete job\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
       job.getType(),
       job.getKey(),
-      job.getDeadline().toString(),
-      job.getHeaders(),
+      Long.toString(job.getDeadline()),
+      job.getCustomHeaders().toString(),
       job.getVariables());
   }
 
