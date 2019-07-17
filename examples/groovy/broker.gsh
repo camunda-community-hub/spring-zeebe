@@ -6,7 +6,7 @@ import io.zeebe.spring.broker.EnableZeebeBroker
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@Grab("io.zeebe.spring:spring-zeebe-broker-starter:0.6.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-broker-starter:0.7.0-SNAPSHOT")
 @SpringBootApplication
 @EnableZeebeBroker
 class Application {

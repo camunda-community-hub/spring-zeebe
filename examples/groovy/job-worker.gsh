@@ -10,7 +10,7 @@ import java.time.Instant;
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.6.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-starter:0.7.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
