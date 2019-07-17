@@ -4,6 +4,7 @@ import io.zeebe.client.api.worker.JobClient;
 import io.zeebe.client.api.response.ActivatedJob;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
+import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,11 +20,13 @@ public class WorkerApplication {
 
   private static void logJob(final ActivatedJob job) {
     log.info(
-      "complete job\n>>> [type: {}, key: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
+      "complete job\n>>> [type: {}, key: {}, element: {}, workflow instance: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
       job.getType(),
       job.getKey(),
-      Long.toString(job.getDeadline()),
-      job.getCustomHeaders().toString(),
+      job.getElementId(),
+      job.getWorkflowInstanceKey(),
+      Instant.ofEpochMilli(job.getDeadline()),
+      job.getCustomHeaders(),
       job.getVariables());
   }
 
