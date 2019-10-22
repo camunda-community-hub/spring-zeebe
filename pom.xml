@@ -25,7 +25,7 @@
 
 
     <zeebe.version>0.21.1</zeebe.version>
-    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+    <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
 
     <!-- release parent settings for distribution management -->
     <nexus.snapshot.repository>
@@ -142,13 +142,6 @@
           <configuration>
             <release>${java.version}</release>
           </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.ow2.asm</groupId>
-              <artifactId>asm</artifactId>
-              <version>6.2</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <artifactId>kotlin-maven-plugin</artifactId>
@@ -199,13 +192,6 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>6.2</version>
-          </dependency>
-        </dependencies>
         <executions>
           <!-- Replacing default-compile as it is treated specially by maven -->
           <execution>
