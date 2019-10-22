@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Primary;
 public class ZeebeClientStarterAutoConfiguration {
 
   private final ZeebeClientConfigurationProperties configurationProperties;
-  
+
   @Bean
   @Primary
   public ZeebeClientBuilder builder() {
@@ -28,7 +28,8 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.defaultJobWorkerMaxJobsActive(configurationProperties.getDefaultJobWorkerMaxJobsActive());
     builder.defaultJobWorkerName(configurationProperties.getDefaultJobWorkerName());
     builder.defaultMessageTimeToLive(configurationProperties.getDefaultMessageTimeToLive());
-    
+    builder.numJobWorkerExecutionThreads(configurationProperties.getNumJobWorkerExecutionThreads());
+
     return builder;
   }
 }
