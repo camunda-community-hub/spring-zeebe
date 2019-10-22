@@ -3,9 +3,12 @@ package io.zeebe.spring.client.properties;
 import static io.zeebe.spring.client.config.ZeebeClientSpringConfiguration.DEFAULT;
 
 import java.time.Duration;
-import lombok.Data;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+
+import io.zeebe.client.CredentialsProvider;
+import lombok.Data;
 
 @Data
 @ConfigurationProperties(prefix = "zeebe.client")
@@ -20,25 +23,41 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @NestedConfigurationProperty
   private Message message = new Message();
 
+  @NestedConfigurationProperty
+  private Security security = new Security();
+
+  @NestedConfigurationProperty
+  private Job job = new Job();
+
+  private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
+
   @Data
   public static class Broker {
-
     private String contactPoint = DEFAULT.getBrokerContactPoint();
-    private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
   }
 
   @Data
   public static class Worker {
-    private String name = DEFAULT.getDefaultJobWorkerName();
-    private Duration timeout = DEFAULT.getDefaultJobTimeout();
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
-    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
+  }
+
+  @Data
+  public static class Job {
+    private String worker = DEFAULT.getDefaultJobWorkerName();
+    private Duration timeout = DEFAULT.getDefaultJobTimeout();
+    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
   }
 
   @Data
   public static class Message {
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
+  }
+
+  @Data
+  public static class Security{
+    private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
+    private String certPath = DEFAULT.getCaCertificatePath();
   }
 
   @Override
@@ -48,7 +67,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public Duration getDefaultRequestTimeout() {
-    return broker.getRequestTimeout();
+    return getRequestTimeout();
   }
 
   @Override
@@ -63,22 +82,37 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getDefaultJobWorkerName() {
-    return worker.getName();
+    return job.getWorker();
   }
 
   @Override
   public Duration getDefaultJobTimeout() {
-    return worker.getTimeout();
+    return job.getTimeout();
   }
 
   @Override
   public Duration getDefaultJobPollInterval() {
-    return worker.getPollInterval();
+    return job.getPollInterval();
   }
 
   @Override
   public Duration getDefaultMessageTimeToLive() {
     return message.getTimeToLive();
+  }
+
+  @Override
+  public boolean isPlaintextConnectionEnabled() {
+    return security.isPlaintext();
+  }
+
+  @Override
+  public String getCaCertificatePath() {
+    return security.getCertPath();
+  }
+
+  @Override
+  public CredentialsProvider getCredentialsProvider() {
+    return null;
   }
   
 }
