@@ -2,7 +2,7 @@ language: java
 sudo: false # faster builds
 
 jdk:
-- openjdk11
+- openjdk9
 
 install: true
 cache:
