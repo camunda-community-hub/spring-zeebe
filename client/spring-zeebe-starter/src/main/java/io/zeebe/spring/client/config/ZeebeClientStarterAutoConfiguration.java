@@ -1,14 +1,14 @@
 package io.zeebe.spring.client.config;
 
-import io.zeebe.client.ZeebeClientBuilder;
-import io.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import io.zeebe.client.ZeebeClientBuilder;
+import io.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
+import lombok.RequiredArgsConstructor;
 
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
@@ -29,6 +29,10 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.defaultJobWorkerName(configurationProperties.getDefaultJobWorkerName());
     builder.defaultMessageTimeToLive(configurationProperties.getDefaultMessageTimeToLive());
     builder.numJobWorkerExecutionThreads(configurationProperties.getNumJobWorkerExecutionThreads());
+    builder.defaultRequestTimeout(configurationProperties.getDefaultRequestTimeout());
+    builder.caCertificatePath(configurationProperties.getCaCertificatePath());
+    if (configurationProperties.isPlaintextConnectionEnabled())
+      builder.usePlaintext();
 
     return builder;
   }
