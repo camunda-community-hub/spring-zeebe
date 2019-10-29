@@ -16,14 +16,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 @TestPropertySource(
   properties = {
     "zeebe.client.broker.contactPoint=localhost12345",
-    "zeebe.client.broker.requestTimeout=99s",
-    "zeebe.client.worker.name=testName",
-    "zeebe.client.worker.timeout=99s",
+    "zeebe.client.requestTimeout=99s",
+    "zeebe.client.job.worker=testName",
+    "zeebe.client.job.timeout=99s",
+    "zeebe.client.job.pollInterval=99s",
     "zeebe.client.worker.maxJobsActive=99",
-    "zeebe.client.worker.pollInterval=99s",
     "zeebe.client.worker.threads=99",
     "zeebe.client.message.timeToLive=99s",
-    
+    "zeebe.client.security.certpath=aPath",
+    "zeebe.client.security.plaintext=true"
   }
 )
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
@@ -43,19 +44,18 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   }
 
   @Test
-  public void hasBrokerRequestTimeout() throws Exception {
-    assertThat(properties.getBroker().getRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
+  public void hasRequestTimeout() throws Exception {
+    assertThat(properties.getRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
   }
 
   @Test
   public void hasWorkerName() throws Exception {
-    assertThat(properties.getWorker().getName()).isEqualTo("testName");
-
+    assertThat(properties.getDefaultJobWorkerName()).isEqualTo("testName");
   }
 
   @Test
-  public void hasWorkerTimeout() throws Exception {
-    assertThat(properties.getWorker().getTimeout()).isEqualTo(Duration.ofSeconds(99));
+  public void hasJobTimeout() throws Exception {
+    assertThat(properties.getJob().getTimeout()).isEqualTo(Duration.ofSeconds(99));
   }
 
   @Test
@@ -65,8 +65,8 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   }
 
   @Test
-  public void hasWorkerPollInterval() throws Exception {
-    assertThat(properties.getWorker().getPollInterval()).isEqualTo(Duration.ofSeconds(99));
+  public void hasJobPollInterval() throws Exception {
+    assertThat(properties.getJob().getPollInterval()).isEqualTo(Duration.ofSeconds(99));
   }
 
   @Test
@@ -77,6 +77,16 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasMessageTimeToLeave() throws Exception {
     assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(99));
+  }
+
+  @Test
+  public void isSecurityPlainTextDisabled() throws Exception {
+    assertThat(properties.getSecurity().isPlaintext()).isTrue();
+  }
+
+  @Test
+  public void hasSecurityCertificatePath() throws Exception {
+    assertThat(properties.getSecurity().getCertPath()).isEqualTo("aPath");
   }
 
 }

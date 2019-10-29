@@ -29,40 +29,50 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   }
 
   @Test
-  public void hasBrokerRequestTimeout() throws Exception {
-    assertThat(properties.getBroker().getRequestTimeout()).isEqualTo(Duration.ofSeconds(20));
+  public void hasRequestTimeout() throws Exception {
+    assertThat(properties.getRequestTimeout()).isEqualTo(Duration.ofSeconds(20));
   }
 
   @Test
   public void hasWorkerName() throws Exception {
-    assertThat(properties.getWorker().getName()).isEqualTo("default");
+    assertThat(properties.getDefaultJobWorkerName()).isEqualTo("default");
 
   }
 
   @Test
-  public void hasWorkerTimeout() throws Exception {
-    assertThat(properties.getWorker().getTimeout()).isEqualTo(Duration.ofSeconds(300));
+  public void hasJobTimeout() throws Exception {
+    assertThat(properties.getDefaultJobTimeout()).isEqualTo(Duration.ofSeconds(300));
   }
 
   @Test
   public void hasWorkerMaxJobsActive() throws Exception {
-    assertThat(properties.getWorker().getMaxJobsActive()).isEqualTo(32);
+    assertThat(properties.getDefaultJobWorkerMaxJobsActive()).isEqualTo(32);
 
   }
 
   @Test
-  public void hasWorkerPollInterval() throws Exception {
-    assertThat(properties.getWorker().getPollInterval()).isEqualTo(Duration.ofNanos(100000000));
+  public void hasJobPollInterval() throws Exception {
+    assertThat(properties.getDefaultJobPollInterval()).isEqualTo(Duration.ofNanos(100000000));
   }
 
   @Test
   public void hasWorkerThreads() throws Exception {
-    assertThat(properties.getWorker().getThreads()).isEqualTo(1);
+    assertThat(properties.getNumJobWorkerExecutionThreads()).isEqualTo(1);
+  }
+
+  @Test 
+  public void hasMessageTimeToLeave() throws Exception {
+    assertThat(properties.getDefaultMessageTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
   }
 
   @Test
-  public void hasMessageTimeToLeave() throws Exception {
-    assertThat(properties.getMessage().getTimeToLive()).isEqualTo(Duration.ofSeconds(3600));
+  public void isSecurityPlainTextDisabled() throws Exception {
+    assertThat(properties.isPlaintextConnectionEnabled()).isFalse();
+  }
+
+  @Test
+  public void hasSecurityCertificatePath() throws Exception {
+    assertThat(properties.getCaCertificatePath()).isNull();
   }
 
 }
