@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class ZeebeClientStarterAutoConfiguration {
 
   private final ZeebeClientConfigurationProperties configurationProperties;
-  
+
   @Bean
   @Primary
   public ZeebeClientBuilder builder() {
@@ -28,11 +28,11 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.defaultJobWorkerMaxJobsActive(configurationProperties.getDefaultJobWorkerMaxJobsActive());
     builder.defaultJobWorkerName(configurationProperties.getDefaultJobWorkerName());
     builder.defaultMessageTimeToLive(configurationProperties.getDefaultMessageTimeToLive());
+    builder.numJobWorkerExecutionThreads(configurationProperties.getNumJobWorkerExecutionThreads());
     builder.defaultRequestTimeout(configurationProperties.getDefaultRequestTimeout());
     builder.caCertificatePath(configurationProperties.getCaCertificatePath());
     if (configurationProperties.isPlaintextConnectionEnabled())
       builder.usePlaintext();
-    
     return builder;
   }
 }
