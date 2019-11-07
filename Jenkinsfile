@@ -22,6 +22,10 @@ spec:
     - name: maven
       image: maven:3.6.0-jdk-11
       command: ["cat"]
+      env: 
+        name: JAVA_TOOL_OPTIONS
+          value: |
+            -XX:+UseContainerSupport
       tty: true
       resources:
         limits:
