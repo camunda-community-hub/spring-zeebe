@@ -23,7 +23,6 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-
     <zeebe.version>0.21.1</zeebe.version>
     <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
 
@@ -37,6 +36,10 @@
     <kotlin.version>1.2.60</kotlin.version>
     <kotlin-jackson.version>2.9.4.1</kotlin-jackson.version>
     <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+
+    <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
+    <!-- disable jdk8 javadoc checks on release build -->
+    <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
 
   <modules>
@@ -238,6 +241,7 @@
           </execution>
         </executions>
       </plugin>
+
       <!--<plugin>-->
       <!--<groupId>com.coveo</groupId>-->
       <!--<artifactId>fmt-maven-plugin</artifactId>-->
