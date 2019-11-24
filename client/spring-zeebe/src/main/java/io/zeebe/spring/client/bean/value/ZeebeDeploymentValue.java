@@ -4,11 +4,13 @@ import io.zeebe.spring.client.bean.ClassInfo;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 @Builder
 public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
 
-  private String classPathResource;
+  private List<String> classPathResources;
 
   private ClassInfo beanInfo;
 }

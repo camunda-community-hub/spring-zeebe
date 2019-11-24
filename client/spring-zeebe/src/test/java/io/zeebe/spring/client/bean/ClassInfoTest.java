@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class ClassInfoTest {
 
-  @ZeebeDeployment(classPathResource = "/1.bpmn")
+  @ZeebeDeployment(classPathResources = "/1.bpmn")
   public static class WithDeploymentAnnotation {
 
   }
