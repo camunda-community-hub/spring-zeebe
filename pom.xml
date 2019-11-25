@@ -270,7 +270,7 @@
         <tag>${env.RELEASE_VERSION}</tag>
         <releaseVersion>${env.RELEASE_VERSION}</releaseVersion>
         <developmentVersion>${env.DEVELOPMENT_VERSION}</developmentVersion>
-        <arguments>-s .ci/settings.xml -DskipTests</arguments>
+        <arguments>-DskipTests</arguments>
       </properties>
       <build>
         <pluginManagement>
