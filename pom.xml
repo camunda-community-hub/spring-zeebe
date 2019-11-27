@@ -46,7 +46,6 @@
     <module>test</module>
     <module>util</module>
 
-    <module>broker</module>
     <module>client</module>
 
     <module>examples</module>

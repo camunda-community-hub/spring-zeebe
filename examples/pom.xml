@@ -12,7 +12,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>broker</module>
     <module>starter</module>
     <module>worker</module>
   </modules>
