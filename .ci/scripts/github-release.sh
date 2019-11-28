@@ -23,7 +23,5 @@ function upload {
   popd
 }
 
-upload broker/spring-zeebe-broker/target/ spring-zeebe-broker-${RELEASE_VERSION}.jar
-upload broker/spring-zeebe-broker-starter/target/ spring-zeebe-broker-starter-${RELEASE_VERSION}.jar
 upload client/spring-zeebe/target/ spring-zeebe-${RELEASE_VERSION}.jar
 upload client/spring-zeebe-starter/target/ spring-zeebe-starter-${RELEASE_VERSION}.jar
