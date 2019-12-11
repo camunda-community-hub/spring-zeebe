@@ -58,7 +58,7 @@ For a full set of configuration options please see [ZeebeClientConfigurationProp
 
 ## Configuring Camunda Cloud Connection
 
-A connection to the Camunda Cloud is supported out of the box using environment variables.
+Connections to the Camunda Cloud are supported out-of-the-box using environment variables.
 Have a look into the [Environment](https://docs.zeebe.io/operations/authorization.html#environment-variables) section in the Zeebe Authorization documentation. 
 
 ## Add Spring Boot Starter to Your Project
