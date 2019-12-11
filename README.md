@@ -56,6 +56,11 @@ zeebe.client.security.plaintext=true
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](blob/master/client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
 
+## Configuring Camunda Cloud Connection
+
+A connection to the Camunda Cloud is supported out of the box using environment variables.
+Have a look into the [Environment](https://docs.zeebe.io/operations/authorization.html) section in the Zeebe Authorization documentation. 
+
 ## Add Spring Boot Starter to Your Project
 
 Just add the following Maven dependency to your Spring Boot Starter project:
