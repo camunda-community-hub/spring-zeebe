@@ -19,7 +19,6 @@ Just add the `@EnableZeebeClient` annotation to your Spring Boot Application:
 ```
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(classPathResource = "demoProcess.bpmn")
 public class MySpringBootApplication {
 ```
 
