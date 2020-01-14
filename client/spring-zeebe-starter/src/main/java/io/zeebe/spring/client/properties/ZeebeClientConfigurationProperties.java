@@ -3,10 +3,13 @@ package io.zeebe.spring.client.properties;
 import static io.zeebe.spring.client.config.ZeebeClientSpringConfiguration.DEFAULT;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import io.grpc.ClientInterceptor;
 import io.zeebe.client.CredentialsProvider;
 import lombok.Data;
 
@@ -28,23 +31,31 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @NestedConfigurationProperty
   private Job job = new Job();
+  
+  /**
+   * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
+   * interface upstream
+   */
+  private ArrayList<ClientInterceptor> interceptors = new ArrayList<>();
 
   private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
 
   @Data
   public static class Broker {
     private String contactPoint = DEFAULT.getBrokerContactPoint();
+    private Duration keepAlive = DEFAULT.getKeepAlive();
   }
 
   @Data
   public static class Worker {
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
+    private String defaultName = DEFAULT.getDefaultJobWorkerName();
+    private String defaultType = null;
   }
 
   @Data
   public static class Job {
-    private String worker = DEFAULT.getDefaultJobWorkerName();
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
     private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
   }
@@ -82,7 +93,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getDefaultJobWorkerName() {
-    return job.getWorker();
+    return worker.getDefaultName();
+  }
+
+  public String getDefaultJobWorkerType() {
+    return worker.getDefaultType();
   }
 
   @Override
@@ -113,6 +128,16 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public CredentialsProvider getCredentialsProvider() {
     return null;
+  }
+
+  @Override
+  public Duration getKeepAlive() {
+    return broker.getKeepAlive();
+  }
+
+  @Override
+  public List<ClientInterceptor> getInterceptors() {
+    return interceptors;
   }
   
 }

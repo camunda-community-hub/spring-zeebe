@@ -17,11 +17,12 @@ import org.springframework.test.context.junit4.SpringRunner;
   properties = {
     "zeebe.client.broker.contactPoint=localhost12345",
     "zeebe.client.requestTimeout=99s",
-    "zeebe.client.job.worker=testName",
     "zeebe.client.job.timeout=99s",
     "zeebe.client.job.pollInterval=99s",
     "zeebe.client.worker.maxJobsActive=99",
     "zeebe.client.worker.threads=99",
+    "zeebe.client.worker.defaultName=testName",
+    "zeebe.client.worker.defaultType=testType",
     "zeebe.client.message.timeToLive=99s",
     "zeebe.client.security.certpath=aPath",
     "zeebe.client.security.plaintext=true"
@@ -51,6 +52,11 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasWorkerName() throws Exception {
     assertThat(properties.getDefaultJobWorkerName()).isEqualTo("testName");
+  }
+
+  @Test
+  public void hasWorkerType() throws Exception {
+    assertThat(properties.getDefaultJobWorkerType()).isEqualTo("testType");
   }
 
   @Test

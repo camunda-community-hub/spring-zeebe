@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ZeebeWorker {
 
-  String type();
+  String type() default "${zeebe.worker.defaultType}";
 
-  String name() default "${zeebe.worker.name}";
+  String name() default "${zeebe.worker.defaultName}";
 
   long timeout() default 10000L;
 

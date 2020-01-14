@@ -23,7 +23,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>0.21.1</zeebe.version>
+    <zeebe.version>0.22.0</zeebe.version>
     <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
 
     <!-- release parent settings for distribution management -->
