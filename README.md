@@ -48,9 +48,15 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 ## Configuring Zeebe Connection
 
 ```
-zeebe.worker.name="foo-worker"
+zeebe.worker.defaultName="foo-worker"
 zeebe.client.broker.contactPoint=127.0.0.1:26500
 zeebe.client.security.plaintext=true
+```
+
+If you build a worker that only serves one thing, it might also be handy to define the worker job type
+
+```
+zeebe.worker.defaultType="foo"
 ```
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](blob/master/client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
