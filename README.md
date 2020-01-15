@@ -59,7 +59,7 @@ If you build a worker that only serves one thing, it might also be handy to defi
 zeebe.worker.defaultType=foo
 ```
 
-For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](blob/master/client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
+For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
 
 ## Add Spring Boot Starter to Your Project
 
