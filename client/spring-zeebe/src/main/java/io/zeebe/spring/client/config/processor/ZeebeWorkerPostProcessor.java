@@ -3,6 +3,7 @@ package io.zeebe.spring.client.config.processor;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 import io.zeebe.client.ZeebeClient;
+import io.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeWorkerValue;
@@ -15,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object,
- * String)} to add Handler subscriptions for {@link ZeebeWorker} method-annotations.
+ * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
+ * method-annotations.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -43,14 +44,21 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     return client ->
       annotatedMethods.forEach(
         m -> {
-          client
+          final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
             .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
-            .name(m.getName())
-            .maxJobsActive(m.getMaxJobsActive())
-            .timeout(m.getTimeout())
-            .open();
+            .name(m.getName());
+
+          // using defaults from config if negative
+          if (m.getMaxJobsActive() > 0) {
+            builder.maxJobsActive(m.getMaxJobsActive());
+          }
+          if (m.getTimeout() > 0) {
+            builder.timeout(m.getTimeout());
+          }
+
+          builder.open();
 
           log.info("register job worker: {}", m);
         });
