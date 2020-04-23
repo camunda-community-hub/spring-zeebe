@@ -21,6 +21,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   private Broker broker = new Broker();
 
   @NestedConfigurationProperty
+  private Cloud cloud = new Cloud();
+
+  @NestedConfigurationProperty
   private Worker worker = new Worker();
 
   @NestedConfigurationProperty
@@ -45,6 +48,28 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     private String contactPoint = DEFAULT.getBrokerContactPoint();
     private Duration keepAlive = DEFAULT.getKeepAlive();
   }
+  
+  @Data
+  public static class Cloud {
+    private String clusterId;
+    private String clientId;
+    private String clientSecret;
+    
+    private String baseUrl="zeebe.camunda.io";
+    private String authUrl="https://login.cloud.camunda.io/oauth/token";
+    private int port=443;
+    private String credentialsCachePath;
+
+    public String getAudience() {
+		return clusterId + "." + baseUrl;
+	}
+	public boolean isConfigured() {
+		return (clusterId!=null);
+	}
+	public String getBrokerContactPoint() {
+		return clusterId + "." + baseUrl + ":" + port;
+	}
+  }  
 
   @Data
   public static class Worker {
@@ -73,7 +98,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getBrokerContactPoint() {
-    return broker.getContactPoint();
+	if (cloud.isConfigured()) {
+		return cloud.getBrokerContactPoint();
+	} else {
+		return broker.getContactPoint();
+	}
   }
 
   @Override
@@ -127,9 +156,19 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
-    return null;
-  }
-
+      if (cloud.clientId != null && cloud.clientSecret != null) {
+//        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider with: {}", this);
+        return CredentialsProvider.newCredentialsProviderBuilder()
+          .clientId(cloud.clientId)
+          .clientSecret(cloud.clientSecret)
+          .audience(cloud.getAudience())
+          .authorizationServerUrl(cloud.authUrl)
+          .credentialsCachePath(cloud.credentialsCachePath)
+          .build();
+      }
+      return null;
+    }
+  
   @Override
   public Duration getKeepAlive() {
     return broker.getKeepAlive();

@@ -32,6 +32,7 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.defaultMessageTimeToLive(configurationProperties.getDefaultMessageTimeToLive());
     builder.numJobWorkerExecutionThreads(configurationProperties.getNumJobWorkerExecutionThreads());
     builder.defaultRequestTimeout(configurationProperties.getDefaultRequestTimeout());
+    builder.credentialsProvider(configurationProperties.getCredentialsProvider());
     builder.caCertificatePath(configurationProperties.getCaCertificatePath());
     if (configurationProperties.isPlaintextConnectionEnabled())
       builder.usePlaintext();

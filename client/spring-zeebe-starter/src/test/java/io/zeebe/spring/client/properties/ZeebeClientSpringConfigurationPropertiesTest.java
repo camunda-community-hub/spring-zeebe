@@ -95,4 +95,8 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
     assertThat(properties.getSecurity().getCertPath()).isEqualTo("aPath");
   }
 
+  @Test
+  public void getCredentialsProvider() throws Exception {
+    assertThat(properties.getCredentialsProvider()).isNull();
+  }
 }
