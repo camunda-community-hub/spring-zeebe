@@ -63,8 +63,24 @@ For a full set of configuration options please see [ZeebeClientConfigurationProp
 
 ## Configuring Camunda Cloud Connection
 
-Connections to the Camunda Cloud are supported out-of-the-box using environment variables.
-Have a look into the [Environment](https://docs.zeebe.io/operations/authorization.html#environment-variables) section in the Zeebe Authorization documentation. 
+Connections to the Camunda Cloud can be easily configured:
+
+```
+zeebe.client.cloud.clusterId=xxx
+zeebe.client.cloud.clientId=xxx
+zeebe.client.cloud.clientSecret=xxx
+```
+
+If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
+
+```
+zeebe.client.cloud.baseUrl=zeebe.camunda.io
+zeebe.client.cloud.port=443
+zeebe.client.cloud.authUrl=https://login.cloud.camunda.io/oauth/token
+```
+
+As an alternative you can use the [Zeebe Client environment variables](https://docs.zeebe.io/operations/authorization.html#environment-variables). 
+
 
 ## Add Spring Boot Starter to Your Project
 
