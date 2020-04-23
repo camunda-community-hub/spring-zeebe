@@ -3,6 +3,7 @@ package io.zeebe.spring.client.config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 import io.zeebe.client.ZeebeClientBuilder;
@@ -10,6 +11,7 @@ import io.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 
+@Import(ZeebeActuatorConfiguration.class)
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
 @RequiredArgsConstructor
