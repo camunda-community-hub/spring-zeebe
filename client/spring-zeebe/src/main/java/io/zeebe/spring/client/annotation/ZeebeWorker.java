@@ -15,7 +15,7 @@ public @interface ZeebeWorker {
 
   String name() default "${zeebe.worker.defaultName}";
 
-  long timeout() default 10000L;
+  long timeout() default -1L;
 
-  int maxJobsActive() default 2; // FIXME: DEFAULT_TASK_FETCH_SIZE
+  int maxJobsActive() default -1;
 }
