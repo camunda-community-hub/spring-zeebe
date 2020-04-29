@@ -6,8 +6,8 @@ pipeline {
 
   agent {
     kubernetes {
-      cloud 'zeebe-ci'
-      label "${utils.envPrefix()}ci-zeebe-build_${env.JOB_BASE_NAME.take(20)}-${env.BUILD_ID}"
+      cloud getZeebeK8sCloud()
+      label getZeebeK8sLabel()
       defaultContainer 'jnlp'
       yaml libraryResource("zeebe/podspecs/${utils.isProdJenkins() ? 'mavenAgent.yml' : 'mavenAgentStage.yml'}")
     }
