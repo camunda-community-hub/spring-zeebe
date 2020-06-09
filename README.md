@@ -33,6 +33,12 @@ Use the `@ZeebeDeployment` annotation:
 public class MySpringBootApplication {
 ```
 
+You can also deploy multiple files at once: 
+
+```
+@ZeebeDeployment(classPathResources ={"demoProcess.bpmn", "demoProcess2.bpmn"})
+```
+
 ## Implement Job Worker
 
 ```
