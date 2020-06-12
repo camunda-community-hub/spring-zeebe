@@ -16,5 +16,11 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private int maxJobsActive;
 
+  private long requestTimeout;
+
+  private long pollInterval;
+
+  private String[] fetchVariables;
+
   private MethodInfo beanInfo;
 }

@@ -25,6 +25,9 @@ public class ReadZeebeWorkerValue
             .name(resolver.resolve(annotation.name()))
             .timeout(annotation.timeout())
             .maxJobsActive(annotation.maxJobsActive())
+            .pollInterval(annotation.pollInterval())
+            .fetchVariables(annotation.fetchVariables())
+            .requestTimeout(annotation.requestTimeout())
             .build());
   }
 }

@@ -8,6 +8,8 @@ import io.zeebe.spring.client.annotation.ZeebeWorker;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -56,6 +58,15 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           }
           if (m.getTimeout() > 0) {
             builder.timeout(m.getTimeout());
+          }
+          if (m.getPollInterval() > 0) {
+            builder.pollInterval(Duration.ofMillis(m.getPollInterval()));
+          }
+          if (m.getRequestTimeout() > 0) {
+            builder.requestTimeout(Duration.ofSeconds(m.getRequestTimeout()));
+          }
+          if (m.getFetchVariables().length > 0) {
+            builder.fetchVariables(m.getFetchVariables());
           }
 
           builder.open();

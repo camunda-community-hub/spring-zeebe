@@ -18,4 +18,10 @@ public @interface ZeebeWorker {
   long timeout() default -1L;
 
   int maxJobsActive() default -1;
+
+  long requestTimeout() default -1L;
+
+  long pollInterval() default -1L;
+
+  String[] fetchVariables() default {};
 }
