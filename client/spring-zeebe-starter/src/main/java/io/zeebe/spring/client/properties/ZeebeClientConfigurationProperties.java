@@ -71,6 +71,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 	}
   }  
 
+
+  @Data
+  public static class OAuth {
+    private String clientId;
+    private String clientSecret;
+    private String authUrl="https://login.cloud.camunda.io/oauth/token";
+    private String credentialsCachePath;
+    private String audience;
+  }  
   @Data
   public static class Worker {
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
@@ -94,6 +103,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public static class Security{
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
     private String certPath = DEFAULT.getCaCertificatePath();
+    private OAuth oauth = new OAuth();
   }
 
   @Override
@@ -156,7 +166,16 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
-      if (cloud.clientId != null && cloud.clientSecret != null) {
+    if (security.oauth.clientId != null && security.oauth.clientSecret != null) {
+      return CredentialsProvider.newCredentialsProviderBuilder()
+        .clientId(security.oauth.clientId)
+        .clientSecret(security.oauth.clientSecret)
+        .audience(security.oauth.audience)
+        .authorizationServerUrl(security.oauth.authUrl)
+        .credentialsCachePath(security.oauth.credentialsCachePath)
+        .build();
+    }
+    if (cloud.clientId != null && cloud.clientSecret != null) {
 //        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider with: {}", this);
         return CredentialsProvider.newCredentialsProviderBuilder()
           .clientId(cloud.clientId)
@@ -165,9 +184,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
           .authorizationServerUrl(cloud.authUrl)
           .credentialsCachePath(cloud.credentialsCachePath)
           .build();
-      }
-      return null;
     }
+    return null;
+  }
   
   @Override
   public Duration getKeepAlive() {
