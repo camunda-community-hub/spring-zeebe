@@ -1,40 +1,15 @@
+#!/usr/bin/env groovy
+
+@Library(["camunda-ci", "zeebe-jenkins-shared-library"]) _
+
 pipeline {
 
   agent {
     kubernetes {
-      cloud 'zeebe-ci'
-      label "zeebe-ci-build_${env.JOB_BASE_NAME}-${env.BUILD_ID}"
+      cloud getZeebeK8sCloud()
+      label getZeebeK8sLabel()
       defaultContainer 'jnlp'
-      yaml '''\
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    agent: zeebe-ci-build
-spec:
-  nodeSelector:
-    cloud.google.com/gke-nodepool: slaves
-  tolerations:
-    - key: "slaves"
-      operator: "Exists"
-      effect: "NoSchedule"
-  containers:
-    - name: maven
-      image: maven:3.6.3-jdk-8
-      command: ["cat"]
-      env:
-        - name: JAVA_TOOL_OPTIONS
-          value: |
-            -XX:+UseContainerSupport
-      tty: true
-      resources:
-        limits:
-          cpu: 1
-          memory: 2Gi
-        requests:
-          cpu: 1
-          memory: 2Gi
-'''
+      yaml libraryResource("zeebe/podspecs/${utils.isProdJenkins() ? 'mavenAgent.yml' : 'mavenAgentStage.yml'}")
     }
   }
 
@@ -62,7 +37,7 @@ spec:
         container('maven') {
           configFileProvider([configFile(fileId: 'maven-nexus-settings-zeebe', variable: 'MAVEN_SETTINGS_XML')]) {
             sh 'mvn clean install -B -s $MAVEN_SETTINGS_XML -DskipTests'
-           }
+          }
         }
       }
     }
@@ -79,7 +54,7 @@ spec:
 
       post {
         always {
-            junit testResults: "**/*/TEST-*.xml", keepLongStdio: true
+          junit testResults: "**/*/TEST-*.xml", keepLongStdio: true
         }
       }
     }
@@ -127,14 +102,14 @@ spec:
   }
 
   post {
-      always {
-          // Retrigger the build if the node disconnected
-          script {
-              if (nodeDisconnected()) {
-                  build job: currentBuild.projectName, propagate: false, quietPeriod: 60, wait: false
-              }
-          }
+    always {
+      // Retrigger the build if the node disconnected
+      script {
+        if (nodeDisconnected()) {
+          build job: currentBuild.projectName, propagate: false, quietPeriod: 60, wait: false
+        }
       }
+    }
   }
 }
 
