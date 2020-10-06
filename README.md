@@ -22,6 +22,13 @@ Just add the `@EnableZeebeClient` annotation to your Spring Boot Application:
 public class MySpringBootApplication {
 ```
 
+Now you can inject the ZeebeClient and work with it, e.g. to create new workflow instances:
+
+```
+@Autowired
+private ZeebeClient client;
+```
+
 ## Deploy Workflow Models
 
 Use the `@ZeebeDeployment` annotation:
