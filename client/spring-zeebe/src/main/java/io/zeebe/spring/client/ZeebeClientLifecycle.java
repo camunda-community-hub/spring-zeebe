@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import org.springframework.context.ApplicationEventPublisher;
 
-public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClientImpl> implements
+public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient> implements
   ZeebeClient {
 
   public static final int PHASE = 22222;
