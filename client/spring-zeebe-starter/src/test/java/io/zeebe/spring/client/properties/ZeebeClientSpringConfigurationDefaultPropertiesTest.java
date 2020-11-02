@@ -24,13 +24,13 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   private ZeebeClientConfigurationProperties properties;
 
   @Test
-  public void hasBrokerContactPoint() throws Exception {
-    assertThat(properties.getBrokerContactPoint()).isEqualTo("0.0.0.0:26500");
+  public void hasGatewayAddress() throws Exception {
+    assertThat(properties.getGatewayAddress()).isEqualTo("0.0.0.0:26500");
   }
 
   @Test
   public void hasRequestTimeout() throws Exception {
-    assertThat(properties.getRequestTimeout()).isEqualTo(Duration.ofSeconds(20));
+    assertThat(properties.getRequestTimeout()).isEqualTo(Duration.ofSeconds(10));
   }
 
   @Test

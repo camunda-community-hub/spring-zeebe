@@ -62,7 +62,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 
 ```
 zeebe.client.worker.defaultName=foo-worker
-zeebe.client.broker.contactPoint=127.0.0.1:26500
+zeebe.client.broker.gatewayAddress=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
 

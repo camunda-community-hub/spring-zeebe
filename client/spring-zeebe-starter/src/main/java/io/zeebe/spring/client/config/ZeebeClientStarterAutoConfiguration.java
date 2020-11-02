@@ -24,7 +24,7 @@ public class ZeebeClientStarterAutoConfiguration {
   public ZeebeClientBuilder builder() {
     final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
-    builder.brokerContactPoint(configurationProperties.getBrokerContactPoint());
+    builder.gatewayAddress(configurationProperties.getGatewayAddress());
     builder.defaultJobPollInterval(configurationProperties.getDefaultJobPollInterval());
     builder.defaultJobTimeout(configurationProperties.getDefaultJobTimeout());
     builder.defaultJobWorkerMaxJobsActive(configurationProperties.getDefaultJobWorkerMaxJobsActive());

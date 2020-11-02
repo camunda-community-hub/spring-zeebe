@@ -45,10 +45,24 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Data
   public static class Broker {
-    private String contactPoint = DEFAULT.getBrokerContactPoint();
+    /**
+     *  @deprecated Use gatewayAddress. It's deprecated since 0.25.0, and will be removed in 0.26.0
+     */
+    private String contactPoint;
+
+    private String gatewayAddress;
     private Duration keepAlive = DEFAULT.getKeepAlive();
+    public String getGatewayAddress() {
+      if (gatewayAddress!=null) {
+        return gatewayAddress;
+      } else if (contactPoint!=null) {
+        return contactPoint;
+      } else {
+        return DEFAULT.getGatewayAddress();
+      }
+    }
   }
-  
+
   @Data
   public static class Cloud {
     private String clusterId;
@@ -66,7 +80,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 	public boolean isConfigured() {
 		return (clusterId!=null);
 	}
-	public String getBrokerContactPoint() {
+	public String getGatewayAddress() {
 		return clusterId + "." + baseUrl + ":" + port;
 	}
   }  
@@ -98,10 +112,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getBrokerContactPoint() {
+    return getGatewayAddress();
+  }
+
+  @Override
+  public String getGatewayAddress() {
 	if (cloud.isConfigured()) {
-		return cloud.getBrokerContactPoint();
+		return cloud.getGatewayAddress();
 	} else {
-		return broker.getContactPoint();
+		return broker.getGatewayAddress();
 	}
   }
 

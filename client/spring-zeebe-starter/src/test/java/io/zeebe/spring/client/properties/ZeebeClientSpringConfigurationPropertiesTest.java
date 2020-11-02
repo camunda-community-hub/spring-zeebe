@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @TestPropertySource(
   properties = {
-    "zeebe.client.broker.contactPoint=localhost12345",
+    "zeebe.client.broker.gatewayAddress=localhost12345",
     "zeebe.client.requestTimeout=99s",
     "zeebe.client.job.timeout=99s",
     "zeebe.client.job.pollInterval=99s",
@@ -41,7 +41,7 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
-    assertThat(properties.getBrokerContactPoint()).isEqualTo("localhost12345");
+    assertThat(properties.getGatewayAddress()).isEqualTo("localhost12345");
   }
 
   @Test
