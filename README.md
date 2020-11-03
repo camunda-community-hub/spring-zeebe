@@ -36,7 +36,7 @@ Use the `@ZeebeDeployment` annotation:
 ```
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(classPathResource = "demoProcess.bpmn")
+@ZeebeDeployment(classPathResources = "demoProcess.bpmn")
 public class MySpringBootApplication {
 ```
 
