@@ -8,22 +8,28 @@ import io.zeebe.spring.client.annotation.ZeebeWorker;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
  * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
  * method-annotations.
  */
-@Slf4j
-@RequiredArgsConstructor
 public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private final ReadZeebeWorkerValue reader;
+
+  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader) {
+    this.reader = reader;
+  }
 
   @Override
   public boolean test(final ClassInfo beanInfo) {
@@ -32,7 +38,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
   @Override
   public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
-    log.info("zeebeWorker: {}", beanInfo);
+    LOGGER.info("zeebeWorker: {}", beanInfo);
 
     final List<ZeebeWorkerValue> annotatedMethods = new ArrayList<>();
 
@@ -60,7 +66,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
           builder.open();
 
-          log.info("register job worker: {}", m);
+          LOGGER.info("register job worker: {}", m);
         });
   }
 }

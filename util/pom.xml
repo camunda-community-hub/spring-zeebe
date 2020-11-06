@@ -19,11 +19,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>io.zeebe.spring</groupId>
       <artifactId>spring-zeebe-test</artifactId>
       <scope>test</scope>

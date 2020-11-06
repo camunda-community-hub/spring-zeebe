@@ -6,15 +6,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.Value;
 
-@Value
-@Builder
 public class MethodInfo implements BeanInfo {
 
   private ClassInfo classInfo;
   private Method method;
+
+  private MethodInfo(ClassInfo classInfo, Method method) {
+    this.classInfo = classInfo;
+    this.method = method;
+  }
 
   @Override
   public Object getBean() {
@@ -44,5 +45,32 @@ public class MethodInfo implements BeanInfo {
 
   public <T extends Annotation> Optional<T> getAnnotation(final Class<T> type) {
     return Optional.ofNullable(findAnnotation(method, type));
+  }
+
+  static MethodInfoBuilder builder() {
+    return new MethodInfoBuilder();
+  }
+
+  public static final class MethodInfoBuilder {
+
+    private ClassInfo classInfo;
+    private Method method;
+
+    private MethodInfoBuilder() {
+    }
+
+    public MethodInfoBuilder classInfo(ClassInfo classInfo) {
+      this.classInfo = classInfo;
+      return this;
+    }
+
+    public MethodInfoBuilder method(Method method) {
+      this.method = method;
+      return this;
+    }
+
+    public MethodInfo build() {
+      return new MethodInfo(classInfo, method);
+    }
   }
 }

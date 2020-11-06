@@ -60,6 +60,6 @@ public class ClassInfoTest {
   }
 
   private ClassInfo beanInfo(final Object bean) {
-    return new ClassInfo(bean, Introspector.decapitalize(bean.getClass().getSimpleName()));
+    return ClassInfo.builder().bean(bean).beanName(Introspector.decapitalize(bean.getClass().getSimpleName())).build();
   }
 }
