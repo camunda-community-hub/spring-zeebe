@@ -36,6 +36,6 @@ public class ZeebeClientSpringConfiguration {
 
   @Bean
   public ZeebeClientObjectFactory zeebeClientObjectFactory() {
-    return () -> (ZeebeClientImpl) zeebeClientBuilder.build();
+    return () -> zeebeClientBuilder.build();
   }
 }
