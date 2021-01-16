@@ -12,7 +12,7 @@
   <groupId>io.zeebe.spring.root</groupId>
   <artifactId>spring-zeebe-root</artifactId>
   <name>pom/spring-zeebe</name>
-  <version>0.26.2</version>
+  <version>0.27.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -327,6 +327,6 @@
     <url>https://github.com/zeebe-io/spring-zeebe</url>
     <connection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</connection>
     <developerConnection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</developerConnection>
-    <tag>0.26.2</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
