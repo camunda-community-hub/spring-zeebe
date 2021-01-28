@@ -9,15 +9,17 @@ import org.springframework.context.annotation.Primary;
 import io.zeebe.client.ZeebeClientBuilder;
 import io.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
-import lombok.RequiredArgsConstructor;
 
 @Import(ZeebeActuatorConfiguration.class)
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
 @Configuration
-@RequiredArgsConstructor
 public class ZeebeClientStarterAutoConfiguration {
 
   private final ZeebeClientConfigurationProperties configurationProperties;
+
+  public ZeebeClientStarterAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties) {
+    this.configurationProperties = configurationProperties;
+  }
 
   @Bean
   @Primary

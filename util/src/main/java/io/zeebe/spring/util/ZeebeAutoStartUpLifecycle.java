@@ -1,7 +1,6 @@
 package io.zeebe.spring.util;
 
 import java.util.function.Supplier;
-import lombok.SneakyThrows;
 import org.springframework.context.SmartLifecycle;
 
 /**
@@ -27,7 +26,7 @@ public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> impleme
    * @param phase the phase to run in
    */
   public ZeebeAutoStartUpLifecycle(final int phase,
-    final ZeebeObjectFactory<T> factory) {
+                                   final ZeebeObjectFactory<T> factory) {
     this.phase = phase;
     this.factory = factory;
   }
@@ -55,12 +54,13 @@ public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> impleme
     }
   }
 
-  @SneakyThrows
   @Override
   public void stop(final Runnable callback) {
     try {
       delegate.close();
       callback.run();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     } finally {
       running = false;
     }

@@ -7,16 +7,22 @@ import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
+import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
-@RequiredArgsConstructor
 public class DeploymentPostProcessor extends BeanInfoPostProcessor {
 
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private final ReadZeebeDeploymentValue reader;
+
+  public DeploymentPostProcessor(ReadZeebeDeploymentValue reader) {
+    this.reader = reader;
+  }
 
   @Override
   public boolean test(final ClassInfo beanInfo) {
@@ -27,7 +33,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
   public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
     final ZeebeDeploymentValue value = reader.applyOrThrow(beanInfo);
 
-    log.info("deployment: {}", value);
+    LOGGER.info("deployment: {}", value);
 
     return client -> {
 
@@ -42,7 +48,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
         .send()
         .join();
 
-      log.info(
+      LOGGER.info(
         "Deployed: {}",
         deploymentResult
           .getWorkflows()
