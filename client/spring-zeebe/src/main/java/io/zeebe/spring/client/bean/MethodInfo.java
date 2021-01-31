@@ -47,7 +47,7 @@ public class MethodInfo implements BeanInfo {
     return Optional.ofNullable(findAnnotation(method, type));
   }
 
-  static MethodInfoBuilder builder() {
+  public static MethodInfoBuilder builder() {
     return new MethodInfoBuilder();
   }
 

@@ -55,6 +55,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(3, zeebeWorkerValue.get().getMaxJobsActive());
     assertEquals(500L, zeebeWorkerValue.get().getRequestTimeout());
     assertEquals(1_000L, zeebeWorkerValue.get().getPollInterval());
+    assertArrayEquals(new String[] { "foo"}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getBeanInfo());
   }
 

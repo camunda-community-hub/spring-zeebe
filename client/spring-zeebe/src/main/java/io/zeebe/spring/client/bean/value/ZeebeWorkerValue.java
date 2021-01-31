@@ -20,11 +20,14 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private MethodInfo beanInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, MethodInfo beanInfo) {
+  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, MethodInfo beanInfo) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
     this.maxJobsActive = maxJobsActive;
+    this.requestTimeout = requestTimeout;
+    this.pollInterval = pollInterval;
+    this.fetchVariables = fetchVariables;
     this.beanInfo = beanInfo;
   }
 
@@ -127,7 +130,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     }
 
     public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, beanInfo);
+      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, beanInfo);
     }
   }
 }
