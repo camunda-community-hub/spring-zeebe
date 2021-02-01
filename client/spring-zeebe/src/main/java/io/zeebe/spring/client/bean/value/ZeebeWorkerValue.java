@@ -12,13 +12,22 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private int maxJobsActive;
 
+  private long requestTimeout;
+
+  private long pollInterval;
+
+  private String[] fetchVariables;
+
   private MethodInfo beanInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, MethodInfo beanInfo) {
+  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, MethodInfo beanInfo) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
     this.maxJobsActive = maxJobsActive;
+    this.requestTimeout = requestTimeout;
+    this.pollInterval = pollInterval;
+    this.fetchVariables = fetchVariables;
     this.beanInfo = beanInfo;
   }
 
@@ -36,6 +45,18 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   public int getMaxJobsActive() {
     return maxJobsActive;
+  }
+
+  public long getRequestTimeout() {
+    return requestTimeout;
+  }
+
+  public long getPollInterval() {
+    return pollInterval;
+  }
+
+  public String[] getFetchVariables() {
+    return fetchVariables;
   }
 
   @Override
@@ -56,6 +77,12 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     private long timeout;
 
     private int maxJobsActive;
+
+    private long requestTimeout;
+
+    private long pollInterval;
+
+    private String[] fetchVariables;
 
     private MethodInfo beanInfo;
 
@@ -82,13 +109,28 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       return this;
     }
 
+    public ZeebeWorkerValueBuilder requestTimeout(long requestTimeout) {
+      this.requestTimeout = requestTimeout;
+      return this;
+    }
+
+    public ZeebeWorkerValueBuilder pollInterval(long pollInterval) {
+      this.pollInterval = pollInterval;
+      return this;
+    }
+
+    public ZeebeWorkerValueBuilder fetchVariables(String[] fetchVariables) {
+      this.fetchVariables = fetchVariables;
+      return this;
+    }
+
     public ZeebeWorkerValueBuilder beanInfo(MethodInfo beanInfo) {
       this.beanInfo = beanInfo;
       return this;
     }
 
     public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, beanInfo);
+      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, beanInfo);
     }
   }
 }

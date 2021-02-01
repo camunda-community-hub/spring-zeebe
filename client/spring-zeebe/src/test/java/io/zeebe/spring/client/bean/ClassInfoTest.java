@@ -25,6 +25,13 @@ public class ClassInfoTest {
     }
   }
 
+  public static class WithZeebeWorkerAllValues {
+
+    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"})
+    public void handle() {
+    }
+  }
+
   @Test
   public void getBeanInfo() throws Exception {
     final WithDeploymentAnnotation withDeploymentAnnotation = new WithDeploymentAnnotation();
