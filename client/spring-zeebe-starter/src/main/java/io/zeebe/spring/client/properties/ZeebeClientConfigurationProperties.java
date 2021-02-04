@@ -465,11 +465,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   }
 
   @Override
-  public String getBrokerContactPoint() {
-    return getGatewayAddress();
-  }
-
-  @Override
   public String getGatewayAddress() {
     if (cloud.isConfigured()) {
       return cloud.getGatewayAddress();
@@ -541,7 +536,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     }
     return null;
   }
-
   @Override
   public Duration getKeepAlive() {
     return broker.getKeepAlive();
