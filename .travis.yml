@@ -1,6 +1,9 @@
 language: java
 sudo: false # faster builds
 
+services:
+  - docker
+
 jdk:
 - openjdk8
 
