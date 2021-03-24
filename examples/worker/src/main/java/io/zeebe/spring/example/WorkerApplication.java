@@ -1,8 +1,9 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.api.worker.JobClient;
 import io.zeebe.client.api.response.ActivatedJob;
+import io.zeebe.client.api.worker.JobClient;
 import io.zeebe.spring.client.EnableZeebeClient;
+import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableZeebeClient
+@ZeebeDeployment(classPathResources = "demoProcess.bpmn")
 @Slf4j
 public class WorkerApplication {
 

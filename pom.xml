@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -6,7 +7,7 @@
     <artifactId>camunda-release-parent</artifactId>
     <version>3.3</version>
     <!-- do not remove empty tag - http://jira.codehaus.org/browse/MNG-4687 -->
-    <relativePath />
+    <relativePath/>
   </parent>
 
   <groupId>io.zeebe.spring.root</groupId>
@@ -25,6 +26,7 @@
 
     <zeebe.version>0.26.0</zeebe.version>
     <spring-boot.version>2.2.11.RELEASE</spring-boot.version>
+    <zeebe-test-container.version>2.0.0</zeebe-test-container.version>
 
     <!-- release parent settings for distribution management -->
     <nexus.snapshot.repository>
@@ -119,6 +121,12 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-kotlin</artifactId>
         <version>${kotlin-jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.zeebe</groupId>
+        <artifactId>zeebe-test-container</artifactId>
+        <version>${zeebe-test-container.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
