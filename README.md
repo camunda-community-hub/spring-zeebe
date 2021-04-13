@@ -74,6 +74,18 @@ zeebe.client.worker.defaultType=foo
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
 
+## ObjectMapper customization
+If you need to customize the ObjectMapper that the Zeebe client uses to work with variables, you can declare a bean with type `io.zeebe.client.api.JsonMapper` like this:
+```java
+@Configuration
+class MyConfiguration {
+  @Bean
+  public JsonMapper jsonMapper() {
+    new ZeebeObjectMapper().enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+  }
+}
+```
+
 ## Configuring Camunda Cloud Connection
 
 Connections to the Camunda Cloud can be easily configured:
