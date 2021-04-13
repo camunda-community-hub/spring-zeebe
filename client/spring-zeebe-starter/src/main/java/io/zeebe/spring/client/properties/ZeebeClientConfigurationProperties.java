@@ -8,6 +8,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import io.zeebe.client.api.JsonMapper;
+import io.zeebe.client.impl.ZeebeObjectMapper;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -31,6 +34,12 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @NestedConfigurationProperty
   private Job job = new Job();
+
+  /**
+   * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
+   * interface upstream
+   */
+  private JsonMapper jsonMapper = new ZeebeObjectMapper();
 
   /**
    * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
@@ -550,6 +559,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public List<ClientInterceptor> getInterceptors() {
     return interceptors;
+  }
+
+  @Override
+  public JsonMapper getJsonMapper() {
+    return jsonMapper;
   }
 
 }

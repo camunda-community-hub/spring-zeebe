@@ -1,7 +1,7 @@
 package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.command.DeployWorkflowCommandStep1;
+import io.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.zeebe.client.api.response.DeploymentEvent;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.zeebe.spring.client.bean.ClassInfo;
@@ -37,7 +37,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
 
     return client -> {
 
-      DeployWorkflowCommandStep1 deployWorkflowCommand = client
+      DeployProcessCommandStep1 deployWorkflowCommand = client
         .newDeployCommand();
 
       DeploymentEvent deploymentResult = value.getClassPathResources()
@@ -51,7 +51,7 @@ public class DeploymentPostProcessor extends BeanInfoPostProcessor {
       LOGGER.info(
         "Deployed: {}",
         deploymentResult
-          .getWorkflows()
+          .getProcesses()
           .stream()
           .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion()))
           .collect(Collectors.joining(",")));

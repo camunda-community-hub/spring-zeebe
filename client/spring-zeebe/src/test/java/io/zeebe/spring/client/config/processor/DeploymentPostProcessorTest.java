@@ -2,9 +2,9 @@ package io.zeebe.spring.client.config.processor;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.api.ZeebeFuture;
-import io.zeebe.client.api.command.DeployWorkflowCommandStep1;
+import io.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.zeebe.client.api.response.DeploymentEvent;
-import io.zeebe.client.api.response.Workflow;
+import io.zeebe.client.api.response.Process;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
@@ -30,10 +30,10 @@ public class DeploymentPostProcessorTest {
   private ZeebeClient client;
 
   @Mock
-  private DeployWorkflowCommandStep1 deployStep1;
+  private DeployProcessCommandStep1 deployStep1;
 
   @Mock
-  private DeployWorkflowCommandStep1.DeployWorkflowCommandBuilderStep2 deployStep2;
+  private DeployProcessCommandStep1.DeployProcessCommandBuilderStep2 deployStep2;
 
   @Mock
   private ZeebeFuture<DeploymentEvent> zeebeFuture;
@@ -69,7 +69,7 @@ public class DeploymentPostProcessorTest {
 
     when(zeebeFuture.join()).thenReturn(deploymentEvent);
 
-    when(deploymentEvent.getWorkflows()).thenReturn(Collections.singletonList(getWorkFlow()));
+    when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
     //when
     deploymentPostProcessor.apply(classInfo).accept(client);
@@ -100,7 +100,7 @@ public class DeploymentPostProcessorTest {
 
     when(zeebeFuture.join()).thenReturn(deploymentEvent);
 
-    when(deploymentEvent.getWorkflows()).thenReturn(Collections.singletonList(getWorkFlow()));
+    when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
     //when
     deploymentPostProcessor.apply(classInfo).accept(client);
@@ -132,8 +132,8 @@ public class DeploymentPostProcessorTest {
     deploymentPostProcessor.apply(classInfo).accept(client);
   }
 
-  private Workflow getWorkFlow() {
-    return new Workflow() {
+  private Process getProcess() {
+    return new Process() {
       @Override
       public String getBpmnProcessId() {
         return "12345-abcd";
@@ -145,7 +145,7 @@ public class DeploymentPostProcessorTest {
       }
 
       @Override
-      public long getWorkflowKey() {
+      public long getProcessDefinitionKey() {
         return 101010;
       }
 

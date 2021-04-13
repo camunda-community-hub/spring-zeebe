@@ -2,18 +2,10 @@ package io.zeebe.spring.client;
 
 import io.zeebe.client.ZeebeClient;
 import io.zeebe.client.ZeebeClientConfiguration;
-import io.zeebe.client.api.command.ActivateJobsCommandStep1;
-import io.zeebe.client.api.command.CancelWorkflowInstanceCommandStep1;
-import io.zeebe.client.api.command.CompleteJobCommandStep1;
-import io.zeebe.client.api.command.CreateWorkflowInstanceCommandStep1;
-import io.zeebe.client.api.command.DeployWorkflowCommandStep1;
-import io.zeebe.client.api.command.FailJobCommandStep1;
-import io.zeebe.client.api.command.PublishMessageCommandStep1;
-import io.zeebe.client.api.command.ResolveIncidentCommandStep1;
-import io.zeebe.client.api.command.SetVariablesCommandStep1;
-import io.zeebe.client.api.command.ThrowErrorCommandStep1;
-import io.zeebe.client.api.command.TopologyRequestStep1;
-import io.zeebe.client.api.command.UpdateRetriesJobCommandStep1;
+import io.zeebe.client.api.command.*;
+import io.zeebe.client.api.command.CancelProcessInstanceCommandStep1;
+import io.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
+import io.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
@@ -68,17 +60,17 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
   }
 
   @Override
-  public DeployWorkflowCommandStep1 newDeployCommand() {
+  public DeployProcessCommandStep1 newDeployCommand() {
     return get().newDeployCommand();
   }
 
   @Override
-  public CreateWorkflowInstanceCommandStep1 newCreateInstanceCommand() {
+  public CreateProcessInstanceCommandStep1 newCreateInstanceCommand() {
     return get().newCreateInstanceCommand();
   }
 
   @Override
-  public CancelWorkflowInstanceCommandStep1 newCancelInstanceCommand(long workflowInstanceKey) {
+  public CancelProcessInstanceCommandStep1 newCancelInstanceCommand(long workflowInstanceKey) {
     return get().newCancelInstanceCommand(workflowInstanceKey);
   }
 
