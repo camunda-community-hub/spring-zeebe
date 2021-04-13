@@ -1,6 +1,6 @@
 package io.zeebe.spring.example;
 
-import io.zeebe.client.api.response.WorkflowInstanceEvent;
+import io.zeebe.client.api.response.ProcessInstanceEvent;
 import io.zeebe.spring.client.EnableZeebeClient;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
 import io.zeebe.spring.client.annotation.ZeebeDeployment;
@@ -32,7 +32,7 @@ public class StarterApplication {
       return;
     }
 
-    final WorkflowInstanceEvent event =
+    final ProcessInstanceEvent event =
       client
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
@@ -42,6 +42,6 @@ public class StarterApplication {
         .join();
 
     log.info("started instance for workflowKey='{}', bpmnProcessId='{}', version='{}' with workflowInstanceKey='{}'",
-      event.getWorkflowKey(), event.getBpmnProcessId(), event.getVersion(), event.getWorkflowInstanceKey());
+      event.getProcessDefinitionKey(), event.getBpmnProcessId(), event.getVersion(), event.getProcessInstanceKey());
   }
 }

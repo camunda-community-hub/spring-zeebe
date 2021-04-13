@@ -24,7 +24,7 @@ public class WorkerApplication {
       job.getType(),
       job.getKey(),
       job.getElementId(),
-      job.getWorkflowInstanceKey(),
+      job.getProcessInstanceKey(),
       Instant.ofEpochMilli(job.getDeadline()),
       job.getCustomHeaders(),
       job.getVariables());
