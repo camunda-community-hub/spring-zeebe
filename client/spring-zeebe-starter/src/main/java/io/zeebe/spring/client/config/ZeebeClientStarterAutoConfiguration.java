@@ -1,5 +1,9 @@
 package io.zeebe.spring.client.config;
 
+import io.grpc.ClientInterceptor;
+import io.zeebe.client.api.JsonMapper;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +27,10 @@ public class ZeebeClientStarterAutoConfiguration {
 
   @Bean
   @Primary
-  public ZeebeClientBuilder builder() {
+  public ZeebeClientBuilder builder(
+    @Autowired(required = false) JsonMapper jsonMapper,
+    @Autowired(required = false) List<ClientInterceptor> clientInterceptorList
+  ) {
     final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
     builder.gatewayAddress(configurationProperties.getGatewayAddress());
@@ -36,8 +43,18 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.defaultRequestTimeout(configurationProperties.getDefaultRequestTimeout());
     builder.credentialsProvider(configurationProperties.getCredentialsProvider());
     builder.caCertificatePath(configurationProperties.getCaCertificatePath());
-    if (configurationProperties.isPlaintextConnectionEnabled())
+    if (configurationProperties.isPlaintextConnectionEnabled()) {
       builder.usePlaintext();
+    }
+    if (jsonMapper != null) {
+      builder.withJsonMapper(jsonMapper);
+    }
+    final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();
+    if (!legacyInterceptors.isEmpty()) {
+      builder.withInterceptors(legacyInterceptors.toArray(new ClientInterceptor[0]));
+    } else if (clientInterceptorList != null && !clientInterceptorList.isEmpty()) {
+      builder.withInterceptors(clientInterceptorList.toArray(new ClientInterceptor[0]));
+    }
     return builder;
   }
 }
