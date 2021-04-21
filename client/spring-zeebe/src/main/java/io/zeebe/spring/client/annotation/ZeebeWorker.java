@@ -13,7 +13,7 @@ public @interface ZeebeWorker {
 
   String type() default "${zeebe.client.worker.defaultType}";
 
-  String name(); // no default, use default from ZeebeClientBuilderImpl instead
+  String name() default ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in ZeebeWorkerPostProcessor
 
   long timeout() default -1L;
 
