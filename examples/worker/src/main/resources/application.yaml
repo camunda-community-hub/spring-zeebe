@@ -1,7 +1,5 @@
 zeebe:
     client:
-      worker:
-        defaultName: worker-name
       broker.contactPoint: 127.0.0.1:26500
       security.plaintext: true
 

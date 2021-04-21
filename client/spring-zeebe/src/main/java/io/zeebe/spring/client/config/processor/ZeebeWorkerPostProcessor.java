@@ -55,10 +55,12 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
-            .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job))
-            .name(m.getName());
+            .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job));
 
-          // using defaults from config if negative
+          // using defaults from config if null, 0 or negative
+          if (m.getName() != null && m.getName().length() > 0) {
+            builder.name(m.getName());
+          }
           if (m.getMaxJobsActive() > 0) {
             builder.maxJobsActive(m.getMaxJobsActive());
           }

@@ -54,35 +54,8 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // do whatever you need to do
   client.newCompleteCommand(job.getKey()) 
      .variables("{\"fooResult\": 1}")
-     .send().join();
-}
-```
-
-## Configuring Zeebe Connection
-
-```
-zeebe.client.worker.defaultName=foo-worker
-zeebe.client.broker.gatewayAddress=127.0.0.1:26500
-zeebe.client.security.plaintext=true
-```
-
-If you build a worker that only serves one thing, it might also be handy to define the worker job type
-
-```
-zeebe.client.worker.defaultType=foo
-```
-
-For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
-
-## ObjectMapper customization
-If you need to customize the ObjectMapper that the Zeebe client uses to work with variables, you can declare a bean with type `io.zeebe.client.api.JsonMapper` like this:
-```java
-@Configuration
-class MyConfiguration {
-  @Bean
-  public JsonMapper jsonMapper() {
-    new ZeebeObjectMapper().enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
-  }
+     .send()
+     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
 }
 ```
 
@@ -106,6 +79,34 @@ zeebe.client.cloud.authUrl=https://login.cloud.camunda.io/oauth/token
 
 As an alternative you can use the [Zeebe Client environment variables](https://docs.zeebe.io/operations/authorization.html#environment-variables). 
 
+## Configuring Self-managed Zeebe Connection
+
+```
+zeebe.client.broker.gatewayAddress=127.0.0.1:26500
+zeebe.client.security.plaintext=true
+```
+
+## Additional Configuration Options
+
+If you build a worker that only serves one thing, it might also be handy to define the worker job type globally - and not in the annotation:
+
+```
+zeebe.client.worker.defaultType=foo
+```
+
+For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
+
+## ObjectMapper customization
+If you need to customize the ObjectMapper that the Zeebe client uses to work with variables, you can declare a bean with type `io.zeebe.client.api.JsonMapper` like this:
+```java
+@Configuration
+class MyConfiguration {
+  @Bean
+  public JsonMapper jsonMapper() {
+    new ZeebeObjectMapper().enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+  }
+}
+```
 
 ## Add Spring Boot Starter to Your Project
 
