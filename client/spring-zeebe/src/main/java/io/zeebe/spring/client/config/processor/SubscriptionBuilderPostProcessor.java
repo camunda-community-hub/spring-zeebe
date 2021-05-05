@@ -1,6 +1,6 @@
 package io.zeebe.spring.client.config.processor;
 
-import io.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
 import io.zeebe.spring.client.bean.ClassInfo;
 import java.lang.invoke.MethodHandles;

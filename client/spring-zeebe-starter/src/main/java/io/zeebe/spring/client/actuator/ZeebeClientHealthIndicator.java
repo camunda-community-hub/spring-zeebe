@@ -1,7 +1,7 @@
 package io.zeebe.spring.client.actuator;
 
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.response.Topology;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.Topology;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 

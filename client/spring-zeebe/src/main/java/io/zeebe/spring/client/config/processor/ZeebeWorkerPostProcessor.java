@@ -2,8 +2,8 @@ package io.zeebe.spring.client.config.processor;
 
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.zeebe.spring.client.annotation.ZeebeWorker;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeWorkerValue;

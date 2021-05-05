@@ -1,7 +1,7 @@
 package io.zeebe.spring.client.config;
 
 import io.grpc.ClientInterceptor;
-import io.zeebe.client.api.JsonMapper;
+import io.camunda.zeebe.client.api.JsonMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
-import io.zeebe.client.ZeebeClientBuilder;
-import io.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.camunda.zeebe.client.ZeebeClientBuilder;
+import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 
 @Import(ZeebeActuatorConfiguration.class)

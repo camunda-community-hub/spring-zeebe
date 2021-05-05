@@ -1,13 +1,13 @@
 package io.zeebe.spring.client;
 
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.ZeebeClientConfiguration;
-import io.zeebe.client.api.command.*;
-import io.zeebe.client.api.command.CancelProcessInstanceCommandStep1;
-import io.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
-import io.zeebe.client.api.command.DeployProcessCommandStep1;
-import io.zeebe.client.api.worker.JobWorkerBuilderStep1;
-import io.zeebe.client.impl.ZeebeClientImpl;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.ZeebeClientConfiguration;
+import io.camunda.zeebe.client.api.command.*;
+import io.camunda.zeebe.client.api.command.CancelProcessInstanceCommandStep1;
+import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
+import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
+import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
+import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.event.ClientStartedEvent;
 import io.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
 import java.util.LinkedHashSet;
