@@ -1,6 +1,6 @@
 package io.zeebe.spring.client.config;
 
-import io.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

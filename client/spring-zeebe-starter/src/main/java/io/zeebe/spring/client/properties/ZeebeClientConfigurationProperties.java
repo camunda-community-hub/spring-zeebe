@@ -3,14 +3,14 @@ package io.zeebe.spring.client.properties;
 import static io.zeebe.spring.client.config.ZeebeClientSpringConfiguration.DEFAULT;
 
 import io.grpc.ClientInterceptor;
-import io.zeebe.client.CredentialsProvider;
+import io.camunda.zeebe.client.CredentialsProvider;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.zeebe.client.api.JsonMapper;
-import io.zeebe.client.impl.ZeebeObjectMapper;
+import io.camunda.zeebe.client.api.JsonMapper;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 

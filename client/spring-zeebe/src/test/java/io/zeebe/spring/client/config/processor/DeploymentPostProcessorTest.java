@@ -1,10 +1,10 @@
 package io.zeebe.spring.client.config.processor;
 
-import io.zeebe.client.ZeebeClient;
-import io.zeebe.client.api.ZeebeFuture;
-import io.zeebe.client.api.command.DeployProcessCommandStep1;
-import io.zeebe.client.api.response.DeploymentEvent;
-import io.zeebe.client.api.response.Process;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.ZeebeFuture;
+import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.Process;
 import io.zeebe.spring.client.bean.ClassInfo;
 import io.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;

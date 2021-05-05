@@ -1,8 +1,8 @@
 package io.zeebe.spring.client.config;
 
-import io.zeebe.client.ZeebeClientBuilder;
-import io.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.zeebe.client.impl.ZeebeClientImpl;
+import io.camunda.zeebe.client.ZeebeClientBuilder;
+import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.zeebe.spring.client.ZeebeClientLifecycle;
 import io.zeebe.spring.client.ZeebeClientObjectFactory;
 import io.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
