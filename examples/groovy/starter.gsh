@@ -2,7 +2,7 @@
 package io.zeebe.spring.groovy
 
 import groovy.util.logging.Slf4j
-import io.zeebe.client.api.response.WorkflowInstanceEvent
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import io.zeebe.spring.client.EnableZeebeClient
 import io.zeebe.spring.client.ZeebeClientLifecycle
 import io.zeebe.spring.client.annotation.ZeebeDeployment
@@ -12,12 +12,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.7.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-starter:1.0.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
 @EnableScheduling
-@ZeebeDeployment(classPathResource = "demoProcess.bpmn")
+@ZeebeDeployment(classPathResources = "demoProcess.bpmn")
 class Application {
 
   @Autowired
@@ -25,12 +25,12 @@ class Application {
 
 
   @Scheduled(fixedRate = 5000L)
-  void startWorkflow() {
+  void startProcess() {
     if (!client.isRunning()) {
       return;
     }
 
-    final WorkflowInstanceEvent event =
+    final ProcessInstanceEvent event =
       client
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
@@ -39,8 +39,8 @@ class Application {
         .send()
         .join();
 
-    log.info("started instance for workflowKey='{}', bpmnProcessId='{}', version='{}' with workflowInstanceKey='{}'",
-      event.getWorkflowKey(), event.getBpmnProcessId(), event.getVersion(), event.getWorkflowInstanceKey());
+    log.info("started instance for processDefinitionKey='{}', bpmnProcessId='{}', version='{}' with processInstanceKey='{}'",
+      event.getProcessDefinitionKey(), event.getBpmnProcessId(), event.getVersion(), event.getProcessInstanceKey());
   }
 
 }

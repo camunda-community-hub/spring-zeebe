@@ -2,15 +2,15 @@
 package io.zeebe.spring.groovy
 
 import groovy.util.logging.Slf4j
-import io.zeebe.client.api.worker.JobClient
-import io.zeebe.client.api.response.ActivatedJob
+import io.camunda.zeebe.client.api.worker.JobClient
+import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.zeebe.spring.client.EnableZeebeClient
 import io.zeebe.spring.client.annotation.ZeebeWorker
 import java.time.Instant;
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:0.7.0-SNAPSHOT")
+@Grab("io.zeebe.spring:spring-zeebe-starter:1.0.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient
@@ -18,11 +18,11 @@ class Application {
 
   private static void logJob(final ActivatedJob job) {
     log.info(
-      "complete job\n>>> [type: {}, key: {}, element: {}, workflow instance: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
+      "complete job\n>>> [type: {}, key: {}, element: {}, process instance: {}]\n{deadline; {}]\n[headers: {}]\n[variables: {}]",
       job.getType(),
       job.getKey(),
       job.getElementId(),
-      job.getWorkflowInstanceKey(),
+      job.getProcessInstanceKey(),
       Instant.ofEpochMilli(job.getDeadline()),
       job.getCustomHeaders(),
       job.getVariables());
