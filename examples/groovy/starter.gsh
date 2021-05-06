@@ -1,18 +1,18 @@
 #!/usr/bin/env groovy
-package io.zeebe.spring.groovy
+package io.camunda.spring.groovy
 
 import groovy.util.logging.Slf4j
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import io.zeebe.spring.client.EnableZeebeClient
-import io.zeebe.spring.client.ZeebeClientLifecycle
-import io.zeebe.spring.client.annotation.ZeebeDeployment
+import io.camunda.spring.client.EnableZeebeClient
+import io.camunda.spring.client.ZeebeClientLifecycle
+import io.camunda.spring.client.annotation.ZeebeDeployment
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:1.0.0-SNAPSHOT")
+@Grab("io.camunda:spring-zeebe-starter:1.0.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient

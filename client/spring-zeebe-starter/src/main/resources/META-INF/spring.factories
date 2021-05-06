@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.zeebe.spring.client.config.ZeebeClientStarterAutoConfiguration
+  io.camunda.spring.client.config.ZeebeClientStarterAutoConfiguration

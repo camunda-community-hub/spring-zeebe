@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>spring-zeebe-root</artifactId>
-    <groupId>io.zeebe.spring.root</groupId>
+    <groupId>io.camunda</groupId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>io.zeebe.spring</groupId>
+  <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-util</artifactId>
   <name>lib/spring-zeebe-util</name>
 
@@ -19,7 +19,7 @@
     </dependency>
 
     <dependency>
-      <groupId>io.zeebe.spring</groupId>
+      <groupId>io.camunda</groupId>
       <artifactId>spring-zeebe-test</artifactId>
       <scope>test</scope>
     </dependency>

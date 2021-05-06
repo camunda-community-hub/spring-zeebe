@@ -1,16 +1,16 @@
 #!/usr/bin/env groovy
-package io.zeebe.spring.groovy
+package io.camunda.spring.groovy
 
 import groovy.util.logging.Slf4j
 import io.camunda.zeebe.client.api.worker.JobClient
 import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.zeebe.spring.client.EnableZeebeClient
-import io.zeebe.spring.client.annotation.ZeebeWorker
+import io.camunda.spring.client.EnableZeebeClient
+import io.camunda.spring.client.annotation.ZeebeWorker
 import java.time.Instant;
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@Grab("io.zeebe.spring:spring-zeebe-starter:1.0.0-SNAPSHOT")
+@Grab("io.camunda:spring-zeebe-starter:1.0.0-SNAPSHOT")
 @Slf4j
 @SpringBootApplication
 @EnableZeebeClient

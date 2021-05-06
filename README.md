@@ -1,6 +1,6 @@
 # Spring Zeebe
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.zeebe.spring/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.zeebe.spring/spring-zeebe)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda.spring/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda.spring/spring-zeebe)
 
 [![Build Status](https://travis-ci.org/zeebe-io/spring-zeebe.svg?branch=master)](https://travis-ci.org/zeebe-io/spring-zeebe)
 [![codecov](https://codecov.io/gh/zeebe-io/spring-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/zeebe-io/spring-zeebe)
@@ -114,7 +114,7 @@ Just add the following Maven dependency to your Spring Boot Starter project:
 
 ```
 <dependency>
-	<groupId>io.zeebe.spring</groupId>
+	<groupId>io.camunda</groupId>
 	<artifactId>spring-zeebe-starter</artifactId>
 	<version>${CURRENT_VERSION}</version>
 </dependency>

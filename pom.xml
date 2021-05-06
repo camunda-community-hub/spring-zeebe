@@ -9,7 +9,7 @@
     <relativePath />
   </parent>
 
-  <groupId>io.zeebe.spring.root</groupId>
+  <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-root</artifactId>
   <name>pom/spring-zeebe</name>
   <version>1.0.0-SNAPSHOT</version>
@@ -70,36 +70,36 @@
 
       <!-- BROKER -->
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-broker</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-broker-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <!-- CLIENT -->
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-util</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>io.zeebe.spring</groupId>
+        <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-test</artifactId>
         <version>${project.version}</version>
       </dependency>
