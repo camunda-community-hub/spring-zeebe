@@ -1,11 +1,11 @@
 #!/usr/bin/env groovy
-package io.camunda.spring.groovy
+package io.camunda.zeebe.spring.groovy
 
 import groovy.util.logging.Slf4j
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import io.camunda.spring.client.EnableZeebeClient
-import io.camunda.spring.client.ZeebeClientLifecycle
-import io.camunda.spring.client.annotation.ZeebeDeployment
+import io.camunda.zeebe.spring.client.EnableZeebeClient
+import io.camunda.zeebe.spring.client.ZeebeClientLifecycle
+import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
