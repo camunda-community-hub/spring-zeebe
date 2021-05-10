@@ -12,7 +12,7 @@
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-root</artifactId>
   <name>pom/spring-zeebe</name>
-  <version>1.0.0-rc3</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -329,6 +329,6 @@
     <url>https://github.com/zeebe-io/spring-zeebe</url>
     <connection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</connection>
     <developerConnection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</developerConnection>
-    <tag>1.0.0-rc3</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
