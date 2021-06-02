@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class ReadZeebeDeploymentValue
   extends ReadAnnotationValue<ClassInfo, ZeebeDeployment, ZeebeDeploymentValue> {
 
+  private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
+
   public ReadZeebeDeploymentValue(final ZeebeExpressionResolver resolver) {
     super(resolver, ZeebeDeployment.class);
   }
@@ -22,17 +24,29 @@ public class ReadZeebeDeploymentValue
     return classInfo
       .getAnnotation(annotationType)
       .map(
-        annotation ->
-          ZeebeDeploymentValue.builder()
+        annotation -> {
+          List<String> resources = Arrays.stream(annotation.resources()).collect(Collectors.toList());
+
+          String[] classPathResources = annotation.classPathResources();
+          if (classPathResources.length > 0) {
+            resources.addAll(
+              Arrays.stream(classPathResources)
+              .map(resource -> CLASSPATH_ALL_URL_PREFIX + resource)
+              .collect(Collectors.toList())
+            );
+          }
+
+          return ZeebeDeploymentValue.builder()
             .beanInfo(classInfo)
-            .classPathResources(
-              resolveResources(annotation.classPathResources())
+            .resources(
+              resolveResources(resources)
             )
-            .build());
+            .build();
+        });
   }
 
-  private List<String> resolveResources(String[] classPathResources) {
-    return Arrays.stream(classPathResources)
+  private List<String> resolveResources(List<String> resources) {
+    return resources.stream()
       .map(resource -> ((String) resolver.resolve(resource)))
       .collect(Collectors.toList());
   }

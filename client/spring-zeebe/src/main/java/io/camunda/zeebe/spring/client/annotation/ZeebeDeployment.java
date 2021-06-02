@@ -12,5 +12,9 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
 public @interface ZeebeDeployment {
-  String[] classPathResources();
+
+  @Deprecated
+  String[] classPathResources() default {};
+
+  String[] resources() default {};
 }

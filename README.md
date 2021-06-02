@@ -44,6 +44,7 @@ You can also deploy multiple files at once:
 
 ```
 @ZeebeDeployment(classPathResources ={"demoProcess.bpmn", "demoProcess2.bpmn"})
+@ZeebeDeployment(resources = "classpath*:/bpmn/**/*.bpmn")
 ```
 
 ## Implement Job Worker
