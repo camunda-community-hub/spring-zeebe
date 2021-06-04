@@ -94,7 +94,7 @@ If you build a worker that only serves one thing, it might also be handy to defi
 zeebe.client.worker.defaultType=foo
 ```
 
-For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
+For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java)
 
 ## ObjectMapper customization
 If you need to customize the ObjectMapper that the Zeebe client uses to work with variables, you can declare a bean with type `io.camunda.zeebe.client.api.JsonMapper` like this:
