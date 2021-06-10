@@ -6,17 +6,17 @@ import java.util.Objects;
 
 public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
 
-  private List<String> classPathResources;
+  private List<String> resources;
 
   private ClassInfo beanInfo;
 
-  private ZeebeDeploymentValue(List<String> classPathResources, ClassInfo beanInfo) {
-    this.classPathResources = classPathResources;
+  private ZeebeDeploymentValue(List<String> resources, ClassInfo beanInfo) {
+    this.resources = resources;
     this.beanInfo = beanInfo;
   }
 
-  public List<String> getClassPathResources() {
-    return classPathResources;
+  public List<String> getResources() {
+    return resources;
   }
 
   @Override
@@ -29,19 +29,19 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeDeploymentValue that = (ZeebeDeploymentValue) o;
-    return Objects.equals(classPathResources, that.classPathResources) &&
+    return Objects.equals(resources, that.resources) &&
       Objects.equals(beanInfo, that.beanInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(classPathResources, beanInfo);
+    return Objects.hash(resources, beanInfo);
   }
 
   @Override
   public String toString() {
     return "ZeebeDeploymentValue{" +
-      "classPathResources=" + classPathResources +
+      "resources=" + resources +
       ", beanInfo=" + beanInfo +
       '}';
   }
@@ -52,14 +52,14 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
 
   public static final class ZeebeDeploymentValueBuilder {
 
-    private List<String> classPathResources;
+    private List<String> resources;
     private ClassInfo beanInfo;
 
     private ZeebeDeploymentValueBuilder() {
     }
 
-    public ZeebeDeploymentValueBuilder classPathResources(List<String> classPathResources) {
-      this.classPathResources = classPathResources;
+    public ZeebeDeploymentValueBuilder resources(List<String> resources) {
+      this.resources = resources;
       return this;
     }
 
@@ -69,7 +69,7 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
     }
 
     public ZeebeDeploymentValue build() {
-      return new ZeebeDeploymentValue(classPathResources, beanInfo);
+      return new ZeebeDeploymentValue(resources, beanInfo);
     }
   }
 }

@@ -41,7 +41,7 @@ public class ReadZeebeDeploymentValueTest {
 
     ZeebeDeploymentValue expectedDeploymentValue = ZeebeDeploymentValue.builder()
       .beanInfo(classInfo)
-      .classPathResources(Collections.singletonList("/1.bpmn"))
+      .resources(Collections.singletonList("classpath*:/1.bpmn"))
       .build();
 
     //when
@@ -63,7 +63,7 @@ public class ReadZeebeDeploymentValueTest {
 
     ZeebeDeploymentValue expectedDeploymentValue = ZeebeDeploymentValue.builder()
       .beanInfo(classInfo)
-      .classPathResources(Arrays.asList("/1.bpmn", "/2.bpmn"))
+      .resources(Arrays.asList("classpath*:/1.bpmn", "classpath*:/2.bpmn"))
       .build();
 
     //when

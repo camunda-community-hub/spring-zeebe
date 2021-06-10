@@ -11,13 +11,15 @@ import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValu
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +48,7 @@ public class DeploymentPostProcessorTest {
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
-    deploymentPostProcessor = new DeploymentPostProcessor(reader);
+    deploymentPostProcessor = Mockito.spy(new DeploymentPostProcessor(reader));
   }
 
   @Test
@@ -56,14 +58,20 @@ public class DeploymentPostProcessorTest {
       .build();
 
     ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .classPathResources(Collections.singletonList("/1.bpmn"))
+      .resources(Collections.singletonList("classpath*:/1.bpmn"))
       .build();
+
+    Resource resource = Mockito.mock(FileSystemResource.class);
+
+    when(resource.getFilename()).thenReturn("1.bpmn");
 
     when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
     when(client.newDeployCommand()).thenReturn(deployStep1);
 
-    when(deployStep1.addResourceFromClasspath(anyString())).thenReturn(deployStep2);
+    when(deploymentPostProcessor.getResources(anyString())).thenReturn(new Resource[]{resource});
+
+    when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
     when(deployStep2.send()).thenReturn(zeebeFuture);
 
@@ -75,7 +83,7 @@ public class DeploymentPostProcessorTest {
     deploymentPostProcessor.apply(classInfo).accept(client);
 
     //then
-    verify(deployStep1).addResourceFromClasspath(eq("/1.bpmn"));
+    verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
     verify(deployStep2).send();
     verify(zeebeFuture).join();
   }
@@ -87,14 +95,23 @@ public class DeploymentPostProcessorTest {
       .build();
 
     ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .classPathResources(Arrays.asList("/1.bpmn", "/2.bpmn"))
+      .resources(Arrays.asList("classpath*:/1.bpmn", "classpath*:/2.bpmn"))
       .build();
+
+    Resource[] resources = {Mockito.mock(FileSystemResource.class), Mockito.mock(FileSystemResource.class)};
+
+    when(resources[0].getFilename()).thenReturn("1.bpmn");
+    when(resources[1].getFilename()).thenReturn("2.bpmn");
 
     when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
     when(client.newDeployCommand()).thenReturn(deployStep1);
 
-    when(deployStep1.addResourceFromClasspath(anyString())).thenReturn(deployStep2);
+    when(deploymentPostProcessor.getResources("classpath*:/1.bpmn")).thenReturn(new Resource[]{resources[0]});
+
+    when(deploymentPostProcessor.getResources("classpath*:/2.bpmn")).thenReturn(new Resource[]{resources[1]});
+
+    when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
     when(deployStep2.send()).thenReturn(zeebeFuture);
 
@@ -106,8 +123,9 @@ public class DeploymentPostProcessorTest {
     deploymentPostProcessor.apply(classInfo).accept(client);
 
     //then
-    verify(deployStep1).addResourceFromClasspath(eq("/1.bpmn"));
-    verify(deployStep1).addResourceFromClasspath(eq("/2.bpmn"));
+    verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
+    verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
+
     verify(deployStep2).send();
     verify(zeebeFuture).join();
   }
@@ -119,14 +137,14 @@ public class DeploymentPostProcessorTest {
       .build();
 
     ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .classPathResources(Collections.emptyList())
+      .resources(Collections.emptyList())
       .build();
 
     when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
     when(client.newDeployCommand()).thenReturn(deployStep1);
 
-    when(deployStep1.addResourceFromClasspath(anyString())).thenReturn(deployStep2);
+    when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
     //when
     deploymentPostProcessor.apply(classInfo).accept(client);
