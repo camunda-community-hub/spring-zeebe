@@ -9,6 +9,17 @@
 This project allows to leverage Zeebe within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.zeebe.io/java-client/).
 
 
+## Add Spring Boot Starter to Your Project
+
+Just add the following Maven dependency to your Spring Boot Starter project:
+
+```
+<dependency>
+	<groupId>io.camunda</groupId>
+	<artifactId>spring-zeebe-starter</artifactId>
+	<version>${CURRENT_VERSION}</version>
+</dependency>
+```
 
 # How to use
 
@@ -109,17 +120,6 @@ class MyConfiguration {
 }
 ```
 
-## Add Spring Boot Starter to Your Project
-
-Just add the following Maven dependency to your Spring Boot Starter project:
-
-```
-<dependency>
-	<groupId>io.camunda</groupId>
-	<artifactId>spring-zeebe-starter</artifactId>
-	<version>${CURRENT_VERSION}</version>
-</dependency>
-```
 
 ## Examples
 
