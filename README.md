@@ -106,6 +106,13 @@ If you build a worker that only serves one thing, it might also be handy to defi
 zeebe.client.worker.defaultType=foo
 ```
 
+Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
+
+```
+zeebe.client.worker.maxJobsActive=32
+zeebe.client.worker.threads=1
+```
+
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java)
 
 ## ObjectMapper customization
