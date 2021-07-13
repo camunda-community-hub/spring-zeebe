@@ -40,21 +40,24 @@ Now you can inject the ZeebeClient and work with it, e.g. to create new workflow
 private ZeebeClient client;
 ```
 
-## Deploy Workflow Models
+## Deploy Process Models
 
 Use the `@ZeebeDeployment` annotation:
 
 ```
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(classPathResources = "demoProcess.bpmn")
+@ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
 public class MySpringBootApplication {
 ```
 
-You can also deploy multiple files at once: 
+This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader](the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
 
 ```
-@ZeebeDeployment(classPathResources ={"demoProcess.bpmn", "demoProcess2.bpmn"})
+@ZeebeDeployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
+```
+or define wildcard patterns:
+```
 @ZeebeDeployment(resources = "classpath*:/bpmn/**/*.bpmn")
 ```
 
