@@ -79,6 +79,7 @@ Connections to the Camunda Cloud can be easily configured:
 zeebe.client.cloud.clusterId=xxx
 zeebe.client.cloud.clientId=xxx
 zeebe.client.cloud.clientSecret=xxx
+zeebe.client.cloud.region=bru-2
 ```
 
 If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
