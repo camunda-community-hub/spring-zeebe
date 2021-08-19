@@ -7,8 +7,10 @@ import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Repository;
 
 @Import(ReadAnnotationValueConfiguration.class)
+@Configuration
 public class PostProcessorConfiguration {
 
   @Bean
