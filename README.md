@@ -98,7 +98,7 @@ As an alternative you can use the [Zeebe Client environment variables](https://d
 ## Configuring Self-managed Zeebe Connection
 
 ```
-zeebe.client.gateway.address=127.0.0.1:26500
+zeebe.client.broker.gateway-address=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
 
