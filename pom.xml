@@ -24,7 +24,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>1.1.0</zeebe.version>
-    <spring-boot.version>2.2.11.RELEASE</spring-boot.version>
+    <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 
     <!-- release parent settings for distribution management -->
     <nexus.snapshot.repository>
@@ -33,11 +33,6 @@
     <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io/
     </nexus.release.repository>
     <nexus.sonatype.url>https://s01.oss.sonatype.org</nexus.sonatype.url>
-
-
-    <kotlin.version>1.2.60</kotlin.version>
-    <kotlin-jackson.version>2.9.4.1</kotlin-jackson.version>
-    <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -70,18 +65,6 @@
         <type>pom</type>
       </dependency>
 
-      <!-- BROKER -->
-      <dependency>
-        <groupId>io.camunda</groupId>
-        <artifactId>spring-zeebe-broker</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda</groupId>
-        <artifactId>spring-zeebe-broker-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
       <!-- CLIENT -->
       <dependency>
         <groupId>io.camunda</groupId>
@@ -106,17 +89,6 @@
         <version>${project.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <artifactId>kotlin-stdlib-jdk8</artifactId>
-        <version>${kotlin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <artifactId>kotlin-test</artifactId>
-        <version>${kotlin.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-kotlin</artifactId>
@@ -149,48 +121,10 @@
           </configuration>
       	  -->
         </plugin>
-        <plugin>
-          <artifactId>kotlin-maven-plugin</artifactId>
-          <groupId>org.jetbrains.kotlin</groupId>
-          <version>${kotlin.version}</version>
-        </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <artifactId>kotlin-maven-plugin</artifactId>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <sourceDirs>
-                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
-                <sourceDir>${project.basedir}/src/main/java</sourceDir>
-              </sourceDirs>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-compile</id>
-            <goals>
-              <goal>test-compile</goal>
-            </goals>
-            <configuration>
-              <sourceDirs>
-                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
-                <sourceDir>${project.basedir}/src/test/java</sourceDir>
-              </sourceDirs>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <jvmTarget>${java.version}</jvmTarget>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
