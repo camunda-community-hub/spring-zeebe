@@ -95,7 +95,7 @@ zeebe.client.cloud.port=443
 zeebe.client.cloud.authUrl=https://login.cloud.camunda.io/oauth/token
 ```
 
-As an alternative you can use the [Zeebe Client environment variables](https://docs.zeebe.io/operations/authorization.html#environment-variables). 
+As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping). 
 
 ## Configuring Self-managed Zeebe Connection
 
