@@ -16,7 +16,7 @@ public interface ZeebeClientProperties extends ZeebeClientConfiguration {
   /**
    * This method and configuration is deprecated in the Spring environment and shall not be used.
    * Declare beans on type {@link JsonMapper} in your Spring context and they will be used automatically.
-   * See: {@link io.camunda.zeebe.spring.client.config.ZeebeClientStarterAutoConfiguration#builder(io.camunda.zeebe.client.api.JsonMapper, java.util.List)}
+   * See: ZeebeClientStarterAutoConfiguration#builder
    *
    * @deprecated
    * @return list of GRPC interceptors.
