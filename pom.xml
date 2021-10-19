@@ -24,14 +24,6 @@
     <zeebe.version>1.2.1</zeebe.version>
     <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 
-    <!-- release parent settings for distribution management -->
-    <nexus.snapshot.repository>
-      https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots/
-    </nexus.snapshot.repository>
-    <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io/
-    </nexus.release.repository>
-    <nexus.sonatype.url>https://s01.oss.sonatype.org</nexus.sonatype.url>
-
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
     <additionalparam>-Xdoclint:none</additionalparam>
@@ -194,37 +186,6 @@
       <!--</plugin>-->
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>release</id>
-      <properties>
-        <plugin.version.gpg>1.6</plugin.version.gpg>
-        <gpg.passphrase>${env.GPG_PASS}</gpg.passphrase>
-        <resume>false</resume>
-        <tag>${env.RELEASE_VERSION}</tag>
-        <releaseVersion>${env.RELEASE_VERSION}</releaseVersion>
-        <developmentVersion>${env.DEVELOPMENT_VERSION}</developmentVersion>
-        <arguments>-DskipTests</arguments>
-      </properties>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <configuration>
-                <gpgArguments>
-                  <arg>--pinentry-mode</arg>
-                  <arg>loopback</arg>
-                </gpgArguments>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 
   <repositories>
     <repository>
