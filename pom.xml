@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.camunda.community</groupId>
     <artifactId>community-hub-release-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
   </parent>
 
   <groupId>io.camunda</groupId>
@@ -26,7 +26,7 @@
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
-    <additionalparam>-Xdoclint:none</additionalparam>
+    <additionalparam>-Xdoclint:none</additionalparam>    
   </properties>
 
   <modules>
