@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.camunda.community</groupId>
     <artifactId>community-hub-release-parent</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.0.ss01</version>
   </parent>
 
   <groupId>io.camunda</groupId>
