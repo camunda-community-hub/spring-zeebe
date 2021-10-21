@@ -23,10 +23,11 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
           gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
       - name: Deploy SNAPSHOT / Release
-        uses: camunda-community-hub/community-action-maven-release@ss01
+        uses: camunda-community-hub/community-action-maven-release@v1
         with:
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
+          maven-url: ss01.oss.sonatype.org
           nexus-usr: ${{ secrets.NEXUS_USR }}
           nexus-psw: ${{ secrets.NEXUS_PSW }}
           maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
