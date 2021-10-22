@@ -81,18 +81,18 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 Connections to the Camunda Cloud can be easily configured:
 
 ```
-zeebe.client.cloud.clusterId=xxx
-zeebe.client.cloud.clientId=xxx
-zeebe.client.cloud.clientSecret=xxx
+zeebe.client.cloud.cluster-id=xxx
+zeebe.client.cloud.client-id=xxx
+zeebe.client.cloud.client-secret=xxx
 zeebe.client.cloud.region=bru-2
 ```
 
 If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
 
 ```
-zeebe.client.cloud.baseUrl=zeebe.camunda.io
+zeebe.client.cloud.base-url=zeebe.camunda.io
 zeebe.client.cloud.port=443
-zeebe.client.cloud.authUrl=https://login.cloud.camunda.io/oauth/token
+zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
 ```
 
 As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping). 
@@ -100,7 +100,7 @@ As an alternative you can use the [Zeebe Client environment variables](https://d
 ## Configuring Self-managed Zeebe Connection
 
 ```
-zeebe.client.broker.gatewayAddress=127.0.0.1:26500
+zeebe.client.broker.gateway-address=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
 
@@ -115,7 +115,7 @@ zeebe.client.worker.defaultType=foo
 Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
 
 ```
-zeebe.client.worker.maxJobsActive=32
+zeebe.client.worker.max-jobs-active=32
 zeebe.client.worker.threads=1
 ```
 
