@@ -2,21 +2,27 @@ package io.camunda.zeebe.spring.client.config.processor;
 
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
+import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
-import java.lang.invoke.MethodHandles;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.invoke.MethodHandles;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 
 /**
  * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
@@ -26,6 +32,8 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
   private static final Logger LOGGER =
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final ReadZeebeWorkerValue reader;
 
@@ -52,10 +60,41 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     return client ->
       annotatedMethods.forEach(
         m -> {
+          MethodInfo methodInfo = m.getBeanInfo();
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
-            .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job));
+            .handler((jobClient, job) -> {
+              List<Object> args = new ArrayList<>();
+              Map<String, Object> variables = job.getVariablesAsMap();
+              Map<String, Class<?>> fetchVariables = methodInfo.getFetchVariables();
+              for (Map.Entry<String, Class<?>> entry : fetchVariables.entrySet()) {
+                String key = entry.getKey();
+                Class<?> clazz = entry.getValue();
+
+                // set paramter default null
+                Object arg = null;
+
+                // set paramter from JobClient
+                if (clazz.isInstance(jobClient)) {
+                  arg = jobClient;
+                }
+                // set paramter from ActivatedJob
+                if (clazz.isInstance(job)) {
+                  arg = job;
+                }
+
+                // other paramter from variables
+                if (Objects.nonNull(variables)) {
+                  Object v = variables.get(key);
+                  if (Objects.nonNull(v)) {
+                    arg = OBJECT_MAPPER.readValue(OBJECT_MAPPER.writeValueAsString(v), clazz);
+                  }
+                }
+                args.add(arg);
+              }
+              m.getBeanInfo().invoke(args.toArray());
+            });
 
           // using defaults from config if null, 0 or negative
           if (m.getName() != null && m.getName().length() > 0) {
@@ -75,6 +114,16 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           }
           if (m.getFetchVariables().length > 0) {
             builder.fetchVariables(m.getFetchVariables());
+          }
+
+          Map<String, Class<?>> variables = methodInfo.getFetchVariables();
+          if (Objects.nonNull(variables)) {
+            List<String> fetchVariables = variables
+              .keySet()
+              .stream()
+              .filter(variable -> variable != null && variable.length() > 0)
+              .collect(Collectors.toList());
+            builder.fetchVariables(fetchVariables);
           }
 
           builder.open();

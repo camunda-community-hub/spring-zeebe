@@ -5,16 +5,19 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Optional;
 
 public class MethodInfo implements BeanInfo {
 
   private ClassInfo classInfo;
   private Method method;
+  private Map<String, Class<?>> fetchVariables;
 
-  private MethodInfo(ClassInfo classInfo, Method method) {
+  private MethodInfo(ClassInfo classInfo, Method method, Map<String, Class<?>> fetchVariables) {
     this.classInfo = classInfo;
     this.method = method;
+    this.fetchVariables = fetchVariables;
   }
 
   @Override
@@ -27,6 +30,10 @@ public class MethodInfo implements BeanInfo {
     return classInfo.getBeanName();
   }
 
+  public Map<String, Class<?>> getFetchVariables() {
+    return fetchVariables;
+  }
+
   public Object invoke(final Object... args) {
     try {
       return method.invoke(getBean(), args);
@@ -34,8 +41,7 @@ public class MethodInfo implements BeanInfo {
       final Throwable targetException = e.getTargetException();
       if (targetException instanceof RuntimeException) {
         throw (RuntimeException) targetException;
-      }
-      else {
+      } else {
         throw new RuntimeException("Failed to invoke method: " + method.getName(), targetException);
       }
     } catch (IllegalAccessException e) {
@@ -55,6 +61,7 @@ public class MethodInfo implements BeanInfo {
 
     private ClassInfo classInfo;
     private Method method;
+    private Map<String, Class<?>> fetchVariables;
 
     private MethodInfoBuilder() {
     }
@@ -69,8 +76,13 @@ public class MethodInfo implements BeanInfo {
       return this;
     }
 
+    public MethodInfoBuilder fetchVariables(Map<String, Class<?>> fetchVariables) {
+      this.fetchVariables = fetchVariables;
+      return this;
+    }
+
     public MethodInfo build() {
-      return new MethodInfo(classInfo, method);
+      return new MethodInfo(classInfo, method, fetchVariables);
     }
   }
 }
