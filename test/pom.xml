@@ -12,7 +12,7 @@
   <name>test/spring-zeebe-test</name>
 
   <properties>
-    <jgiven.version>0.17.1</jgiven.version>
+    <jgiven.version>1.1.0</jgiven.version>
     <archunit.version>0.8.3</archunit.version>
   </properties>
 
