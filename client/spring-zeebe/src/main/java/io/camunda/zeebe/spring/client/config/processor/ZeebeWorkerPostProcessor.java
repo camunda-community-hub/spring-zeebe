@@ -61,7 +61,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
-            .handler(new JobWorkerHandler(m));
+            .handler(new ZeebeWorkerSpringJobHandler(m));
 
           // using defaults from config if null, 0 or negative
           if (m.getName() != null && m.getName().length() > 0) {
@@ -89,36 +89,5 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
         });
   }
 
-  public static class JobWorkerHandler implements JobHandler {
-    private ZeebeWorkerValue workerValue;
 
-    public JobWorkerHandler(ZeebeWorkerValue workerValue) {
-      this.workerValue = workerValue;
-    }
-
-    @Override
-    public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
-      // TODO workerValue.getVariableParameters()
-      //workerValue.getBeanInfo().invoke(jobClient, job);
-
-      List<ParameterInfo> parameters = workerValue.getBeanInfo().getParameters();
-      List<Object> args = new ArrayList<>();
-
-      for (ParameterInfo param: parameters) {
-        Object arg = null; // paramter default null
-        Class<?> clazz = param.getParameterInfo().getType();
-
-        if (JobClient.class.isAssignableFrom(clazz)) {
-          arg = jobClient;
-        } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
-          arg = job;
-        } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
-          arg = clazz.cast( job.getVariablesAsMap().get(param.getParameterName()) );
-        }
-        args.add(arg);
-      }
-
-      workerValue.getBeanInfo().invoke(args.toArray());
-    }
-  }
 }

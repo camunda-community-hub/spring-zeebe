@@ -43,6 +43,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.beanInfo = beanInfo;
 
     // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
+    // TODO: Discuss if this the target behavior we wan,t or should @zeebeVariable probably NOT limit the variables fetched?
+    // --> https://github.com/camunda-community-hub/spring-zeebe/issues/132#issuecomment-970293438
     Set<String> variables = new HashSet<>();
     variables.addAll(Arrays.asList(fetchVariables));
     variables.addAll(variableParameters.stream().map(p -> p.getParameterName()).collect(Collectors.toList()));
