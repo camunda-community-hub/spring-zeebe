@@ -24,4 +24,13 @@ public @interface ZeebeWorker {
   long pollInterval() default -1L;
 
   String[] fetchVariables() default {};
+
+  /**
+   * If set to true, the job is automatically completed after the worker code has finished.
+   * In this case, your worker code is not allowed to complete the job itself.
+   *
+   *  You can still throw exceptions if you want to raise a problem instead of job completion.
+   *  You could also raise a BPMN problem throwing a {@link io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
+   */
+  boolean autoComplete() default false;
 }
