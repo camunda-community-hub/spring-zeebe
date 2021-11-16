@@ -76,6 +76,42 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 }
 ```
 
+### Fetch Variables
+
+You can access all variables of a process via the job:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  String variable1 = (String)job.getVariablesAsMap().get("variable1");
+  sysout(variable1);
+  // ...
+}
+```
+
+
+You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
+
+```
+@ZeebeWorker(type = "foo", fetchVariables={"variable1", "variable2"})
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  String variable1 = (String)job.getVariablesAsMap().get("variable1");
+  sysout(variable1);
+  // ...
+}
+```
+
+By using the `@ZeebeVariable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
+  sysout(variable1);
+  // ...
+}
+```
+
+
 ## Configuring Camunda Cloud Connection
 
 Connections to the Camunda Cloud can be easily configured:

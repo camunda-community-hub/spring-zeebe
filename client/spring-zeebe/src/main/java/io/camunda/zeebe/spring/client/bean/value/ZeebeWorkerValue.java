@@ -1,6 +1,13 @@
 package io.camunda.zeebe.spring.client.bean.value;
 
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
+import io.camunda.zeebe.spring.client.bean.ParameterInfo;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
@@ -16,19 +23,30 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private long pollInterval;
 
+  private List<ParameterInfo> variableParameters;
+
+  private boolean autoComplete;
+
   private String[] fetchVariables;
 
   private MethodInfo beanInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, MethodInfo beanInfo) {
+  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo beanInfo) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
     this.maxJobsActive = maxJobsActive;
     this.requestTimeout = requestTimeout;
     this.pollInterval = pollInterval;
-    this.fetchVariables = fetchVariables;
+    this.variableParameters = variableParameters;
+    this.autoComplete = autoComplete;
     this.beanInfo = beanInfo;
+
+    // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
+    Set<String> variables = new HashSet<>();
+    variables.addAll(Arrays.asList(fetchVariables));
+    variables.addAll(variableParameters.stream().map(p -> p.getParameterName()).collect(Collectors.toList()));
+    this.fetchVariables = variables.toArray(new String[0]);
   }
 
   public String getType() {
@@ -59,6 +77,10 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return fetchVariables;
   }
 
+  public boolean isAutoComplete() {
+    return autoComplete;
+  }
+
   @Override
   public MethodInfo getBeanInfo() {
     return beanInfo;
@@ -83,6 +105,10 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     private long pollInterval;
 
     private String[] fetchVariables;
+
+    private List<ParameterInfo> variableParameters;
+
+    private boolean autoComplete;
 
     private MethodInfo beanInfo;
 
@@ -124,13 +150,24 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       return this;
     }
 
+    public ZeebeWorkerValueBuilder autoComplete(boolean autoComplete) {
+      this.autoComplete = autoComplete;
+      return this;
+    }
+
     public ZeebeWorkerValueBuilder beanInfo(MethodInfo beanInfo) {
       this.beanInfo = beanInfo;
       return this;
     }
 
-    public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, beanInfo);
+    public ZeebeWorkerValueBuilder variableParameters(List<ParameterInfo> variableParameters) {
+      this.variableParameters = variableParameters;
+      return this;
     }
+
+    public ZeebeWorkerValue build() {
+      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, variableParameters, autoComplete, beanInfo);
+    }
+
   }
 }
