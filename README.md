@@ -111,6 +111,59 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeV
 }
 ```
 
+### Completing the job
+
+As a default, your job handler code has to also complete the job, otherwise Zeebe will not know you did your work correctly:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  // do whatever you need to do
+  client.newCompleteCommand(job.getKey()) 
+     .send()
+     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
+}
+```
+
+Ideally, you **don't** use blocking behavior like `send().join()`, as this is a blocking call to wait for the issues command to be executed on the workflow engine. While this is very straightforward to use and produces easy-to-read code, blocking code is limited in terms of scalability.
+
+That's why the worker showed a different pattern:
+```
+send().whenComplete((result, exception) -> {})
+```
+This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
+This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+
+To ease things, you can also set `autoComplete=true` for the worker, than the Spring integration will take care if job completion for you:
+
+```
+@ZeebeWorker(type = "foo", autoComplete = true)
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  // do whatever you need to do
+  // but no need to call client.newCompleteCommand()...
+}
+```
+
+When using `autoComplete` you can:
+
+* Return a `Map`, `String`, `InputStream`, or `Object`, which then will be added to the process variables
+* Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
+
+```
+@ZeebeWorker(type = "foo", autoComplete = true)
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  // some work
+  if (successful) {
+    // some data is returned to be stored as process variable
+    return variablesMap;
+  } else {
+   // problem shall be indicated to the process:
+   throw new ZeebeBpmnError("DOESNT_WORK", "This does not work because...");
+  }
+}
+```
+
+
 
 ## Configuring Camunda Cloud Connection
 

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0-nightly.20210504">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1">
   <bpmn:process id="demoProcess" isExecutable="true">
     <bpmn:startEvent id="start" name="start">
       <bpmn:outgoing>SequenceFlow_1sz6737</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1sz6737" sourceRef="start" targetRef="taskA" />
     <bpmn:sequenceFlow id="SequenceFlow_06ytcxw" sourceRef="taskA" targetRef="taskB" />
-    <bpmn:sequenceFlow id="SequenceFlow_1oh45y7" sourceRef="taskB" targetRef="taskC" />
-    <bpmn:endEvent id="end" name="end">
+    <bpmn:sequenceFlow id="SequenceFlow_1oh45y7" sourceRef="taskB" targetRef="Activity_0m0rnae" />
+    <bpmn:endEvent id="end" name="Ended after error">
       <bpmn:incoming>SequenceFlow_148rk2p</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_148rk2p" sourceRef="taskC" targetRef="end" />
-    <bpmn:serviceTask id="taskA" name="task A">
+    <bpmn:serviceTask id="taskA" name="task A&#10;(&#34;foo&#34;)">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="foo" />
         <zeebe:ioMapping>
@@ -22,33 +22,50 @@
       <bpmn:incoming>SequenceFlow_1sz6737</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_06ytcxw</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="taskB" name="taks B">
+    <bpmn:serviceTask id="taskB" name="task B&#10;(&#34;bar&#34;)">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="bar" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_06ytcxw</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1oh45y7</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="taskC" name="taks C">
+    <bpmn:serviceTask id="taskC" name="task C&#10;(&#34;foo&#34;)">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="foo" />
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_1oh45y7</bpmn:incoming>
+      <bpmn:incoming>Flow_1s6ycek</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_148rk2p</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0m0rnae" name="Failing task&#10;(&#34;fail&#34;)">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="fail" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1oh45y7</bpmn:incoming>
+      <bpmn:outgoing>Flow_00a2z6k</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_00pv4d6" name="doesn&#39;t work" attachedToRef="Activity_0m0rnae">
+      <bpmn:outgoing>Flow_1s6ycek</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1kharcq" errorRef="Error_0pek6aj" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1s6ycek" sourceRef="Event_00pv4d6" targetRef="taskC" />
+    <bpmn:endEvent id="Event_0o05wd2" name="Ended without error">
+      <bpmn:incoming>Flow_00a2z6k</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_00a2z6k" sourceRef="Activity_0m0rnae" targetRef="Event_0o05wd2" />
   </bpmn:process>
+  <bpmn:error id="Error_0pek6aj" name="Error_2t5kb31" errorCode="DOESNT_WORK" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="demoProcess">
       <bpmndi:BPMNEdge id="SequenceFlow_148rk2p_di" bpmnElement="SequenceFlow_148rk2p">
-        <di:waypoint x="794" y="120" />
-        <di:waypoint x="867" y="120" />
+        <di:waypoint x="964" y="240" />
+        <di:waypoint x="1037" y="240" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="831" y="105" width="0" height="0" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1oh45y7_di" bpmnElement="SequenceFlow_1oh45y7">
         <di:waypoint x="602" y="120" />
-        <di:waypoint x="694" y="120" />
+        <di:waypoint x="690" y="120" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="648" y="105" width="0" height="0" />
         </bpmndi:BPMNLabel>
@@ -67,16 +84,19 @@
           <dc:Bounds x="260" y="105" width="0" height="0" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1s6ycek_di" bpmnElement="Flow_1s6ycek">
+        <di:waypoint x="750" y="178" />
+        <di:waypoint x="750" y="240" />
+        <di:waypoint x="864" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00a2z6k_di" bpmnElement="Flow_00a2z6k">
+        <di:waypoint x="790" y="120" />
+        <di:waypoint x="882" y="120" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
         <dc:Bounds x="173" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="180" y="138" width="22" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_0gbv3sc_di" bpmnElement="end">
-        <dc:Bounds x="867" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="876" y="138" width="18" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_09m0goq_di" bpmnElement="taskA">
@@ -85,8 +105,29 @@
       <bpmndi:BPMNShape id="ServiceTask_0sryj72_di" bpmnElement="taskB">
         <dc:Bounds x="502" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ctcekn_di" bpmnElement="Activity_0m0rnae">
+        <dc:Bounds x="690" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1xu4l3g_di" bpmnElement="taskC">
-        <dc:Bounds x="694" y="80" width="100" height="80" />
+        <dc:Bounds x="864" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0o05wd2_di" bpmnElement="Event_0o05wd2">
+        <dc:Bounds x="882" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="865" y="145" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0gbv3sc_di" bpmnElement="end">
+        <dc:Bounds x="1037" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1012" y="273" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0m04bcg_di" bpmnElement="Event_00pv4d6">
+        <dc:Bounds x="732" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="720" y="185" width="62" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
