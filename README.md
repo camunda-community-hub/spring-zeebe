@@ -111,6 +111,14 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeV
 }
 ```
 
+With `@ZeebeVariable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
+
+```
+@ZeebeWorker(type = "foo", forceFetchAllVariables = true)
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
+}
+```
+
 ### Completing the job
 
 As a default, your job handler code has to also complete the job, otherwise Zeebe will not know you did your work correctly:
