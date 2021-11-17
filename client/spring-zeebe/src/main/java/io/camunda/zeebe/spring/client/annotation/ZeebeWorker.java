@@ -26,6 +26,12 @@ public @interface ZeebeWorker {
   String[] fetchVariables() default {};
 
   /**
+   * Set to true, all variables are fetched independent of any other configuration
+   * via fetchVariables or @ZeebeVariable.
+   */
+  boolean forceFetchAllVariables() default false;
+
+  /**
    * If set to true, the job is automatically completed after the worker code has finished.
    * In this case, your worker code is not allowed to complete the job itself.
    *

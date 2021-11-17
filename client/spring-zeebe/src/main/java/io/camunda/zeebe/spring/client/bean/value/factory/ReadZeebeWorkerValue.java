@@ -33,6 +33,7 @@ public class ReadZeebeWorkerValue
             .maxJobsActive(annotation.maxJobsActive())
             .pollInterval(annotation.pollInterval())
             .fetchVariables(annotation.fetchVariables())
+            .forceFetchAllVariables(annotation.forceFetchAllVariables())
             .autoComplete(annotation.autoComplete())
             .variableParameters(readZeebeVariableParameters(methodInfo))
             .requestTimeout(annotation.requestTimeout())

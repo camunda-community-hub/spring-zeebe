@@ -24,7 +24,7 @@ public class WorkerApplication {
     SpringApplication.run(WorkerApplication.class, args);
   }
 
-  private static void logJob(final ActivatedJob job, String a) {
+  private static void logJob(final ActivatedJob job, Object parameterValue) {
     log.info(
       "complete job\n>>> [type: {}, key: {}, element: {}, workflow instance: {}]\n{deadline; {}]\n[headers: {}]\n[variable parameter: {}\n[variables: {}]",
       job.getType(),
@@ -33,7 +33,7 @@ public class WorkerApplication {
       job.getProcessInstanceKey(),
       Instant.ofEpochMilli(job.getDeadline()),
       job.getCustomHeaders(),
-      a,
+      parameterValue,
       job.getVariables());
   }
 
@@ -56,9 +56,9 @@ public class WorkerApplication {
     return Collections.singletonMap("someResult", "42");
   }
 
-  @ZeebeWorker(type = "fail", autoComplete = true)
-  public void handleFailingJob(final JobClient client, final ActivatedJob job) {
-    logJob(job, null);
+  @ZeebeWorker(type = "fail", autoComplete = true, forceFetchAllVariables = true)
+  public void handleFailingJob(final JobClient client, final ActivatedJob job, @ZeebeVariable Integer bar) {
+    logJob(job, bar);
     throw new ZeebeBpmnError("DOESNT_WORK", "This will actually never work :-)");
   }
 }

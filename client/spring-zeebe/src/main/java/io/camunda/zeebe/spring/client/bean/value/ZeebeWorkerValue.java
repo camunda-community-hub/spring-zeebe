@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.bean.value;
 
+import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 
@@ -23,32 +24,32 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private long pollInterval;
 
-  private List<ParameterInfo> variableParameters;
-
   private boolean autoComplete;
 
   private String[] fetchVariables;
 
   private MethodInfo beanInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo beanInfo) {
+  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, boolean forceFetchAllVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo beanInfo) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
     this.maxJobsActive = maxJobsActive;
     this.requestTimeout = requestTimeout;
     this.pollInterval = pollInterval;
-    this.variableParameters = variableParameters;
     this.autoComplete = autoComplete;
     this.beanInfo = beanInfo;
 
-    // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
-    // TODO: Discuss if this the target behavior we wan,t or should @zeebeVariable probably NOT limit the variables fetched?
-    // --> https://github.com/camunda-community-hub/spring-zeebe/issues/132#issuecomment-970293438
-    Set<String> variables = new HashSet<>();
-    variables.addAll(Arrays.asList(fetchVariables));
-    variables.addAll(variableParameters.stream().map(p -> p.getParameterName()).collect(Collectors.toList()));
-    this.fetchVariables = variables.toArray(new String[0]);
+    if (forceFetchAllVariables) {
+      // this overwrites any other setting
+      this.fetchVariables = new String[0];
+    } else {
+      // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
+      Set<String> variables = new HashSet<>();
+      variables.addAll(Arrays.asList(fetchVariables));
+      variables.addAll(variableParameters.stream().map(p -> p.getParameterName()).collect(Collectors.toList()));
+      this.fetchVariables = variables.toArray(new String[0]);
+    }
   }
 
   public String getType() {
@@ -108,6 +109,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
     private String[] fetchVariables;
 
+    private boolean forceFetchAllVariables;
+
     private List<ParameterInfo> variableParameters;
 
     private boolean autoComplete;
@@ -152,6 +155,11 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       return this;
     }
 
+    public ZeebeWorkerValueBuilder forceFetchAllVariables(boolean forceFetchAllVariables) {
+      this.forceFetchAllVariables = forceFetchAllVariables;
+      return this;
+    }
+
     public ZeebeWorkerValueBuilder autoComplete(boolean autoComplete) {
       this.autoComplete = autoComplete;
       return this;
@@ -168,7 +176,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     }
 
     public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, variableParameters, autoComplete, beanInfo);
+      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, forceFetchAllVariables, variableParameters, autoComplete, beanInfo);
     }
 
   }
