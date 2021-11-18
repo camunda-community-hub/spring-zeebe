@@ -96,7 +96,7 @@ You can specify that you only want to fetch some variables (instead of all) when
 @ZeebeWorker(type = "foo", fetchVariables={"variable1", "variable2"})
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   String variable1 = (String)job.getVariablesAsMap().get("variable1");
-  sysout(variable1);
+  System.out.println(variable1);
   // ...
 }
 ```
@@ -106,7 +106,7 @@ By using the `@ZeebeVariable` annotation there is a shortcut to make variable re
 ```
 @ZeebeWorker(type = "foo")
 public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
-  sysout(variable1);
+  System.out.println(variable1);
   // ...
 }
 ```
@@ -159,7 +159,7 @@ When using `autoComplete` you can:
 
 ```
 @ZeebeWorker(type = "foo", autoComplete = true)
-public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+public Map<String, Object> handleJobFoo(final JobClient client, final ActivatedJob job) {
   // some work
   if (successful) {
     // some data is returned to be stored as process variable

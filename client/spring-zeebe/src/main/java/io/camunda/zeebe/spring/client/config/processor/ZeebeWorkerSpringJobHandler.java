@@ -29,6 +29,7 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
 
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
+    // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
     List<ParameterInfo> parameters = workerValue.getBeanInfo().getParameters();
     List<Object> args = new ArrayList<>();
 
