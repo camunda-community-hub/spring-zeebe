@@ -47,7 +47,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
       Set<String> variables = new HashSet<>();
       variables.addAll(Arrays.asList(fetchVariables));
-      variables.addAll(variableParameters.stream().map(p -> p.getParameterName()).collect(Collectors.toList()));
+      variables.addAll(variableParameters.stream().map(ParameterInfo::getParameterName).collect(Collectors.toList()));
       this.fetchVariables = variables.toArray(new String[0]);
     }
   }
