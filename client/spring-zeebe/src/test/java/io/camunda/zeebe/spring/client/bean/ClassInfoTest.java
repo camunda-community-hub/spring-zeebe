@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.bean;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import java.beans.Introspector;
 import org.junit.Test;
@@ -27,8 +28,14 @@ public class ClassInfoTest {
 
   public static class WithZeebeWorkerAllValues {
 
-    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"})
+    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true)
     public void handle() {
+    }
+  }
+
+  public static class WithZeebeWorkerVariables {
+    @ZeebeWorker(type = "bar", timeout = 100L, fetchVariables = "var3")
+    public void handle(@ZeebeVariable String var1, @ZeebeVariable int var2) {
     }
   }
 

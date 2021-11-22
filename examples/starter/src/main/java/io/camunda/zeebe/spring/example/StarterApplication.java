@@ -4,6 +4,8 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.EnableZeebeClient;
 import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+
+import java.util.Date;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @SpringBootApplication
 @EnableZeebeClient
 @EnableScheduling
-@ZeebeDeployment(classPathResources = "demoProcess.bpmn")
+@ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
 @Slf4j
 public class StarterApplication {
 
@@ -37,7 +39,7 @@ public class StarterApplication {
         .newCreateInstanceCommand()
         .bpmnProcessId("demoProcess")
         .latestVersion()
-        .variables("{\"a\": \"" + UUID.randomUUID().toString() + "\"}")
+        .variables("{\"a\": \"" + UUID.randomUUID().toString() + "\",\"b\": \"" + new Date().toString() + "\"}")
         .send()
         .join();
 

@@ -3,17 +3,25 @@ package io.camunda.zeebe.spring.client.config.processor;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.worker.JobClient;
+import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
+import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
+import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.lang.invoke.MethodHandles;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -28,9 +36,11 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ReadZeebeWorkerValue reader;
+  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
-  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader) {
+  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader,  DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.reader = reader;
+    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
   }
 
   @Override
@@ -55,7 +65,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
-            .handler((jobClient, job) -> m.getBeanInfo().invoke(jobClient, job));
+            .handler(new ZeebeWorkerSpringJobHandler(m, commandExceptionHandlingStrategy));
 
           // using defaults from config if null, 0 or negative
           if (m.getName() != null && m.getName().length() > 0) {
@@ -82,4 +92,6 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           LOGGER.info("register job worker: {}", m);
         });
   }
+
+
 }

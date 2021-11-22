@@ -76,6 +76,122 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 }
 ```
 
+### Fetch Variables
+
+You can access all variables of a process via the job:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  String variable1 = (String)job.getVariablesAsMap().get("variable1");
+  sysout(variable1);
+  // ...
+}
+```
+
+
+You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
+
+```
+@ZeebeWorker(type = "foo", fetchVariables={"variable1", "variable2"})
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  String variable1 = (String)job.getVariablesAsMap().get("variable1");
+  System.out.println(variable1);
+  // ...
+}
+```
+
+By using the `@ZeebeVariable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
+  System.out.println(variable1);
+  // ...
+}
+```
+
+With `@ZeebeVariable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
+
+```
+@ZeebeWorker(type = "foo", forceFetchAllVariables = true)
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
+}
+```
+
+### Completing the job
+
+As a default, your job handler code has to also complete the job, otherwise Zeebe will not know you did your work correctly:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  // do whatever you need to do
+  client.newCompleteCommand(job.getKey()) 
+     .send()
+     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
+}
+```
+
+Ideally, you **don't** use blocking behavior like `send().join()`, as this is a blocking call to wait for the issues command to be executed on the workflow engine. While this is very straightforward to use and produces easy-to-read code, blocking code is limited in terms of scalability.
+
+That's why the worker showed a different pattern:
+```
+send().whenComplete((result, exception) -> {})
+```
+This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
+This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+
+To ease things, you can also set `autoComplete=true` for the worker, than the Spring integration will take care if job completion for you:
+
+```
+@ZeebeWorker(type = "foo", autoComplete = true)
+public void handleJobFoo(final ActivatedJob job) {
+  // do whatever you need to do
+  // but no need to call client.newCompleteCommand()...
+}
+```
+
+Note that the code within the handler method needs to be synchronously executed, as the completion will be triggered right after the method has finished.
+
+When using `autoComplete` you can:
+
+* Return a `Map`, `String`, `InputStream`, or `Object`, which then will be added to the process variables
+* Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
+* Throw any other `Exception` that leads in an failure handed over to Zeebe
+
+```
+@ZeebeWorker(type = "foo", autoComplete = true)
+public Map<String, Object> handleJobFoo(final ActivatedJob job) {
+  // some work
+  if (successful) {
+    // some data is returned to be stored as process variable
+    return variablesMap;
+  } else {
+   // problem shall be indicated to the process:
+   throw new ZeebeBpmnError("DOESNT_WORK", "This does not work because...");
+  }
+}
+```
+
+
+### Throwing ZeebeBpmnError's
+
+Whenever your code hits a problem that should lead to a <a href="https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/">BPMN error</a> being raised, you can simply throw a ZeebeBpmnError providing the error code used in BPMN:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo() {
+  // some work
+  if (!successful) {
+   // problem shall be indicated to the process:
+   throw new ZeebeBpmnError("DOESNT_WORK", "This does not work because...");
+  }
+}
+```
+
+
+
 ## Configuring Camunda Cloud Connection
 
 Connections to the Camunda Cloud can be easily configured:
