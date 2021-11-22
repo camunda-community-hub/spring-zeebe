@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -34,9 +36,11 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ReadZeebeWorkerValue reader;
+  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
-  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader) {
+  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader,  DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.reader = reader;
+    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
   }
 
   @Override
@@ -61,7 +65,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
             .jobType(m.getType())
-            .handler(new ZeebeWorkerSpringJobHandler(m));
+            .handler(new ZeebeWorkerSpringJobHandler(m, commandExceptionHandlingStrategy));
 
           // using defaults from config if null, 0 or negative
           if (m.getName() != null && m.getName().length() > 0) {

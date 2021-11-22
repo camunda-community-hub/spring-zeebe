@@ -146,25 +146,44 @@ To ease things, you can also set `autoComplete=true` for the worker, than the Sp
 
 ```
 @ZeebeWorker(type = "foo", autoComplete = true)
-public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+public void handleJobFoo(final ActivatedJob job) {
   // do whatever you need to do
   // but no need to call client.newCompleteCommand()...
 }
 ```
 
+Note that the code within the handler method needs to be synchronously executed, as the completion will be triggered right after the method has finished.
+
 When using `autoComplete` you can:
 
 * Return a `Map`, `String`, `InputStream`, or `Object`, which then will be added to the process variables
 * Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
+* Throw any other `Exception` that leads in an failure handed over to Zeebe
 
 ```
 @ZeebeWorker(type = "foo", autoComplete = true)
-public Map<String, Object> handleJobFoo(final JobClient client, final ActivatedJob job) {
+public Map<String, Object> handleJobFoo(final ActivatedJob job) {
   // some work
   if (successful) {
     // some data is returned to be stored as process variable
     return variablesMap;
   } else {
+   // problem shall be indicated to the process:
+   throw new ZeebeBpmnError("DOESNT_WORK", "This does not work because...");
+  }
+}
+```
+
+
+### Throwing ZeebeBpmnError's
+
+Whenever your code hits a problem that should lead to a <a href="https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/">BPMN error</a> being raised, you can simply throw a ZeebeBpmnError providing the error code used in BPMN:
+
+```
+@ZeebeWorker(type = "foo")
+public void handleJobFoo() {
+  // some work
+  if (!successful) {
    // problem shall be indicated to the process:
    throw new ZeebeBpmnError("DOESNT_WORK", "This does not work because...");
   }

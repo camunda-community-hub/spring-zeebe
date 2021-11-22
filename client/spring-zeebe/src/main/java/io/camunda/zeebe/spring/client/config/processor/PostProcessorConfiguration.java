@@ -5,6 +5,8 @@ import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConf
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.util.List;
+
+import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -23,8 +25,8 @@ public class PostProcessorConfiguration {
   }
 
   @Bean
-  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader) {
-    return new ZeebeWorkerPostProcessor(reader);
+  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+    return new ZeebeWorkerPostProcessor(reader, commandExceptionHandlingStrategy);
   }
 
 }
