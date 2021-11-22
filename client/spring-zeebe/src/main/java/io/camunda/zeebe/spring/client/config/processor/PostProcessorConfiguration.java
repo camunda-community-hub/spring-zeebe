@@ -25,8 +25,8 @@ public class PostProcessorConfiguration {
   }
 
   @Bean
-  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
-    return new ZeebeWorkerPostProcessor(reader, commandExceptionHandlingStrategy);
+  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader) {
+    return new ZeebeWorkerPostProcessor(reader, new DefaultCommandExceptionHandlingStrategy());
   }
 
 }

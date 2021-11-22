@@ -38,7 +38,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
   private final ReadZeebeWorkerValue reader;
   private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
-  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader,  DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public ZeebeWorkerPostProcessor(ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.reader = reader;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
   }
