@@ -3,9 +3,7 @@ package io.camunda.zeebe.spring.client.exception;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DefaultCommandExceptionHandlingStrategy {
 
   public void handleCommandError(JobClient jobClient, ActivatedJob job, FinalCommandStep command, Throwable throwable) {

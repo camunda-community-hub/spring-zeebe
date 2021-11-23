@@ -2,10 +2,10 @@ package io.camunda.zeebe.spring.client.config;
 
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
+import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.config.processor.PostProcessorConfiguration;
 import java.util.Properties;
 
@@ -37,5 +37,10 @@ public class ZeebeClientSpringConfiguration {
   @Bean
   public ZeebeClientObjectFactory zeebeClientObjectFactory() {
     return () -> zeebeClientBuilder.build();
+  }
+
+  @Bean
+  public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
+    return new DefaultCommandExceptionHandlingStrategy();
   }
 }
