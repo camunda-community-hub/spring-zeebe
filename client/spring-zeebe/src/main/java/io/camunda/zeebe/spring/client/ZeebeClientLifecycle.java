@@ -3,17 +3,14 @@ package io.camunda.zeebe.spring.client;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.client.api.command.*;
-import io.camunda.zeebe.client.api.command.CancelProcessInstanceCommandStep1;
-import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
-import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
-import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
 import io.camunda.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
+import org.springframework.context.ApplicationEventPublisher;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.springframework.context.ApplicationEventPublisher;
 
 public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient> implements
   ZeebeClient {
@@ -31,6 +28,10 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
 
   public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> consumer) {
     startListener.add(consumer);
+    if (isRunning()) {
+      // In test cases the call sequence seems to be different, still need to understand why, but this fixes it
+      consumer.accept(this);
+    }
     return this;
   }
 

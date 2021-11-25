@@ -11,64 +11,27 @@
   <artifactId>spring-zeebe-test</artifactId>
   <name>test/spring-zeebe-test</name>
 
-  <properties>
-    <jgiven.version>1.1.0</jgiven.version>
-    <archunit.version>0.8.3</archunit.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>compile</scope>
     </dependency>
-
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>zeebe-broker</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.tngtech.archunit</groupId>
-      <artifactId>archunit-junit</artifactId>
-      <version>${archunit.version}</version>
+      <artifactId>spring-zeebe</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-bpmn-assert</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.tngtech.jgiven</groupId>
-      <artifactId>jgiven-junit</artifactId>
-      <version>${jgiven.version}</version>
-      <exclusions>
-        <!-- exclude guava as a different version is provided by grpc from zeebe-gateway -->
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.tngtech.jgiven</groupId>
-      <artifactId>jgiven-spring</artifactId>
-      <version>${jgiven.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.tngtech.jgiven</groupId>
-      <artifactId>jgiven-html5-report</artifactId>
-      <version>${jgiven.version}</version>
     </dependency>
   </dependencies>
 
