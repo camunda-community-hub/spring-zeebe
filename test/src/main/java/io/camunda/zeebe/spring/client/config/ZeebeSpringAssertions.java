@@ -8,7 +8,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-//@EmbeddedZeebeEngine
 @Import(ZeebeTestClientSpringConfiguration.class)
 @ExtendWith(ZeebeSpringAssertionsExtension.class)
 public @interface ZeebeSpringAssertions {}

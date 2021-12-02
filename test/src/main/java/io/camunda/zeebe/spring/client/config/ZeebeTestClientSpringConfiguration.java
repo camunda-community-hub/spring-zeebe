@@ -1,11 +1,10 @@
 package io.camunda.zeebe.spring.client.config;
 
+import io.camunda.zeebe.bpmnassert.testengine.EngineFactory;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.exporter.api.Exporter;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
-import io.camunda.zeebe.spring.client.config.ZeebeClientSpringConfiguration;
-import org.camunda.community.eze.EngineFactory;
-import org.camunda.community.eze.ZeebeEngine;
 import org.springframework.beans.BeansException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,24 +18,24 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
 
     // Do we miss a zeebeClient.close() somewhere?
     @Bean(destroyMethod = "stop")
-    public ZeebeEngine zeebeEngine() {
-        ZeebeEngine zeebeEngine = EngineFactory.INSTANCE.create(new ArrayList<Exporter>());
-        zeebeEngine.start();
-        return zeebeEngine;
-        // A zeebeEngine is at the same time also a RecordStreamSource (which is required in tests).
+    public InMemoryEngine inMemoryZeebeEngine() {
+      InMemoryEngine zeebeEngine = EngineFactory.create();
+      zeebeEngine.start();
+      return zeebeEngine;
+      // A zeebeEngine is at the same time also a RecordStreamSource (which is required in tests).
     }
 
     /**
      * Create ZeebeClient not by connecting to a broker, but the in-process EZE ZeebeEngine
      */
     @Bean
-    public ZeebeClientObjectFactory zeebeClientObjectFactory(ZeebeEngine zeebeEngine) {
-        return new ZeebeClientObjectFactory() {
-            @Override
-            public ZeebeClient getObject() throws BeansException {
-                return zeebeEngine.createClient();
-            }
-        };
+    public ZeebeClientObjectFactory zeebeClientObjectFactory(InMemoryEngine zeebeEngine) {
+      return new ZeebeClientObjectFactory() {
+        @Override
+        public ZeebeClient getObject() throws BeansException {
+          return zeebeEngine.createClient();
+        }
+      };
     }
 
 }

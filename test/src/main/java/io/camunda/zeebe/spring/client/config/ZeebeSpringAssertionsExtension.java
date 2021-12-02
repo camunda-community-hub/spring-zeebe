@@ -1,7 +1,7 @@
 package io.camunda.zeebe.spring.client.config;
 
 import io.camunda.zeebe.bpmnassert.RecordStreamSourceStore;
-import org.camunda.community.eze.ZeebeEngine;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -12,16 +12,16 @@ public class ZeebeSpringAssertionsExtension implements BeforeEachCallback, After
 
   @Override
   public void beforeEach(final ExtensionContext extensionContext) throws Exception {
-    ZeebeEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(ZeebeEngine.class);
-    RecordStreamSourceStore.init(zeebeEngine);
+    InMemoryEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(InMemoryEngine.class);
+    RecordStreamSourceStore.init(zeebeEngine.getRecordStream());
   }
 
   @Override
   public void testFailed(final ExtensionContext extensionContext, Throwable cause)  {
-    ZeebeEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(ZeebeEngine.class);
+    InMemoryEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(InMemoryEngine.class);
 
     System.out.print("===== Test failed! Printing records from the log stream =====");
-    zeebeEngine.records().forEach( record -> {System.out.println(record);});
+    zeebeEngine.getRecordStream().records().forEach( record -> {System.out.println(record);});
     System.out.print("----------");
   }
 
