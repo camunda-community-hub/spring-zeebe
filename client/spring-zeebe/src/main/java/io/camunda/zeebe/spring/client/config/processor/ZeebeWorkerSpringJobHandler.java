@@ -13,6 +13,7 @@ import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
+import org.springframework.util.StringUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -65,9 +66,13 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
         try {
-          arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
-        }
-        catch (ClassCastException ex) {
+          String variableName = param.getParameterInfo().getAnnotation(ZeebeVariable.class).variableName();
+
+          if (StringUtils.isEmpty(variableName.trim())) {
+            variableName = param.getParameterName();
+          }
+          arg = clazz.cast(job.getVariablesAsMap().get(variableName));
+        } catch (ClassCastException ex) {
           throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter, invalid type found: " + ex.getMessage());
         }
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeTypedVariables.class)) {
