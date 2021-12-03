@@ -6,6 +6,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.impl.Loggers;
+import io.camunda.zeebe.spring.client.annotation.ZeebeTypedVariables;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
@@ -68,6 +69,12 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
         }
         catch (ClassCastException ex) {
           throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter, invalid type found: " + ex.getMessage());
+        }
+      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeTypedVariables.class)) {
+        try {
+          arg = job.getVariablesAsType(clazz);
+        } catch (RuntimeException e) {
+          throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "', cause is: " + e.getMessage(), e);
         }
       }
       args.add(arg);
