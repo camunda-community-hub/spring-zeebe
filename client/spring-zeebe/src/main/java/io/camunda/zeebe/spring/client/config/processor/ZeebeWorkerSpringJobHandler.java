@@ -66,7 +66,7 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
         try {
-          String variableName = param.getParameterInfo().getAnnotation(ZeebeVariable.class).variableName();
+          String variableName = param.getParameterInfo().getAnnotation(ZeebeVariable.class).value();
 
           if (StringUtils.isEmpty(variableName.trim())) {
             variableName = param.getParameterName();
