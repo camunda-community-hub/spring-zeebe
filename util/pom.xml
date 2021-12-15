@@ -4,7 +4,7 @@
   <parent>
     <artifactId>spring-zeebe-root</artifactId>
     <groupId>io.camunda</groupId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.8-SNAPSHOT</version>
   </parent>
 
   <groupId>io.camunda</groupId>
