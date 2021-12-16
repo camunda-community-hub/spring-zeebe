@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>spring-zeebe-root</artifactId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>io.camunda</groupId>
@@ -29,8 +29,8 @@
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>zeebe-bpmn-assert</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <artifactId>zeebe-process-test</artifactId>
+      <version>1.3.0-alpha3</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

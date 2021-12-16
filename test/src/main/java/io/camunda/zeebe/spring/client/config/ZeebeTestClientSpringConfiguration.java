@@ -1,9 +1,9 @@
 package io.camunda.zeebe.spring.client.config;
 
-import io.camunda.zeebe.bpmnassert.testengine.EngineFactory;
-import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.exporter.api.Exporter;
+import io.camunda.zeebe.process.test.testengine.EngineFactory;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.annotation.Bean;

@@ -1,26 +1,21 @@
 package io.camunda.zeebe.spring.client.config;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
-import io.camunda.zeebe.spring.client.config.ZeebeSpringAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
+import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
@@ -68,7 +63,9 @@ public class JobHandlerTest {
   }
 
   @ZeebeWorker(type = "test1", autoComplete = true)
-  public void handleTest1() {
+  public void handleTest1(JobClient client, ActivatedJob job) {
+    // Complete it here to trigger a not found in the auto complete!
+    //client.newCompleteCommand(job.getKey()).send().join();
     calledTest1 = true;
   }
 }

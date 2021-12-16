@@ -1,7 +1,7 @@
 package io.camunda.zeebe.spring.client.config;
 
-import io.camunda.zeebe.bpmnassert.RecordStreamSourceStore;
-import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.RecordStreamSourceStore;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
