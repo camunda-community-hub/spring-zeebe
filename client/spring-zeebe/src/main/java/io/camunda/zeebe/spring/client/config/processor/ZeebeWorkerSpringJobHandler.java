@@ -6,14 +6,13 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.impl.Loggers;
-import io.camunda.zeebe.spring.client.annotation.ZeebeTypedVariables;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
+import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
-import org.springframework.util.StringUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -66,16 +65,12 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
         try {
-          String variableName = param.getParameterInfo().getAnnotation(ZeebeVariable.class).value();
-
-          if (StringUtils.isEmpty(variableName.trim())) {
-            variableName = param.getParameterName();
-          }
-          arg = clazz.cast(job.getVariablesAsMap().get(variableName));
+          // TODO make this work for complex types as well
+          arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
         } catch (ClassCastException ex) {
           throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter, invalid type found: " + ex.getMessage());
         }
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeTypedVariables.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
         try {
           arg = job.getVariablesAsType(clazz);
         } catch (RuntimeException e) {
