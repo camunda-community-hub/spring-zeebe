@@ -67,7 +67,8 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
         try {
           // TODO make this work for complex types as well
           arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
-        } catch (ClassCastException ex) {
+        }
+        catch (ClassCastException ex) {
           throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter, invalid type found: " + ex.getMessage());
         }
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
