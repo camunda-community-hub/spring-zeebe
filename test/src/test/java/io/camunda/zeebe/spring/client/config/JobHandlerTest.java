@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.Collections;
 import java.util.Map;
@@ -18,8 +19,7 @@ import java.util.Map;
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@SpringBootTest
-@SpringBootConfiguration
+@SpringBootTest(classes = {JobHandlerTest.class})
 @ZeebeSpringAssertions
 public class JobHandlerTest {
 
