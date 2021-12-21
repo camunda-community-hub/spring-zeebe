@@ -5,8 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import org.junit.jupiter.api.Test;
+
 import java.beans.Introspector;
-import org.junit.Test;
 
 public class ClassInfoTest {
 

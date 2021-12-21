@@ -8,8 +8,8 @@ import io.camunda.zeebe.client.api.response.Process;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -19,6 +19,7 @@ import org.springframework.core.io.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,7 +46,7 @@ public class DeploymentPostProcessorTest {
 
   private DeploymentPostProcessor deploymentPostProcessor;
 
-  @Before
+  @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
     deploymentPostProcessor = Mockito.spy(new DeploymentPostProcessor(reader));
@@ -130,24 +131,26 @@ public class DeploymentPostProcessorTest {
     verify(zeebeFuture).join();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldThrowExceptionOnNoResourcesToDeploy() {
-    //given
-    ClassInfo classInfo = ClassInfo.builder()
-      .build();
+    assertThrows(IllegalArgumentException.class, () -> {
+      //given
+      ClassInfo classInfo = ClassInfo.builder()
+        .build();
 
-    ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .resources(Collections.emptyList())
-      .build();
+      ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
+        .resources(Collections.emptyList())
+        .build();
 
-    when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
+      when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
-    when(client.newDeployCommand()).thenReturn(deployStep1);
+      when(client.newDeployCommand()).thenReturn(deployStep1);
 
-    when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
+      when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
-    //when
-    deploymentPostProcessor.apply(classInfo).accept(client);
+      //when
+      deploymentPostProcessor.apply(classInfo).accept(client);
+    });
   }
 
   private Process getProcess() {

@@ -1,9 +1,7 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
@@ -12,10 +10,9 @@ import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
-import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
+
+import org.junit.jupiter.api.Test;
 
 public class ReadZeebeWorkerValueTest {
 

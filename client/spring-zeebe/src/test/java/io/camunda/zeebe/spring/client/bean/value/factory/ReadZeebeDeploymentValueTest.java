@@ -4,8 +4,8 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -24,7 +24,7 @@ public class ReadZeebeDeploymentValueTest {
 
   private ReadZeebeDeploymentValue readZeebeDeploymentValue;
 
-  @Before
+  @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
     readZeebeDeploymentValue = new ReadZeebeDeploymentValue(expressionResolver);
