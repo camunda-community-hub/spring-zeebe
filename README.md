@@ -174,13 +174,15 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 }
 ```
 
-When already using `autoComplete` and you prefer using types to map your variables, the `@ZeebeTypedVariables` annotation makes your life easy. You can 
-use it like this:
+When using `autoComplete` you can also use your own class variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation:
 
 ```java
 @ZeebeWorker(type = "foo", autoComplete = true)
-public ProcessVariables handleFoo(@ZeebeTypedVariables ProcessVariables variables){
+public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variables){
   // do whatever you need to do
+  variables.getMyAttribueX();
+  variables.setMyAttribueY(42);
+  // return variables object if something has changed, so the changes are submitted to Zeebe
   return variables;
 }
 ```
