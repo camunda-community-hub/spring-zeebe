@@ -174,6 +174,17 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 }
 ```
 
+When already using `autoComplete` and you prefer using types to map your variables, the `@ZeebeTypedVariables` annotation makes your life easy. You can 
+use it like this:
+
+```java
+@ZeebeWorker(type = "foo", autoComplete = true)
+public ProcessVariables handleFoo(@ZeebeTypedVariables ProcessVariables variables){
+  // do whatever you need to do
+  return variables;
+}
+```
+
 
 ### Throwing ZeebeBpmnError's
 
