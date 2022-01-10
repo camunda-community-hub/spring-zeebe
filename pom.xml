@@ -58,6 +58,11 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test</artifactId>
+        <version>${zeebe.version}</version>
+      </dependency>
 
       <!-- CLIENT -->
       <dependency>
