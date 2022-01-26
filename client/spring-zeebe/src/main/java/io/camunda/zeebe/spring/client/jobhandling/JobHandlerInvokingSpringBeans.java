@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config.processor;
+package io.camunda.zeebe.spring.client.jobhandling;
 
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -10,7 +10,6 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
-import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
 
@@ -19,13 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ZeebeWorkerSpringJobHandler implements JobHandler {
+/**
+ * Zeebe JobHandler that invokes a Spring bean
+ */
+public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
-  public ZeebeWorkerSpringJobHandler(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
   }
@@ -41,15 +43,19 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
       // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
       // which leads to retrying
       if (workerValue.isAutoComplete()) {
-        final FinalCommandStep<Void> command = createCompleteCommand(jobClient, job, result);
-        command.send().exceptionally(t -> {
-          commandExceptionHandlingStrategy.handleCommandError(jobClient, job, command, t);
-          return null;
-        });
+        CommandWrapper command = new CommandWrapper(
+          createCompleteCommand(jobClient, job, result),
+          job,
+          commandExceptionHandlingStrategy);
+        command.executeAsync();
       }
     }
     catch (ZeebeBpmnError bpmnError) {
-      handleBpmnError(jobClient, job, bpmnError);
+      CommandWrapper command = new CommandWrapper(
+        createThrowErrorCommand(jobClient, job, bpmnError),
+        job,
+        commandExceptionHandlingStrategy);
+      command.executeAsync();
     }
   }
 
@@ -99,17 +105,13 @@ public class ZeebeWorkerSpringJobHandler implements JobHandler {
     return completeCommand;
   }
 
-  public void handleBpmnError(JobClient jobClient, ActivatedJob job,  ZeebeBpmnError bpmnError) {
+  private FinalCommandStep<Void> createThrowErrorCommand(JobClient jobClient, ActivatedJob job, ZeebeBpmnError bpmnError) {
     FinalCommandStep<Void> command = jobClient.newThrowErrorCommand(job.getKey()) // TODO: PR for taking a job only in command chain
       .errorCode(bpmnError.getErrorCode())
       .errorMessage(bpmnError.getErrorMessage());
-
-    command.send()
-      .exceptionally(t -> {
-        commandExceptionHandlingStrategy.handleCommandError(jobClient, job, command, t);
-        return null;
-      });
+    return command;
   }
+
 
 
 }

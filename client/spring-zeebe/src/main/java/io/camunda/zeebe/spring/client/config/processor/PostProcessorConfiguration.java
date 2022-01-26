@@ -1,12 +1,13 @@
 package io.camunda.zeebe.spring.client.config.processor;
 
+import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.util.List;
 
-import io.camunda.zeebe.spring.client.exception.DefaultCommandExceptionHandlingStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -25,8 +26,8 @@ public class PostProcessorConfiguration {
   }
 
   @Bean
-  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
-    return new ZeebeWorkerPostProcessor(reader, commandExceptionHandlingStrategy);
+  public ZeebeWorkerPostProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, BackoffSupplier backoffSupplier) {
+    return new ZeebeWorkerPostProcessor(reader, commandExceptionHandlingStrategy, backoffSupplier);
   }
 
 }
