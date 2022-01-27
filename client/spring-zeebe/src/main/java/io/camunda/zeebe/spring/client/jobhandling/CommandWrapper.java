@@ -6,6 +6,7 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,8 @@ public class CommandWrapper {
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
   private long currentRetryDelay = 50l;
+  private int invocationCounter = 0;
+  private int maxRetries = 20; // TODO: Make configurable
 
   public CommandWrapper(FinalCommandStep<Void> command, ActivatedJob job, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.command = command;
@@ -25,6 +28,7 @@ public class CommandWrapper {
   }
 
   public void executeAsync() {
+    invocationCounter++;
     command.send().exceptionally(t -> {
       commandExceptionHandlingStrategy.handleCommandError(this, t);
       return null;
@@ -46,5 +50,17 @@ public class CommandWrapper {
       ", job=" + job +
       ", currentRetryDelay=" + currentRetryDelay +
       '}';
+  }
+
+  public boolean hasMoreRetries() {
+    if (jobDeadlineExceeded()) {
+      // it does not make much sense to retry if the deadline is over, the job will be assigned to an other worker anyway
+      return false;
+    }
+    return (invocationCounter < maxRetries);
+  }
+
+  public boolean jobDeadlineExceeded() {
+    return (Instant.now().getEpochSecond() > job.getDeadline());
   }
 }

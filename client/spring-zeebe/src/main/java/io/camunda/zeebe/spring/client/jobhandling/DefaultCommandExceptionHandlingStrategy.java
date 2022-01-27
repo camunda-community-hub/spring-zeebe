@@ -54,16 +54,20 @@ public class DefaultCommandExceptionHandlingStrategy implements CommandException
         // TODO: IS Ignorance really a good idea? Think of some local transaction that might need to be marked for rollback! But for sure, retry does not help at all
         return;
       } else if (RETRIABLE_CODES.contains(code)) {
-        command.increaseBackoffUsing(backoffSupplier);
-        LOG.warn("Retrying "+command+" after error of type '" + code + "' with backoff");
-        command.scheduleExecutionUsing(scheduledExecutorService);
-        return;
+        if (command.hasMoreRetries()) {
+          command.increaseBackoffUsing(backoffSupplier);
+          LOG.warn("Retrying " + command + " after error of type '" + code + "' with backoff");
+          command.scheduleExecutionUsing(scheduledExecutorService);
+          return;
+        } else {
+          throw new RuntimeException("Could not execute " + command + " due to error of type '" + code + "' and no retries are left", throwable);
+        }
       } else if (FAILURE_CODES.contains(code)) {
         throw new RuntimeException("Could not execute " + command + " due to error of type '" + code + "'", throwable);
       }
     }
 
-    // if it wasn't handled yet, throw an exception which will lead to retry
+    // if it wasn't handled yet, throw an exception
     throw new RuntimeException("Could not execute " + command + " due to exception: " + throwable.getMessage(), throwable);
   }
 }
