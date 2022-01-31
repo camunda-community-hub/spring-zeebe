@@ -24,11 +24,11 @@ public class ReadZeebeWorkerValue
     return methodInfo
       .getAnnotation(annotationType)
       .map(
-        annotation ->
-          ZeebeWorkerValue.builder()
-            .beanInfo(methodInfo)
+        annotation -> {
+
+          ZeebeWorkerValue.ZeebeWorkerValueBuilder builder = ZeebeWorkerValue.builder()
+            .methodInfo(methodInfo)
             .type(resolver.resolve(annotation.type()))
-            .name(resolver.resolve(annotation.name()))
             .timeout(annotation.timeout())
             .maxJobsActive(annotation.maxJobsActive())
             .pollInterval(annotation.pollInterval())
@@ -36,8 +36,18 @@ public class ReadZeebeWorkerValue
             .forceFetchAllVariables(annotation.forceFetchAllVariables())
             .autoComplete(annotation.autoComplete())
             .variableParameters(readZeebeVariableParameters(methodInfo))
-            .requestTimeout(annotation.requestTimeout())
-            .build());
+            .requestTimeout(annotation.requestTimeout());
+
+          String name = resolver.resolve(annotation.name());
+          if (name != null && name.length() > 0) {
+            builder.name(name);
+          } else {
+            builder.name(methodInfo.getBeanName() + "#" + methodInfo.getMethodName());
+          }
+
+          return builder.build();
+
+        });
   }
 
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {

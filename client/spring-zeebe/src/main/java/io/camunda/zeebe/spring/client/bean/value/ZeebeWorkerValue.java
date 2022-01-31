@@ -28,9 +28,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private String[] fetchVariables;
 
-  private MethodInfo beanInfo;
+  private MethodInfo methodInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, boolean forceFetchAllVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo beanInfo) {
+  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, boolean forceFetchAllVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo methodInfo) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
@@ -38,7 +38,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.requestTimeout = requestTimeout;
     this.pollInterval = pollInterval;
     this.autoComplete = autoComplete;
-    this.beanInfo = beanInfo;
+    this.methodInfo = methodInfo;
 
     if (forceFetchAllVariables) {
       // this overwrites any other setting
@@ -84,13 +84,32 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return autoComplete;
   }
 
+  public MethodInfo getMethodInfo() {
+    return methodInfo;
+  }
+
   @Override
   public MethodInfo getBeanInfo() {
-    return beanInfo;
+    return getMethodInfo();
   }
 
   public static final ZeebeWorkerValueBuilder builder() {
     return new ZeebeWorkerValueBuilder();
+  }
+
+  @Override
+  public String toString() {
+    return "ZeebeWorkerValue{" +
+      "name='" + name + '\'' +
+      ", type='" + type + '\'' +
+      ", timeout=" + timeout +
+      ", maxJobsActive=" + maxJobsActive +
+      ", requestTimeout=" + requestTimeout +
+      ", pollInterval=" + pollInterval +
+      ", autoComplete=" + autoComplete +
+      ", fetchVariables=" + Arrays.toString(fetchVariables) +
+      ", methodInfo=" + methodInfo +
+      '}';
   }
 
   public static final class ZeebeWorkerValueBuilder {
@@ -115,7 +134,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
     private boolean autoComplete;
 
-    private MethodInfo beanInfo;
+    private MethodInfo methodInfo;
 
     private ZeebeWorkerValueBuilder() {
     }
@@ -165,8 +184,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       return this;
     }
 
-    public ZeebeWorkerValueBuilder beanInfo(MethodInfo beanInfo) {
-      this.beanInfo = beanInfo;
+    public ZeebeWorkerValueBuilder methodInfo(MethodInfo methodInfo) {
+      this.methodInfo = methodInfo;
       return this;
     }
 
@@ -176,7 +195,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     }
 
     public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, forceFetchAllVariables, variableParameters, autoComplete, beanInfo);
+      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, forceFetchAllVariables, variableParameters, autoComplete, methodInfo);
     }
 
   }

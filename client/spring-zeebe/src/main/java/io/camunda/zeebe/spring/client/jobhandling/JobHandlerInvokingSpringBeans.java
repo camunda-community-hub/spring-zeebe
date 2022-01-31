@@ -35,10 +35,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
     // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
-    List<Object> args = createParameters(jobClient, job, workerValue.getBeanInfo().getParameters());
+    List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
 
     try {
-      Object result = workerValue.getBeanInfo().invoke(args.toArray());
+      Object result = workerValue.getMethodInfo().invoke(args.toArray());
       // normal exceptions are handled by JobRunnableFactory
       // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
       // which leads to retrying

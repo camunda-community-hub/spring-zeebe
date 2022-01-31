@@ -36,7 +36,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(-1, zeebeWorkerValue.get().getPollInterval());
     assertEquals(false, zeebeWorkerValue.get().isAutoComplete());
     assertArrayEquals(new String[] {}, zeebeWorkerValue.get().getFetchVariables());
-    assertEquals(methodInfo, zeebeWorkerValue.get().getBeanInfo());
+    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(1_000L, zeebeWorkerValue.get().getPollInterval());
     assertEquals(true, zeebeWorkerValue.get().isAutoComplete());
     assertArrayEquals(new String[] { "foo"}, zeebeWorkerValue.get().getFetchVariables());
-    assertEquals(methodInfo, zeebeWorkerValue.get().getBeanInfo());
+    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   @Test
@@ -75,7 +75,7 @@ public class ReadZeebeWorkerValueTest {
     //then
     assertTrue(zeebeWorkerValue.isPresent());
     assertThat(Arrays.asList("var1", "var2", "var3" )).hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
-    assertEquals(methodInfo, zeebeWorkerValue.get().getBeanInfo());
+    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   private MethodInfo extract(Class<?> clazz) throws NoSuchMethodException {

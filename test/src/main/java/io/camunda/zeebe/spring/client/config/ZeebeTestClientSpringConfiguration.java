@@ -5,16 +5,21 @@ import io.camunda.zeebe.exporter.api.Exporter;
 import io.camunda.zeebe.process.test.testengine.EngineFactory;
 import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 @TestConfiguration
 public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientSpringConfiguration {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Replaces most stuff from https://github.com/camunda-community-hub/eze/blob/76d666759fd11699c0356ca02f697b66d2376e0b/junit-extension/src/main/kotlin/org/camunda/community/eze/EzeExtension.kt
 
@@ -22,8 +27,10 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
     @Bean(destroyMethod = "stop")
     @Primary
     public InMemoryEngine testInMemoryZeebeEngine() {
+      LOGGER.info("Create Zeebe in-memory engine for test run...");
       InMemoryEngine zeebeEngine = EngineFactory.create();
       zeebeEngine.start();
+      LOGGER.info("Started up Zeebe in-memory engine for test run");
       return zeebeEngine;
       // A zeebeEngine is at the same time also a RecordStreamSource (which is required in tests).
     }

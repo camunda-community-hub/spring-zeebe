@@ -6,8 +6,10 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
+import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
+import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
 import java.lang.invoke.MethodHandles;
@@ -19,6 +21,7 @@ import java.util.function.Consumer;
 
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans;
+import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -54,7 +57,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
   @Override
   public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
-    LOGGER.info("zeebeWorker: {}", beanInfo);
+    LOGGER.info("Registering Zeebe worker(s) of bean: {}", beanInfo.getBean());
 
     final List<ZeebeWorkerValue> annotatedMethods = new ArrayList<>();
 
@@ -74,6 +77,8 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
           // using defaults from config if null, 0 or negative
           if (zeebeWorkerValue.getName() != null && zeebeWorkerValue.getName().length() > 0) {
             builder.name(zeebeWorkerValue.getName());
+          } else {
+            builder.name(beanInfo.getBeanName() + "#" + zeebeWorkerValue.getMethodInfo().getMethodName());
           }
           if (zeebeWorkerValue.getMaxJobsActive() > 0) {
             builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
@@ -93,7 +98,7 @@ public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
 
           builder.open();
 
-          LOGGER.info("register job worker: {}", zeebeWorkerValue);
+          LOGGER.info(". Register Zeebe worker: {}", zeebeWorkerValue);
         });
   }
 
