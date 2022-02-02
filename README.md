@@ -19,7 +19,7 @@ Just add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>spring-zeebe-starter</artifactId>
-	<version>1.2.8</version>
+	<version>1.3.0</version>
 </dependency>
 ```
 
@@ -53,7 +53,7 @@ Use the `@ZeebeDeployment` annotation:
 public class MySpringBootApplication {
 ```
 
-This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader](the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
+This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader] (the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
 
 ```
 @ZeebeDeployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
