@@ -1,7 +1,6 @@
 package io.camunda.zeebe.spring.client.config;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.exporter.api.Exporter;
 import io.camunda.zeebe.process.test.testengine.EngineFactory;
 import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
@@ -10,11 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 
 @TestConfiguration
 public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientSpringConfiguration {
