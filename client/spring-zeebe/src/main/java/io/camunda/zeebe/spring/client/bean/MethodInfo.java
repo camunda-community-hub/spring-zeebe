@@ -37,6 +37,10 @@ public class MethodInfo implements BeanInfo {
     return classInfo.getBeanName();
   }
 
+  public String getMethodName() {
+    return method.getName();
+  }
+
   public Object invoke(final Object... args) {
     try {
       return method.invoke(getBean(), args);
