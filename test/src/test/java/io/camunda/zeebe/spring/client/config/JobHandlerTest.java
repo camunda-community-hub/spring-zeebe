@@ -11,9 +11,7 @@ import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.time.Duration;
@@ -26,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {JobHandlerTest.class})
-@ZeebeSpringAssertions
+@ZeebeSpringJunit5Extension
 public class JobHandlerTest {
 
   @Autowired

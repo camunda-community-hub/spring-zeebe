@@ -10,4 +10,4 @@ import java.lang.annotation.*;
 @Inherited
 @Import(ZeebeTestClientSpringConfiguration.class)
 @ExtendWith(ZeebeSpringAssertionsExtension.class)
-public @interface ZeebeSpringAssertions {}
+public @interface ZeebeSpringJunit5Extension {}
