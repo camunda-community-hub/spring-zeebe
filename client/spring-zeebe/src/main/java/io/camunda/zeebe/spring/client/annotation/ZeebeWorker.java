@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ZeebeWorker {
 
-  String type() default "${zeebe.client.worker.defaultType}";
+  String type() default "${zeebe.client.worker.default-type}";
 
   String name() default ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in ZeebeWorkerPostProcessor
 
