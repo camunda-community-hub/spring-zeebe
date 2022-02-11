@@ -6,6 +6,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.impl.Loggers;
+import io.camunda.zeebe.spring.client.annotation.ZeebeCustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
@@ -82,6 +83,12 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
           arg = job.getVariablesAsType(clazz);
         } catch (RuntimeException e) {
           throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "', cause is: " + e.getMessage(), e);
+        }
+      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
+        try {
+          arg = job.getCustomHeaders();
+        } catch (RuntimeException e) {
+          throw new RuntimeException("Cannot assign headers '" + param.getParameterName() + "' to parameter, cause is: " + e.getMessage(), e);
         }
       }
       args.add(arg);

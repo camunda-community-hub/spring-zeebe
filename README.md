@@ -187,6 +187,24 @@ public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variabl
 }
 ```
 
+In the same manner you can also access the headers using `@ZeebeCustomHeaders` 
+
+```java
+@ZeebeWorker(type = "foo", autoComplete = true)
+public void handleFoo(final ActivatedJob job, @ZeebeCustomHeaders Map<String, String> headers){
+  // do whatever you need to do
+} 
+```
+
+Or using both `@ZeebeVariablesAsType` and `@ZeebeCustomHeaders`
+
+```java
+@ZeebeWorker(type = "foo", autoComplete = true)
+public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variables, @ZeebeCustomHeaders Map<String, String> headers){
+  // do whatever you need to do
+  return variables;
+}
+```
 
 ### Throwing ZeebeBpmnError's
 
