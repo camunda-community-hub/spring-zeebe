@@ -18,9 +18,8 @@ public class ZeebeSpringAssertionsExtension implements BeforeEachCallback, After
 
   @Override
   public void testFailed(final ExtensionContext extensionContext, Throwable cause)  {
-    InMemoryEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(InMemoryEngine.class);
-
     /*
+    InMemoryEngine zeebeEngine = SpringExtension.getApplicationContext(extensionContext).getBean(InMemoryEngine.class);
     System.out.print("===== Test failed! Printing records from the log stream =====");
     zeebeEngine.getRecordStream().records().forEach( record -> {System.out.println(record);});
     System.out.print("----------");
