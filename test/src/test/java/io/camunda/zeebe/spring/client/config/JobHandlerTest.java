@@ -20,11 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
+import static io.camunda.zeebe.spring.client.config.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {JobHandlerTest.class})
-@ZeebeSpringJunit5Extension
+@ZeebeSpringTest
 public class JobHandlerTest {
 
   @Autowired
@@ -55,7 +56,7 @@ public class JobHandlerTest {
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
 
     assertThat(processInstance).isStarted();
-    waitForCompletion(processInstance);
+    waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
   }
 
@@ -71,8 +72,8 @@ public class JobHandlerTest {
     BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test2").startEvent().serviceTask().zeebeJobType("test2").endEvent().done();
     client.newDeployCommand().addProcessModel(bpmnModel, "test2.bpmn").send().join();
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test2");
-    assertThat(processInstance).isStarted();
-    waitForCompletion(processInstance);
+    //assertThat(processInstance).isStarted();
+    waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest2);
   }
 
@@ -82,14 +83,6 @@ public class JobHandlerTest {
 
   private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId, Map<String, Object> variables) {
     return client.newCreateInstanceCommand().bpmnProcessId(bpmnProcessId).latestVersion().variables(variables).send().join();
-  }
-
-  // TODO find a better solution for this
-  public void waitForCompletion(ProcessInstanceEvent processInstance) {
-    Awaitility.await().atMost(Duration.ofMillis(2000)).untilAsserted(() -> {
-      RecordStreamSourceStore.init(engine.getRecordStream());
-      assertThat(processInstance).isCompleted();
-    });
   }
 
 }

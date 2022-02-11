@@ -18,8 +18,6 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    // Replaces most stuff from https://github.com/camunda-community-hub/eze/blob/76d666759fd11699c0356ca02f697b66d2376e0b/junit-extension/src/main/kotlin/org/camunda/community/eze/EzeExtension.kt
-
     // Do we miss a zeebeClient.close() somewhere?
     @Bean(destroyMethod = "stop")
     @Primary
