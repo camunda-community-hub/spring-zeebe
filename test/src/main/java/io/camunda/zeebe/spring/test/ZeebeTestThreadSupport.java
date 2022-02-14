@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.test;
 
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.RecordStreamSourceStore;

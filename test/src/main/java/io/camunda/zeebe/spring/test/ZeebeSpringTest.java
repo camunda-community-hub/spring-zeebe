@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.test;
 
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;

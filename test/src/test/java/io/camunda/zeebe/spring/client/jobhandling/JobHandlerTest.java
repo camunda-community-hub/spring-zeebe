@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.client.jobhandling;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -6,21 +6,19 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
-import io.camunda.zeebe.process.test.RecordStreamSourceStore;
 import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.spring.client.config.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
+import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
