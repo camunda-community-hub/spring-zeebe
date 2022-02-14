@@ -19,7 +19,7 @@ Just add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>spring-zeebe-starter</artifactId>
-	<version>1.3.3</version>
+	<version>1.3.4</version>
 </dependency>
 ```
 
