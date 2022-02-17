@@ -11,11 +11,19 @@
 This project allows to leverage Zeebe within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client/index).
 
 
+# Example
+
+There is a full example, including test cases, available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot). Further, you might want to have a look into the [examples/](examples/) folder.
+
+# Get Started
+
+Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), or open a pre-existing one you already have.
+
 ## Add Spring Boot Starter to Your Project
 
-Just add the following Maven dependency to your Spring Boot Starter project:
+Add the following Maven dependency to your Spring Boot Starter project:
 
-```
+```xml
 <dependency>
 	<groupId>io.camunda</groupId>
 	<artifactId>spring-zeebe-starter</artifactId>
@@ -23,13 +31,30 @@ Just add the following Maven dependency to your Spring Boot Starter project:
 </dependency>
 ```
 
-# How to use
+
+## Configuring Camunda Cloud Connection
+
+Connections to the Camunda Cloud can be easily configured, create the following entries in your `src/main/resources/application.properties`:
+
+```properties
+zeebe.client.cloud.cluster-id=xxx
+zeebe.client.cloud.client-id=xxx
+zeebe.client.cloud.client-secret=xxx
+zeebe.client.cloud.region=bru-2
+```
+
+You can also confige the connection to a self-managed Zeebe broker:
+
+```properties
+zeebe.client.broker.gateway-address=127.0.0.1:26500
+zeebe.client.security.plaintext=true
+```
 
 ## Connect to Zeebe Broker
 
-Just add the `@EnableZeebeClient` annotation to your Spring Boot Application:
+Add the `@EnableZeebeClient` annotation to your Spring Boot Application:
 
-```
+```java
 @SpringBootApplication
 @EnableZeebeClient
 public class MySpringBootApplication {
@@ -37,7 +62,7 @@ public class MySpringBootApplication {
 
 Now you can inject the ZeebeClient and work with it, e.g. to create new workflow instances:
 
-```
+```java
 @Autowired
 private ZeebeClient client;
 ```
@@ -46,7 +71,7 @@ private ZeebeClient client;
 
 Use the `@ZeebeDeployment` annotation:
 
-```
+```java
 @SpringBootApplication
 @EnableZeebeClient
 @ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
@@ -55,17 +80,17 @@ public class MySpringBootApplication {
 
 This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader] (the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
 
-```
+```java
 @ZeebeDeployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
 ```
 or define wildcard patterns:
-```
+```java
 @ZeebeDeployment(resources = "classpath*:/bpmn/**/*.bpmn")
 ```
 
 ## Implement Job Worker
 
-```
+```java
 @ZeebeWorker(type = "foo")
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // do whatever you need to do
@@ -76,7 +101,44 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 }
 ```
 
-### Fetch Variables
+## Writing test cases
+
+You can startup an in-memory test engine and do assertions by adding this Maven dependency:
+
+```xml
+		<dependency>
+			<groupId>io.camunda</groupId>
+			<artifactId>spring-zeebe-test</artifactId>
+			<version>${spring-zeebe.version}</version>
+			<scope>test</scope>
+		</dependency>
+```
+
+Then you need to startup the test engine in your test case by adding `@ZeebeSpringTest`
+
+```java
+@SpringBootTest
+@ZeebeSpringTest
+public class TestMyProcess {
+  // ...  
+```
+
+An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
+
+## Enjoy
+
+Now have fun with Zeebe :-)
+
+
+
+
+# Documentation
+
+
+
+## Workers
+
+### Fetch all variables
 
 You can access all variables of a process via the job:
 
@@ -90,6 +152,8 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 ```
 
 
+### Define variables to fetch
+
 You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
 
 ```
@@ -100,6 +164,8 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // ...
 }
 ```
+
+### Using @ZeebeVariable
 
 By using the `@ZeebeVariable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
 
@@ -118,6 +184,24 @@ With `@ZeebeVariable` or `fetchVariables` you limit which variables are loaded f
 public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
 }
 ```
+
+### Using @ZeebeVariablesAsType
+
+When using `autoComplete` (see below) you can also use your own class variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation:
+
+```java
+@ZeebeWorker(type = "foo", autoComplete = true)
+public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variables){
+  // do whatever you need to do
+  variables.getMyAttribueX();
+  variables.setMyAttribueY(42);
+  // return variables object if something has changed, so the changes are submitted to Zeebe
+  return variables;
+}
+```
+
+
+
 
 ### Completing the job
 
@@ -141,6 +225,9 @@ send().whenComplete((result, exception) -> {})
 ```
 This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
 This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+
+
+### Auto-completing jobs
 
 To ease things, you can also set `autoComplete=true` for the worker, than the Spring integration will take care if job completion for you:
 
@@ -174,18 +261,9 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 }
 ```
 
-When using `autoComplete` you can also use your own class variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation:
 
-```java
-@ZeebeWorker(type = "foo", autoComplete = true)
-public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variables){
-  // do whatever you need to do
-  variables.getMyAttribueX();
-  variables.setMyAttribueY(42);
-  // return variables object if something has changed, so the changes are submitted to Zeebe
-  return variables;
-}
-```
+
+### @ZeebeCustomHeaders
 
 In the same manner you can also access the headers using `@ZeebeCustomHeaders` 
 
@@ -223,16 +301,17 @@ public void handleJobFoo() {
 
 
 
-## Configuring Camunda Cloud Connection
 
-Connections to the Camunda Cloud can be easily configured:
+## Additional Configuration Options
+
+### Configuring Self-managed Zeebe Connection
 
 ```
-zeebe.client.cloud.cluster-id=xxx
-zeebe.client.cloud.client-id=xxx
-zeebe.client.cloud.client-secret=xxx
-zeebe.client.cloud.region=bru-2
+zeebe.client.broker.gateway-address=127.0.0.1:26500
+zeebe.client.security.plaintext=true
 ```
+
+### Configure different cloud environments
 
 If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
 
@@ -244,20 +323,17 @@ zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
 
 As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping). 
 
-## Configuring Self-managed Zeebe Connection
 
-```
-zeebe.client.broker.gateway-address=127.0.0.1:26500
-zeebe.client.security.plaintext=true
-```
+### Default task type
 
-## Additional Configuration Options
 
 If you build a worker that only serves one thing, it might also be handy to define the worker job type globally - and not in the annotation:
 
 ```
 zeebe.client.worker.defaultType=foo
 ```
+
+### Configure jobs in flight and thread pool
 
 Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
 
@@ -268,8 +344,13 @@ zeebe.client.worker.threads=1
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java)
 
-## ObjectMapper customization
+Note that we generally do not advise to use a threa pool for workers, but rather implement asynchronous code, see [Writing Good Workers For Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+
+
+### ObjectMapper customization
+
 If you need to customize the ObjectMapper that the Zeebe client uses to work with variables, you can declare a bean with type `io.camunda.zeebe.client.api.JsonMapper` like this:
+
 ```java
 @Configuration
 class MyConfiguration {
@@ -281,13 +362,6 @@ class MyConfiguration {
 ```
 
 
-## Examples
-
-Have a look into the [examples/](examples/) folder for working Maven projects that might serve as inspiration.
-
 # Code of Conduct
 
-This project adheres to the Contributor Covenant [Code of
-Conduct](/.github/CODE_OF_CONDUCT.md). By participating, you are expected to uphold
-this code. Please report unacceptable behavior to
-code-of-conduct@zeebe.io.
+This project adheres to the Contributor Covenant [Code of Conduct](/.github/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to code-of-conduct@zeebe.io.
