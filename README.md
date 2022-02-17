@@ -25,9 +25,9 @@ Add the following Maven dependency to your Spring Boot Starter project:
 
 ```xml
 <dependency>
-	<groupId>io.camunda</groupId>
-	<artifactId>spring-zeebe-starter</artifactId>
-	<version>1.3.4</version>
+  <groupId>io.camunda</groupId>
+  <artifactId>spring-zeebe-starter</artifactId>
+  <version>1.3.4</version>
 </dependency>
 ```
 
@@ -106,12 +106,12 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 You can startup an in-memory test engine and do assertions by adding this Maven dependency:
 
 ```xml
-		<dependency>
-			<groupId>io.camunda</groupId>
-			<artifactId>spring-zeebe-test</artifactId>
-			<version>${spring-zeebe.version}</version>
-			<scope>test</scope>
-		</dependency>
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>spring-zeebe-test</artifactId>
+  <version>${spring-zeebe.version}</version>
+  <scope>test</scope>
+</dependency>
 ```
 
 Then you need to startup the test engine in your test case by adding `@ZeebeSpringTest`
@@ -142,7 +142,7 @@ Now have fun with Zeebe :-)
 
 You can access all variables of a process via the job:
 
-```
+```java
 @ZeebeWorker(type = "foo")
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   String variable1 = (String)job.getVariablesAsMap().get("variable1");
@@ -156,7 +156,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 
 You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
 
-```
+```java
 @ZeebeWorker(type = "foo", fetchVariables={"variable1", "variable2"})
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   String variable1 = (String)job.getVariablesAsMap().get("variable1");
@@ -169,7 +169,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 
 By using the `@ZeebeVariable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
 
-```
+```java
 @ZeebeWorker(type = "foo")
 public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
   System.out.println(variable1);
@@ -179,7 +179,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeV
 
 With `@ZeebeVariable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
 
-```
+```java
 @ZeebeWorker(type = "foo", forceFetchAllVariables = true)
 public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
 }
@@ -207,7 +207,7 @@ public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variabl
 
 As a default, your job handler code has to also complete the job, otherwise Zeebe will not know you did your work correctly:
 
-```
+```java
 @ZeebeWorker(type = "foo")
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // do whatever you need to do
@@ -220,7 +220,8 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 Ideally, you **don't** use blocking behavior like `send().join()`, as this is a blocking call to wait for the issues command to be executed on the workflow engine. While this is very straightforward to use and produces easy-to-read code, blocking code is limited in terms of scalability.
 
 That's why the worker showed a different pattern:
-```
+
+```java
 send().whenComplete((result, exception) -> {})
 ```
 This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
@@ -231,7 +232,7 @@ This is discussed in more detail in [this blog post about writing good workers f
 
 To ease things, you can also set `autoComplete=true` for the worker, than the Spring integration will take care if job completion for you:
 
-```
+```java
 @ZeebeWorker(type = "foo", autoComplete = true)
 public void handleJobFoo(final ActivatedJob job) {
   // do whatever you need to do
@@ -247,7 +248,7 @@ When using `autoComplete` you can:
 * Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
 * Throw any other `Exception` that leads in an failure handed over to Zeebe
 
-```
+```java
 @ZeebeWorker(type = "foo", autoComplete = true)
 public Map<String, Object> handleJobFoo(final ActivatedJob job) {
   // some work
@@ -288,7 +289,7 @@ public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variabl
 
 Whenever your code hits a problem that should lead to a <a href="https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/">BPMN error</a> being raised, you can simply throw a ZeebeBpmnError providing the error code used in BPMN:
 
-```
+```java
 @ZeebeWorker(type = "foo")
 public void handleJobFoo() {
   // some work
@@ -306,7 +307,7 @@ public void handleJobFoo() {
 
 ### Configuring Self-managed Zeebe Connection
 
-```
+```properties
 zeebe.client.broker.gateway-address=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
@@ -315,7 +316,7 @@ zeebe.client.security.plaintext=true
 
 If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
 
-```
+```properties
 zeebe.client.cloud.base-url=zeebe.camunda.io
 zeebe.client.cloud.port=443
 zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
@@ -329,7 +330,7 @@ As an alternative you can use the [Zeebe Client environment variables](https://d
 
 If you build a worker that only serves one thing, it might also be handy to define the worker job type globally - and not in the annotation:
 
-```
+```properties
 zeebe.client.worker.defaultType=foo
 ```
 
@@ -337,7 +338,7 @@ zeebe.client.worker.defaultType=foo
 
 Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
 
-```
+```properties
 zeebe.client.worker.max-jobs-active=32
 zeebe.client.worker.threads=1
 ```
