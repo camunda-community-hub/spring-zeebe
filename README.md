@@ -314,7 +314,7 @@ zeebe.client.security.plaintext=true
 
 ### Configure different cloud environments
 
-If you don't connect to the Camunda Cloud production environment you might have to also adjust these two properties:
+If you don't connect to the Camunda Cloud production environment you might have to also adjust these properties:
 
 ```properties
 zeebe.client.cloud.base-url=zeebe.camunda.io
