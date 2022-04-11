@@ -27,7 +27,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>1.3.4</version>
+  <version>8.0.0</version>
 </dependency>
 ```
 
@@ -125,6 +125,21 @@ You can startup an in-memory test engine and do assertions by adding this Maven 
 </dependency>
 ```
 
+Note that **the test engines requires Java version >= 17**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a docker installation locally available on the developer machine. Use this dependency:
+
+```xml
+<!-- 
+  Alternative dependency if you cannot run Java 17, so you will leverage Testcontainer 
+  Make sure NOT to have spring-zeebe-test on the classpath in parallel!
+-->
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>spring-zeebe-test-testcontainer</artifactId>
+  <version>${spring-zeebe.version}</version>
+  <scope>test</scope>
+</dependency>
+```
+
 Then you need to startup the test engine in your test case by adding `@ZeebeSpringTest`
 
 ```java
@@ -135,12 +150,6 @@ public class TestMyProcess {
 ```
 
 An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
-
-## Enjoy
-
-Now have fun with Zeebe :-)
-
-
 
 
 # Documentation
