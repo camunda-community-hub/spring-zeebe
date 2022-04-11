@@ -6,7 +6,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
@@ -19,8 +19,7 @@ import java.util.Map;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {JobHandlerTest.class})
 @ZeebeSpringTest
@@ -30,7 +29,7 @@ public class JobHandlerTest {
   private ZeebeClient client;
 
   @Autowired
-  private InMemoryEngine engine;
+  private ZeebeTestEngine engine;
 
   private static boolean calledTest1 = false;
   private static boolean calledTest2 = false;

@@ -1,7 +1,8 @@
 package io.camunda.zeebe.spring.test;
 
-import io.camunda.zeebe.process.test.RecordStreamSourceStore;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -18,28 +19,31 @@ public class ZeebeTestExecutionListener implements TestExecutionListener, Ordere
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private InMemoryEngine zeebeEngine;
+  private ZeebeTestEngine zeebeEngine;
 
   public void beforeTestClass(@NonNull TestContext testContext) {
-    zeebeEngine = testContext.getApplicationContext().getBean(InMemoryEngine.class);
+    zeebeEngine = testContext.getApplicationContext().getBean(ZeebeTestEngine.class);
   }
 
   public void beforeTestMethod(@NonNull TestContext testContext) {
-    RecordStreamSourceStore.init(zeebeEngine.getRecordStream());
+    final RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
+    BpmnAssert.initRecordStream(recordStream);
+
     ZeebeTestThreadSupport.setEngineForCurrentThread(zeebeEngine);
   }
 
   public void afterTestMethod(@NonNull TestContext testContext) {
     if (testContext.getTestException()!=null) {
       LOGGER.warn("Test failure on '"+testContext.getTestMethod()+"'. Tracing workflow engine interals now on INFO for debugging purposes");
-      zeebeEngine.getRecordStream().print(true);
+      RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
+      recordStream.print(true);
 
-      if (zeebeEngine.getRecordStream().incidentRecords().iterator().hasNext()) {
+      if (recordStream.incidentRecords().iterator().hasNext()) {
         LOGGER.warn("There were incidents in Zeebe during '"+testContext.getTestMethod()+"', maybe they caused some unexpected behavior for you? Please check below:");
-        zeebeEngine.getRecordStream().incidentRecords().forEach( record -> {LOGGER.warn(". " + record.getValue());});
+        recordStream.incidentRecords().forEach( record -> {LOGGER.warn(". " + record.getValue());});
       }
     }
-    RecordStreamSourceStore.reset();
+    BpmnAssert.resetRecordStream();
     ZeebeTestThreadSupport.cleanupEngineForCurrentThread();
   }
 

@@ -8,8 +8,8 @@
   </parent>
 
   <groupId>io.camunda</groupId>
-  <artifactId>spring-zeebe-test</artifactId>
-  <name>test/spring-zeebe-test</name>
+  <artifactId>spring-zeebe-test-testcontainer</artifactId>
+  <name>test/spring-zeebe-test-testcontainer</name>
 
   <dependencies>
     <dependency>
@@ -28,10 +28,18 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test</artifactId>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.2.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+
   </dependencies>
 
 </project>

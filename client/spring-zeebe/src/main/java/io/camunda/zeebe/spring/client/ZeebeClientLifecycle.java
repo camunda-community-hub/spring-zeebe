@@ -67,6 +67,11 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
   }
 
   @Override
+  public DeployResourceCommandStep1 newDeployResourceCommand() {
+    return get().newDeployResourceCommand();
+  }  
+
+  @Override
   public CreateProcessInstanceCommandStep1 newCreateInstanceCommand() {
     return get().newCreateInstanceCommand();
   }
