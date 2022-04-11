@@ -36,7 +36,7 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
      */
     @Bean
     @Primary
-    public ZeebeClientObjectFactory zeebeClientObjectFactory(ZeebeTestEngine zeebeEngine) {
+    public ZeebeClientObjectFactory testZeebeClientObjectFactory(ZeebeTestEngine zeebeEngine) {
       return new ZeebeClientObjectFactory() {
         @Override
         public ZeebeClient getObject() throws BeansException {
