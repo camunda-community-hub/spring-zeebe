@@ -5,6 +5,7 @@
     <groupId>io.camunda</groupId>
     <artifactId>spring-zeebe-root</artifactId>
     <version>1.3.5-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
   </parent>
 
   <groupId>io.camunda</groupId>
@@ -45,7 +46,8 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- We need this temporarily because of an issue in 1.45.0 of grpc-netty used in the in-memory engine -->
+    <!-- We need this temporarily because of an issue in 1.45.0 of grpc-netty used in the in-memory engine
+         See https://github.com/camunda/zeebe/issues/9085 -->
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty</artifactId>
