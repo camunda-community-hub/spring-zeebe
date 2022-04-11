@@ -70,7 +70,6 @@
         <version>${zeebe.version}</version>
       </dependency>
 
-      <!-- CLIENT -->
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe</artifactId>
@@ -81,19 +80,22 @@
         <artifactId>spring-zeebe-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-util</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-test</artifactId>
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>4.2.0</version>
+      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-kotlin</artifactId>
@@ -195,22 +197,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!--<plugin>-->
-      <!--<groupId>com.coveo</groupId>-->
-      <!--<artifactId>fmt-maven-plugin</artifactId>-->
-      <!--<version>2.5.1</version>-->
-      <!--<configuration>-->
-      <!--<displayFiles>true</displayFiles>-->
-      <!--</configuration>-->
-      <!--<executions>-->
-      <!--<execution>-->
-      <!--<goals>-->
-      <!--<goal>check</goal>-->
-      <!--</goals>-->
-      <!--</execution>-->
-      <!--</executions>-->
-      <!--</plugin>-->
     </plugins>
   </build>
 
@@ -246,9 +232,9 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/zeebe-io/spring-zeebe</url>
-    <connection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</connection>
-    <developerConnection>scm:git:git@github.com:zeebe-io/spring-zeebe.git</developerConnection>
+    <url>https://github.com/camunda-community-hub/spring-zeebe</url>
+    <connection>scm:git:git@github.com:camunda-community-hub/spring-zeebe.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda-community-hub/spring-zeebe.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 </project>
