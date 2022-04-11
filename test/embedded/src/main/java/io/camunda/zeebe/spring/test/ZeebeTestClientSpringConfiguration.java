@@ -1,8 +1,8 @@
 package io.camunda.zeebe.spring.test;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.process.test.testengine.EngineFactory;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.spring.client.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.config.AbstractZeebeBaseClientSpringConfiguration;
 import org.slf4j.Logger;
@@ -22,11 +22,11 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
     // Do we miss a zeebeClient.close() somewhere?
     @Bean(destroyMethod = "stop")
     @Primary
-    public InMemoryEngine testInMemoryZeebeEngine() {
+    public ZeebeTestEngine zeebeTestEngine() {
       LOGGER.info("Create Zeebe in-memory engine for test run...");
-      InMemoryEngine zeebeEngine = EngineFactory.create();
+      ZeebeTestEngine zeebeEngine = EngineFactory.create();
       zeebeEngine.start();
-      LOGGER.info("Started up Zeebe in-memory engine for test run");
+      LOGGER.info("Started up Zeebe in-memory engine for test runs");
       return zeebeEngine;
       // A zeebeEngine is at the same time also a RecordStreamSource (which is required in tests).
     }
@@ -36,7 +36,7 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
      */
     @Bean
     @Primary
-    public ZeebeClientObjectFactory testZeebeClientObjectFactory(InMemoryEngine zeebeEngine) {
+    public ZeebeClientObjectFactory zeebeClientObjectFactory(ZeebeTestEngine zeebeEngine) {
       return new ZeebeClientObjectFactory() {
         @Override
         public ZeebeClient getObject() throws BeansException {

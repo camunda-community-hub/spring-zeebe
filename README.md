@@ -31,6 +31,17 @@ Add the following Maven dependency to your Spring Boot Starter project:
 </dependency>
 ```
 
+Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](https://docs.camunda.io/docs/apis-clients/java-client/), you could also add a direct dependency if you need to specify the concrete version in your `pom.xml`:
+
+```xml
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>zeebe-client-java</artifactId>
+  <version>1.3.5</version>
+</dependency>
+```
+
+
 
 ## Configuring Camunda Cloud Connection
 

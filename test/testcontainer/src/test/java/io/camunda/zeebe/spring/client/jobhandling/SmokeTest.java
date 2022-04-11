@@ -6,7 +6,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
@@ -20,17 +20,16 @@ import java.util.Map;
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {JobHandlerTest.class})
+@SpringBootTest(classes = {SmokeTest.class})
 @ZeebeSpringTest
-public class JobHandlerTest {
+public class SmokeTest {
 
   @Autowired
   private ZeebeClient client;
 
   @Autowired
-  private InMemoryEngine engine;
+  private ZeebeTestEngine engine;
 
   private static boolean calledTest1 = false;
   private static boolean calledTest2 = false;
@@ -56,23 +55,6 @@ public class JobHandlerTest {
     assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
-  }
-
-  @ZeebeWorker(type = "test2", autoComplete = true)
-  public void handleTest2(JobClient client, ActivatedJob job) {
-    // Complete it here to trigger a not found in the auto complete, which will be ignored
-    client.newCompleteCommand(job.getKey()).send().join();
-    calledTest2 = true;
-  }
-
-  @Test
-  public void testAutoCompleteOnAlreadyCompletedJob() {
-    BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test2").startEvent().serviceTask().zeebeJobType("test2").endEvent().done();
-    client.newDeployCommand().addProcessModel(bpmnModel, "test2.bpmn").send().join();
-    ProcessInstanceEvent processInstance = startProcessInstance(client, "test2");
-    //assertThat(processInstance).isStarted();
-    waitForProcessInstanceCompleted(processInstance);
-    assertTrue(calledTest2);
   }
 
   private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId) {

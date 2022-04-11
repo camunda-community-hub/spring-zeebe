@@ -11,6 +11,13 @@
   <artifactId>spring-zeebe-test</artifactId>
   <name>test/spring-zeebe-test</name>
 
+  <properties>
+    <version.java>17</version.java>
+    <java.version>${version.java}</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -28,10 +35,23 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test</artifactId>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-process-test-extension</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- We need this temporarily because of an issue in 1.45.0 of grpc-netty used in the in-memory engine -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+      <version>1.45.1</version>
+    </dependency>
+
   </dependencies>
 
 </project>
