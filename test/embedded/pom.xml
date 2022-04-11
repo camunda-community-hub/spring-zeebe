@@ -45,8 +45,11 @@
       <artifactId>zeebe-process-test-extension</artifactId>
       <scope>compile</scope>
     </dependency>
-
-
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+      <version>1.45.1</version>
+    </dependency>
   </dependencies>
 
 </project>

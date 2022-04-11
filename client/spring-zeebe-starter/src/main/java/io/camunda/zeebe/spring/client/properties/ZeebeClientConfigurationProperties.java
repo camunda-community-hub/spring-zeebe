@@ -441,6 +441,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   public static class Security {
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
+    private String overrideAuthority = DEFAULT.getOverrideAuthority();
     private String certPath = DEFAULT.getCaCertificatePath();
 
     public boolean isPlaintext() {
@@ -459,24 +460,32 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
       this.certPath = certPath;
     }
 
+    public String getOverrideAuthority() {
+      return overrideAuthority;
+    }
+
+    public void setOverrideAuthority(String overrideAuthority) {
+      this.overrideAuthority = overrideAuthority;
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Security security = (Security) o;
-      return plaintext == security.plaintext &&
-        Objects.equals(certPath, security.certPath);
+      return plaintext == security.plaintext && Objects.equals(overrideAuthority, security.overrideAuthority) && Objects.equals(certPath, security.certPath);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(plaintext, certPath);
+      return Objects.hash(plaintext, overrideAuthority, certPath);
     }
 
     @Override
     public String toString() {
       return "Security{" +
         "plaintext=" + plaintext +
+        ", overrideAuthority='" + overrideAuthority + '\'' +
         ", certPath='" + certPath + '\'' +
         '}';
     }
@@ -538,6 +547,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public String getCaCertificatePath() {
     return security.getCertPath();
+  }
+
+  @Override
+  public String getOverrideAuthority() {
+    return security.getOverrideAuthority();
   }
 
   @Override
