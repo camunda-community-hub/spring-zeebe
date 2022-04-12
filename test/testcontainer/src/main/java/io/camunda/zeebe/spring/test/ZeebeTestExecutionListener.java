@@ -27,8 +27,6 @@ public class ZeebeTestExecutionListener implements TestExecutionListener, Ordere
   }
 
   public void beforeTestMethod(@NonNull TestContext testContext) {
-    zeebeEngine.reset();
-
     final RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
     BpmnAssert.initRecordStream(recordStream);
 
