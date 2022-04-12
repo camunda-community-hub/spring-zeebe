@@ -8,7 +8,7 @@
 [![codecov](https://codecov.io/gh/zeebe-io/spring-zeebe/branch/master/graph/badge.svg)](https://codecov.io/gh/zeebe-io/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-This project allows to leverage Zeebe within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client/index).
+This project allows to leverage Zeebe (the orchestration engine that comes as part of Camunda Platform 8) within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client/index).
 
 
 # Example
@@ -27,7 +27,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.0.0</version>
+  <version>8.0.1</version>
 </dependency>
 ```
 
@@ -43,9 +43,9 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 
 
 
-## Configuring Camunda Cloud Connection
+## Configuring Camunda Platform 8 SaaS Connection
 
-Connections to the Camunda Cloud can be easily configured, create the following entries in your `src/main/resources/application.properties`:
+Connections to the Camunda SaaS can be easily configured, create the following entries in your `src/main/resources/application.properties`:
 
 ```properties
 zeebe.client.cloud.cluster-id=xxx
@@ -54,14 +54,14 @@ zeebe.client.cloud.client-secret=xxx
 zeebe.client.cloud.region=bru-2
 ```
 
-You can also confige the connection to a self-managed Zeebe broker:
+You can also configure the connection to a self-managed Zeebe broker:
 
 ```properties
 zeebe.client.broker.gateway-address=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
 
-## Connect to Zeebe Broker
+## Connect to Zeebe
 
 Add the `@EnableZeebeClient` annotation to your Spring Boot Application:
 
@@ -334,7 +334,7 @@ zeebe.client.security.plaintext=true
 
 ### Configure different cloud environments
 
-If you don't connect to the Camunda Cloud production environment you might have to also adjust these properties:
+If you don't connect to the Camunda SaaS production environment you might have to also adjust these properties:
 
 ```properties
 zeebe.client.cloud.base-url=zeebe.camunda.io
@@ -365,7 +365,7 @@ zeebe.client.worker.threads=1
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java)
 
-Note that we generally do not advise to use a threa pool for workers, but rather implement asynchronous code, see [Writing Good Workers For Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+Note that we generally do not advise to use a thread pool for workers, but rather implement asynchronous code, see [Writing Good Workers](https://docs.camunda.io/docs/components/best-practices/development/writing-good-workers/).
 
 
 ### ObjectMapper customization
