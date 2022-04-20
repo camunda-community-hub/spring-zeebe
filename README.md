@@ -27,7 +27,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.0.1</version>
+  <version>8.0.2</version>
 </dependency>
 ```
 
@@ -37,10 +37,11 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>1.3.5</version>
+  <version>8.0.0</version>
 </dependency>
 ```
 
+Please note, that starting from spring-zeebe 8.0.2 you need Zeebe >= 8.0.0.
 
 
 ## Configuring Camunda Platform 8 SaaS Connection
