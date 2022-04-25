@@ -46,13 +46,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- We need this temporarily because of an issue in 1.45.0 of grpc-netty used in the in-memory engine -->
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty</artifactId>
-      <version>1.45.1</version>
-    </dependency>
-
   </dependencies>
 
 </project>

@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.config.processor;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
+import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
@@ -33,10 +34,10 @@ public class DeploymentPostProcessorTest {
   private ZeebeClient client;
 
   @Mock
-  private DeployProcessCommandStep1 deployStep1;
+  private DeployResourceCommandStep1 deployStep1;
 
   @Mock
-  private DeployProcessCommandStep1.DeployProcessCommandBuilderStep2 deployStep2;
+  private DeployResourceCommandStep1.DeployResourceCommandStep2 deployStep2;
 
   @Mock
   private ZeebeFuture<DeploymentEvent> zeebeFuture;
@@ -68,7 +69,7 @@ public class DeploymentPostProcessorTest {
 
     when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
-    when(client.newDeployCommand()).thenReturn(deployStep1);
+    when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
     when(deploymentPostProcessor.getResources(anyString())).thenReturn(new Resource[]{resource});
 
@@ -106,7 +107,7 @@ public class DeploymentPostProcessorTest {
 
     when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
-    when(client.newDeployCommand()).thenReturn(deployStep1);
+    when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
     when(deploymentPostProcessor.getResources("classpath*:/1.bpmn")).thenReturn(new Resource[]{resources[0]});
 
@@ -144,7 +145,7 @@ public class DeploymentPostProcessorTest {
 
       when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
-      when(client.newDeployCommand()).thenReturn(deployStep1);
+      when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
       when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 

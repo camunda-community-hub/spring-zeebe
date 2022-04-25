@@ -47,7 +47,7 @@ public class JobHandlerTest {
       .endEvent()
       .done();
 
-    client.newDeployCommand().addProcessModel(bpmnModel, "test1.bpmn").send().join();
+    client.newDeployResourceCommand().addProcessModel(bpmnModel, "test1.bpmn").send().join();
 
     final Map<String, Object> variables = Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
