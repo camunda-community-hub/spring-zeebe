@@ -34,6 +34,7 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
           container.getHost(),
           container.getMappedPort(ContainerProperties.getContainerPort()),
           container.getMappedPort(ContainerProperties.getGatewayPort()));
+      engine.start();
 
       LOGGER.info("Started up Zeebe Container for test runs");
       return engine;

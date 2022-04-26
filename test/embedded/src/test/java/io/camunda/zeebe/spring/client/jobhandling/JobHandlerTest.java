@@ -67,7 +67,7 @@ public class JobHandlerTest {
   @Test
   public void testAutoCompleteOnAlreadyCompletedJob() {
     BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test2").startEvent().serviceTask().zeebeJobType("test2").endEvent().done();
-    client.newDeployCommand().addProcessModel(bpmnModel, "test2.bpmn").send().join();
+    client.newDeployResourceCommand().addProcessModel(bpmnModel, "test2.bpmn").send().join();
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test2");
     //assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
