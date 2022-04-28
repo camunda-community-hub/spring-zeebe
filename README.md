@@ -17,7 +17,7 @@ There is a full example, including test cases, available here: [Twitter Review e
 
 # Get Started
 
-Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), or open a pre-existing one you already have.
+Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), or open a pre-existing one you already have, or simply fork our [Camunda Platform 8 Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template).
 
 ## Add Spring Boot Starter to Your Project
 
