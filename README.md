@@ -11,9 +11,9 @@
 This project allows to leverage Zeebe (the orchestration engine that comes as part of Camunda Platform 8) within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client/index).
 
 
-# Example
+# Examples
 
-There is a full example, including test cases, available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot). Further, you might want to have a look into the [examples/](examples/) folder.
+There are full examples, including test cases, are available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [examples/](examples/) folder.
 
 # Get Started
 
