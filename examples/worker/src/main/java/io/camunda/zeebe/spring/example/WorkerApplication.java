@@ -6,19 +6,21 @@ import io.camunda.zeebe.spring.client.EnableZeebeClient;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableZeebeClient
-@Slf4j
 public class WorkerApplication {
+
+  private static Logger log = LoggerFactory.getLogger(WorkerApplication.class);
 
   public static void main(final String... args) {
     SpringApplication.run(WorkerApplication.class, args);
@@ -37,28 +39,20 @@ public class WorkerApplication {
       job.getVariables());
   }
 
-  @ZeebeWorker(type = "foo")
-  public void handleFooJob(final JobClient client, final ActivatedJob job) {
+  @ZeebeWorker(type = "foo", autoComplete = true) 
+  public void handleFooJob(final ActivatedJob job) {
     logJob(job, null);
-    client.newCompleteCommand(job.getKey()).variables("{\"foo\": 1}").send().whenComplete((result, exception) -> {
-      if (exception == null) {
-        log.info("Completed job successful");
-      } else {
-        log.error("Failed to complete job", exception);
-      }
-    });
   }
 
-  @ZeebeWorker(type = "bar", fetchVariables = "bar", autoComplete = true) // Variable "foo" gets renamed to "bar" by IO mapping in the process
+  @ZeebeWorker(type = "bar", autoComplete = true) 
   public Map<String, Object> handleBarJob(final JobClient client, final ActivatedJob job, @ZeebeVariable String a) {
     logJob(job, a);
-    // Done by auto complete: client.newCompleteCommand(job.getKey()).send()
     return Collections.singletonMap("someResult", "42");
   }
 
   @ZeebeWorker(type = "fail", autoComplete = true, forceFetchAllVariables = true)
-  public void handleFailingJob(final JobClient client, final ActivatedJob job, @ZeebeVariable Integer bar) {
-    logJob(job, bar);
+  public void handleFailingJob(final JobClient client, final ActivatedJob job, @ZeebeVariable String someResult) {
+    logJob(job, someResult);
     throw new ZeebeBpmnError("DOESNT_WORK", "This will actually never work :-)");
   }
 }

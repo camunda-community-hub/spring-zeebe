@@ -7,7 +7,9 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 
 import java.util.Date;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +20,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableZeebeClient
 @EnableScheduling
 @ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
-@Slf4j
 public class StarterApplication {
+
+  private static Logger log = LoggerFactory.getLogger(StarterApplication.class);
 
   public static void main(final String... args) {
     SpringApplication.run(StarterApplication.class, args);
