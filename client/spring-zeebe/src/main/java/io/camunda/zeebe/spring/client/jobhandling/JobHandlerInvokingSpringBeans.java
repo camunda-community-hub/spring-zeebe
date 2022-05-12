@@ -76,19 +76,19 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
           arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
         }
         catch (ClassCastException ex) {
-          throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter, invalid type found: " + ex.getMessage());
+          throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter when executing job '"+job.getType()+"', invalid type found: " + ex.getMessage());
         }
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
         try {
           arg = job.getVariablesAsType(clazz);
         } catch (RuntimeException e) {
-          throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "', cause is: " + e.getMessage(), e);
+          throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "' when executing job '"+job.getType()+"', cause is: " + e.getMessage(), e);
         }
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
         try {
           arg = job.getCustomHeaders();
         } catch (RuntimeException e) {
-          throw new RuntimeException("Cannot assign headers '" + param.getParameterName() + "' to parameter, cause is: " + e.getMessage(), e);
+          throw new RuntimeException("Cannot assign headers '" + param.getParameterName() + "' to parameter when executing job '"+job.getType()+"', cause is: " + e.getMessage(), e);
         }
       }
       args.add(arg);
