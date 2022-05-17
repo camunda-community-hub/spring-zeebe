@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client;
+package io.camunda.zeebe.spring.client.factory;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
@@ -6,32 +6,33 @@ import io.camunda.zeebe.client.api.command.*;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
-import io.camunda.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient> implements
-  ZeebeClient {
+/**
+ * Lifecycle implementation that also directly acts as a ZeebeClient by delegating all methods to the
+ * ZeebeClient that is controlled (and kept in the delegate field)
+ */
+public class ZeebeClientLifecycle extends AbstractZeebeClientLifecycle implements ZeebeClient {
 
   public static final int PHASE = 22222;
 
   private final ApplicationEventPublisher publisher;
   private final Set<Consumer<ZeebeClient>> startListener = new LinkedHashSet<>();
 
-  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory,
-    final ApplicationEventPublisher publisher) {
+  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory, final ApplicationEventPublisher publisher) {
     super(PHASE, factory);
     this.publisher = publisher;
   }
 
-  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> consumer) {
-    startListener.add(consumer);
+  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> zeebeClientConsumer) {
+    startListener.add(zeebeClientConsumer);
     if (isRunning()) {
       // In test cases the call sequence seems to be different, still need to understand why, but this fixes it
-      consumer.accept(this);
+      zeebeClientConsumer.accept(this);
     }
     return this;
   }
@@ -42,7 +43,7 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
 
     publisher.publishEvent(new ClientStartedEvent());
 
-    startListener.forEach(c -> c.accept(this));
+    startListener.forEach(zeebeClientConsumer -> zeebeClientConsumer.accept(this));
   }
 
   @Override
@@ -69,7 +70,7 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
   @Override
   public DeployResourceCommandStep1 newDeployResourceCommand() {
     return get().newDeployResourceCommand();
-  }  
+  }
 
   @Override
   public CreateProcessInstanceCommandStep1 newCreateInstanceCommand() {

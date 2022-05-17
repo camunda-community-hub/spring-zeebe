@@ -1,42 +1,33 @@
-package io.camunda.zeebe.spring.util;
+package io.camunda.zeebe.spring.client.factory;
 
 import java.util.function.Supplier;
+
+import io.camunda.zeebe.client.ZeebeClient;
 import org.springframework.context.SmartLifecycle;
 
 /**
- * Implementation of {@link SmartLifecycle} that delegates to a delegate of type <code>T</code> and
- * defaults to <code>autostart</code>.
- *
- * @param <T> type of delegate to start/stop
+ * Bean controlling the lifecycle of a ZebeeClient.
+ * Auto creates a ZeebeClient using the {@link ZeebeClientLifecycle} provided by ??
  */
-public abstract class ZeebeAutoStartUpLifecycle<T extends AutoCloseable> implements SmartLifecycle,
-  Supplier<T> {
+public abstract class AbstractZeebeClientLifecycle implements SmartLifecycle, Supplier<ZeebeClient> {
 
   protected boolean autoStartup = true;
   protected boolean running = false;
-
   protected final int phase;
-  protected final ZeebeObjectFactory<T> factory;
 
-  protected T delegate;
+  protected final ZeebeClientObjectFactory factory;
+  protected ZeebeClient delegate;
 
-  /**
-   * Creates a new lifecycle.
-   *
-   * @param phase the phase to run in
-   */
-  public ZeebeAutoStartUpLifecycle(final int phase,
-                                   final ZeebeObjectFactory<T> factory) {
+  public AbstractZeebeClientLifecycle(final int phase, final ZeebeClientObjectFactory factory) {
     this.phase = phase;
     this.factory = factory;
   }
 
   @Override
-  public T get() {
+  public ZeebeClient get() {
     if (!isRunning()) {
-      throw new IllegalStateException("delegate is not running!");
+      throw new IllegalStateException("ZeebeClient is not yet created!");
     }
-
     return delegate;
   }
 

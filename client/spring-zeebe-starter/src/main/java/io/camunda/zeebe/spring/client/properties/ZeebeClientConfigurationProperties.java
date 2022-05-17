@@ -1,13 +1,13 @@
 package io.camunda.zeebe.spring.client.properties;
 
-import static io.camunda.zeebe.spring.client.config.ZeebeClientSpringConfiguration.DEFAULT;
-
+import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.grpc.ClientInterceptor;
 import io.camunda.zeebe.client.CredentialsProvider;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
@@ -16,6 +16,9 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
+
+  // Used to read default config values
+  public static final ZeebeClientBuilderImpl DEFAULT = (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
 
   @NestedConfigurationProperty
   private Broker broker = new Broker();

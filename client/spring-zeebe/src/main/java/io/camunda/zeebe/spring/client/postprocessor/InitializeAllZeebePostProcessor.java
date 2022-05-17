@@ -1,7 +1,7 @@
-package io.camunda.zeebe.spring.client.config.processor;
+package io.camunda.zeebe.spring.client.postprocessor;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
+import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -12,15 +12,15 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 
-public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Ordered {
+public class InitializeAllZeebePostProcessor implements BeanPostProcessor, Ordered {
 
   private static final Logger LOGGER =
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final List<BeanInfoPostProcessor> processors;
+  private final List<AbstractZeebePostProcessor> processors;
   private final ZeebeClientLifecycle clientLifecycle;
 
-  public SubscriptionBuilderPostProcessor(List<BeanInfoPostProcessor> processors, ZeebeClientLifecycle clientLifecycle) {
+  public InitializeAllZeebePostProcessor(List<AbstractZeebePostProcessor> processors, ZeebeClientLifecycle clientLifecycle) {
     this.processors = processors;
     this.clientLifecycle = clientLifecycle;
   }
@@ -36,7 +36,7 @@ public class SubscriptionBuilderPostProcessor implements BeanPostProcessor, Orde
     throws BeansException {
     final ClassInfo beanInfo = ClassInfo.builder().bean(bean).beanName(beanName).build();
 
-    for (final BeanInfoPostProcessor p : processors) {
+    for (final AbstractZeebePostProcessor p : processors) {
       if (!p.test(beanInfo)) {
         continue;
       }

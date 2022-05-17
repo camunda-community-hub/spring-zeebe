@@ -1,36 +1,31 @@
-package io.camunda.zeebe.spring.client.config.processor;
-
-import static org.springframework.util.ReflectionUtils.doWithMethods;
+package io.camunda.zeebe.spring.client.postprocessor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
-import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
-import java.lang.invoke.MethodHandles;
+import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
-import io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
+import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 /**
- * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
+ * Triggered by {@link InitializeAllZeebePostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
  * method-annotations.
  */
-public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
+public class ZeebeWorkerPostProcessor extends AbstractZeebePostProcessor {
 
   private static final Logger LOGGER =
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

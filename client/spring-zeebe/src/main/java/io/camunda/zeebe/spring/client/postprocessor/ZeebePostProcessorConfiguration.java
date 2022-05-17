@@ -1,7 +1,7 @@
-package io.camunda.zeebe.spring.client.config.processor;
+package io.camunda.zeebe.spring.client.postprocessor;
 
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
-import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
+import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;
@@ -12,12 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(ReadAnnotationValueConfiguration.class)
-public class PostProcessorConfiguration {
+public class ZeebePostProcessorConfiguration {
 
   @Bean
-  public SubscriptionBuilderPostProcessor subscriptionBuilderPostProcessor(
-    final List<BeanInfoPostProcessor> processors, final ZeebeClientLifecycle clientLifecycle) {
-    return new SubscriptionBuilderPostProcessor(processors, clientLifecycle);
+  public InitializeAllZeebePostProcessor subscriptionBuilderPostProcessor(
+    final List<AbstractZeebePostProcessor> processors, final ZeebeClientLifecycle clientLifecycle) {
+    return new InitializeAllZeebePostProcessor(processors, clientLifecycle);
   }
 
   @Bean

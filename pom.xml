@@ -36,7 +36,6 @@
   <modules>
     <module>test/embedded</module>
     <module>test/testcontainer</module>
-    <module>util</module>
 
     <module>client</module>
 
