@@ -33,14 +33,12 @@ public class ZeebeClientLifecycle extends AbstractZeebeClientLifecycle implement
     if (isRunning()) {
       // In test cases the call sequence seems to be different, still need to understand why, but this fixes it
       zeebeClientConsumer.accept(this);
-      new Exception().printStackTrace();
     }
     return this;
   }
 
   @Override
   public void start() {
-    new Exception().printStackTrace();
     super.start();
 
     publisher.publishEvent(new ClientStartedEvent());
