@@ -43,7 +43,6 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
         @Override
         public ZeebeClient getObject() throws BeansException {
           LOG.info("Creating ZeebeClient for ZeebeTestEngine [" + zeebeEngine + "]");
-          new Exception().printStackTrace();
           return zeebeEngine.createClient();
         }
       };
