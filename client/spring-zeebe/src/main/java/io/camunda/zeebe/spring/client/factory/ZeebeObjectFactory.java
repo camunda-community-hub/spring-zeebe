@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.util;
+package io.camunda.zeebe.spring.client.factory;
 
 import org.springframework.beans.factory.ObjectFactory;
 

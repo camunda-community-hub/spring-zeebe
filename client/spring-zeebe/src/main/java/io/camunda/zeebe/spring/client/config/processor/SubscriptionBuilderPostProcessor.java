@@ -1,7 +1,7 @@
 package io.camunda.zeebe.spring.client.config.processor;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
+import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import java.lang.invoke.MethodHandles;
 import java.util.List;

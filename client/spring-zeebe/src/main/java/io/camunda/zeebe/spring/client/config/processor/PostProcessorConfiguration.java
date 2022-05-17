@@ -1,7 +1,7 @@
 package io.camunda.zeebe.spring.client.config.processor;
 
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
-import io.camunda.zeebe.spring.client.ZeebeClientLifecycle;
+import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeWorkerValue;

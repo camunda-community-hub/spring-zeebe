@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.util;
+package io.camunda.zeebe.spring.client.factory;
 
 import java.util.function.Supplier;
 import org.springframework.context.SmartLifecycle;

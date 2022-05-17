@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client;
+package io.camunda.zeebe.spring.client.factory;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
@@ -6,7 +6,6 @@ import io.camunda.zeebe.client.api.command.*;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
-import io.camunda.zeebe.spring.util.ZeebeAutoStartUpLifecycle;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.LinkedHashSet;
@@ -69,7 +68,7 @@ public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient>
   @Override
   public DeployResourceCommandStep1 newDeployResourceCommand() {
     return get().newDeployResourceCommand();
-  }  
+  }
 
   @Override
   public CreateProcessInstanceCommandStep1 newCreateInstanceCommand() {
