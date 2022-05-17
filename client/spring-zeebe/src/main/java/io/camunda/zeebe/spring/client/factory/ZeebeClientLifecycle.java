@@ -28,22 +28,24 @@ public class ZeebeClientLifecycle extends AbstractZeebeClientLifecycle implement
     this.publisher = publisher;
   }
 
-  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> consumer) {
-    startListener.add(consumer);
+  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> zeebeClientConsumer) {
+    startListener.add(zeebeClientConsumer);
     if (isRunning()) {
       // In test cases the call sequence seems to be different, still need to understand why, but this fixes it
-      consumer.accept(this);
+      zeebeClientConsumer.accept(this);
+      new Exception().printStackTrace();
     }
     return this;
   }
 
   @Override
   public void start() {
+    new Exception().printStackTrace();
     super.start();
 
     publisher.publishEvent(new ClientStartedEvent());
 
-    startListener.forEach(c -> c.accept(this));
+    startListener.forEach(zeebeClientConsumer -> zeebeClientConsumer.accept(this));
   }
 
   @Override

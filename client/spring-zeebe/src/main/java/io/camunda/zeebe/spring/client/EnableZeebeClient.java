@@ -1,6 +1,5 @@
 package io.camunda.zeebe.spring.client;
 
-import io.camunda.zeebe.spring.client.config.ZeebeClientSpringConfiguration;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

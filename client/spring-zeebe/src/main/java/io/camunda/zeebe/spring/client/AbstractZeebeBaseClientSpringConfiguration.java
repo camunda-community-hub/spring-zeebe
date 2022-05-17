@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.client;
 
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
@@ -16,14 +16,17 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * Abstact class to create ZeebeClient's, the subclass decides about the concrete {@link ZeebeClientObjectFactory}
+ * so that it can differ between normal life and test cases
+ */
 @Import({
   ZeebePostProcessorConfiguration.class,
   ReadAnnotationValueConfiguration.class,
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
-  public static final ZeebeClientBuilderImpl DEFAULT =
-    (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+
 
   @Bean
   public ZeebeClientLifecycle zeebeClientLifecycle(

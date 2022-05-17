@@ -4,7 +4,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.spring.client.factory.ZeebeClientObjectFactory;
-import io.camunda.zeebe.spring.client.config.AbstractZeebeBaseClientSpringConfiguration;
+import io.camunda.zeebe.spring.client.AbstractZeebeBaseClientSpringConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

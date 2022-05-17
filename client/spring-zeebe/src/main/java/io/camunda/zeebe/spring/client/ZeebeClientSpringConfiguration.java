@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.client;
 
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.spring.client.factory.ZeebeClientObjectFactory;
