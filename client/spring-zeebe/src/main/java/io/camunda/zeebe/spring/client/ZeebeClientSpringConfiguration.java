@@ -27,7 +27,6 @@ public class ZeebeClientSpringConfiguration extends AbstractZeebeBaseClientSprin
       @Override
       public ZeebeClient getObject() throws BeansException {
         LOG.info("Creating ZeebeClient using normal ZeebeClientBuilder [" + zeebeClientBuilder + "]");
-        new Exception().printStackTrace();
         return zeebeClientBuilder.build();
       }
     };
