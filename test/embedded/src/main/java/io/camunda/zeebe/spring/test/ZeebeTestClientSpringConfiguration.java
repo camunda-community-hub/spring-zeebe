@@ -18,17 +18,17 @@ import java.lang.invoke.MethodHandles;
 @TestConfiguration
 public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientSpringConfiguration {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Do we miss a zeebeClient.close() somewhere?
     @Bean(destroyMethod = "stop")
     @Primary
     public ZeebeTestEngine zeebeTestEngine() {
       int randomPort = SocketUtils.findAvailableTcpPort(); // can be replaced with TestSocketUtils once available: https://github.com/spring-projects/spring-framework/issues/28210
-      LOGGER.info("Create Zeebe in-memory engine for test run on random port: " + randomPort + "...");
+      LOG.info("Create Zeebe in-memory engine for test run on random port: " + randomPort + "...");
       ZeebeTestEngine zeebeEngine = EngineFactory.create(randomPort);
       zeebeEngine.start();
-      LOGGER.info("Started up Zeebe in-memory engine for test runs");
+      LOG.info("Started up Zeebe in-memory engine for test runs");
       return zeebeEngine;
       // A zeebeEngine is at the same time also a RecordStreamSource (which is required in tests).
     }
@@ -42,6 +42,8 @@ public class ZeebeTestClientSpringConfiguration extends AbstractZeebeBaseClientS
       return new ZeebeClientObjectFactory() {
         @Override
         public ZeebeClient getObject() throws BeansException {
+          LOG.info("Creating ZeebeClient for ZeebeTestEngine [" + zeebeEngine + "]");
+          new Exception().printStackTrace();
           return zeebeEngine.createClient();
         }
       };
