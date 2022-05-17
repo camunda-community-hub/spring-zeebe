@@ -6,7 +6,7 @@ import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.factory.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
-import io.camunda.zeebe.spring.client.config.processor.PostProcessorConfiguration;
+import io.camunda.zeebe.spring.client.postprocessor.ZeebePostProcessorConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Import({
-  PostProcessorConfiguration.class,
+  ZeebePostProcessorConfiguration.class,
   ReadAnnotationValueConfiguration.class,
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {

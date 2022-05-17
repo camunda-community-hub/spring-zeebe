@@ -1,14 +1,14 @@
-package io.camunda.zeebe.spring.client.config.processor;
+package io.camunda.zeebe.spring.client.postprocessor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.ZeebeFuture;
-import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.postprocessor.DeploymentPostProcessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

@@ -12,16 +12,18 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ZeebeClientLifecycle extends ZeebeAutoStartUpLifecycle<ZeebeClient> implements
-  ZeebeClient {
+/**
+ * Lifecycle implementation that also directly acts as a ZeebeClient by delegating all methods to the
+ * ZeebeClient that is controlled (and kept in the delegate field)
+ */
+public class ZeebeClientLifecycle extends AbstractZeebeClientLifecycle implements ZeebeClient {
 
   public static final int PHASE = 22222;
 
   private final ApplicationEventPublisher publisher;
   private final Set<Consumer<ZeebeClient>> startListener = new LinkedHashSet<>();
 
-  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory,
-    final ApplicationEventPublisher publisher) {
+  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory, final ApplicationEventPublisher publisher) {
     super(PHASE, factory);
     this.publisher = publisher;
   }

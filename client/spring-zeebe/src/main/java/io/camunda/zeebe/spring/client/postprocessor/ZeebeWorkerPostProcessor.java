@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config.processor;
+package io.camunda.zeebe.spring.client.postprocessor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 import static org.springframework.util.ReflectionUtils.doWithMethods;
 
 /**
- * Triggered by {@link SubscriptionBuilderPostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
+ * Triggered by {@link InitializeAllZeebePostProcessor#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
  * method-annotations.
  */
-public class ZeebeWorkerPostProcessor extends BeanInfoPostProcessor {
+public class ZeebeWorkerPostProcessor extends AbstractZeebePostProcessor {
 
   private static final Logger LOGGER =
     LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
