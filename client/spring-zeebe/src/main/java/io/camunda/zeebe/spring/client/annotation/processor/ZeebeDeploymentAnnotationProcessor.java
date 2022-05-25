@@ -1,12 +1,12 @@
-package io.camunda.zeebe.spring.client.postprocessor;
+package io.camunda.zeebe.spring.client.annotation.processor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -16,45 +16,53 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Always created by {@link AnnotationProcessorConfiguration}
+ *
  * Loop throgh @{@link ZeebeDeployment} annotations to deploy resources to Zeebe
- * once the {@link io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle} was initialized
+ * once the {@link io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle} was initialized.
  */
-public class DeploymentPostProcessor extends AbstractZeebePostProcessor {
+public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
 
-  private static final Logger LOGGER =
-    LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private final ReadZeebeDeploymentValue reader;
+  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
-  public DeploymentPostProcessor(ReadZeebeDeploymentValue reader) {
+  private final ReadZeebeDeploymentValue reader;
+
+  private List<ZeebeDeploymentValue> deploymentValues = new ArrayList<>();
+
+  public ZeebeDeploymentAnnotationProcessor(ReadZeebeDeploymentValue reader) {
     this.reader = reader;
   }
 
   @Override
-  public boolean test(final ClassInfo beanInfo) {
+  public boolean isApplicableFor(ClassInfo beanInfo) {
     return beanInfo.hasClassAnnotation(ZeebeDeployment.class);
   }
 
   @Override
-  public Consumer<ZeebeClient> apply(final ClassInfo beanInfo) {
-    final ZeebeDeploymentValue value = reader.applyOrThrow(beanInfo);
+  public void configureFor(final ClassInfo beanInfo) {
+    ZeebeDeploymentValue value = reader.applyOrThrow(beanInfo);
+    LOGGER.info("Configuring deployment: {}", value);
 
-    LOGGER.info("deployment: {}", value);
+    deploymentValues.add(value);
+  }
 
-    return client -> {
+  @Override
+  public void start(final ZeebeClient client) {
+    deploymentValues.forEach( deployment -> {
 
       DeployResourceCommandStep1 deployResourceCommand = client
         .newDeployResourceCommand();
 
-      DeploymentEvent deploymentResult = value.getResources()
+      DeploymentEvent deploymentResult = deployment.getResources()
         .stream()
         .flatMap(resource -> Stream.of(getResources(resource)))
         .map(resource -> {
@@ -73,18 +81,24 @@ public class DeploymentPostProcessor extends AbstractZeebePostProcessor {
       LOGGER.info(
         "Deployed: {}",
         Stream.concat(deploymentResult
-            .getDecisionRequirements()
-            .stream()
-            .map(wf -> String.format("<%s:%d>", wf.getDmnDecisionRequirementsId(), wf.getVersion())),
-          deploymentResult
-            .getProcesses()
-            .stream()
-            .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion())))
+              .getDecisionRequirements()
+              .stream()
+              .map(wf -> String.format("<%s:%d>", wf.getDmnDecisionRequirementsId(), wf.getVersion())),
+            deploymentResult
+              .getProcesses()
+              .stream()
+              .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion())))
           .collect(Collectors.joining(",")));
-    };
+
+    });
   }
 
-  Resource[] getResources(String resources) {
+  @Override
+  public void stop(ZeebeClient client) {
+    // noop for deployment
+  }
+
+  public Resource[] getResources(String resources) {
     try {
       return resourceResolver.getResources(resources);
     } catch (IOException e) {

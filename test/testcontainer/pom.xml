@@ -14,23 +14,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>spring-zeebe</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
+      <artifactId>spring-zeebe-test-common</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -38,8 +23,6 @@
       <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
       <scope>compile</scope>
     </dependency>
-
-
   </dependencies>
 
 </project>

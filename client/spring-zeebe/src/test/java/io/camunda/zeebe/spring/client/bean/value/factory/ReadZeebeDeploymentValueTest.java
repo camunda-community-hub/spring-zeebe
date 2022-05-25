@@ -1,8 +1,9 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

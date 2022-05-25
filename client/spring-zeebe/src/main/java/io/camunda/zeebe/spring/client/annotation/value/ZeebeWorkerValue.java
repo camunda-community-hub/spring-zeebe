@@ -1,6 +1,5 @@
-package io.camunda.zeebe.spring.client.bean.value;
+package io.camunda.zeebe.spring.client.annotation.value;
 
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 

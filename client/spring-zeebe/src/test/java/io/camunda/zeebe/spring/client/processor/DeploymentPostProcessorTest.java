@@ -1,14 +1,14 @@
-package io.camunda.zeebe.spring.client.postprocessor;
+package io.camunda.zeebe.spring.client.processor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
+import io.camunda.zeebe.spring.client.annotation.processor.ZeebeDeploymentAnnotationProcessor;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.postprocessor.DeploymentPostProcessor;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -45,12 +45,12 @@ public class DeploymentPostProcessorTest {
   @Mock
   private DeploymentEvent deploymentEvent;
 
-  private DeploymentPostProcessor deploymentPostProcessor;
+  private ZeebeDeploymentAnnotationProcessor deploymentPostProcessor;
 
   @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
-    deploymentPostProcessor = Mockito.spy(new DeploymentPostProcessor(reader));
+    deploymentPostProcessor = Mockito.spy(new ZeebeDeploymentAnnotationProcessor(reader));
   }
 
   @Test
@@ -82,7 +82,8 @@ public class DeploymentPostProcessorTest {
     when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
     //when
-    deploymentPostProcessor.apply(classInfo).accept(client);
+    deploymentPostProcessor.configureFor(classInfo);
+    deploymentPostProcessor.start(client);
 
     //then
     verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
@@ -122,7 +123,8 @@ public class DeploymentPostProcessorTest {
     when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
     //when
-    deploymentPostProcessor.apply(classInfo).accept(client);
+    deploymentPostProcessor.configureFor(classInfo);
+    deploymentPostProcessor.start(client);
 
     //then
     verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
@@ -150,7 +152,8 @@ public class DeploymentPostProcessorTest {
       when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
       //when
-      deploymentPostProcessor.apply(classInfo).accept(client);
+      deploymentPostProcessor.configureFor(classInfo);
+      deploymentPostProcessor.start(client);
     });
   }
 

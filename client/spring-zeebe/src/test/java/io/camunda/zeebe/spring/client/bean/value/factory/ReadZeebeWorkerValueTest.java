@@ -3,10 +3,11 @@ package io.camunda.zeebe.spring.client.bean.value.factory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import java.lang.reflect.Method;
 import java.util.Arrays;

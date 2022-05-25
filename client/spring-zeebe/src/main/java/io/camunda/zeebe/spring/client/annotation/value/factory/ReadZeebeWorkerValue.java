@@ -1,19 +1,16 @@
-package io.camunda.zeebe.spring.client.bean.value.factory;
+package io.camunda.zeebe.spring.client.annotation.value.factory;
 
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 
-import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public class ReadZeebeWorkerValue
-  extends ReadAnnotationValue<MethodInfo, ZeebeWorker, ZeebeWorkerValue> {
+public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeWorker, ZeebeWorkerValue> {
 
   public ReadZeebeWorkerValue(final ZeebeExpressionResolver resolver) {
     super(resolver, ZeebeWorker.class);

@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.factory;
+package io.camunda.zeebe.spring.client.lifecycle;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
@@ -6,55 +6,94 @@ import io.camunda.zeebe.client.api.command.*;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
+import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.SmartLifecycle;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Lifecycle implementation that also directly acts as a ZeebeClient by delegating all methods to the
  * ZeebeClient that is controlled (and kept in the delegate field)
+ *
+ * Created by {@link io.camunda.zeebe.spring.client.ZeebeClientSpringConfiguration} (only for production code, not for tests)
  */
-public class ZeebeClientLifecycle extends AbstractZeebeClientLifecycle implements ZeebeClient {
+public class ZeebeClientLifecycle implements ZeebeClient, SmartLifecycle, Supplier<ZeebeClient> {
 
   public static final int PHASE = 22222;
+  protected boolean autoStartup = true;
+  protected boolean running = false;
+  protected boolean runningInTestContext = false;
 
+  private final ZeebeAnnotationProcessorRegistry annotationProcessorRegistry;
   private final ApplicationEventPublisher publisher;
-  private final Set<Consumer<ZeebeClient>> startListener = new LinkedHashSet<>();
 
-  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory, final ApplicationEventPublisher publisher) {
-    super(PHASE, factory);
+  protected final ZeebeClientObjectFactory factory;
+  protected ZeebeClient delegate;
+
+  public ZeebeClientLifecycle(final ZeebeClientObjectFactory factory, final ZeebeAnnotationProcessorRegistry annotationProcessorRegistry, final ApplicationEventPublisher publisher) {
+    this.factory = factory;
+    this.annotationProcessorRegistry = annotationProcessorRegistry;
     this.publisher = publisher;
-  }
-
-  public ZeebeClientLifecycle addStartListener(final Consumer<ZeebeClient> zeebeClientConsumer) {
-    startListener.add(zeebeClientConsumer);
-    if (isRunning()) {
-      // In test cases the call sequence seems to be different, still need to understand why, but this fixes it
-      zeebeClientConsumer.accept(this);
-    }
-    return this;
   }
 
   @Override
   public void start() {
-    super.start();
-
-    publisher.publishEvent(new ClientStartedEvent());
-
-    startListener.forEach(zeebeClientConsumer -> zeebeClientConsumer.accept(this));
+    delegate = factory.getObject();
+    if (delegate==null) {
+      // in test cases the test support makes sure, this does not create a real client, which is OK for us here
+      runningInTestContext = true;
+    } else {
+      this.running = true;
+      publisher.publishEvent(new ClientStartedEvent());
+      annotationProcessorRegistry.startAll(this);
+    }
   }
 
   @Override
-  public ZeebeClientConfiguration getConfiguration() {
-    return get().getConfiguration();
+  public void stop() {
+    try {
+      delegate.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    } finally {
+      running = false;
+    }
+    annotationProcessorRegistry.stopAll(this);
   }
 
   @Override
   public void close() {
     // needed to fulfill the ZeebeClient Interface
-    stop();
+  }
+
+  @Override
+  public ZeebeClient get() {
+    if (!isRunning()) {
+      throw new IllegalStateException("ZeebeClient is not yet created!");
+    }
+    return delegate;
+  }
+
+  @Override
+  public boolean isAutoStartup() {
+    return autoStartup;
+  }
+
+
+  @Override
+  public boolean isRunning() {
+    return running;
+  }
+
+  @Override
+  public int getPhase() {
+    return PHASE;
+  }
+
+  @Override
+  public ZeebeClientConfiguration getConfiguration() {
+    return get().getConfiguration();
   }
 
   @Override

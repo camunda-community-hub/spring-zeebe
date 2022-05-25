@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.bean.value.factory;
+package io.camunda.zeebe.spring.client.annotation.value.factory;
 
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.springframework.context.annotation.Bean;

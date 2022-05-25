@@ -28,8 +28,8 @@ public class JobHandlerTest {
   @Autowired
   private ZeebeClient client;
 
-  @Autowired
-  private ZeebeTestEngine engine;
+  //@Autowired
+  //private ZeebeTestEngine engine;
 
   private static boolean calledTest1 = false;
   private static boolean calledTest2 = false;

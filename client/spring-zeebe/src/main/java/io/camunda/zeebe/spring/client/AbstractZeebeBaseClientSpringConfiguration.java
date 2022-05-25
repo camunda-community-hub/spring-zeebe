@@ -1,39 +1,27 @@
 package io.camunda.zeebe.spring.client;
 
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
-import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
-import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
-import io.camunda.zeebe.spring.client.factory.ZeebeClientObjectFactory;
-import io.camunda.zeebe.spring.client.bean.value.factory.ReadAnnotationValueConfiguration;
-import io.camunda.zeebe.spring.client.postprocessor.ZeebePostProcessorConfiguration;
+import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
+import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
-import org.springframework.context.ApplicationEventPublisher;
+import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * Abstact class to create ZeebeClient's, the subclass decides about the concrete {@link ZeebeClientObjectFactory}
- * so that it can differ between normal life and test cases
+ * Abstract class pulling up all configuration that is needed for production as well as for tests.
+ *
+ * The subclasses add the differences for prod/test
  */
 @Import({
-  ZeebePostProcessorConfiguration.class,
+  AnnotationProcessorConfiguration.class,
   ReadAnnotationValueConfiguration.class,
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
-
-
-
-  @Bean
-  public ZeebeClientLifecycle zeebeClientLifecycle(
-    final ZeebeClientObjectFactory factory,
-    final ApplicationEventPublisher publisher) {
-    return new ZeebeClientLifecycle(factory, publisher);
-  }
 
   @Bean
   public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {

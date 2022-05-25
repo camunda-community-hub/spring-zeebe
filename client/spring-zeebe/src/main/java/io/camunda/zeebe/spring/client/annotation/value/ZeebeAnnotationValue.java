@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.bean.value;
+package io.camunda.zeebe.spring.client.annotation.value;
 
 import io.camunda.zeebe.spring.client.bean.BeanInfo;
 

@@ -34,6 +34,7 @@
   </properties>
 
   <modules>
+    <module>test/common</module>
     <module>test/embedded</module>
     <module>test/testcontainer</module>
 
@@ -82,6 +83,11 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-zeebe-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-zeebe-test-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

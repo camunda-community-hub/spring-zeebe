@@ -10,7 +10,7 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeCustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-import io.camunda.zeebe.spring.client.bean.value.ZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
 

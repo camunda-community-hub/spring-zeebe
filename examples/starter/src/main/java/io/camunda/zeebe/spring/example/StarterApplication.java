@@ -2,7 +2,7 @@ package io.camunda.zeebe.spring.example;
 
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.EnableZeebeClient;
-import io.camunda.zeebe.spring.client.factory.ZeebeClientLifecycle;
+import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 
 import java.util.Date;
