@@ -78,10 +78,14 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
             .jobType(zeebeWorkerValue.getType())
             .handler(new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
 
-          // using defaults from config if null, 0 or negative
           if (zeebeWorkerValue.getName() != null && zeebeWorkerValue.getName().length() > 0) {
+            // using name from annotation
             builder.name(zeebeWorkerValue.getName());
+          } else if (null != client.getConfiguration().getDefaultJobWorkerName()) {
+            // otherwise, default name from Spring config if set ([would be done automatically anyway])
+            builder.name(client.getConfiguration().getDefaultJobWorkerName());
           } else {
+            // otherwise, bean/method name combo
             builder.name(beanName + "#" + zeebeWorkerValue.getMethodInfo().getMethodName());
           }
           if (zeebeWorkerValue.getMaxJobsActive() > 0) {
