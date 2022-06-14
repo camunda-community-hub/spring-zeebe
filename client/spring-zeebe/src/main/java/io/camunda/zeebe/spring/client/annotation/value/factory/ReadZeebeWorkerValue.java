@@ -38,8 +38,6 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
           String name = resolver.resolve(annotation.name());
           if (name != null && name.length() > 0) {
             builder.name(name);
-          } else {
-            builder.name(methodInfo.getBeanName() + "#" + methodInfo.getMethodName());
           }
 
           return builder.build();
