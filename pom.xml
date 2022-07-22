@@ -22,7 +22,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.0.4</zeebe.version>
-    <spring-boot.version>2.7.1</spring-boot.version>
+    <spring-boot.version>2.7.2</spring-boot.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
