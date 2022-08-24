@@ -8,10 +8,12 @@ import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import io.camunda.zeebe.spring.client.properties.ZeebeClientProperties;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +32,9 @@ public class SmokeTest {
 
   @Autowired
   private ZeebeTestEngine engine;
+
+  @MockBean
+  private ZeebeClientProperties zeebeClientProperties;
 
   private static boolean calledTest1 = false;
   private static boolean calledTest2 = false;

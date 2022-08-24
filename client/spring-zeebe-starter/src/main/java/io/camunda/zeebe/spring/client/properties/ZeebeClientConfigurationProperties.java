@@ -5,7 +5,9 @@ import io.grpc.ClientInterceptor;
 import io.camunda.zeebe.client.CredentialsProvider;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -307,6 +309,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName = null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
+    private Map<String, WorkerConfiguration> workers = new HashMap<>();
+
+    public Map<String, WorkerConfiguration> getWorkers() {
+      return workers;
+    }
+
+    public void setWorkers(Map<String, WorkerConfiguration> workers) {
+      this.workers = workers;
+    }
 
     public Integer getMaxJobsActive() {
       return maxJobsActive;
@@ -348,12 +359,13 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
       return Objects.equals(maxJobsActive, worker.maxJobsActive) &&
         Objects.equals(threads, worker.threads) &&
         Objects.equals(defaultName, worker.defaultName) &&
-        Objects.equals(defaultType, worker.defaultType);
+        Objects.equals(defaultType, worker.defaultType) &&
+        Objects.equals(workers, worker.workers);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(maxJobsActive, threads, defaultName, defaultType);
+      return Objects.hash(maxJobsActive, threads, defaultName, defaultType, workers);
     }
 
     @Override
@@ -363,6 +375,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
         ", threads=" + threads +
         ", defaultName='" + defaultName + '\'' +
         ", defaultType='" + defaultType + '\'' +
+        ", workers=" + workers +
         '}';
     }
   }
@@ -584,6 +597,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public JsonMapper getJsonMapper() {
     return jsonMapper;
+  }
+
+  @Override
+  public Map<String, WorkerConfiguration> getWorkersConfiguration() {
+    return worker.getWorkers();
   }
 
 }

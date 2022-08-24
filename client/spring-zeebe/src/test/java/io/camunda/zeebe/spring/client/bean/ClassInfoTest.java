@@ -29,13 +29,19 @@ public class ClassInfoTest {
 
   public static class WithZeebeWorkerAllValues {
 
-    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true)
+    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true, enabled = true)
     public void handle() {
     }
   }
 
   public static class WithZeebeWorkerVariables {
     @ZeebeWorker(type = "bar", timeout = 100L, fetchVariables = "var3")
+    public void handle(@ZeebeVariable String var1, @ZeebeVariable int var2) {
+    }
+  }
+
+  public static class WithDisabledZeebeWorker {
+    @ZeebeWorker(type = "bar", enabled = false)
     public void handle(@ZeebeVariable String var1, @ZeebeVariable int var2) {
     }
   }

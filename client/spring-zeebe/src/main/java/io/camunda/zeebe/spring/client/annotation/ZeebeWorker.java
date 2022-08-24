@@ -39,4 +39,6 @@ public @interface ZeebeWorker {
    *  You could also raise a BPMN problem throwing a {@link io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
    */
   boolean autoComplete() default false;
+
+  boolean enabled() default true;
 }
