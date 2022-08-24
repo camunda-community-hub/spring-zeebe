@@ -112,7 +112,6 @@ public class JobHandlerTest {
     final BpmnModelInstance bpmnModelInstance = serviceTaskBuilder.endEvent().error("shouldNotPass").done();
     client.newDeployResourceCommand().addProcessModel(bpmnModelInstance, "test3.bpmn").send().join();
     final ProcessInstanceEvent processInstance = startProcessInstance(client, processId);
-    assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     // The double-check that we didn't go to the worker.
     assertThat(calledTest3).isFalse();
@@ -138,7 +137,6 @@ public class JobHandlerTest {
     final BpmnModelInstance bpmnModelInstance = serviceTaskBuilder.endEvent().error("shouldNotPass").done();
     client.newDeployResourceCommand().addProcessModel(bpmnModelInstance, "test4.bpmn").send().join();
     final ProcessInstanceEvent processInstance = startProcessInstance(client, processId);
-    assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     // The double-check that we didn't go to the worker.
     assertThat(calledTest4).isFalse();
