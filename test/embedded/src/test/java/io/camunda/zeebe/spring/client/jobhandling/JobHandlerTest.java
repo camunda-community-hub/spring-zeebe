@@ -73,7 +73,6 @@ public class JobHandlerTest {
     final Map<String, Object> variables = Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
 
-    assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
   }
