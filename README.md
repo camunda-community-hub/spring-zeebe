@@ -382,6 +382,28 @@ class MyConfiguration {
 }
 ```
 
+### Disable worker
+
+If you need to disable worker you can do it using properties:
+```yaml
+zeebe:
+  client:
+    worker:
+      workers:
+        someWorker:
+          enabled: false
+```
+Or using the `enabled` `ZeebeWorker`'s annotation parameter:
+```java
+import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+
+class SomeClass {
+  @ZeebeWorker(type = "foo", enabled = false)
+  public void disabledHandleJobFoo(final JobClient client, final ActivatedJob job) {
+    // worker's code
+  }
+}
+```
 
 # Code of Conduct
 
