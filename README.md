@@ -208,14 +208,14 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeV
 
 ### Using @ZeebeVariablesAsType
 
-When using `autoComplete` (see below) you can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation (`MyProcessVariables` referes to your own class):
+When using `autoComplete` (see below) you can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation (`MyProcessVariables` refers to your own class):
 
 ```java
 @ZeebeWorker(type = "foo", autoComplete = true)
 public ProcessVariables handleFoo(@ZeebeVariablesAsType MyProcessVariables variables){
   // do whatever you need to do
-  variables.getMyAttribueX();
-  variables.setMyAttribueY(42);
+  variables.getMyAttributeX();
+  variables.setMyAttributeY(42);
   // return variables object if something has changed, so the changes are submitted to Zeebe
   return variables;
 }
