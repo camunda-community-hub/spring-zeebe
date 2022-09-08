@@ -140,6 +140,7 @@ Note that **the test engines requires Java version >= 17**. If you cannot run on
   <scope>test</scope>
 </dependency>
 ```
+Using Maven profiles you can also [switch the test dependencies based on the available Java version](https://github.com/camunda-community-hub/camunda-8-process-solution-template/commit/128be0ead988404c5c746ae96b47fe1138bf2a83).
 
 Then you need to startup the test engine in your test case by adding `@ZeebeSpringTest`
 
