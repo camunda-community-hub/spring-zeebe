@@ -43,7 +43,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       // normal exceptions are handled by JobRunnableFactory
       // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
       // which leads to retrying
-      if (workerValue.isAutoComplete()) {
+      if (workerValue.getAutoComplete()) {
         CommandWrapper command = new CommandWrapper(
           createCompleteCommand(jobClient, job, result),
           job,

@@ -80,7 +80,7 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
     zeebeWorkerValues
       .stream()
       .peek(zeebeWorkerValue -> zeebeWorkerValueCustomizers.forEach(customizer -> customizer.customize(zeebeWorkerValue)))
-      .filter(ZeebeWorkerValue::isEnabled)
+      .filter(ZeebeWorkerValue::getEnabled)
       .forEach(
         zeebeWorkerValue -> {
           final JobWorkerBuilderStep3 builder = client

@@ -23,6 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
     "zeebe.client.worker.threads=99",
     "zeebe.client.worker.defaultName=testName",
     "zeebe.client.worker.defaultType=testType",
+    "zeebe.client.worker.override.foo.enabled=false",
     "zeebe.client.message.timeToLive=99s",
     "zeebe.client.security.certpath=aPath",
     "zeebe.client.security.plaintext=true"
@@ -98,5 +99,10 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void getCredentialsProvider() throws Exception {
     assertThat(properties.getCredentialsProvider()).isNull();
+  }
+
+  @Test
+  void shouldFooWorkerDisabled() {
+    assertThat(properties.getWorker().getOverride().get("foo").getEnabled()).isFalse();
   }
 }

@@ -37,7 +37,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(-1, zeebeWorkerValue.get().getMaxJobsActive());
     assertEquals(-1, zeebeWorkerValue.get().getRequestTimeout());
     assertEquals(-1, zeebeWorkerValue.get().getPollInterval());
-    assertEquals(false, zeebeWorkerValue.get().isAutoComplete());
+    assertEquals(false, zeebeWorkerValue.get().getAutoComplete());
     assertArrayEquals(new String[] {}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
@@ -60,7 +60,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(3, zeebeWorkerValue.get().getMaxJobsActive());
     assertEquals(500L, zeebeWorkerValue.get().getRequestTimeout());
     assertEquals(1_000L, zeebeWorkerValue.get().getPollInterval());
-    assertEquals(true, zeebeWorkerValue.get().isAutoComplete());
+    assertEquals(true, zeebeWorkerValue.get().getAutoComplete());
     assertArrayEquals(new String[] { "foo"}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }

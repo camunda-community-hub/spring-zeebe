@@ -35,6 +35,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private MethodInfo methodInfo;
 
+  public ZeebeWorkerValue() {
+  }
+
   private ZeebeWorkerValue(String type,
                            String name,
                            long timeout,
@@ -97,7 +100,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return fetchVariables;
   }
 
-  public Boolean isAutoComplete() {
+  public Boolean getAutoComplete() {
     return autoComplete;
   }
 
@@ -110,7 +113,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return getMethodInfo();
   }
 
-  public Boolean isEnabled() {
+  public Boolean getEnabled() {
     return enabled;
   }
 

@@ -33,6 +33,77 @@ class CopyNotNullBeanUtilsBeanTest {
     assertThat(firstObject).isEqualTo(new ForTest(first, second, third));
   }
 
+  @Test
+  void shouldMapBooleanProperties() throws InvocationTargetException, IllegalAccessException {
+    // given
+    final ForTestWithBoolean dest = new ForTestWithBoolean(null, false, true);
+
+    // when
+    copyNotNullBeanUtilsBean.copyProperties(dest, new ForTestWithBoolean(true, true, null));
+
+    assertThat(dest).isEqualTo(new ForTestWithBoolean(true, true, true));
+  }
+
+  public static class ForTestWithBoolean {
+    private Boolean first;
+    private boolean second;
+    private Boolean third;
+
+    public ForTestWithBoolean(Boolean first, boolean second, Boolean third) {
+      this.first = first;
+      this.second = second;
+      this.third = third;
+    }
+
+    public ForTestWithBoolean() {
+    }
+
+    public Boolean getFirst() {
+      return first;
+    }
+
+    public void setFirst(Boolean first) {
+      this.first = first;
+    }
+
+    public boolean isSecond() {
+      return second;
+    }
+
+    public void setSecond(boolean second) {
+      this.second = second;
+    }
+
+    public Boolean getThird() {
+      return third;
+    }
+
+    public void setThird(Boolean third) {
+      this.third = third;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      ForTestWithBoolean that = (ForTestWithBoolean) o;
+      return second == that.second && Objects.equals(first, that.first) && Objects.equals(third, that.third);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(first, second, third);
+    }
+
+    @Override
+    public String toString() {
+      return "ForTestWithBoolean{" +
+        "first=" + first +
+        ", second=" + second +
+        ", third=" + third +
+        '}';
+    }
+  }
 
   public static class ForTest {
     private String first;
