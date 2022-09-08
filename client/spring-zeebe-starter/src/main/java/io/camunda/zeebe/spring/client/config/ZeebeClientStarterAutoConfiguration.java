@@ -1,18 +1,21 @@
 package io.camunda.zeebe.spring.client.config;
 
-import io.grpc.ClientInterceptor;
+import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
-import java.util.List;
+import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
+import io.grpc.ClientInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
-import io.camunda.zeebe.client.ZeebeClientBuilder;
-import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
+import java.util.List;
 
 @Import(ZeebeActuatorConfiguration.class)
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
@@ -56,5 +59,11 @@ public class ZeebeClientStarterAutoConfiguration {
       builder.withInterceptors(clientInterceptorList.toArray(new ClientInterceptor[0]));
     }
     return builder;
+  }
+
+  @Bean("propertyBasedZeebeWorkerValueCustomizer")
+  @ConditionalOnMissingBean(name = "propertyBasedZeebeWorkerValueCustomizer")
+  public ZeebeWorkerValueCustomizer propertyBasedZeebeWorkerValueCustomizer() {
+    return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
   }
 }

@@ -8,7 +8,7 @@ import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
-import io.camunda.zeebe.spring.client.properties.ZeebeClientProperties;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +21,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {JobHandlerTest.ZeebeClientPropertiesConfiguration.class, JobHandlerTest.class})
+@SpringBootTest(classes = {JobHandlerTest.class, JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class})
 @ZeebeSpringTest
 public class JobHandlerTest {
 
@@ -36,16 +33,15 @@ public class JobHandlerTest {
   private ZeebeClient client;
 
   @TestConfiguration
-  public static class ZeebeClientPropertiesConfiguration {
+  public static class ZeebeCustomizerDisableWorkerConfiguration {
 
     @Bean
-    public ZeebeClientProperties zeebeClientProperties() {
-      final ZeebeClientProperties properties = mock(ZeebeClientProperties.class);
-      // Disabling the worker via properties
-      final ZeebeClientProperties.WorkerConfiguration workerConfiguration = new ZeebeClientProperties.WorkerConfiguration();
-      workerConfiguration.setEnabled(false);
-      when(properties.getWorkersConfiguration()).thenReturn(Map.of("test4", workerConfiguration));
-      return properties;
+    public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
+      return zeebeWorker -> {
+        if(zeebeWorker.getType().equals("test4")){
+          zeebeWorker.setEnabled(false);
+        }
+      };
     }
   }
 
@@ -122,7 +118,7 @@ public class JobHandlerTest {
   }
 
   /**
-   * Worker disabled in {@link ZeebeClientPropertiesConfiguration#zeebeClientProperties()}
+   * Worker disabled in {@link ZeebeCustomizerDisableWorkerConfiguration#zeebeWorkerValueCustomizer()}
    */
   @Test
   void shouldNotActivateJobInPropertiesDisabledWorker() {

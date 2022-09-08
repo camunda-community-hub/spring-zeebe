@@ -1,35 +1,52 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
+import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
+  private static final CopyNotNullBeanUtilsBean BEAN_UTILS_BEAN = new CopyNotNullBeanUtilsBean();
   private String type;
 
   private String name;
 
-  private long timeout;
+  private Long timeout;
 
-  private int maxJobsActive;
+  private Integer maxJobsActive;
 
-  private long requestTimeout;
+  private Long requestTimeout;
 
-  private long pollInterval;
+  private Long pollInterval;
 
-  private boolean autoComplete;
+  private Boolean autoComplete;
 
   private String[] fetchVariables;
 
+  private Boolean enabled;
+
   private MethodInfo methodInfo;
 
-  private ZeebeWorkerValue(String type, String name, long timeout, int maxJobsActive, long requestTimeout, long pollInterval, String[] fetchVariables, boolean forceFetchAllVariables, List<ParameterInfo> variableParameters, boolean autoComplete, MethodInfo methodInfo) {
+  private ZeebeWorkerValue(String type,
+                           String name,
+                           long timeout,
+                           int maxJobsActive,
+                           long requestTimeout,
+                           long pollInterval,
+                           String[] fetchVariables,
+                           boolean forceFetchAllVariables,
+                           List<ParameterInfo> variableParameters,
+                           boolean autoComplete,
+                           MethodInfo methodInfo,
+                           final boolean enabled) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
@@ -38,6 +55,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.pollInterval = pollInterval;
     this.autoComplete = autoComplete;
     this.methodInfo = methodInfo;
+    this.enabled = enabled;
 
     if (forceFetchAllVariables) {
       // this overwrites any other setting
@@ -59,19 +77,19 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return name;
   }
 
-  public long getTimeout() {
+  public Long getTimeout() {
     return timeout;
   }
 
-  public int getMaxJobsActive() {
+  public Integer getMaxJobsActive() {
     return maxJobsActive;
   }
 
-  public long getRequestTimeout() {
+  public Long getRequestTimeout() {
     return requestTimeout;
   }
 
-  public long getPollInterval() {
+  public Long getPollInterval() {
     return pollInterval;
   }
 
@@ -79,7 +97,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return fetchVariables;
   }
 
-  public boolean isAutoComplete() {
+  public Boolean isAutoComplete() {
     return autoComplete;
   }
 
@@ -92,6 +110,59 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return getMethodInfo();
   }
 
+  public Boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setTimeout(Long timeout) {
+    this.timeout = timeout;
+  }
+
+  public void setMaxJobsActive(Integer maxJobsActive) {
+    this.maxJobsActive = maxJobsActive;
+  }
+
+  public void setRequestTimeout(Long requestTimeout) {
+    this.requestTimeout = requestTimeout;
+  }
+
+  public void setPollInterval(Long pollInterval) {
+    this.pollInterval = pollInterval;
+  }
+
+  public void setAutoComplete(Boolean autoComplete) {
+    this.autoComplete = autoComplete;
+  }
+
+  public void setFetchVariables(String[] fetchVariables) {
+    this.fetchVariables = fetchVariables;
+  }
+
+  public void setMethodInfo(MethodInfo methodInfo) {
+    this.methodInfo = methodInfo;
+  }
+
+  public ZeebeWorkerValue merge(ZeebeWorkerValue other) {
+    try {
+      BEAN_UTILS_BEAN.copyProperties(this, other);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException(e);
+    }
+    return this;
+  }
+
   public static final ZeebeWorkerValueBuilder builder() {
     return new ZeebeWorkerValueBuilder();
   }
@@ -99,16 +170,41 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   @Override
   public String toString() {
     return "ZeebeWorkerValue{" +
-      "name='" + name + '\'' +
-      ", type='" + type + '\'' +
+      "type='" + type + '\'' +
+      ", name='" + name + '\'' +
       ", timeout=" + timeout +
       ", maxJobsActive=" + maxJobsActive +
       ", requestTimeout=" + requestTimeout +
       ", pollInterval=" + pollInterval +
       ", autoComplete=" + autoComplete +
       ", fetchVariables=" + Arrays.toString(fetchVariables) +
+      ", enabled=" + enabled +
       ", methodInfo=" + methodInfo +
       '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ZeebeWorkerValue that = (ZeebeWorkerValue) o;
+    return Objects.equals(type, that.type) &&
+      Objects.equals(name, that.name) &&
+      Objects.equals(timeout, that.timeout) &&
+      Objects.equals(maxJobsActive, that.maxJobsActive) &&
+      Objects.equals(requestTimeout, that.requestTimeout) &&
+      Objects.equals(pollInterval, that.pollInterval) &&
+      Objects.equals(autoComplete, that.autoComplete) &&
+      Arrays.equals(fetchVariables, that.fetchVariables) &&
+      Objects.equals(enabled, that.enabled) &&
+      Objects.equals(methodInfo, that.methodInfo);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, autoComplete, enabled, methodInfo);
+    result = 31 * result + Arrays.hashCode(fetchVariables);
+    return result;
   }
 
   public static final class ZeebeWorkerValueBuilder {
@@ -132,6 +228,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     private List<ParameterInfo> variableParameters;
 
     private boolean autoComplete;
+
+    private boolean enabled;
 
     private MethodInfo methodInfo;
 
@@ -193,8 +291,26 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       return this;
     }
 
+    public ZeebeWorkerValueBuilder enabled(final boolean enabled) {
+      this.enabled = enabled;
+      return this;
+    }
+
     public ZeebeWorkerValue build() {
-      return new ZeebeWorkerValue(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, fetchVariables, forceFetchAllVariables, variableParameters, autoComplete, methodInfo);
+      return new ZeebeWorkerValue(
+        type,
+        name,
+        timeout,
+        maxJobsActive,
+        requestTimeout,
+        pollInterval,
+        fetchVariables,
+        forceFetchAllVariables,
+        variableParameters,
+        autoComplete,
+        methodInfo,
+        enabled
+      );
     }
 
   }

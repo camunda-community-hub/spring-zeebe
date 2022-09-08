@@ -1,6 +1,7 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
@@ -24,8 +25,11 @@ public class AnnotationProcessorConfiguration {
   }
 
   @Bean
-  public ZeebeWorkerAnnotationProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, BackoffSupplier backoffSupplier) {
-    return new ZeebeWorkerAnnotationProcessor(reader, commandExceptionHandlingStrategy, backoffSupplier);
+  public ZeebeWorkerAnnotationProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader,
+                                                                 final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                                                 final BackoffSupplier backoffSupplier,
+                                                                 final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
+    return new ZeebeWorkerAnnotationProcessor(reader, commandExceptionHandlingStrategy, backoffSupplier, zeebeWorkerValueCustomizers);
   }
 
 }

@@ -1,6 +1,5 @@
 package io.camunda.zeebe.spring.client.annotation.value.factory;
 
-import io.camunda.zeebe.spring.client.properties.ZeebeClientProperties;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.springframework.context.annotation.Bean;
 
@@ -20,8 +19,8 @@ public class ReadAnnotationValueConfiguration {
   }
 
   @Bean
-  public ReadZeebeWorkerValue readZeebeWorkerValue(final ZeebeExpressionResolver resolver, final ZeebeClientProperties zeebeClientProperties) {
-    return new ReadZeebeWorkerValue(resolver, zeebeClientProperties);
+  public ReadZeebeWorkerValue readZeebeWorkerValue(final ZeebeExpressionResolver resolver) {
+    return new ReadZeebeWorkerValue(resolver);
   }
 
 }

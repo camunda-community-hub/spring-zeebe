@@ -1,23 +1,21 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
-import io.camunda.zeebe.spring.client.properties.ZeebeClientProperties;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
+import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReadZeebeWorkerValueTest {
 
@@ -25,7 +23,7 @@ public class ReadZeebeWorkerValueTest {
   public void applyOnWithZeebeWorker() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver, mock(ZeebeClientProperties.class));
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorker.class);
 
     //when
@@ -48,7 +46,7 @@ public class ReadZeebeWorkerValueTest {
   public void applyOnWithZeebeWorkerAllValues() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver, mock(ZeebeClientProperties.class));
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerAllValues.class);
 
     //when
@@ -71,7 +69,7 @@ public class ReadZeebeWorkerValueTest {
   public void applyOnWithZeebeWorkerVariables() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver, mock(ZeebeClientProperties.class));
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
 
     //when
@@ -81,40 +79,6 @@ public class ReadZeebeWorkerValueTest {
     assertTrue(zeebeWorkerValue.isPresent());
     assertThat(Arrays.asList("var1", "var2", "var3" )).hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
-  }
-
-  @Test
-  void shouldNotCreateWorkerIfItDisabledInAnnotation() {
-    //given
-    final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver, mock(ZeebeClientProperties.class));
-    final MethodInfo methodInfo = extract(ClassInfoTest.WithDisabledZeebeWorker.class);
-
-    //when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
-
-    //then
-    assertThat(zeebeWorkerValue).isEmpty();
-  }
-
-  @Test
-  void shouldNotCreateWorkerIfItDisabledInProperties() {
-    //given
-    final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ZeebeClientProperties zeebeClientProperties = mock(ZeebeClientProperties.class);
-    final Map<String, ZeebeClientProperties.WorkerConfiguration> workersConfiguration = new HashMap<>(1, 1);
-    final ZeebeClientProperties.WorkerConfiguration barWorkerConfiguration = new ZeebeClientProperties.WorkerConfiguration();
-    barWorkerConfiguration.setEnabled(false);
-    workersConfiguration.put("bar", barWorkerConfiguration);
-    when(zeebeClientProperties.getWorkersConfiguration()).thenReturn(workersConfiguration);
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver, zeebeClientProperties);
-    final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
-
-    //when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
-
-    //then
-    assertThat(zeebeWorkerValue).isEmpty();
   }
 
   private MethodInfo extract(Class<?> clazz) {

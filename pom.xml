@@ -23,6 +23,7 @@
 
     <zeebe.version>8.0.6</zeebe.version>
     <spring-boot.version>2.7.3</spring-boot.version>
+    <commons-beanutils.version>1.9.4</commons-beanutils.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -105,6 +106,11 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-kotlin</artifactId>
         <version>${kotlin-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>${commons-beanutils.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
