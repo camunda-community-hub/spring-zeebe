@@ -46,6 +46,12 @@ public class ClassInfoTest {
     }
   }
 
+  public static class NoTypeNameSet {
+    @ZeebeWorker()
+    public void handle() {
+    }
+  }
+
   @Test
   public void getBeanInfo() throws Exception {
     final WithDeploymentAnnotation withDeploymentAnnotation = new WithDeploymentAnnotation();

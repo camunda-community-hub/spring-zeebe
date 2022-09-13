@@ -158,7 +158,35 @@ An example test case is [available here](https://github.com/camunda-community-hu
 
 
 
-## Workers
+## Worker configuration options
+
+### Job Type
+
+You can configure the job type via the `ZeebeWorker` annotation:
+
+```java
+@ZeebeWorker(type = "foo")
+public void handleJobFoo() {
+  // handles jobs of type 'foo'
+}
+```
+
+If you don't specify the `type` the method name is used as default:
+
+```java
+@ZeebeWorker
+public void foo() {
+    // handles jobs of type 'foo'
+}
+```
+
+As a third possibility, you can set a default job type:
+
+```properties
+zeebe.client.worker.default-type=foo
+```
+
+This is used for all workers that do **not** set a task type via the annoation.
 
 ### Fetch all variables
 

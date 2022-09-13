@@ -83,9 +83,15 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
       .filter(ZeebeWorkerValue::getEnabled)
       .forEach(
         zeebeWorkerValue -> {
+
+          String jobType = zeebeWorkerValue.getType();
+          if (jobType==null) {
+            jobType = zeebeWorkerValue.getMethodInfo().getMethodName();
+          }
+
           final JobWorkerBuilderStep3 builder = client
             .newWorker()
-            .jobType(zeebeWorkerValue.getType())
+            .jobType(jobType)
             .handler(new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
 
           if (zeebeWorkerValue.getName() != null && zeebeWorkerValue.getName().length() > 0) {

@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ZeebeWorker {
 
-  String type() default "${zeebe.client.worker.default-type}";
+  String type() default ""; // set to empty string which leads to method name being used (if not ${zeebe.client.worker.default-type}" is configured) Implemented in ZeebeWorkerAnnotationProcessor
 
-  String name() default ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in ZeebeWorkerPostProcessor
+  String name() default ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in ZeebeWorkerAnnotationProcessor
 
   long timeout() default -1L;
 

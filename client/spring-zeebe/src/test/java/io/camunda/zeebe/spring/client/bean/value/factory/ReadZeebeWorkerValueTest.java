@@ -6,6 +6,7 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestPropertySource;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorker() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorker.class);
 
     //when
@@ -43,7 +44,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerAllValues() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerAllValues.class);
 
     //when
@@ -65,7 +66,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerVariables() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
 
     //when
@@ -75,6 +76,35 @@ public class ReadZeebeWorkerValueTest {
     assertTrue(zeebeWorkerValue.isPresent());
     assertThat(Arrays.asList("var1", "var2", "var3" )).hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
+  }
+
+  @Test
+  public void applyOnZeebeWorkerWithNoTypeSet() {
+    //given
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoTypeNameSet.class);
+
+    //when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
+
+    //then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertEquals("handle", zeebeWorkerValue.get().getType());
+  }
+
+  @Test
+  // MAybe valuidate via own test class with @TestPropertySource(properties = {"zeebe.client.worker.default-type=defaultWorkerType"})
+  public void applyOnZeebeWorkerWithNoTypeSetUsingDefault() {
+    //given
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue("defaultWorkerType");
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoTypeNameSet.class);
+
+    //when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
+
+    //then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertEquals("defaultWorkerType", zeebeWorkerValue.get().getType());
   }
 
   private MethodInfo extract(Class<?> clazz) {
