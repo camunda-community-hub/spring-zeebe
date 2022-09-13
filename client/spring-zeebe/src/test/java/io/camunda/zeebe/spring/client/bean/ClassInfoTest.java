@@ -47,7 +47,7 @@ public class ClassInfoTest {
   }
 
   public static class NoTypeNameSet {
-    @ZeebeWorker()
+    @ZeebeWorker
     public void handle() {
     }
   }
