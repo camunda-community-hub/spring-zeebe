@@ -5,9 +5,10 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
-import io.camunda.zeebe.spring.client.bean.ClassInfo;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans;
 import org.slf4j.Logger;
@@ -41,13 +42,18 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
   private final BackoffSupplier backoffSupplier;
 
   private String beanName = null;
-  private List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();;
+  private final List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();;
   private List<JobWorker> openedWorkers = new ArrayList<>();
+  private final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers;
 
-  public ZeebeWorkerAnnotationProcessor(ReadZeebeWorkerValue reader, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, BackoffSupplier backoffSupplier) {
+  public ZeebeWorkerAnnotationProcessor(final ReadZeebeWorkerValue reader,
+                                        final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                        final BackoffSupplier backoffSupplier,
+                                        final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
     this.reader = reader;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.backoffSupplier = backoffSupplier;
+    this.zeebeWorkerValueCustomizers = zeebeWorkerValueCustomizers;
   }
 
   @Override
@@ -71,7 +77,11 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
   }
   @Override
   public void start(ZeebeClient client) {
-      zeebeWorkerValues.forEach(
+    zeebeWorkerValues
+      .stream()
+      .peek(zeebeWorkerValue -> zeebeWorkerValueCustomizers.forEach(customizer -> customizer.customize(zeebeWorkerValue)))
+      .filter(ZeebeWorkerValue::getEnabled)
+      .forEach(
         zeebeWorkerValue -> {
           final JobWorkerBuilderStep3 builder = client
             .newWorker()

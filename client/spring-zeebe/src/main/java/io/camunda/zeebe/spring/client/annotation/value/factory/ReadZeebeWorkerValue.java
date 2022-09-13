@@ -22,7 +22,6 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
       .getAnnotation(annotationType)
       .map(
         annotation -> {
-
           ZeebeWorkerValue.ZeebeWorkerValueBuilder builder = ZeebeWorkerValue.builder()
             .methodInfo(methodInfo)
             .type(resolver.resolve(annotation.type()))
@@ -33,7 +32,8 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
             .forceFetchAllVariables(annotation.forceFetchAllVariables())
             .autoComplete(annotation.autoComplete())
             .variableParameters(readZeebeVariableParameters(methodInfo))
-            .requestTimeout(annotation.requestTimeout());
+            .requestTimeout(annotation.requestTimeout())
+            .enabled(annotation.enabled());
 
           String name = resolver.resolve(annotation.name());
           if (name != null && name.length() > 0) {
@@ -41,7 +41,6 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
           }
 
           return builder.build();
-
         });
   }
 

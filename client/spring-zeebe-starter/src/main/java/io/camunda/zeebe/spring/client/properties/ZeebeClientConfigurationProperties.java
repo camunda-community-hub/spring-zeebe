@@ -1,11 +1,14 @@
 package io.camunda.zeebe.spring.client.properties;
 
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.grpc.ClientInterceptor;
 import io.camunda.zeebe.client.CredentialsProvider;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -307,6 +310,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName = null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
+    private Map<String, ZeebeWorkerValue> override = new HashMap<>();
+
+    public Map<String, ZeebeWorkerValue> getOverride() {
+      return override;
+    }
+
+    public void setOverride(Map<String, ZeebeWorkerValue> override) {
+      this.override = override;
+    }
 
     public Integer getMaxJobsActive() {
       return maxJobsActive;
@@ -348,12 +360,13 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
       return Objects.equals(maxJobsActive, worker.maxJobsActive) &&
         Objects.equals(threads, worker.threads) &&
         Objects.equals(defaultName, worker.defaultName) &&
-        Objects.equals(defaultType, worker.defaultType);
+        Objects.equals(defaultType, worker.defaultType) &&
+        Objects.equals(override, worker.override);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(maxJobsActive, threads, defaultName, defaultType);
+      return Objects.hash(maxJobsActive, threads, defaultName, defaultType, override);
     }
 
     @Override
@@ -363,6 +376,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
         ", threads=" + threads +
         ", defaultName='" + defaultName + '\'' +
         ", defaultType='" + defaultType + '\'' +
+        ", override=" + override +
         '}';
     }
   }
@@ -585,5 +599,4 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public JsonMapper getJsonMapper() {
     return jsonMapper;
   }
-
 }

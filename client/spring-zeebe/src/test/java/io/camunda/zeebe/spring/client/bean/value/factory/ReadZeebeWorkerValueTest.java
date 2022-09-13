@@ -1,24 +1,26 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
+import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReadZeebeWorkerValueTest {
 
   @Test
-  public void applyOnWithZeebeWorker() throws NoSuchMethodException {
+  public void applyOnWithZeebeWorker() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
     final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
@@ -35,13 +37,13 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(-1, zeebeWorkerValue.get().getMaxJobsActive());
     assertEquals(-1, zeebeWorkerValue.get().getRequestTimeout());
     assertEquals(-1, zeebeWorkerValue.get().getPollInterval());
-    assertEquals(false, zeebeWorkerValue.get().isAutoComplete());
+    assertEquals(false, zeebeWorkerValue.get().getAutoComplete());
     assertArrayEquals(new String[] {}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   @Test
-  public void applyOnWithZeebeWorkerAllValues() throws NoSuchMethodException {
+  public void applyOnWithZeebeWorkerAllValues() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
     final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
@@ -58,13 +60,13 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(3, zeebeWorkerValue.get().getMaxJobsActive());
     assertEquals(500L, zeebeWorkerValue.get().getRequestTimeout());
     assertEquals(1_000L, zeebeWorkerValue.get().getPollInterval());
-    assertEquals(true, zeebeWorkerValue.get().isAutoComplete());
+    assertEquals(true, zeebeWorkerValue.get().getAutoComplete());
     assertArrayEquals(new String[] { "foo"}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   @Test
-  public void applyOnWithZeebeWorkerVariables() throws NoSuchMethodException {
+  public void applyOnWithZeebeWorkerVariables() {
     //given
     final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
     final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
@@ -79,7 +81,7 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
-  private MethodInfo extract(Class<?> clazz) throws NoSuchMethodException {
+  private MethodInfo extract(Class<?> clazz) {
 
     final Method method = Arrays.stream(clazz.getMethods()).filter(m -> m.getName().equals("handle")).findFirst().get();
     final ClassInfo classInfo = ClassInfo.builder()

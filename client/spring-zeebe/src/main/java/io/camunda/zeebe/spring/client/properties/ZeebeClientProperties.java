@@ -1,8 +1,8 @@
 package io.camunda.zeebe.spring.client.properties;
 
-import io.grpc.ClientInterceptor;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.client.api.JsonMapper;
+import io.grpc.ClientInterceptor;
 
 import java.util.List;
 
