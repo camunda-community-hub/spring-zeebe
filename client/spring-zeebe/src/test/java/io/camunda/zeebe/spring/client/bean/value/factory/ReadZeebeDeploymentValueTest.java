@@ -4,10 +4,8 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
@@ -15,20 +13,16 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class ReadZeebeDeploymentValueTest {
 
-  @Mock
-  private ZeebeExpressionResolver expressionResolver;
 
   private ReadZeebeDeploymentValue readZeebeDeploymentValue;
 
   @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
-    readZeebeDeploymentValue = new ReadZeebeDeploymentValue(expressionResolver);
+    readZeebeDeploymentValue = new ReadZeebeDeploymentValue();
   }
 
   @Test
@@ -37,8 +31,6 @@ public class ReadZeebeDeploymentValueTest {
     ClassInfo classInfo = ClassInfo.builder()
       .bean(new WithSingleClassPathResource())
       .build();
-
-    when(expressionResolver.resolve(anyString())).thenAnswer(inv -> inv.getArgument(0));
 
     ZeebeDeploymentValue expectedDeploymentValue = ZeebeDeploymentValue.builder()
       .beanInfo(classInfo)
@@ -60,8 +52,6 @@ public class ReadZeebeDeploymentValueTest {
       .bean(new WithMultipleClassPathResource())
       .build();
 
-    when(expressionResolver.resolve(anyString())).thenAnswer(inv -> inv.getArgument(0));
-
     ZeebeDeploymentValue expectedDeploymentValue = ZeebeDeploymentValue.builder()
       .beanInfo(classInfo)
       .resources(Arrays.asList("classpath*:/1.bpmn", "classpath*:/2.bpmn"))
@@ -81,8 +71,6 @@ public class ReadZeebeDeploymentValueTest {
     ClassInfo classInfo = ClassInfo.builder()
       .bean(new WithoutAnnotation())
       .build();
-
-    when(expressionResolver.resolve(anyString())).thenAnswer(inv -> inv.getArgument(0));
 
     //when
     Optional<ZeebeDeploymentValue> valueForClass = readZeebeDeploymentValue.apply(classInfo);

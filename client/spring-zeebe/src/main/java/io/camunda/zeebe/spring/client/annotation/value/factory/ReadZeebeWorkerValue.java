@@ -5,15 +5,14 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeWorker, ZeebeWorkerValue> {
 
-  public ReadZeebeWorkerValue(final ZeebeExpressionResolver resolver) {
-    super(resolver, ZeebeWorker.class);
+  public ReadZeebeWorkerValue() {
+    super(ZeebeWorker.class);
   }
 
   @Override
@@ -24,7 +23,7 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
         annotation -> {
           ZeebeWorkerValue.ZeebeWorkerValueBuilder builder = ZeebeWorkerValue.builder()
             .methodInfo(methodInfo)
-            .type(resolver.resolve(annotation.type()))
+            .type(annotation.type())
             .timeout(annotation.timeout())
             .maxJobsActive(annotation.maxJobsActive())
             .pollInterval(annotation.pollInterval())
@@ -35,7 +34,7 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
             .requestTimeout(annotation.requestTimeout())
             .enabled(annotation.enabled());
 
-          String name = resolver.resolve(annotation.name());
+          String name = annotation.name();
           if (name != null && name.length() > 0) {
             builder.name(name);
           }

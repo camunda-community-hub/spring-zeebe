@@ -3,7 +3,6 @@ package io.camunda.zeebe.spring.client.annotation.value.factory;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +13,8 @@ public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, Zee
 
   private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
-  public ReadZeebeDeploymentValue(final ZeebeExpressionResolver resolver) {
-    super(resolver, ZeebeDeployment.class);
+  public ReadZeebeDeploymentValue() {
+    super(ZeebeDeployment.class);
   }
 
   @Override
@@ -37,16 +36,9 @@ public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, Zee
 
           return ZeebeDeploymentValue.builder()
             .beanInfo(classInfo)
-            .resources(
-              resolveResources(resources)
-            )
+            .resources(resources)
             .build();
         });
   }
 
-  private List<String> resolveResources(List<String> resources) {
-    return resources.stream()
-      .map(resource -> ((String) resolver.resolve(resource)))
-      .collect(Collectors.toList());
-  }
 }

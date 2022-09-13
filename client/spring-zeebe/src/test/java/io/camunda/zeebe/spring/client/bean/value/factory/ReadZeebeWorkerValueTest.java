@@ -5,7 +5,6 @@ import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerVa
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -22,8 +21,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorker() {
     //given
-    final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorker.class);
 
     //when
@@ -45,8 +43,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerAllValues() {
     //given
-    final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerAllValues.class);
 
     //when
@@ -68,8 +65,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerVariables() {
     //given
-    final ZeebeExpressionResolver zeebeExpressionResolver = new ZeebeExpressionResolver();
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(zeebeExpressionResolver);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue();
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
 
     //when

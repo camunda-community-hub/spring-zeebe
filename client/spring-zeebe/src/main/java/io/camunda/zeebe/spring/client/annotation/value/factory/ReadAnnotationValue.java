@@ -2,7 +2,6 @@ package io.camunda.zeebe.spring.client.annotation.value.factory;
 
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeAnnotationValue;
 import io.camunda.zeebe.spring.client.bean.BeanInfo;
-import io.camunda.zeebe.spring.util.ZeebeExpressionResolver;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Function;
@@ -18,12 +17,9 @@ import java.util.function.Function;
  */
 abstract class ReadAnnotationValue<B extends BeanInfo, A extends Annotation, V extends ZeebeAnnotationValue<B>> implements Function<B, Optional<V>> {
 
-  protected final ZeebeExpressionResolver resolver;
   protected final Class<A> annotationType;
 
-  protected ReadAnnotationValue(
-    final ZeebeExpressionResolver resolver, final Class<A> annotationType) {
-    this.resolver = resolver;
+  protected ReadAnnotationValue(final Class<A> annotationType) {
     this.annotationType = annotationType;
   }
 
