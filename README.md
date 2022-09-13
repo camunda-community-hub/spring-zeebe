@@ -385,33 +385,47 @@ class MyConfiguration {
 
 ### Disable worker
 
-There exists an ability to disable a worker via the `enabled` `ZeebeWorker`'s annotation parameter:
-```java
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+You can disable workesr via the `enabled` parameter of the `@ZeebeWorker` annotation :
 
+```java
 class SomeClass {
   @ZeebeWorker(type = "foo", enabled = false)
-  public void disabledHandleJobFoo(final JobClient client, final ActivatedJob job) {
-    // worker's code
+  public void handleJobFoo() {
+    // worker's code - now disabled
   }
 }
 ```
-It could be useful when there is a migration of a worker between different applications. This process is described below.
 
-### Override values in the `io.camunda.zeebe.spring.client.annotation.ZeebeWorker` annotation
+You can also overwrite this setting via the your `application.properties` file:
 
-Sometimes it is helpful to override the `ZeebeWorker` annotation's values.
-For example, if there are two applications and there is a migration of workers from one to another it is convenient to disable workers via configuration in the old application.
-This could be done like this:
 ```properties
-zeebe.client.worker.override.my-worker.enabled=false
+zeebe.client.worker.override.foo.enabled=false
 ```
-where `my-worker` is the type of the worker that we want to customize.
-Also, there all configuration supported that exists in the `ZeebeWorker` annotation:
+
+This is especially useful, if you have a bigger code base including many workers, but want to start only some of them. Typical use cases are 
+
+* Testing: You only want one specific worker to run at a time
+* Load Balancing: You want to control which workers run on which instance of cluster nodes
+* Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new. 
+
+
+### Overriding `ZeebeWorker` values via configuration file
+
+You can override the `ZeebeWorker` annotation's values, as you could see in the example above where the `enabled` property is overwritten:
+
 ```properties
-zeebe.client.worker.override.my-worker.timeout=10000
+zeebe.client.worker.override.foo.enabled=false
 ```
-It is also possible to provide a different way to customize the `ZeebeWorker` annotation by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
+
+In this case, `foo` is the type of the worker that we want to customize.
+
+You can overwrite all supported configuration options for a worker, e.g.:
+
+```properties
+zeebe.client.worker.override.foo.timeout=10000
+```
+
+You could also provide a custom class that can customize the `ZeebeWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
 
 # Code of Conduct
 
