@@ -12,13 +12,6 @@
   <artifactId>spring-zeebe-test-common</artifactId>
   <name>test/spring-zeebe-test-common</name>
 
-  <properties>
-    <version.java>17</version.java>
-    <java.version>${version.java}</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
