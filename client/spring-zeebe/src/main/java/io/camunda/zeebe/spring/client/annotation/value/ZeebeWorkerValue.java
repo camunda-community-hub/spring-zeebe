@@ -114,6 +114,10 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   public ZeebeWorkerValue setType(String type) {
     this.type = type;
+    // You can only set a type of a worker - in this case the name is set equals to the type
+    if (name==null) {
+      setName(type);
+    }
     return this;
   }
 
@@ -246,6 +250,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     } else {
       setType( methodInfo.getMethodName() );
     }
+
     return this;
   }
 }
