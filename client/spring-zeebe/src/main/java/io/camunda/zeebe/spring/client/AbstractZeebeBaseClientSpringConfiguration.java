@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
+import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
@@ -26,6 +27,11 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   @Bean
   public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
     return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService());
+  }
+
+  @Bean
+  public JobWorkerManager jobWorkerManager(final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+    return new JobWorkerManager(commandExceptionHandlingStrategy);
   }
 
   @Bean

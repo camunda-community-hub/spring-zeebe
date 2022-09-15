@@ -1,0 +1,86 @@
+package io.camunda.zeebe.spring.client.jobhandling;
+
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.worker.JobHandler;
+import io.camunda.zeebe.client.api.worker.JobWorker;
+import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class JobWorkerManager {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+
+  private List<JobWorker> openedWorkers = new ArrayList<>();
+  private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
+
+  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
+  }
+
+  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, JobHandler handler) {
+    final JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder = client
+      .newWorker()
+      .jobType(zeebeWorkerValue.getType())
+      .handler(handler)
+      .name(zeebeWorkerValue.getName());
+
+    if (zeebeWorkerValue.getMaxJobsActive() > 0) {
+      builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
+    }
+    if (zeebeWorkerValue.getTimeout() > 0) {
+      builder.timeout(zeebeWorkerValue.getTimeout());
+    }
+    if (zeebeWorkerValue.getPollInterval() > 0) {
+      builder.pollInterval(Duration.ofMillis(zeebeWorkerValue.getPollInterval()));
+    }
+    if (zeebeWorkerValue.getRequestTimeout() > 0) {
+      builder.requestTimeout(Duration.ofSeconds(zeebeWorkerValue.getRequestTimeout()));
+    }
+    if (zeebeWorkerValue.getFetchVariables().length > 0) {
+      builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
+    }
+
+    JobWorker jobWorker = builder.open();
+    openedWorkers.add(jobWorker);
+    workerValues.add(zeebeWorkerValue);
+    LOGGER.info(". Starting Zeebe worker: {}", zeebeWorkerValue);
+    return jobWorker;
+  }
+
+  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
+    return openWorker(
+      client,
+      zeebeWorkerValue,
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
+  }
+
+  public void closeAllOpenWorkers() {
+    openedWorkers.forEach(worker -> worker.close());
+    openedWorkers = new ArrayList<>();
+  }
+
+  public void closeWorker(JobWorker worker) {
+    worker.close();
+    int i = openedWorkers.indexOf(worker);
+    openedWorkers.remove(i);
+    workerValues.remove(i);
+  }
+
+  public Optional<ZeebeWorkerValue> findJobWorkerConfigByName(String name) {
+    return workerValues.stream().filter( worker -> worker.getName().equals(name) ).findFirst();
+  }
+
+  public Optional<ZeebeWorkerValue> findJobWorkerConfigByType(String type) {
+    return workerValues.stream().filter( worker -> worker.getType().equals(type) ).findFirst();
+  }
+}

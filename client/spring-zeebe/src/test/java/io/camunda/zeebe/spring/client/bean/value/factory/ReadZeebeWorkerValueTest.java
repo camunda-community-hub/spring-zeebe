@@ -6,7 +6,6 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.TestPropertySource;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -19,10 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReadZeebeWorkerValueTest {
 
+  public static final String DEFAULT_WORKER_TYPE = "defaultWorkerType";
+  public static final String DEFAULT_WORKER_NAME = "defaultJobWorkerName";
+
   @Test
   public void applyOnWithZeebeWorker() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, DEFAULT_WORKER_NAME);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorker.class);
 
     //when
@@ -44,7 +46,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerAllValues() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, DEFAULT_WORKER_NAME);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerAllValues.class);
 
     //when
@@ -66,7 +68,7 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnWithZeebeWorkerVariables() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, DEFAULT_WORKER_NAME);
     final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
 
     //when
@@ -81,8 +83,8 @@ public class ReadZeebeWorkerValueTest {
   @Test
   public void applyOnZeebeWorkerWithNoTypeSet() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null);
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoTypeNameSet.class);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, DEFAULT_WORKER_NAME);
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
 
     //when
     final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
@@ -96,15 +98,43 @@ public class ReadZeebeWorkerValueTest {
   // MAybe valuidate via own test class with @TestPropertySource(properties = {"zeebe.client.worker.default-type=defaultWorkerType"})
   public void applyOnZeebeWorkerWithNoTypeSetUsingDefault() {
     //given
-    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue("defaultWorkerType");
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoTypeNameSet.class);
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(DEFAULT_WORKER_TYPE, DEFAULT_WORKER_NAME);
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
 
     //when
     final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
 
     //then
     assertTrue(zeebeWorkerValue.isPresent());
-    assertEquals("defaultWorkerType", zeebeWorkerValue.get().getType());
+    assertEquals(DEFAULT_WORKER_TYPE, zeebeWorkerValue.get().getType());
+  }
+
+  @Test
+  public void applyOnZeebeWorkerWithNoNameSetUsingDefault() {
+    //given
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(DEFAULT_WORKER_TYPE, DEFAULT_WORKER_NAME);
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
+
+    //when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
+
+    //then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertEquals(DEFAULT_WORKER_NAME, zeebeWorkerValue.get().getName());
+  }
+
+  @Test
+  public void applyOnZeebeWorkerWithNoNameNoDefault() {
+    //given
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, null);
+    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
+
+    //when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
+
+    //then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertEquals("null#handle", zeebeWorkerValue.get().getName()); // we are not using beans here - so beanName is null
   }
 
   private MethodInfo extract(Class<?> clazz) {

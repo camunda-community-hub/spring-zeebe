@@ -46,7 +46,7 @@ public class ClassInfoTest {
     }
   }
 
-  public static class NoTypeNameSet {
+  public static class NoPropertiesSet {
     @ZeebeWorker
     public void handle() {
     }

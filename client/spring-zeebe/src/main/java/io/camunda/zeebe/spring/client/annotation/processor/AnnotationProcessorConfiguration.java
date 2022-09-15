@@ -8,6 +8,7 @@ import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerVa
 import java.util.List;
 
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -26,10 +27,9 @@ public class AnnotationProcessorConfiguration {
 
   @Bean
   public ZeebeWorkerAnnotationProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader,
-                                                                 final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                                                 final BackoffSupplier backoffSupplier,
+                                                                 final JobWorkerManager jobWorkerManager,
                                                                  final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
-    return new ZeebeWorkerAnnotationProcessor(reader, commandExceptionHandlingStrategy, backoffSupplier, zeebeWorkerValueCustomizers);
+    return new ZeebeWorkerAnnotationProcessor(reader, jobWorkerManager, zeebeWorkerValueCustomizers);
   }
 
 }

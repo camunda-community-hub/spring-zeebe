@@ -25,7 +25,10 @@ import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcess
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {JobHandlerTest.class, JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class})
+@SpringBootTest(
+  classes = {JobHandlerTest.class, JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class},
+  properties = { "zeebe.client.worker.default-type=DefaultType" }
+)
 @ZeebeSpringTest
 public class JobHandlerTest {
 
@@ -78,6 +81,14 @@ public class JobHandlerTest {
     // Complete it here to trigger a not found in the auto complete, which will be ignored
     client.newCompleteCommand(job.getKey()).send().join();
     calledTest2 = true;
+  }
+
+  @Autowired
+  private JobWorkerManager jobWorkerManager;
+
+  @Test
+  public void testWorkerDefaultName() {
+    assertTrue(jobWorkerManager.findJobWorkerConfigByName("io.camunda.zeebe.spring.client.jobhandling.JobHandlerTest.ORIGINAL#handleTest2").isPresent());
   }
 
   @Test
@@ -135,6 +146,15 @@ public class JobHandlerTest {
     waitForProcessInstanceCompleted(processInstance);
     // The double-check that we didn't go to the worker.
     assertThat(calledTest4).isFalse();
+  }
+
+  @ZeebeWorker(name = "test5")
+  public void handeTest5() {
+  }
+
+  @Test
+  public void testWorkerDefaultType() {
+    assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
   }
 
   private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId) {

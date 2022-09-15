@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
+import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
@@ -205,4 +206,46 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return result;
   }
 
+  public ZeebeWorkerValue initializeName(String name, MethodInfo methodInfo, String defaultJobWorkerName) {
+    // Set name only if configured (default from Java Client library is used only if null - not if empty string)
+    if (name != null && name.length() > 0) {
+      this.name = name;
+    } else if (null != defaultJobWorkerName) {
+      // otherwise, default name from Spring config if set ([would be done automatically anyway])
+      this.name = defaultJobWorkerName;
+    } else {
+      // otherwise, bean/method name combo
+      this.name = methodInfo.getBeanName() + "#" + methodInfo.getMethodName();
+    }
+    return this;
+  }
+
+  public ZeebeWorkerValue initializeFetchVariables(boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
+    if (forceFetchAllVariables) {
+      // this overwrites any other setting
+      setFetchVariables(new String[0]);
+    } else {
+      // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
+      Set<String> variables = new HashSet<>();
+      variables.addAll(Arrays.asList(fetchVariables));
+      variables.addAll(readZeebeVariableParameters(methodInfo).stream().map(ParameterInfo::getParameterName).collect(Collectors.toList()));
+      setFetchVariables(variables.toArray(new String[0]));
+    }
+    return this;
+  }
+
+  private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
+    return methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class);
+  }
+
+  public ZeebeWorkerValue initializeJobType(String jobType, MethodInfo methodInfo, String defaultWorkerType) {
+    if (jobType!=null && jobType.length() > 0) {
+      setType(jobType);
+    } else if (defaultWorkerType!=null) {
+      setType(defaultWorkerType);
+    } else {
+      setType( methodInfo.getMethodName() );
+    }
+    return this;
+  }
 }

@@ -1,22 +1,17 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.worker.BackoffSupplier;
-import io.camunda.zeebe.client.api.worker.JobWorker;
-import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1.JobWorkerBuilderStep3;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
-import io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans;
+import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.invoke.MethodHandles;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,26 +28,17 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ReadZeebeWorkerValue reader;
-
-  /**
-   * Spring beans the job handler will need to do its job. As the job handler itself will not be a Spring bean,
-   * make sure we have them here and pass it on from here.
-   */
-  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private final BackoffSupplier backoffSupplier;
+  private final JobWorkerManager jobWorkerManager;
 
   private String beanName = null;
   private final List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();;
-  private List<JobWorker> openedWorkers = new ArrayList<>();
   private final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers;
 
   public ZeebeWorkerAnnotationProcessor(final ReadZeebeWorkerValue reader,
-                                        final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                        final BackoffSupplier backoffSupplier,
+                                        final JobWorkerManager jobWorkerFactory,
                                         final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
     this.reader = reader;
-    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
-    this.backoffSupplier = backoffSupplier;
+    this.jobWorkerManager = jobWorkerFactory;
     this.zeebeWorkerValueCustomizers = zeebeWorkerValueCustomizers;
   }
 
@@ -75,6 +61,7 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
 
     zeebeWorkerValues.addAll(newZeebeWorkerValues);
   }
+
   @Override
   public void start(ZeebeClient client) {
     zeebeWorkerValues
@@ -83,54 +70,13 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
       .filter(ZeebeWorkerValue::getEnabled)
       .forEach(
         zeebeWorkerValue -> {
-
-          String jobType = zeebeWorkerValue.getType();
-          if (jobType==null) {
-            jobType = zeebeWorkerValue.getMethodInfo().getMethodName();
-          }
-
-          final JobWorkerBuilderStep3 builder = client
-            .newWorker()
-            .jobType(jobType)
-            .handler(new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
-
-          if (zeebeWorkerValue.getName() != null && zeebeWorkerValue.getName().length() > 0) {
-            // using name from annotation
-            builder.name(zeebeWorkerValue.getName());
-          } else if (null != client.getConfiguration().getDefaultJobWorkerName()) {
-            // otherwise, default name from Spring config if set ([would be done automatically anyway])
-            builder.name(client.getConfiguration().getDefaultJobWorkerName());
-          } else {
-            // otherwise, bean/method name combo
-            builder.name(beanName + "#" + zeebeWorkerValue.getMethodInfo().getMethodName());
-          }
-          if (zeebeWorkerValue.getMaxJobsActive() > 0) {
-            builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
-          }
-          if (zeebeWorkerValue.getTimeout() > 0) {
-            builder.timeout(zeebeWorkerValue.getTimeout());
-          }
-          if (zeebeWorkerValue.getPollInterval() > 0) {
-            builder.pollInterval(Duration.ofMillis(zeebeWorkerValue.getPollInterval()));
-          }
-          if (zeebeWorkerValue.getRequestTimeout() > 0) {
-            builder.requestTimeout(Duration.ofSeconds(zeebeWorkerValue.getRequestTimeout()));
-          }
-          if (zeebeWorkerValue.getFetchVariables().length > 0) {
-            builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
-          }
-
-          JobWorker jobWorker = builder.open();
-          openedWorkers.add(jobWorker);
-
-          LOGGER.info(". Starting Zeebe worker: {}", zeebeWorkerValue);
+          jobWorkerManager.openWorker(client, zeebeWorkerValue);
         });
   }
 
   @Override
   public void stop(ZeebeClient zeebeClient) {
-    openedWorkers.forEach( worker -> worker.close());
-    openedWorkers = new ArrayList<>();
+    jobWorkerManager.closeAllOpenWorkers();
   }
 
 }
