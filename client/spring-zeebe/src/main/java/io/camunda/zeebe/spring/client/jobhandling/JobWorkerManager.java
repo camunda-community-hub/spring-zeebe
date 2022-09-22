@@ -34,16 +34,16 @@ public class JobWorkerManager {
       .handler(handler)
       .name(zeebeWorkerValue.getName());
 
-    if (zeebeWorkerValue.getMaxJobsActive() > 0) {
+    if (zeebeWorkerValue.getMaxJobsActive() != null && zeebeWorkerValue.getMaxJobsActive() > 0) {
       builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
     }
-    if (zeebeWorkerValue.getTimeout() > 0) {
+    if (zeebeWorkerValue.getTimeout() !=null && zeebeWorkerValue.getTimeout()  > 0) {
       builder.timeout(zeebeWorkerValue.getTimeout());
     }
-    if (zeebeWorkerValue.getPollInterval() > 0) {
+    if (zeebeWorkerValue.getPollInterval() != null && zeebeWorkerValue.getPollInterval() > 0) {
       builder.pollInterval(Duration.ofMillis(zeebeWorkerValue.getPollInterval()));
     }
-    if (zeebeWorkerValue.getRequestTimeout() > 0) {
+    if (zeebeWorkerValue.getRequestTimeout() != null && zeebeWorkerValue.getRequestTimeout() > 0) {
       builder.requestTimeout(Duration.ofSeconds(zeebeWorkerValue.getRequestTimeout()));
     }
     if (zeebeWorkerValue.getFetchVariables().length > 0) {
