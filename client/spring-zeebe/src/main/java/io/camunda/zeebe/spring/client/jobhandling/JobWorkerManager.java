@@ -27,7 +27,17 @@ public class JobWorkerManager {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
   }
 
+  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
+    return openWorker(
+      client,
+      zeebeWorkerValue,
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
+  }
+
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, JobHandler handler) {
+
+	// TODO: Trigger initialization of  worker values and defaults here 
+
     final JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder = client
       .newWorker()
       .jobType(zeebeWorkerValue.getType())
@@ -55,13 +65,6 @@ public class JobWorkerManager {
     workerValues.add(zeebeWorkerValue);
     LOGGER.info(". Starting Zeebe worker: {}", zeebeWorkerValue);
     return jobWorker;
-  }
-
-  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
-    return openWorker(
-      client,
-      zeebeWorkerValue,
-      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
   }
 
   public void closeAllOpenWorkers() {

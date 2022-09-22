@@ -210,6 +210,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return result;
   }
 
+  // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker maybe via one method
   public ZeebeWorkerValue initializeName(String name, MethodInfo methodInfo, String defaultJobWorkerName) {
     // Set name only if configured (default from Java Client library is used only if null - not if empty string)
     if (name != null && name.length() > 0) {

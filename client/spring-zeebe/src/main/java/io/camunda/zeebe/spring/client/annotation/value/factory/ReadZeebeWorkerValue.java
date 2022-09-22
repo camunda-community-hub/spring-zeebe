@@ -33,6 +33,7 @@ public class ReadZeebeWorkerValue extends ReadAnnotationValue<MethodInfo, ZeebeW
             .setRequestTimeout(annotation.requestTimeout())
             .setEnabled(annotation.enabled())
 
+            // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
             .initializeName(annotation.name(), methodInfo, defaultWorkerName)
             .initializeFetchVariables(annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo)
             .initializeJobType(annotation.type(), methodInfo, defaultWorkerType);
