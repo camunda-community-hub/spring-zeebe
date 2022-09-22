@@ -46,7 +46,7 @@ public class JobWorkerManager {
     if (zeebeWorkerValue.getRequestTimeout() != null && zeebeWorkerValue.getRequestTimeout() > 0) {
       builder.requestTimeout(Duration.ofSeconds(zeebeWorkerValue.getRequestTimeout()));
     }
-    if (zeebeWorkerValue.getFetchVariables().length > 0) {
+    if (zeebeWorkerValue.getFetchVariables() != null && zeebeWorkerValue.getFetchVariables().length > 0) {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
     }
 
