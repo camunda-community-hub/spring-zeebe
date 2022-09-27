@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ZeebeWorker {
+public @interface JobWorker {
+  // Alternative naming ideas:
+  // JobSubscription
+  // JobListener
 
   String type() default ""; // set to empty string which leads to method name being used (if not ${zeebe.client.worker.default-type}" is configured) Implemented in ZeebeWorkerAnnotationProcessor
 
@@ -29,7 +32,7 @@ public @interface ZeebeWorker {
    * Set to true, all variables are fetched independent of any other configuration
    * via fetchVariables or @ZeebeVariable.
    */
-  boolean forceFetchAllVariables() default false;
+  boolean fetchAllVariables() default false;
 
   /**
    * If set to true, the job is automatically completed after the worker code has finished.
@@ -38,7 +41,7 @@ public @interface ZeebeWorker {
    *  You can still throw exceptions if you want to raise a problem instead of job completion.
    *  You could also raise a BPMN problem throwing a {@link io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
    */
-  boolean autoComplete() default false;
+  boolean autoComplete() default true;
 
   boolean enabled() default true;
 }

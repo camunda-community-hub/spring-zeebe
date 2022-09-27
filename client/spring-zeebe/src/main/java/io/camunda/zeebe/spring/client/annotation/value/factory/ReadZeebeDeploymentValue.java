@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.annotation.value.factory;
 
-import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 
@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, ZeebeDeployment, ZeebeDeploymentValue> {
+public class ReadZeebeDeploymentValue extends ReadAnnotationValue<ClassInfo, Deployment, ZeebeDeploymentValue> {
 
   private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
   public ReadZeebeDeploymentValue() {
-    super(ZeebeDeployment.class);
+    super(Deployment.class);
   }
 
   @Override

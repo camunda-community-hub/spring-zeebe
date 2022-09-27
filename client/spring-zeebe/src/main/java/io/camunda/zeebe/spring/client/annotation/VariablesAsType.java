@@ -5,4 +5,9 @@ import java.lang.annotation.*;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ZeebeVariablesAsType {}
+public @interface VariablesAsType {
+  // Alternative naming ideas:
+  // @Variables
+  // @VariablesObject
+  // @VariablesAsObject
+}

@@ -3,7 +3,7 @@ package io.camunda.zeebe.spring.example;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.EnableZeebeClient;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import java.time.Instant;
 import java.util.Collections;
@@ -39,19 +39,19 @@ public class WorkerApplication {
       job.getVariables());
   }
 
-  @ZeebeWorker(type = "foo", autoComplete = true) 
+  @ZeebeWorker(type = "foo", autoComplete = true)
   public void handleFooJob(final ActivatedJob job) {
     logJob(job, null);
   }
 
-  @ZeebeWorker(type = "bar", autoComplete = true) 
-  public Map<String, Object> handleBarJob(final JobClient client, final ActivatedJob job, @ZeebeVariable String a) {
+  @ZeebeWorker(type = "bar", autoComplete = true)
+  public Map<String, Object> handleBarJob(final JobClient client, final ActivatedJob job, @Variable String a) {
     logJob(job, a);
     return Collections.singletonMap("someResult", "42");
   }
 
   @ZeebeWorker(type = "fail", autoComplete = true, forceFetchAllVariables = true)
-  public void handleFailingJob(final JobClient client, final ActivatedJob job, @ZeebeVariable String someResult) {
+  public void handleFailingJob(final JobClient client, final ActivatedJob job, @Variable String someResult) {
     logJob(job, someResult);
     throw new ZeebeBpmnError("DOESNT_WORK", "This will actually never work :-)");
   }

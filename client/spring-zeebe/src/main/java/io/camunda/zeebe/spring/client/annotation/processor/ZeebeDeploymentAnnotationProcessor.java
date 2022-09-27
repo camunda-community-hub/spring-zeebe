@@ -3,7 +3,7 @@ package io.camunda.zeebe.spring.client.annotation.processor;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 /**
  * Always created by {@link AnnotationProcessorConfiguration}
  *
- * Loop throgh @{@link ZeebeDeployment} annotations to deploy resources to Zeebe
+ * Loop throgh @{@link Deployment} annotations to deploy resources to Zeebe
  * once the {@link io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle} was initialized.
  */
 public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
@@ -44,7 +44,7 @@ public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationP
 
   @Override
   public boolean isApplicableFor(ClassInfo beanInfo) {
-    return beanInfo.hasClassAnnotation(ZeebeDeployment.class);
+    return beanInfo.hasClassAnnotation(Deployment.class);
   }
 
   @Override

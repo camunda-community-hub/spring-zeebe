@@ -11,10 +11,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
-public @interface ZeebeDeployment {
+public @interface Deployment {
 
-  @Deprecated
-  String[] classPathResources() default {};
+  // Are there other @Deployment annotations in the JAva Spring Boot space so this could create confusion?
+  // Alternative naming ideas:
+  // @ZeebeDeployment
+  // @CamundaDeployment
 
   String[] resources() default {};
+
 }

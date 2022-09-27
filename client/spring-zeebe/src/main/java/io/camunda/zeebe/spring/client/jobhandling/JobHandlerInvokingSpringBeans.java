@@ -6,8 +6,8 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.impl.Loggers;
-import io.camunda.zeebe.spring.client.annotation.ZeebeCustomHeaders;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
+import io.camunda.zeebe.spring.client.annotation.CustomHeaders;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
@@ -70,7 +70,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
         arg = jobClient;
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(Variable.class)) {
         try {
           // TODO make this work for complex types as well
           arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
@@ -84,7 +84,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
         } catch (RuntimeException e) {
           throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "' when executing job '"+job.getType()+"', cause is: " + e.getMessage(), e);
         }
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(CustomHeaders.class)) {
         try {
           arg = job.getCustomHeaders();
         } catch (RuntimeException e) {

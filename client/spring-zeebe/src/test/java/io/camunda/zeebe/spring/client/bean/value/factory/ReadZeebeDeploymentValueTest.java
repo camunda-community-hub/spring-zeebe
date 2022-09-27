@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
-import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
@@ -79,12 +79,12 @@ public class ReadZeebeDeploymentValueTest {
     assertFalse(valueForClass.isPresent());
   }
 
-  @ZeebeDeployment(classPathResources = "/1.bpmn")
+  @Deployment(classPathResources = "/1.bpmn")
   private static class WithSingleClassPathResource {
 
   }
 
-  @ZeebeDeployment(classPathResources = {"/1.bpmn", "/2.bpmn"})
+  @Deployment(classPathResources = {"/1.bpmn", "/2.bpmn"})
   private static class WithMultipleClassPathResource {
 
   }
