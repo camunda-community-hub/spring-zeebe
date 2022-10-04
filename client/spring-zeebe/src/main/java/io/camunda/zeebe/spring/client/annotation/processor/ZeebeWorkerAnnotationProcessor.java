@@ -31,7 +31,7 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
   private final JobWorkerManager jobWorkerManager;
 
   private String beanName = null;
-  private final List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();;
+  private final List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();
   private final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers;
 
   public ZeebeWorkerAnnotationProcessor(final ReadZeebeWorkerValue reader,

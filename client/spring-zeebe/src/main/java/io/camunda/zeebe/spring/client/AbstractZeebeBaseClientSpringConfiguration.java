@@ -1,14 +1,17 @@
 package io.camunda.zeebe.spring.client;
 
+import io.camunda.connector.api.secret.SecretStore;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientObjectFactory;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
+import io.camunda.zeebe.spring.client.jobhandling.SpringSecretProvider;
+import io.grpc.ServerCredentials;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,8 +33,14 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   }
 
   @Bean
-  public JobWorkerManager jobWorkerManager(final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy);
+  public SecretStore secretStore(Environment env) {
+    return new SecretStore(
+      new SpringSecretProvider(env));
+  }
+
+    @Bean
+  public JobWorkerManager jobWorkerManager(final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, SecretStore secretStore) {
+    return new JobWorkerManager(commandExceptionHandlingStrategy, secretStore);
   }
 
   @Bean

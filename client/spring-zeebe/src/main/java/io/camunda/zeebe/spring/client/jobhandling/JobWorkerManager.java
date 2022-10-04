@@ -1,5 +1,8 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
+import io.camunda.connector.api.outbound.OutboundConnectorFunction;
+import io.camunda.connector.api.secret.SecretProvider;
+import io.camunda.connector.api.secret.SecretStore;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
@@ -19,12 +22,14 @@ public class JobWorkerManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private final SecretStore secretStore;
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
 
-  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, SecretStore secretStore) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
+    this.secretStore = secretStore;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
@@ -34,9 +39,16 @@ public class JobWorkerManager {
       new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
   }
 
+  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, OutboundConnectorFunction function) {
+    return openWorker(
+      client,
+      zeebeWorkerValue,
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, secretStore, function));
+  }
+
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, JobHandler handler) {
 
-	// TODO: Trigger initialization of  worker values and defaults here 
+	// TODO: Trigger initialization of  worker values and defaults here
 
     final JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder = client
       .newWorker()

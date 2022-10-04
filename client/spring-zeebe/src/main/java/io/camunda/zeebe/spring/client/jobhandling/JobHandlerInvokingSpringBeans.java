@@ -1,5 +1,10 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
+import io.camunda.connector.api.outbound.OutboundConnectorContext;
+import io.camunda.connector.api.outbound.OutboundConnectorFunction;
+import io.camunda.connector.api.secret.SecretProvider;
+import io.camunda.connector.api.secret.SecretStore;
+import io.camunda.connector.impl.outbound.AbstractOutboundConnectorContext;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -12,12 +17,16 @@ import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
+import io.camunda.zeebe.spring.client.jobhandling.copy.JobHandlerContext;
+import io.camunda.zeebe.spring.client.jobhandling.copy.OutboundConnectorFunctionInvoker;
 import org.slf4j.Logger;
+import org.springframework.core.env.Environment;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * Zeebe JobHandler that invokes a Spring bean
@@ -27,10 +36,21 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private SecretStore secretStore;
+
+  // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbounc connector function
+  private OutboundConnectorFunction outboundConnectorFunction;
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
+  }
+
+  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, SecretStore secretStore, OutboundConnectorFunction outboundConnectorFunction) {
+    this.workerValue = workerValue;
+    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
+    this.secretStore = secretStore;
+    this.outboundConnectorFunction = outboundConnectorFunction;
   }
 
   @Override
@@ -39,7 +59,18 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
 
     try {
-      Object result = workerValue.getMethodInfo().invoke(args.toArray());
+
+      Object result = null;
+      if (outboundConnectorFunction!=null) {
+        JobHandlerContext jobHandlerContext = createJobHandlerContext(job);
+        result = new OutboundConnectorFunctionInvoker().execute(
+          outboundConnectorFunction,
+          jobHandlerContext,
+          job);
+      } else { // "normal" @JobWorker
+        result = workerValue.getMethodInfo().invoke(args.toArray());
+      }
+
       // normal exceptions are handled by JobRunnableFactory
       // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
       // which leads to retrying
@@ -94,6 +125,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       args.add(arg);
     }
     return args;
+  }
+
+  protected JobHandlerContext createJobHandlerContext(ActivatedJob job) {
+    return new JobHandlerContext(job, secretStore);
   }
 
   public FinalCommandStep createCompleteCommand(JobClient jobClient, ActivatedJob job, Object result) {

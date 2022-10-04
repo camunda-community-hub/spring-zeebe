@@ -28,4 +28,9 @@ public class ReadAnnotationValueConfiguration {
     return new ReadZeebeWorkerValue(defaultWorkerType, defaultJobWorkerName);
   }
 
+  @Bean
+  public ReadOutboundConnectorValue readOutboundConnectorValue() {
+    return new ReadOutboundConnectorValue();
+  }
+
 }
