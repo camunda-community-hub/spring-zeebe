@@ -55,11 +55,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
-    // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
-    List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
-
     try {
-
       Object result = null;
       if (outboundConnectorFunction!=null) {
         JobHandlerContext jobHandlerContext = createJobHandlerContext(job);
@@ -68,6 +64,8 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
           jobHandlerContext,
           job);
       } else { // "normal" @JobWorker
+        // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
+        List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
         result = workerValue.getMethodInfo().invoke(args.toArray());
       }
 
