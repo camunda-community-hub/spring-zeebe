@@ -4,6 +4,7 @@ import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.api.secret.SecretStore;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
@@ -26,24 +27,28 @@ public class JobWorkerManager {
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
+  private JsonMapper jsonMapper;
 
-  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, SecretStore secretStore) {
+  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                          SecretStore secretStore,
+                          JsonMapper jsonMapper) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.secretStore = secretStore;
+    this.jsonMapper = jsonMapper;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
     return openWorker(
       client,
       zeebeWorkerValue,
-      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy));
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, jsonMapper));
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, OutboundConnectorFunction function) {
     return openWorker(
       client,
       zeebeWorkerValue,
-      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, secretStore, function));
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, secretStore, function, jsonMapper));
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, JobHandler handler) {

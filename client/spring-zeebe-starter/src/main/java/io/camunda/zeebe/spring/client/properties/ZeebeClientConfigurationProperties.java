@@ -14,8 +14,12 @@ import java.util.Properties;
 
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
@@ -41,11 +45,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @NestedConfigurationProperty
   private Job job = new Job();
 
-  /**
-   * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
-   * interface upstream
-   */
-  private JsonMapper jsonMapper = new ZeebeObjectMapper();
+  @Lazy
+  @Autowired
+  private JsonMapper jsonMapper;
 
   /**
    * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties

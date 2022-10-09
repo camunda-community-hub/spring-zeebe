@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretStore;
+import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -18,11 +19,15 @@ import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import io.camunda.zeebe.spring.client.jobhandling.copy.JobHandlerContext;
 import io.camunda.zeebe.spring.client.jobhandling.copy.OutboundConnectorFunctionInvoker;
 import org.slf4j.Logger;
+import scala.annotation.meta.param;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 /**
  * Zeebe JobHandler that invokes a Spring bean
@@ -30,24 +35,35 @@ import java.util.Map;
 public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
+    .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private SecretStore secretStore;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorFunction outboundConnectorFunction;
+  private JsonMapper jsonMapper;
 
-  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
+                                       DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                       JsonMapper jsonMapper) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
+    this.jsonMapper = jsonMapper;
   }
 
-  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy, SecretStore secretStore, OutboundConnectorFunction outboundConnectorFunction) {
+  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
+                                       DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                       SecretStore secretStore,
+                                       OutboundConnectorFunction outboundConnectorFunction,
+                                       JsonMapper jsonMapper) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.secretStore = secretStore;
     this.outboundConnectorFunction = outboundConnectorFunction;
+    this.jsonMapper = jsonMapper;
   }
 
   @Override
@@ -97,14 +113,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
-        String paramName =param.getParameterName();
+        String paramName = param.getParameterName();
         Object variableValue = job.getVariablesAsMap().get(paramName);
         try {
-          if (variableValue != null && !clazz.isInstance(variableValue)) {
-            arg = OBJECT_MAPPER.convertValue(variableValue, param.getParameterInfo().getType());
-          } else {
-            arg = clazz.cast(variableValue);
-          }
+          arg = mapZeebeVariable(variableValue, param.getParameterInfo().getType());
         }
         catch (ClassCastException | IllegalArgumentException ex) {
           throw new RuntimeException("Cannot assign process variable '" + paramName + "' to parameter when executing job '"+job.getType()+"', invalid type found: " + ex.getMessage());
@@ -154,6 +166,15 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     return command;
   }
 
-
+  private <T>T mapZeebeVariable(Object toMap, Class<T> clazz) {
+    if (toMap != null && !clazz.isInstance(toMap)) {
+      if (jsonMapper != null) {
+        return jsonMapper.fromJson(jsonMapper.toJson(toMap), clazz);
+      }
+      return DEFAULT_OBJECT_MAPPER.convertValue(toMap, clazz);
+    } else {
+      return clazz.cast(toMap);
+    }
+  }
 
 }
