@@ -137,6 +137,21 @@ public class ReadZeebeWorkerValueTest {
     assertEquals("null#handle", zeebeWorkerValue.get().getName()); // we are not using beans here - so beanName is null
   }
 
+  @Test
+  public void applyOnWithZeebeWorkerVariablesComplexType() {
+    //given
+    final ReadZeebeWorkerValue readZeebeWorkerValue = new ReadZeebeWorkerValue(null, DEFAULT_WORKER_NAME);
+    final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariablesComplexType.class);
+
+    //when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue = readZeebeWorkerValue.apply(methodInfo);
+
+    //then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertThat(Arrays.asList("var1", "var2")).hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
+    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
+  }
+
   private MethodInfo extract(Class<?> clazz) {
 
     final Method method = Arrays.stream(clazz.getMethods()).filter(m -> m.getName().equals("handle")).findFirst().get();

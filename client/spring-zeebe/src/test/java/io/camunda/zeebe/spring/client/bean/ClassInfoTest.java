@@ -46,6 +46,16 @@ public class ClassInfoTest {
     }
   }
 
+  public static class WithZeebeWorkerVariablesComplexType {
+    public static class ComplexTypeDTO {
+      private String var1;
+      private String var2;
+    }
+    @ZeebeWorker(type = "bar", timeout = 100L, fetchVariables = "var2")
+    public void handle(@ZeebeVariable String var1, @ZeebeVariable ComplexTypeDTO var2) {
+    }
+  }
+
   public static class NoPropertiesSet {
     @ZeebeWorker
     public void handle() {
