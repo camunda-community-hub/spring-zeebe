@@ -1,10 +1,8 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
-import io.camunda.connector.api.outbound.OutboundConnectorContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
-import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.api.secret.SecretStore;
-import io.camunda.connector.impl.outbound.AbstractOutboundConnectorContext;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -14,19 +12,17 @@ import io.camunda.zeebe.client.impl.Loggers;
 import io.camunda.zeebe.spring.client.annotation.ZeebeCustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
-import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import io.camunda.zeebe.spring.client.jobhandling.copy.JobHandlerContext;
 import io.camunda.zeebe.spring.client.jobhandling.copy.OutboundConnectorFunctionInvoker;
 import org.slf4j.Logger;
-import org.springframework.core.env.Environment;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
  * Zeebe JobHandler that invokes a Spring bean
@@ -34,11 +30,12 @@ import java.util.ServiceLoader;
 public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private SecretStore secretStore;
 
-  // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbounc connector function
+  // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorFunction outboundConnectorFunction;
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
@@ -100,12 +97,17 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
+        String paramName =param.getParameterName();
+        Object variableValue = job.getVariablesAsMap().get(paramName);
         try {
-          // TODO make this work for complex types as well
-          arg = clazz.cast(job.getVariablesAsMap().get(param.getParameterName()));
+          if (variableValue != null && !clazz.isInstance(variableValue)) {
+            arg = OBJECT_MAPPER.convertValue(variableValue, param.getParameterInfo().getType());
+          } else {
+            arg = clazz.cast(variableValue);
+          }
         }
-        catch (ClassCastException ex) {
-          throw new RuntimeException("Cannot assign process variable '" + param.getParameterName() + "' to parameter when executing job '"+job.getType()+"', invalid type found: " + ex.getMessage());
+        catch (ClassCastException | IllegalArgumentException ex) {
+          throw new RuntimeException("Cannot assign process variable '" + paramName + "' to parameter when executing job '"+job.getType()+"', invalid type found: " + ex.getMessage());
         }
       } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
         try {
