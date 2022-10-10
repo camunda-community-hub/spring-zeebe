@@ -403,7 +403,9 @@ If you need to customize the ObjectMapper that the Zeebe client uses to work wit
 class MyConfiguration {
   @Bean
   public JsonMapper jsonMapper() {
-    new ZeebeObjectMapper().enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+    ObjectMapper objectMapper = new ObjectMapper()
+      .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+    new ZeebeObjectMapper(objectMapper);
   }
 }
 ```

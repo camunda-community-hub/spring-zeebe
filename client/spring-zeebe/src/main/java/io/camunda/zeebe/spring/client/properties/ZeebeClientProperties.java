@@ -24,15 +24,6 @@ public interface ZeebeClientProperties extends ZeebeClientConfiguration {
   @Deprecated
   List<ClientInterceptor> getInterceptors();
 
-  /**
-   * This method and configuration is deprecated in the Spring environment and shall not be used.
-   * Declare beans on type {@link JsonMapper} in your Spring context and they will be used automatically.
-   *
-   * @deprecated
-   */
-  @Deprecated
-  JsonMapper getJsonMapper();
-
   default boolean isAutoStartup() {
     return true;
   }

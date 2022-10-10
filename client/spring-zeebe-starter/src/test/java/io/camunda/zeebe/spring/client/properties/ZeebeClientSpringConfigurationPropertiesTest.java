@@ -4,10 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
+import io.camunda.zeebe.client.api.JsonMapper;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,11 +38,18 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
-
+    @Bean("jsonMapper")
+    @ConditionalOnMissingBean(JsonMapper.class)
+    public JsonMapper jsonMapper() {
+      return new ZeebeObjectMapper();
+    }
   }
 
   @Autowired
   private ZeebeClientConfigurationProperties properties;
+
+  @Autowired
+  private JsonMapper jsonMapper;
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
@@ -104,5 +115,12 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   void shouldFooWorkerDisabled() {
     assertThat(properties.getWorker().getOverride().get("foo").getEnabled()).isFalse();
+  }
+
+  @Test
+  void getJsonMapper() {
+    assertThat(jsonMapper).isNotNull();
+    assertThat(properties.getJsonMapper()).isNotNull();
+    assertThat(properties.getJsonMapper()).isSameAs(properties.getJsonMapper());
   }
 }
