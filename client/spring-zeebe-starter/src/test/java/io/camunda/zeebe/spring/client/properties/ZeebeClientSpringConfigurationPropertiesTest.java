@@ -119,7 +119,8 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @Test
   void getJsonMapper() {
+    assertThat(jsonMapper).isNotNull();
     assertThat(properties.getJsonMapper()).isNotNull();
-    assertThat(properties.getJsonMapper()).isSameAs(properties.getJsonMapper()).isSameAs(jsonMapper);
+    assertThat(properties.getJsonMapper()).isSameAs(properties.getJsonMapper());
   }
 }
