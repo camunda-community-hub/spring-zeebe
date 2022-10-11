@@ -18,24 +18,21 @@
     </dependency>
     <dependency>
       <groupId>io.camunda.connector</groupId>
-      <artifactId>connector-runtime-job-worker</artifactId>
-      <version>0.2.1</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>io.camunda</groupId>
-          <artifactId>zeebe-client-java</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-jdk14</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>connector-core</artifactId>
+      <version>0.2.2</version>
     </dependency>
+    <!-- the following dependencies are only necessary because some code from connector-core was copied as a workaround .-->
+    <dependency>
+      <groupId>org.camunda.feel</groupId>
+      <artifactId>feel-engine</artifactId>
+      <version>1.15.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-scala_2.13</artifactId>
+      <version>2.13.4</version>
+    </dependency>
+    <!-- ############################################### -->
 
     <dependency>
       <groupId>commons-beanutils</groupId>

@@ -20,8 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.impl.outbound.AbstractOutboundConnectorContext;
-import io.camunda.connector.runtime.jobworker.impl.feel.FeelEngineWrapper;
-import io.camunda.connector.runtime.jobworker.impl.feel.FeelEngineWrapperException;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 
 import java.util.HashMap;
