@@ -19,7 +19,7 @@
     <dependency>
       <groupId>io.camunda.connector</groupId>
       <artifactId>connector-runtime-job-worker</artifactId>
-      <version>0.2.1</version>
+      <version>0.2.2</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
