@@ -186,4 +186,8 @@ public class ZeebeClientLifecycle implements ZeebeClient, SmartLifecycle, Suppli
     return newThrowErrorCommand(job.getKey());
   }
 
+  @Override
+  public ModifyProcessInstanceCommandStep1 newModifyProcessInstanceCommand(long processInstanceKey) {
+    return get().newModifyProcessInstanceCommand(processInstanceKey);
+  }
 }
