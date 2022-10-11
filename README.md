@@ -24,7 +24,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.0.10</version>
+  <version>8.0.11</version>
 </dependency>
 ```
 
@@ -149,6 +149,37 @@ public class TestMyProcess {
 ```
 
 An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
+
+
+
+## Run OutboundConnectors
+
+You can directly run `OutboundConnectorFunction`s using spring-zeebe, you just have to make sure they are exposed as Spring Beans. See [https://github.com/camunda/connector-sdk](Connector SDK) for details on connectors overall.
+
+So, for example, if you have the following outbound connector function:
+
+```
+@OutboundConnector(
+        name = "Twitter",
+        inputVariables = {"tweetContent"},
+        type = "io.berndruecker.example.TwitterConnector:1"
+)
+public class TwitterOutboundConnector implements OutboundConnectorFunction {
+```
+
+You can just expose it as a Spring bean:
+
+```
+@Configuration
+public class ConnectorFactory {
+    @Bean
+    public TwitterOutboundConnector twitterOutboundConnector() {
+        return new TwitterOutboundConnector();
+    }
+}
+```
+
+Now a worker for this connector will be started in the background.
 
 
 # Documentation
