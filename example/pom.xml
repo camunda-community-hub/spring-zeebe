@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.camunda</groupId>
-    <artifactId>spring-zeebe-example-root</artifactId>
+    <artifactId>spring-zeebe-root</artifactId>
     <version>8.0.12-SNAPSHOT</version>
   </parent>
 
