@@ -8,8 +8,8 @@
   </parent>
 
   <groupId>io.camunda</groupId>
-  <artifactId>spring-zeebe-example-worker</artifactId>
-  <name>example/spring-zeebe-example-worker</name>
+  <artifactId>spring-zeebe-example</artifactId>
+  <name>example/spring-zeebe-example</name>
 
   <dependencies>
     <dependency>

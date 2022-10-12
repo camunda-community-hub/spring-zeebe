@@ -41,7 +41,7 @@
 
     <module>client</module>
 
-    <module>examples</module>
+    <module>example</module>
   </modules>
 
   <dependencyManagement>
