@@ -10,7 +10,7 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 # Examples
 
-There are full examples, including test cases, are available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [examples/](examples/) folder.
+There are full examples, including test cases, are available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [example/](example/) folder.
 
 # Get Started
 
