@@ -31,10 +31,8 @@ public class ZeebeClientStarterAutoConfiguration {
 
   @Bean
   @Primary
-  public ZeebeClientBuilder builder(
-    JsonMapper jsonMapper,
-    @Autowired(required = false) List<ClientInterceptor> clientInterceptorList
-  ) {
+  public ZeebeClientBuilder builder(@Autowired(required = false) JsonMapper jsonMapper,
+                                    @Autowired(required = false) List<ClientInterceptor> clientInterceptorList) {
     final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
     builder.gatewayAddress(configurationProperties.getGatewayAddress());
@@ -49,6 +47,9 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.caCertificatePath(configurationProperties.getCaCertificatePath());
     if (configurationProperties.isPlaintextConnectionEnabled()) {
       builder.usePlaintext();
+    }
+    if (jsonMapper==null) { // double security because of https://github.com/camunda-community-hub/spring-zeebe/issues/240
+      jsonMapper = jsonMapper();
     }
     builder.withJsonMapper(jsonMapper);
     final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();
@@ -66,7 +67,7 @@ public class ZeebeClientStarterAutoConfiguration {
     return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
   }
 
-  @Bean("jsonMapper")
+  @Bean
   @ConditionalOnMissingBean(JsonMapper.class)
   public JsonMapper jsonMapper() {
     return new ZeebeObjectMapper();
