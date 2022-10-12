@@ -11,6 +11,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
+/**
+ * @deprecated
+ * Use {@link Deployment} instead.
+ */
+@Deprecated
 public @interface ZeebeDeployment {
 
   @Deprecated

@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
@@ -240,7 +241,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   }
 
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
-    return methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class);
+    List<ParameterInfo> result = methodInfo.getParametersFilteredByAnnotation(Variable.class);
+    result.addAll(methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class));
+    return result;
   }
 
   public ZeebeWorkerValue initializeJobType(String jobType, MethodInfo methodInfo, String defaultWorkerType) {

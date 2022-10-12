@@ -5,7 +5,6 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.jobhandling.SpringSecretProvider;
@@ -23,8 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * The subclasses add the differences for prod/test
  */
 @Import({
-  AnnotationProcessorConfiguration.class,
-  ReadAnnotationValueConfiguration.class,
+  AnnotationProcessorConfiguration.class
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 

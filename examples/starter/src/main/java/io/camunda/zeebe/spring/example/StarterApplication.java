@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.example;
 
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.EnableZeebeClient;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
 
@@ -19,7 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @SpringBootApplication
 @EnableZeebeClient
 @EnableScheduling
-@ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
+@Deployment(resources = "classpath:demoProcess.bpmn")
 public class StarterApplication {
 
   private static Logger log = LoggerFactory.getLogger(StarterApplication.class);

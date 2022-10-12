@@ -10,9 +10,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.impl.Loggers;
-import io.camunda.zeebe.spring.client.annotation.ZeebeCustomHeaders;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariablesAsType;
+import io.camunda.zeebe.spring.client.annotation.*;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
@@ -112,7 +110,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
         arg = jobClient;
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(Variable.class) || param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
         String paramName = param.getParameterName();
         Object variableValue = job.getVariablesAsMap().get(paramName);
         try {
@@ -121,13 +119,13 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
         catch (ClassCastException | IllegalArgumentException ex) {
           throw new RuntimeException("Cannot assign process variable '" + paramName + "' to parameter when executing job '"+job.getType()+"', invalid type found: " + ex.getMessage());
         }
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(VariablesAsType.class) || param.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
         try {
           arg = job.getVariablesAsType(clazz);
         } catch (RuntimeException e) {
           throw new RuntimeException("Cannot assign process variables to type '" + clazz.getName() + "' when executing job '"+job.getType()+"', cause is: " + e.getMessage(), e);
         }
-      } else if (param.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
+      } else if (param.getParameterInfo().isAnnotationPresent(CustomHeaders.class) || param.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
         try {
           arg = job.getCustomHeaders();
         } catch (RuntimeException e) {

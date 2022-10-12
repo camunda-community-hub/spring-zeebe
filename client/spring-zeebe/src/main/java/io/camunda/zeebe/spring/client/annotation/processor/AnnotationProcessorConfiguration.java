@@ -1,20 +1,12 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
-import io.camunda.connector.api.annotation.OutboundConnector;
-import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadAnnotationValueConfiguration;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadOutboundConnectorValue;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeWorkerValue;
-import java.util.List;
-
-import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 
-@Import(ReadAnnotationValueConfiguration.class)
+import java.util.List;
+
 public class AnnotationProcessorConfiguration {
 
   @Bean
@@ -23,20 +15,22 @@ public class AnnotationProcessorConfiguration {
   }
 
   @Bean
-  public ZeebeDeploymentAnnotationProcessor deploymentPostProcessor(final ReadZeebeDeploymentValue reader) {
-    return new ZeebeDeploymentAnnotationProcessor(reader);
+  public ZeebeDeploymentAnnotationProcessor deploymentPostProcessor() {
+    return new ZeebeDeploymentAnnotationProcessor();
   }
 
   @Bean
-  public OutboundConnectorAnnotationProcessor outboundConnectorAnnotationProcessor(final ReadOutboundConnectorValue reader, final JobWorkerManager jobWorkerManager) {
-    return new OutboundConnectorAnnotationProcessor(reader, jobWorkerManager);
+  public OutboundConnectorAnnotationProcessor outboundConnectorAnnotationProcessor(final JobWorkerManager jobWorkerManager) {
+    return new OutboundConnectorAnnotationProcessor(jobWorkerManager);
   }
 
   @Bean
-  public ZeebeWorkerAnnotationProcessor zeebeWorkerPostProcessor(final ReadZeebeWorkerValue reader,
-                                                                 final JobWorkerManager jobWorkerManager,
-                                                                 final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
-    return new ZeebeWorkerAnnotationProcessor(reader, jobWorkerManager, zeebeWorkerValueCustomizers);
+  public ZeebeWorkerAnnotationProcessor zeebeWorkerPostProcessor(final JobWorkerManager jobWorkerManager,
+                                                                 final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers,
+                                                                 final Environment environment) { // can#t use @Value because it is only evaluated after constructors are executed
+    String defaultWorkerType = environment.getProperty("zeebe.client.worker.default-type", (String)null);
+    String defaultJobWorkerName = environment.getProperty("zeebe.client.worker.default-name", (String)null);
+    return new ZeebeWorkerAnnotationProcessor(jobWorkerManager, zeebeWorkerValueCustomizers, defaultWorkerType, defaultJobWorkerName);
   }
 
 }

@@ -5,10 +5,11 @@ import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeDeploymentAnnotationProcessor;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValueTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,9 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DeploymentPostProcessorTest {
-
-  @Mock
-  private ReadZeebeDeploymentValue reader;
 
   @Mock
   private ZeebeClient client;
@@ -50,24 +48,23 @@ public class DeploymentPostProcessorTest {
   @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
-    deploymentPostProcessor = Mockito.spy(new ZeebeDeploymentAnnotationProcessor(reader));
+    deploymentPostProcessor = Mockito.spy(new ZeebeDeploymentAnnotationProcessor());
+  }
+
+  @Deployment(resources = "/1.bpmn")
+  private static class WithSingleClassPathResource {
   }
 
   @Test
   public void shouldDeploySingleResourceTest() {
     //given
     ClassInfo classInfo = ClassInfo.builder()
-      .build();
-
-    ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .resources(Collections.singletonList("classpath*:/1.bpmn"))
+      .bean(new WithSingleClassPathResource())
       .build();
 
     Resource resource = Mockito.mock(FileSystemResource.class);
 
     when(resource.getFilename()).thenReturn("1.bpmn");
-
-    when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
     when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
@@ -91,22 +88,21 @@ public class DeploymentPostProcessorTest {
     verify(zeebeFuture).join();
   }
 
+  @Deployment(resources = {"classpath*:/1.bpmn", "classpath*:/2.bpmn"})
+  private static class WithDoubleClassPathResource {
+  }
+
   @Test
   public void shouldDeployMultipleResourcesTest() {
     //given
     ClassInfo classInfo = ClassInfo.builder()
-      .build();
-
-    ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-      .resources(Arrays.asList("classpath*:/1.bpmn", "classpath*:/2.bpmn"))
+      .bean(new WithDoubleClassPathResource())
       .build();
 
     Resource[] resources = {Mockito.mock(FileSystemResource.class), Mockito.mock(FileSystemResource.class)};
 
     when(resources[0].getFilename()).thenReturn("1.bpmn");
     when(resources[1].getFilename()).thenReturn("2.bpmn");
-
-    when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
     when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
@@ -134,18 +130,17 @@ public class DeploymentPostProcessorTest {
     verify(zeebeFuture).join();
   }
 
+  @Deployment(resources = {})
+  private static class WithNoClassPathResource {
+  }
+
   @Test
   public void shouldThrowExceptionOnNoResourcesToDeploy() {
     assertThrows(IllegalArgumentException.class, () -> {
       //given
       ClassInfo classInfo = ClassInfo.builder()
+        .bean(new WithNoClassPathResource())
         .build();
-
-      ZeebeDeploymentValue zeebeDeploymentValue = ZeebeDeploymentValue.builder()
-        .resources(Collections.emptyList())
-        .build();
-
-      when(reader.applyOrThrow(classInfo)).thenReturn(zeebeDeploymentValue);
 
       when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 

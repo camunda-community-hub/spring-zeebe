@@ -3,10 +3,11 @@ package io.camunda.zeebe.spring.client.annotation.processor;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
+import io.camunda.zeebe.spring.client.bean.BeanInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -16,16 +17,14 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Always created by {@link AnnotationProcessorConfiguration}
  *
- * Loop throgh @{@link ZeebeDeployment} annotations to deploy resources to Zeebe
+ * Loop throgh @{@link Deployment} annotations to deploy resources to Zeebe
  * once the {@link io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle} was initialized.
  */
 public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
@@ -34,25 +33,66 @@ public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationP
 
   private static final ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
-  private final ReadZeebeDeploymentValue reader;
-
   private List<ZeebeDeploymentValue> deploymentValues = new ArrayList<>();
 
-  public ZeebeDeploymentAnnotationProcessor(ReadZeebeDeploymentValue reader) {
-    this.reader = reader;
+  public ZeebeDeploymentAnnotationProcessor() {
   }
 
   @Override
   public boolean isApplicableFor(ClassInfo beanInfo) {
-    return beanInfo.hasClassAnnotation(ZeebeDeployment.class);
+    return beanInfo.hasClassAnnotation(Deployment.class) || beanInfo.hasClassAnnotation(ZeebeDeployment.class);
   }
 
   @Override
   public void configureFor(final ClassInfo beanInfo) {
-    ZeebeDeploymentValue value = reader.applyOrThrow(beanInfo);
-    LOGGER.info("Configuring deployment: {}", value);
+    Optional<ZeebeDeploymentValue> zeebeDeploymentValue = readAnnotation(beanInfo);
+    if (zeebeDeploymentValue.isPresent()) {
+      LOGGER.info("Configuring deployment: {}", zeebeDeploymentValue.get());
+      deploymentValues.add(zeebeDeploymentValue.get());
+    }
+  }
 
-    deploymentValues.add(value);
+  public Optional<ZeebeDeploymentValue> readAnnotation(ClassInfo beanInfo) {
+    Optional<Deployment> annotation = beanInfo.getAnnotation(Deployment.class);
+    if (!annotation.isPresent()) {
+      return readDeprecatedAnnotation(beanInfo);
+    } else {
+      List<String> resources = Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
+      return Optional.of(ZeebeDeploymentValue.builder()
+        .beanInfo(beanInfo)
+        .resources(resources)
+        .build());
+    }
+  }
+
+  private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
+
+  /**
+   * Seperate handling for legacy annotation (had additional classPathResources attribute)
+   * @param beanInfo
+   */
+  private Optional<ZeebeDeploymentValue> readDeprecatedAnnotation(ClassInfo beanInfo) {
+    Optional<ZeebeDeployment> annotation = beanInfo.getAnnotation(ZeebeDeployment.class);
+    if (!annotation.isPresent()) {
+      return Optional.empty();
+    }
+
+    List<String> resources = Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
+
+    String[] classPathResources = annotation.get().classPathResources();
+    if (classPathResources.length > 0) {
+      resources.addAll(
+        Arrays.stream(classPathResources)
+          .map(resource -> CLASSPATH_ALL_URL_PREFIX + resource)
+          .collect(Collectors.toList())
+      );
+    }
+
+    return Optional.of(
+      ZeebeDeploymentValue.builder()
+        .beanInfo(beanInfo)
+        .resources(resources)
+        .build());
   }
 
   @Override

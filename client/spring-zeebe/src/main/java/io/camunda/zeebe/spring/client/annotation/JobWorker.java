@@ -1,20 +1,11 @@
 package io.camunda.zeebe.spring.client.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-/**
- * @deprecated
- * Use {@link JobWorker} instead. Note, that the default for auto completion has changed there from "false" to "true"!
- */
-@Deprecated
-public @interface ZeebeWorker {
+public @interface JobWorker {
 
   String type() default ""; // set to empty string which leads to method name being used (if not ${zeebe.client.worker.default-type}" is configured) Implemented in ZeebeWorkerAnnotationProcessor
 
@@ -31,10 +22,9 @@ public @interface ZeebeWorker {
   String[] fetchVariables() default {};
 
   /**
-   * Set to true, all variables are fetched independent of any other configuration
-   * via fetchVariables or @ZeebeVariable.
+   * If set to true, all variables are fetched
    */
-  boolean forceFetchAllVariables() default false;
+  boolean fetchAllVariables() default false;
 
   /**
    * If set to true, the job is automatically completed after the worker code has finished.
@@ -43,7 +33,7 @@ public @interface ZeebeWorker {
    *  You can still throw exceptions if you want to raise a problem instead of job completion.
    *  You could also raise a BPMN problem throwing a {@link io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
    */
-  boolean autoComplete() default false;
+  boolean autoComplete() default true;
 
   boolean enabled() default true;
 }

@@ -1,7 +1,8 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
+import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
-import io.camunda.zeebe.spring.client.annotation.value.factory.ReadZeebeDeploymentValue;
+import io.camunda.zeebe.spring.client.annotation.processor.ZeebeDeploymentAnnotationProcessor;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ReadZeebeDeploymentValueTest {
 
-
-  private ReadZeebeDeploymentValue readZeebeDeploymentValue;
+  private ZeebeDeploymentAnnotationProcessor annotationProcessor;
 
   @BeforeEach
   public void init() {
     MockitoAnnotations.initMocks(this);
-    readZeebeDeploymentValue = new ReadZeebeDeploymentValue();
+    annotationProcessor = new ZeebeDeploymentAnnotationProcessor();
   }
 
   @Test
@@ -38,7 +38,7 @@ public class ReadZeebeDeploymentValueTest {
       .build();
 
     //when
-    Optional<ZeebeDeploymentValue> valueForClass = readZeebeDeploymentValue.apply(classInfo);
+    Optional<ZeebeDeploymentValue> valueForClass = annotationProcessor.readAnnotation(classInfo);
 
     //then
     assertTrue(valueForClass.isPresent());
@@ -58,7 +58,7 @@ public class ReadZeebeDeploymentValueTest {
       .build();
 
     //when
-    Optional<ZeebeDeploymentValue> valueForClass = readZeebeDeploymentValue.apply(classInfo);
+    Optional<ZeebeDeploymentValue> valueForClass = annotationProcessor.readAnnotation(classInfo);
 
     //then
     assertTrue(valueForClass.isPresent());
@@ -73,18 +73,43 @@ public class ReadZeebeDeploymentValueTest {
       .build();
 
     //when
-    Optional<ZeebeDeploymentValue> valueForClass = readZeebeDeploymentValue.apply(classInfo);
+    Optional<ZeebeDeploymentValue> valueForClass = annotationProcessor.readAnnotation(classInfo);
 
     //then
     assertFalse(valueForClass.isPresent());
   }
 
-  @ZeebeDeployment(classPathResources = "/1.bpmn")
+  @Test
+  public void shouldReadDeprecatedClassPathResourceTest() {
+    //given
+    ClassInfo classInfo = ClassInfo.builder()
+      .bean(new WithDeprecatedPathResource())
+      .build();
+
+    ZeebeDeploymentValue expectedDeploymentValue = ZeebeDeploymentValue.builder()
+      .beanInfo(classInfo)
+      .resources(Collections.singletonList("classpath*:/1.bpmn"))
+      .build();
+
+    //when
+    Optional<ZeebeDeploymentValue> valueForClass = annotationProcessor.readAnnotation(classInfo);
+
+    //then
+    assertTrue(valueForClass.isPresent());
+    assertEquals(expectedDeploymentValue, valueForClass.get());
+  }
+
+  @Deployment(resources = "classpath*:/1.bpmn")
   private static class WithSingleClassPathResource {
 
   }
 
-  @ZeebeDeployment(classPathResources = {"/1.bpmn", "/2.bpmn"})
+  @ZeebeDeployment(classPathResources = "/1.bpmn")
+  private static class WithDeprecatedPathResource {
+
+  }
+
+  @Deployment(resources = {"classpath*:/1.bpmn", "classpath*:/2.bpmn"})
   private static class WithMultipleClassPathResource {
 
   }

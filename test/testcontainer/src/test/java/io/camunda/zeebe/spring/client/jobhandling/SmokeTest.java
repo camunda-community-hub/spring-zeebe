@@ -7,6 +7,8 @@ import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import io.camunda.zeebe.spring.client.annotation.JobWorker;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
@@ -43,7 +45,7 @@ public class SmokeTest {
   private static ComplexTypeDTO test2ComplexTypeDTO = null;
   private static String test2Var2 = null;
 
-  @ZeebeWorker(name="test1", type = "test1", autoComplete = true)
+  @JobWorker(name="test1", type = "test1") // autoComplete is true
   public void handleTest1(JobClient client, ActivatedJob job) {
     calledTest1 = true;
   }
@@ -66,8 +68,8 @@ public class SmokeTest {
     assertTrue(calledTest1);
   }
 
-  @ZeebeWorker(name = "test2", type = "test2", autoComplete = true, pollInterval = 10)
-  public void handleTest2(final JobClient client, final ActivatedJob job, @ZeebeVariable ComplexTypeDTO dto, @ZeebeVariable String var2) {
+  @JobWorker(name = "test2", type = "test2", pollInterval = 10)
+  public void handleTest2(final JobClient client, final ActivatedJob job, @Variable ComplexTypeDTO dto, @Variable String var2) {
     calledTest2 = true;
     test2ComplexTypeDTO = dto;
     test2Var2 = var2;

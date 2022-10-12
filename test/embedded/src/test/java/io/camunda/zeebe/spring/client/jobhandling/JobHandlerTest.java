@@ -7,6 +7,8 @@ import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
+import io.camunda.zeebe.spring.client.annotation.JobWorker;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
@@ -62,7 +64,7 @@ public class JobHandlerTest {
   private static ComplexTypeDTO test6ComplexTypeDTO = null;
   private static String test6Var2 = null;
 
-  @ZeebeWorker(name="test1", type = "test1", autoComplete = true)
+  @JobWorker(name="test1", type = "test1", autoComplete = true)
   public void handleTest1(JobClient client, ActivatedJob job) {
     calledTest1 = true;
   }
@@ -84,7 +86,7 @@ public class JobHandlerTest {
     assertTrue(calledTest1);
   }
 
-  @ZeebeWorker(type = "test2", autoComplete = true)
+  @JobWorker(type = "test2", autoComplete = true)
   public void handleTest2(JobClient client, ActivatedJob job) {
     // Complete it here to trigger a not found in the auto complete, which will be ignored
     client.newCompleteCommand(job.getKey()).send().join();
@@ -109,7 +111,7 @@ public class JobHandlerTest {
     assertTrue(calledTest2);
   }
 
-  @ZeebeWorker(name = "test3", type = "test3", autoComplete = true, pollInterval = 10, enabled = false)
+  @JobWorker(name = "test3", type = "test3", autoComplete = true, pollInterval = 10, enabled = false)
   public void handeTest3Disabled(final JobClient client, final ActivatedJob job) {
     calledTest3 = true;
   }
@@ -131,7 +133,7 @@ public class JobHandlerTest {
     assertThat(calledTest3).isFalse();
   }
 
-  @ZeebeWorker(name = "test4", type = "test4", autoComplete = true, pollInterval = 10)
+  @JobWorker(name = "test4", type = "test4", autoComplete = true, pollInterval = 10)
   public void handeTest4(final JobClient client, final ActivatedJob job) {
     calledTest4 = true;
   }
@@ -156,7 +158,7 @@ public class JobHandlerTest {
     assertThat(calledTest4).isFalse();
   }
 
-  @ZeebeWorker(name = "test5")
+  @JobWorker(name = "test5", autoComplete = false)
   public void handeTest5() {
   }
 
@@ -165,8 +167,8 @@ public class JobHandlerTest {
     assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
   }
 
-  @ZeebeWorker(name = "test6", type = "test6", autoComplete = true, pollInterval = 10)
-  public void handleTest6(final JobClient client, final ActivatedJob job, @ZeebeVariable ComplexTypeDTO dto, @ZeebeVariable String var2) {
+  @JobWorker(name = "test6", type = "test6", pollInterval = 10)
+  public void handleTest6(final JobClient client, final ActivatedJob job, @Variable ComplexTypeDTO dto, @Variable String var2) {
     calledTest6 = true;
     test6ComplexTypeDTO = dto;
     test6Var2 = var2;

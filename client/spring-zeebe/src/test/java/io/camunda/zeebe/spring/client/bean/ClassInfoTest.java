@@ -2,16 +2,14 @@ package io.camunda.zeebe.spring.client.bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import io.camunda.zeebe.spring.client.annotation.*;
 import org.junit.jupiter.api.Test;
 
 import java.beans.Introspector;
 
 public class ClassInfoTest {
 
-  @ZeebeDeployment(classPathResources = "/1.bpmn")
+  @Deployment(resources = "classpath*:/1.bpmn")
   public static class WithDeploymentAnnotation {
 
   }
@@ -22,27 +20,27 @@ public class ClassInfoTest {
 
   public static class WithZeebeWorker {
 
-    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit")
+    @JobWorker(type = "bar", timeout = 100L, name = "kermit", autoComplete = false)
     public void handle() {
     }
   }
 
   public static class WithZeebeWorkerAllValues {
 
-    @ZeebeWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true, enabled = true)
+    @JobWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true, enabled = true)
     public void handle() {
     }
   }
 
   public static class WithZeebeWorkerVariables {
-    @ZeebeWorker(type = "bar", timeout = 100L, fetchVariables = "var3")
-    public void handle(@ZeebeVariable String var1, @ZeebeVariable int var2) {
+    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var3", autoComplete = false)
+    public void handle(@Variable String var1, @Variable int var2) {
     }
   }
 
   public static class WithDisabledZeebeWorker {
-    @ZeebeWorker(type = "bar", enabled = false)
-    public void handle(@ZeebeVariable String var1, @ZeebeVariable int var2) {
+    @JobWorker(type = "bar", enabled = false, autoComplete = false)
+    public void handle(@Variable String var1, @Variable int var2) {
     }
   }
 
@@ -51,13 +49,13 @@ public class ClassInfoTest {
       private String var1;
       private String var2;
     }
-    @ZeebeWorker(type = "bar", timeout = 100L, fetchVariables = "var2")
-    public void handle(@ZeebeVariable String var1, @ZeebeVariable ComplexTypeDTO var2) {
+    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var2", autoComplete = false)
+    public void handle(@Variable String var1, @Variable ComplexTypeDTO var2) {
     }
   }
 
   public static class NoPropertiesSet {
-    @ZeebeWorker
+    @JobWorker
     public void handle() {
     }
   }
@@ -75,25 +73,25 @@ public class ClassInfoTest {
 
   @Test
   public void hasZeebeeDeploymentAnnotation() throws Exception {
-    assertThat(beanInfo(new WithDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class))
+    assertThat(beanInfo(new WithDeploymentAnnotation()).hasClassAnnotation(Deployment.class))
       .isTrue();
   }
 
   @Test
   public void hasNoZeebeeDeploymentAnnotation() throws Exception {
     assertThat(
-      beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(ZeebeDeployment.class))
+      beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(Deployment.class))
       .isFalse();
   }
 
   @Test
   public void hasZeebeWorkerMethod() throws Exception {
-    assertThat(beanInfo(new WithZeebeWorker()).hasMethodAnnotation(ZeebeWorker.class)).isTrue();
+    assertThat(beanInfo(new WithZeebeWorker()).hasMethodAnnotation(JobWorker.class)).isTrue();
   }
 
   @Test
   public void hasNotZeebeWorkerMethod() throws Exception {
-    assertThat(beanInfo("normal String").hasMethodAnnotation(ZeebeWorker.class)).isFalse();
+    assertThat(beanInfo("normal String").hasMethodAnnotation(JobWorker.class)).isFalse();
   }
 
   private ClassInfo beanInfo(final Object bean) {
