@@ -24,21 +24,19 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.0.11</version>
+  <version>8.1.0</version>
 </dependency>
 ```
 
-Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](https://docs.camunda.io/docs/apis-clients/java-client/), you could also add a direct dependency if you need to specify the concrete version in your `pom.xml`:
+Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](https://docs.camunda.io/docs/apis-clients/java-client/), you could also add a direct dependency if you need to specify the concrete version in your `pom.xml` (even this is rarely necessary):
 
 ```xml
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>8.0.4</version>
+  <version>8.1.1</version>
 </dependency>
 ```
-
-Please note, that **starting from spring-zeebe 8.0.2 you need Zeebe >= 8.0.0**.
 
 
 ## Configuring Camunda Platform 8 SaaS Connection
@@ -78,37 +76,35 @@ private ZeebeClient client;
 
 ## Deploy Process Models
 
-Use the `@ZeebeDeployment` annotation:
+Use the `@Deployment` annotation:
 
 ```java
 @SpringBootApplication
 @EnableZeebeClient
-@ZeebeDeployment(resources = "classpath:demoProcess.bpmn")
+@Deployment(resources = "classpath:demoProcess.bpmn")
 public class MySpringBootApplication {
 ```
 
 This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader] (the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
 
 ```java
-@ZeebeDeployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
+@Deployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
 ```
 or define wildcard patterns:
 ```java
-@ZeebeDeployment(resources = "classpath*:/bpmn/**/*.bpmn")
+@Deployment(resources = "classpath*:/bpmn/**/*.bpmn")
 ```
 
 ## Implement Job Worker
 
 ```java
-@ZeebeWorker(type = "foo")
-public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+@JobWorker(type = "foo")
+public void handleJobFoo(final ActivatedJob job) {
   // do whatever you need to do
-  client.newCompleteCommand(job.getKey()) 
-     .variables("{\"fooResult\": 1}")
-     .send()
-     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
 }
 ```
+
+See documentation below for a more in-depth discussion on parameters and configuration options of JobWorkers.
 
 ## Writing test cases
 
@@ -154,7 +150,7 @@ An example test case is [available here](https://github.com/camunda-community-hu
 
 ## Run OutboundConnectors
 
-You can directly run `OutboundConnectorFunction`s using spring-zeebe, you just have to make sure they are exposed as Spring Beans. See [https://github.com/camunda/connector-sdk](Connector SDK) for details on connectors overall.
+You can directly run `OutboundConnectorFunction`s using spring-zeebe, you just have to make sure they are exposed as Spring Beans. See [Connector SDK](https://github.com/camunda/connector-sdk) for details on connectors overall.
 
 So, for example, if you have the following outbound connector function:
 
@@ -185,24 +181,23 @@ Now a worker for this connector will be started in the background.
 # Documentation
 
 
-
-## Worker configuration options
+## Job worker configuration options
 
 ### Job Type
 
-You can configure the job type via the `ZeebeWorker` annotation:
+You can configure the job type via the `JobWorker` annotation:
 
 ```java
-@ZeebeWorker(type = "foo")
+@JobWorker(type = "foo")
 public void handleJobFoo() {
   // handles jobs of type 'foo'
 }
 ```
 
-If you don't specify the `type` the method name is used as default:
+If you don't specify the `type` the **method name** is used as default:
 
 ```java
-@ZeebeWorker
+@JobWorker
 public void foo() {
     // handles jobs of type 'foo'
 }
@@ -216,13 +211,63 @@ zeebe.client.worker.default-type=foo
 
 This is used for all workers that do **not** set a task type via the annoation.
 
-### Fetch all variables
 
-You can access all variables of a process via the job:
+### Define variables to fetch
+
+You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
 
 ```java
-@ZeebeWorker(type = "foo")
+@JobWorker(type = "foo", fetchVariables={"variable1", "variable2"})
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  String variable1 = (String)job.getVariablesAsMap().get("variable1");
+  System.out.println(variable1);
+  // ...
+}
+```
+
+### Using `@Variable`
+
+By using the `@Variable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
+
+```java
+@JobWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variable String variable1) {
+  System.out.println(variable1);
+  // ...
+}
+```
+
+With `@Variable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
+
+```java
+@JobWorker(type = "foo", fetchAllVariables = true)
+public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variable String variable1) {
+}
+```
+
+### Using `@VariablesAsType`
+
+You can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the Java Client API). Therefore use the `@VariablesAsType` annotation. In the below example, `MyProcessVariables` refers to your own class:
+
+```java
+@JobWorker(type = "foo")
+public ProcessVariables handleFoo(@VariablesAsType MyProcessVariables variables){
+  // do whatever you need to do
+  variables.getMyAttributeX();
+  variables.setMyAttributeY(42);
+  
+  // return variables object if something has changed, so the changes are submitted to Zeebe
+  return variables;
+}
+```
+
+### Fetch variables via Job
+
+You can access variables of a process via the ActivatedJob object, which is passed into the method if it is a parameter:
+
+```java
+@JobWorker(type = "foo")
+public void handleJobFoo(final ActivatedJob job) {
   String variable1 = (String)job.getVariablesAsMap().get("variable1");
   sysout(variable1);
   // ...
@@ -230,90 +275,29 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job) {
 ```
 
 
-### Define variables to fetch
-
-You can specify that you only want to fetch some variables (instead of all) when executing a job, which can decrease load and improve performance:
-
-```java
-@ZeebeWorker(type = "foo", fetchVariables={"variable1", "variable2"})
-public void handleJobFoo(final JobClient client, final ActivatedJob job) {
-  String variable1 = (String)job.getVariablesAsMap().get("variable1");
-  System.out.println(variable1);
-  // ...
-}
-```
-
-### Using @ZeebeVariable
-
-By using the `@ZeebeVariable` annotation there is a shortcut to make variable retrieval simpler, including the type cast:
-
-```java
-@ZeebeWorker(type = "foo")
-public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
-  System.out.println(variable1);
-  // ...
-}
-```
-
-With `@ZeebeVariable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
-
-```java
-@ZeebeWorker(type = "foo", forceFetchAllVariables = true)
-public void handleJobFoo(final JobClient client, final ActivatedJob job, @ZeebeVariable String variable1) {
-}
-```
-
-### Using @ZeebeVariablesAsType
-
-When using `autoComplete` (see below) you can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the API). Therefore use the `@ZeebeVariablesAsType` annotation (`MyProcessVariables` refers to your own class):
-
-```java
-@ZeebeWorker(type = "foo", autoComplete = true)
-public ProcessVariables handleFoo(@ZeebeVariablesAsType MyProcessVariables variables){
-  // do whatever you need to do
-  variables.getMyAttributeX();
-  variables.setMyAttributeY(42);
-  // return variables object if something has changed, so the changes are submitted to Zeebe
-  return variables;
-}
-```
-
-
-
-### Completing the job
-
-As a default, your job handler code has to also complete the job, otherwise Zeebe will not know you did your work correctly:
-
-```java
-@ZeebeWorker(type = "foo")
-public void handleJobFoo(final JobClient client, final ActivatedJob job) {
-  // do whatever you need to do
-  client.newCompleteCommand(job.getKey()) 
-     .send()
-     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
-}
-```
-
-Ideally, you **don't** use blocking behavior like `send().join()`, as this is a blocking call to wait for the issues command to be executed on the workflow engine. While this is very straightforward to use and produces easy-to-read code, blocking code is limited in terms of scalability.
-
-That's why the worker showed a different pattern:
-
-```java
-send().whenComplete((result, exception) -> {})
-```
-This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
-This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
 
 
 ### Auto-completing jobs
 
-To ease things, you can also set `autoComplete=true` for the worker, than the Spring integration will take care if job completion for you:
+By default, the `autoComplete` attribute is set to `true` for any job worker. 
+
+**Note that the described default behavior of auto-completion was introduced with 8.1 and was different before, see https://github.com/camunda-community-hub/spring-zeebe/issues/239 for details.**
+
+In this case, the Spring integration will take care about job completion for you:
 
 ```java
-@ZeebeWorker(type = "foo", autoComplete = true)
+@JobWorker(type = "foo")
 public void handleJobFoo(final ActivatedJob job) {
   // do whatever you need to do
-  // but no need to call client.newCompleteCommand()...
+  // no need to call client.newCompleteCommand()...
+}
+```
+Which is the same as:
+
+```java
+@JobWorker(type = "foo", autoComplete = true)
+public void handleJobFoo(final ActivatedJob job) {
+  // ...
 }
 ```
 
@@ -326,7 +310,7 @@ When using `autoComplete` you can:
 * Throw any other `Exception` that leads in an failure handed over to Zeebe
 
 ```java
-@ZeebeWorker(type = "foo", autoComplete = true)
+@JobWorker(type = "foo")
 public Map<String, Object> handleJobFoo(final ActivatedJob job) {
   // some work
   if (successful) {
@@ -339,35 +323,62 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 }
 ```
 
+### Programtaically completing jobs
 
-
-### @ZeebeCustomHeaders
-
-In the same manner you can also access the headers using `@ZeebeCustomHeaders` 
+Your job worker code can also complete the job itself. This gives you more control about when exactly you want to complete the job (e.g. allowing the completion to be moved to reactive callbacks):
 
 ```java
-@ZeebeWorker(type = "foo", autoComplete = true)
-public void handleFoo(final ActivatedJob job, @ZeebeCustomHeaders Map<String, String> headers){
+@JobWorker(type = "foo")
+public void handleJobFoo(final JobClient client, final ActivatedJob job) {
+  // do whatever you need to do
+  client.newCompleteCommand(job.getKey()) 
+     .send()
+     .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
+}
+```
+
+Ideally, you **don't** use blocking behavior like `send().join()`, as this is a blocking call to wait for the issues command to be executed on the workflow engine. While this is very straightforward to use and produces easy-to-read code, blocking code is limited in terms of scalability.
+
+That's why the worker above showed a different pattern (using `exceptionally`), often you might also want to use the `whenComplete` callback:
+
+```java
+send().whenComplete((result, exception) -> {})
+```
+
+This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
+This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
+
+
+
+
+
+### `@CustomHeaders`
+
+You can use the `@CustomHeaders` annotation for a parameter to retrieve [custom headers](https://docs.camunda.io/docs/components/concepts/job-workers/) for a job:
+
+```java
+@JobWorker(type = "foo")
+public void handleFoo(@CustomHeaders Map<String, String> headers){
   // do whatever you need to do
 } 
 ```
 
-Or using both `@ZeebeVariablesAsType` and `@ZeebeCustomHeaders`
+Of course you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
 
 ```java
-@ZeebeWorker(type = "foo", autoComplete = true)
-public ProcessVariables handleFoo(@ZeebeVariablesAsType ProcessVariables variables, @ZeebeCustomHeaders Map<String, String> headers){
+@JobWorker
+public ProcessVariables foo(@VariablesAsType ProcessVariables variables, @CustomHeaders Map<String, String> headers){
   // do whatever you need to do
   return variables;
 }
 ```
 
-### Throwing ZeebeBpmnError's
+### Throwing `ZeebeBpmnError`s
 
 Whenever your code hits a problem that should lead to a <a href="https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/">BPMN error</a> being raised, you can simply throw a ZeebeBpmnError providing the error code used in BPMN:
 
 ```java
-@ZeebeWorker(type = "foo")
+@JobWorker(type = "foo")
 public void handleJobFoo() {
   // some work
   if (!successful) {
@@ -443,11 +454,11 @@ class MyConfiguration {
 
 ### Disable worker
 
-You can disable workesr via the `enabled` parameter of the `@ZeebeWorker` annotation :
+You can disable workers via the `enabled` parameter of the `@JobWorker` annotation :
 
 ```java
 class SomeClass {
-  @ZeebeWorker(type = "foo", enabled = false)
+  @JobWorker(type = "foo", enabled = false)
   public void handleJobFoo() {
     // worker's code - now disabled
   }
@@ -467,9 +478,9 @@ This is especially useful, if you have a bigger code base including many workers
 * Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new. 
 
 
-### Overriding `ZeebeWorker` values via configuration file
+### Overriding `JobWorker` values via configuration file
 
-You can override the `ZeebeWorker` annotation's values, as you could see in the example above where the `enabled` property is overwritten:
+You can override the `JobWorker` annotation's values, as you could see in the example above where the `enabled` property is overwritten:
 
 ```properties
 zeebe.client.worker.override.foo.enabled=false
@@ -483,7 +494,7 @@ You can overwrite all supported configuration options for a worker, e.g.:
 zeebe.client.worker.override.foo.timeout=10000
 ```
 
-You could also provide a custom class that can customize the `ZeebeWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
+You could also provide a custom class that can customize the `JobWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
 
 # Code of Conduct
 
