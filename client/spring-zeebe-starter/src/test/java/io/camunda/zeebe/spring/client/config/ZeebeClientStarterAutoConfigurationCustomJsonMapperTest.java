@@ -9,7 +9,9 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.security.plaintext=true"
   }
 )
-@ContextConfiguration(classes = { ZeebeClientStarterAutoConfiguration.class, ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.TestConfig.class })
+@ContextConfiguration(classes = { ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.TestConfig.class, ZeebeClientStarterAutoConfiguration.class })
 public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
   public static class TestConfig {
@@ -46,29 +49,49 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
       return ZeebeClient.newClient();
     }
 
-    @Bean
-    public JsonMapper jsonMapper() {
+    @Primary
+    @Bean(name = "overridingJsonMapper")
+    public io.camunda.zeebe.client.api.JsonMapper zeebeJsonMapper() {
       ObjectMapper objectMapper = new ObjectMapper()
         .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true)
         .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true);
       return new ZeebeObjectMapper(objectMapper);
     }
+
+    @Bean(name = "aSecondJsonMapper")
+    public io.camunda.zeebe.client.api.JsonMapper aSecondJsonMapper() {
+      ObjectMapper objectMapper = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true)
+        .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true);
+      return new ZeebeObjectMapper(objectMapper);
+    }
+
+    @Bean(name = "jsonMapper")
+    public ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.JsonMapper jsonMapper() {
+      return new ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.JsonMapper();
+    }
   }
 
   @Autowired
-  private JsonMapper jsonMapper;
-
+  private io.camunda.zeebe.client.api.JsonMapper jsonMapper;
   @Autowired
   private ZeebeClientStarterAutoConfiguration autoConfiguration;
+  @Autowired
+  private ApplicationContext applicationContext;
 
   @Test
   void getJsonMapper() {
     assertThat(jsonMapper).isNotNull();
     assertThat(autoConfiguration).isNotNull();
-    assertThat(autoConfiguration.jsonMapper()).isSameAs(jsonMapper);
 
+    Map<String, io.camunda.zeebe.client.api.JsonMapper> jsonMapperBeans = applicationContext.getBeansOfType(io.camunda.zeebe.client.api.JsonMapper.class);
     Object objectMapper = ReflectionTestUtils.getField(jsonMapper, "objectMapper");
 
+    assertThat(jsonMapperBeans.size()).isEqualTo(2);
+    assertThat(jsonMapperBeans.containsKey("overridingJsonMapper")).isTrue();
+    assertThat(jsonMapperBeans.get("overridingJsonMapper")).isSameAs(jsonMapper);
+    assertThat(jsonMapperBeans.containsKey("aSecondJsonMapper")).isTrue();
+    assertThat(jsonMapperBeans.get("aSecondJsonMapper")).isNotSameAs(jsonMapper);
     assertThat(objectMapper).isNotNull();
     assertThat(objectMapper).isInstanceOf(ObjectMapper.class);
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig()).isNotNull();
@@ -90,5 +113,9 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
     assertThat(client.getConfiguration().isPlaintextConnectionEnabled()).isTrue();
     assertThat(client.getConfiguration().getDefaultJobWorkerMaxJobsActive()).isEqualTo(99);
     assertThat(client.getConfiguration().getDefaultJobPollInterval()).isEqualTo(Duration.ofSeconds(99));
+  }
+
+  private static class JsonMapper {
+
   }
 }
