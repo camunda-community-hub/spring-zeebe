@@ -107,6 +107,7 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
     ZeebeClient client = builder.build();
     assertThat(client.getConfiguration().getJsonMapper()).isSameAs(jsonMapper);
+    assertThat(client.getConfiguration().getJsonMapper()).isSameAs(applicationContext.getBean("overridingJsonMapper"));
     assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost12345");
     assertThat(client.getConfiguration().getDefaultRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
     assertThat(client.getConfiguration().getCaCertificatePath()).isEqualTo("aPath");
