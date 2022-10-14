@@ -49,7 +49,7 @@ public class ZeebeClientStarterAutoConfiguration {
       builder.usePlaintext();
     }
     if (jsonMapper==null) { // double security because of https://github.com/camunda-community-hub/spring-zeebe/issues/240
-      jsonMapper = jsonMapper();
+      jsonMapper = new ZeebeObjectMapper();
     }
     builder.withJsonMapper(jsonMapper);
     final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();
@@ -67,8 +67,17 @@ public class ZeebeClientStarterAutoConfiguration {
     return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
   }
 
-  @Bean
-  @ConditionalOnMissingBean(JsonMapper.class)
+  /**
+   * Registering a JsonMapper bean when there is none already exists in {@link org.springframework.beans.factory.BeanFactory}.
+   *
+   * NOTE: This method SHOULD NOT be explicitly called as it might lead to unexpected behaviour due to the
+   * {@link ConditionalOnMissingBean} annotation. i.e. Calling this method when another JsonMapper bean is defined in the context
+   * might throw {@link org.springframework.beans.factory.NoSuchBeanDefinitionException}
+   *
+   * @return a new JsonMapper bean if none already exists in {@link org.springframework.beans.factory.BeanFactory}
+   */
+  @Bean(name = "zeebeJsonMapper")
+  @ConditionalOnMissingBean
   public JsonMapper jsonMapper() {
     return new ZeebeObjectMapper();
   }

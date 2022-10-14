@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -18,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,15 +52,20 @@ public class ZeebeClientStarterAutoConfigurationTest {
   private JsonMapper jsonMapper;
   @Autowired
   private ZeebeClientStarterAutoConfiguration autoConfiguration;
+  @Autowired
+  private ApplicationContext applicationContext;
 
   @Test
   void getJsonMapper() {
     assertThat(jsonMapper).isNotNull();
     assertThat(autoConfiguration).isNotNull();
-    assertThat(autoConfiguration.jsonMapper()).isSameAs(jsonMapper);
 
+    Map<String, JsonMapper> jsonMapperBeans = applicationContext.getBeansOfType(JsonMapper.class);
     Object objectMapper = ReflectionTestUtils.getField(jsonMapper, "objectMapper");
 
+    assertThat(jsonMapperBeans.size()).isEqualTo(1);
+    assertThat(jsonMapperBeans.containsKey("zeebeJsonMapper")).isTrue();
+    assertThat(jsonMapperBeans.get("zeebeJsonMapper")).isSameAs(jsonMapper);
     assertThat(objectMapper).isNotNull();
     assertThat(objectMapper).isInstanceOf(ObjectMapper.class);
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig()).isNotNull();
