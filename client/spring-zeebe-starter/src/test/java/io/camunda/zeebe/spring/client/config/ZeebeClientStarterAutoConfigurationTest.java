@@ -57,7 +57,7 @@ public class ZeebeClientStarterAutoConfigurationTest {
   void getJsonMapper() {
     assertThat(jsonMapper).isNotNull();
     assertThat(autoConfiguration).isNotNull();
-    assertThat(autoConfiguration.jsonMapper()).isSameAs(jsonMapper);
+    assertThat(autoConfiguration.zeebeObjectMapper()).isSameAs(jsonMapper);
 
     Object objectMapper = ReflectionTestUtils.getField(jsonMapper, "objectMapper");
 

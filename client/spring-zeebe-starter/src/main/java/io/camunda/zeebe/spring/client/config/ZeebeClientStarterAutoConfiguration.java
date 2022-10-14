@@ -9,6 +9,7 @@ import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCu
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class ZeebeClientStarterAutoConfiguration {
 
   @Bean
   @Primary
-  public ZeebeClientBuilder builder(@Autowired(required = false) JsonMapper jsonMapper,
+  public ZeebeClientBuilder builder(@Autowired(required = false) @Qualifier(value = "zeebeObjectMapper") JsonMapper jsonMapper,
                                     @Autowired(required = false) List<ClientInterceptor> clientInterceptorList) {
     final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
@@ -49,7 +50,7 @@ public class ZeebeClientStarterAutoConfiguration {
       builder.usePlaintext();
     }
     if (jsonMapper==null) { // double security because of https://github.com/camunda-community-hub/spring-zeebe/issues/240
-      jsonMapper = jsonMapper();
+      jsonMapper = zeebeObjectMapper();
     }
     builder.withJsonMapper(jsonMapper);
     final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();
@@ -67,9 +68,9 @@ public class ZeebeClientStarterAutoConfiguration {
     return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
   }
 
-  @Bean
-  @ConditionalOnMissingBean(JsonMapper.class)
-  public JsonMapper jsonMapper() {
+  @Bean(name = "zeebeObjectMapper")
+  @ConditionalOnMissingBean(name = "zeebeObjectMapper")
+  public JsonMapper zeebeObjectMapper() {
     return new ZeebeObjectMapper();
   }
 }
