@@ -3,6 +3,8 @@ package io.camunda.zeebe.spring.client.jobhandling;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretStore;
+import io.camunda.connector.runtime.util.ConnectorHelper;
+import io.camunda.connector.runtime.util.outbound.JobHandlerContext;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -14,10 +16,7 @@ import io.camunda.zeebe.spring.client.annotation.*;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
-import io.camunda.zeebe.spring.client.jobhandling.copy.JobHandlerContext;
-import io.camunda.zeebe.spring.client.jobhandling.copy.OutboundConnectorFunctionInvoker;
 import org.slf4j.Logger;
-import scala.annotation.meta.param;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,11 +68,11 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     try {
       Object result = null;
       if (outboundConnectorFunction!=null) {
-        JobHandlerContext jobHandlerContext = createJobHandlerContext(job);
-        result = new OutboundConnectorFunctionInvoker().execute(
-          outboundConnectorFunction,
-          jobHandlerContext,
-          job);
+        Object functionResult = outboundConnectorFunction.execute(
+          createJobHandlerContext(job));
+        result = ConnectorHelper.createOutputVariables(
+          functionResult,
+          job.getCustomHeaders());
       } else { // "normal" @JobWorker
         // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
         List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
