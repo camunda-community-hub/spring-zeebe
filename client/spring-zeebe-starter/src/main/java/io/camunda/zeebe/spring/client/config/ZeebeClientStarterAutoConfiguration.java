@@ -31,7 +31,7 @@ public class ZeebeClientStarterAutoConfiguration {
 
   @Bean
   @Primary
-  public ZeebeClientBuilder builder(@Autowired(required = false) JsonMapper jsonMapper,
+  public ZeebeClientBuilder builder(JsonMapper jsonMapper,
                                     @Autowired(required = false) List<ClientInterceptor> clientInterceptorList) {
     final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
 
@@ -47,9 +47,6 @@ public class ZeebeClientStarterAutoConfiguration {
     builder.caCertificatePath(configurationProperties.getCaCertificatePath());
     if (configurationProperties.isPlaintextConnectionEnabled()) {
       builder.usePlaintext();
-    }
-    if (jsonMapper==null) { // double security because of https://github.com/camunda-community-hub/spring-zeebe/issues/240
-      jsonMapper = new ZeebeObjectMapper();
     }
     builder.withJsonMapper(jsonMapper);
     final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();

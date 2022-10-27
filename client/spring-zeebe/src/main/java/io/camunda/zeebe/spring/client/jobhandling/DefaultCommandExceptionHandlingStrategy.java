@@ -51,7 +51,7 @@ public class DefaultCommandExceptionHandlingStrategy implements CommandException
 
       // Success codes should not lead to an exception!
       if (IGNORABLE_FAILURE_CODES.contains( code )) {
-        LOG.warn("Ignoring the the error of type '" + code + "' during "+command+". Job might have been canceled or already completed.");
+        LOG.warn("Ignoring the error of type '" + code + "' during "+command+". Job might have been canceled or already completed.");
         // TODO: IS Ignorance really a good idea? Think of some local transaction that might need to be marked for rollback! But for sure, retry does not help at all
         return;
       } else if (RETRIABLE_CODES.contains(code)) {

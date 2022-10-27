@@ -22,6 +22,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.1.1</zeebe.version>
+    <connector.version>0.3.0-alpha1</connector.version>
     <spring-boot.version>2.7.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
 
@@ -59,6 +60,11 @@
         <version>${zeebe.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.connector</groupId>
+        <artifactId>connector-runtime-util</artifactId>
+        <version>${connector.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
