@@ -19,7 +19,6 @@
     <dependency>
       <groupId>io.camunda.connector</groupId>
       <artifactId>connector-runtime-util</artifactId>
-      <version>0.3.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
