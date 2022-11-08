@@ -68,6 +68,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     try {
       Object result = null;
       if (outboundConnectorFunction!=null) {
+        LOG.trace("Handle {} and execute connector function {}", job, outboundConnectorFunction);
         Object functionResult = outboundConnectorFunction.execute(
           createJobHandlerContext(job));
         result = ConnectorHelper.createOutputVariables(
@@ -76,6 +77,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       } else { // "normal" @JobWorker
         // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
         List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
+        LOG.trace("Handle {} and invoke worker {}", job, workerValue);
         result = workerValue.getMethodInfo().invoke(args.toArray());
       }
 
@@ -83,6 +85,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
       // which leads to retrying
       if (workerValue.getAutoComplete()) {
+        LOG.trace("Auto completing {}", job);
         CommandWrapper command = new CommandWrapper(
           createCompleteCommand(jobClient, job, result),
           job,
@@ -91,6 +94,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       }
     }
     catch (ZeebeBpmnError bpmnError) {
+      LOG.trace("Catched BPMN error on {}", job);
       CommandWrapper command = new CommandWrapper(
         createThrowErrorCommand(jobClient, job, bpmnError),
         job,
