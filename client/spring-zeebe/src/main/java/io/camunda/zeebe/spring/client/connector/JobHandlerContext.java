@@ -18,13 +18,12 @@ package io.camunda.zeebe.spring.client.connector;
 
 import io.camunda.connector.api.outbound.OutboundConnectorContext;
 import io.camunda.connector.api.secret.SecretStore;
-import io.camunda.connector.impl.context.AbstractConnectorContext;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 
 /**
  * Implementation of {@link OutboundConnectorContext} passed on to
- * a {@link io.camunda.connector.api.outbound.OutboundConnectorFunction} when called from the {@link
- * ConnectorJobHandler}.
+ * a {@link io.camunda.connector.api.outbound.OutboundConnectorFunction} when called
+ * from the {@link io.camunda.zeebe.spring.client.jobhandling.JobHandlerInvokingSpringBeans}
  */
 public class JobHandlerContext extends AbstractConnectorContext
     implements OutboundConnectorContext {
