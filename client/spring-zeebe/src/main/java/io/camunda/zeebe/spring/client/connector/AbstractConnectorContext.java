@@ -60,13 +60,13 @@ public abstract class AbstractConnectorContext {
    * @return the desired validation provider implementation
    */
   protected ValidationProvider getValidationProvider() {
-    return ServiceLoader.load(ValidationProvider.class)
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new IllegalStateException(
-                    "Please bind an implementation to "
-                        + ValidationProvider.class.getName()
-                        + " via SPI"));
+    ServiceLoader<ValidationProvider> validationProviders = ServiceLoader.load(ValidationProvider.class);
+    if (!validationProviders.iterator().hasNext()) {
+      throw new IllegalStateException(
+        "Please bind an implementation to "
+          + ValidationProvider.class.getName()
+          + " via SPI");
+    }
+    return validationProviders.iterator().next();
   }
 }

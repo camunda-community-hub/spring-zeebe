@@ -25,7 +25,10 @@ import org.camunda.feel.syntaxtree.ValString;
 import scala.collection.immutable.Map;
 import scala.collection.immutable.Map$;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +36,7 @@ import java.util.Optional;
 public class FeelConnectorFunctionProvider extends JavaFunctionProvider {
 
   private static final String BPMN_ERROR_FUNCTION_NAME = "bpmnError";
-  private static final List<String> BPMN_ERROR_ARGUMENTS = List.of("code", "message");
+  private static final List<String> BPMN_ERROR_ARGUMENTS = Arrays.asList("code", "message");
   private static final JavaFunction BPMN_ERROR_FUNCTION =
       new JavaFunction(
           BPMN_ERROR_ARGUMENTS,
@@ -48,7 +51,7 @@ public class FeelConnectorFunctionProvider extends JavaFunctionProvider {
                       Map$.MODULE$.empty())));
 
   private static final java.util.Map<String, JavaFunction> functions =
-      java.util.Map.of(BPMN_ERROR_FUNCTION_NAME, BPMN_ERROR_FUNCTION);
+    Collections.singletonMap(BPMN_ERROR_FUNCTION_NAME, BPMN_ERROR_FUNCTION);
 
   @Override
   public Optional<JavaFunction> resolveFunction(String functionName) {
@@ -57,7 +60,7 @@ public class FeelConnectorFunctionProvider extends JavaFunctionProvider {
 
   @Override
   public Collection<String> getFunctionNames() {
-    return List.of(BPMN_ERROR_FUNCTION_NAME);
+    return Arrays.asList(BPMN_ERROR_FUNCTION_NAME);
   }
 
   private static String toString(List<Val> arguments, int index) {

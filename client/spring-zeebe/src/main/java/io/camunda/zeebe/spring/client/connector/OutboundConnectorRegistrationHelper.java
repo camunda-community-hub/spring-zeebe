@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,25 +94,23 @@ public class OutboundConnectorRegistrationHelper {
    * @return the list of registrations
    */
   public static List<OutboundConnectorConfiguration> parseFromSPI() {
+    ArrayList<OutboundConnectorConfiguration> result = new ArrayList<>();
 
-    return ServiceLoader.load(OutboundConnectorFunction.class).stream()
-        .map(
-            functionProvider -> {
-              OutboundConnectorFunction function = functionProvider.get();
-
-              return ConnectorUtil.getOutboundConnectorConfiguration(function.getClass())
-                  .map(
-                      cfg ->
-                          new OutboundConnectorConfiguration(
-                              cfg.getName(), cfg.getType(), cfg.getInputVariables(), function))
-                  .orElseThrow(
-                      () ->
-                          new RuntimeException(
-                              String.format(
-                                  "OutboundConnectorFunction %s is missing @OutboundConnector annotation",
-                                  function.getClass())));
-            })
-        .collect(Collectors.toUnmodifiableList());
+    Iterator<OutboundConnectorFunction> functionIterator = ServiceLoader.load(OutboundConnectorFunction.class).iterator();
+    while (functionIterator.hasNext()) {
+      OutboundConnectorFunction function = functionIterator.next();
+      Optional<OutboundConnectorConfiguration> outboundConnectorConfiguration = ConnectorUtil.getOutboundConnectorConfiguration(function.getClass());
+      if (!outboundConnectorConfiguration.isPresent()) {
+        throw new RuntimeException(
+          String.format(
+            "OutboundConnectorFunction %s is missing @OutboundConnector annotation",
+            function.getClass()));
+      }
+      OutboundConnectorConfiguration cfg = outboundConnectorConfiguration.get();
+      result.add(new OutboundConnectorConfiguration(
+        cfg.getName(), cfg.getType(), cfg.getInputVariables(), function));
+    }
+    return result;
   }
 
   /**
@@ -152,16 +151,25 @@ public class OutboundConnectorRegistrationHelper {
           function.getClass().getName());
     }
 
-    return new OutboundConnectorConfiguration(
-        name,
-        getEnv(name, "TYPE")
-            .or(() -> config.map(OutboundConnectorConfiguration::getType))
-            .orElseThrow(() -> envMissing("Type not specified", name, "TYPE")),
-        getEnv(name, "INPUT_VARIABLES")
-            .map(variables -> variables.split(","))
-            .or(() -> config.map(OutboundConnectorConfiguration::getInputVariables))
-            .orElseThrow(() -> envMissing("Variables not specified", name, "INPUT_VARIABLES")),
-        function);
+    Optional<String> type = getEnv(name, "TYPE");
+    if (!type.isPresent()) {
+      type = Optional.of(config.get().getType());
+    }
+    if (!type.isPresent()) {
+      envMissing("Type not specified", name, "TYPE");
+    }
+
+    String[] inputVariables = null;
+    Optional<String> inputVariablesString = getEnv(name, "INPUT_VARIABLES");
+    if (inputVariablesString.isPresent()) {
+      inputVariables = inputVariablesString.get().split(",");
+    } else {
+      inputVariables = config.get().getInputVariables();
+    }
+    if (inputVariables==null) {
+      envMissing("Variables not specified", name, "INPUT_VARIABLES");
+    }
+    return new OutboundConnectorConfiguration(name, type.get(), inputVariables, function);
   }
 
   private static Optional<String> getEnv(final String name, final String detail) {
