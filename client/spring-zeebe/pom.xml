@@ -16,9 +16,18 @@
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-client-java</artifactId>
     </dependency>
+    <!-- Connectors and FEEL engine -->
     <dependency>
       <groupId>io.camunda.connector</groupId>
-      <artifactId>connector-runtime-util</artifactId>
+      <artifactId>connector-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.camunda.feel</groupId>
+      <artifactId>feel-engine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-scala_2.13</artifactId>
     </dependency>
 
     <dependency>

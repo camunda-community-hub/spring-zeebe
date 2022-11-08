@@ -54,6 +54,7 @@ public class JobWorkerManager {
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, JobHandler handler) {
 
 	// TODO: Trigger initialization of  worker values and defaults here
+  // TODO: Wrap JobHandler to add logging and exception handling if we don't have a JobHandlerInvokingSpringBean?
 
     final JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder = client
       .newWorker()

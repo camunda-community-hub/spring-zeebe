@@ -3,8 +3,6 @@ package io.camunda.zeebe.spring.client.jobhandling;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretStore;
-import io.camunda.connector.runtime.util.ConnectorHelper;
-import io.camunda.connector.runtime.util.outbound.JobHandlerContext;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -15,10 +13,14 @@ import io.camunda.zeebe.client.impl.Loggers;
 import io.camunda.zeebe.spring.client.annotation.*;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
+import io.camunda.zeebe.spring.client.connector.ConnectorHelper;
+import io.camunda.zeebe.spring.client.connector.JobHandlerContext;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
  */
 public class JobHandlerInvokingSpringBeans implements JobHandler {
 
-  private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
     .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);

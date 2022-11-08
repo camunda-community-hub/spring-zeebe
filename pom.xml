@@ -22,7 +22,10 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.1.2</zeebe.version>
-    <connector.version>0.3.0-alpha1</connector.version>
+    <connector.version>0.3.0-SNAPSHOT</connector.version>
+    <version.feel-engine>1.15.2</version.feel-engine>
+    <version.jackson-module-scala>2.13.4</version.jackson-module-scala>
+
     <spring-boot.version>2.7.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
 
@@ -41,6 +44,8 @@
     <module>test/testcontainer</module>
 
     <module>client</module>
+
+    <module>connector-runtime</module>
 
     <module>example</module>
   </modules>
@@ -63,8 +68,28 @@
       </dependency>
       <dependency>
         <groupId>io.camunda.connector</groupId>
-        <artifactId>connector-runtime-util</artifactId>
+        <artifactId>connector-core</artifactId>
         <version>${connector.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.connector</groupId>
+        <artifactId>connector-inbound</artifactId>
+        <version>${connector.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.connector</groupId>
+        <artifactId>connector-validation</artifactId>
+        <version>${connector.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.camunda.feel</groupId>
+        <artifactId>feel-engine</artifactId>
+        <version>${version.feel-engine}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-scala_2.13</artifactId>
+        <version>${version.jackson-module-scala}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
