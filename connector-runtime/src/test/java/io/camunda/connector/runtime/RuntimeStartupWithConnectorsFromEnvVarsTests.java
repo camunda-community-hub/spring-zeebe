@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorRegistrationHelper;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.connector.OutboundConnectorRegistrationHelper;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.util.Optional;

@@ -14,25 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.spring.client.feel;
+package io.camunda.zeebe.spring.client.connector;
 
-/** Exception class indicating issues in a {@link FeelEngineWrapper} call */
-public class FeelEngineWrapperException extends RuntimeException {
+import io.camunda.connector.api.inbound.InboundConnectorContext;
+import io.camunda.connector.api.secret.SecretStore;
+import io.camunda.connector.impl.context.AbstractConnectorContext;
 
-  public FeelEngineWrapperException(
-      final String reason, final String expression, final Object context) {
-    this(reason, expression, context, null);
-  }
+/** Implementation of {@link io.camunda.connector.api.inbound.InboundConnectorContext} */
+public class InboundJobHandlerContext extends AbstractConnectorContext
+    implements InboundConnectorContext {
 
-  public FeelEngineWrapperException(
-      final String reason,
-      final String expression,
-      final Object context,
-      final Throwable throwable) {
-    super(
-        String.format(
-            "Failed to evaluate expression '%s' in context '%s'. Reason: %s",
-            expression, context, reason),
-        throwable);
+  public InboundJobHandlerContext(final SecretStore secretStore) {
+    super(secretStore);
   }
 }
