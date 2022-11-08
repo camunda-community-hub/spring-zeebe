@@ -153,10 +153,12 @@ public class OutboundConnectorRegistrationHelper {
 
     Optional<String> type = getEnv(name, "TYPE");
     if (!type.isPresent()) {
-      type = Optional.of(config.get().getType());
+      if (config.isPresent()) {
+        type = Optional.of(config.get().getType());
+      }
     }
     if (!type.isPresent()) {
-      envMissing("Type not specified", name, "TYPE");
+      throw envMissing("Type not specified", name, "TYPE");
     }
 
     String[] inputVariables = null;
@@ -164,10 +166,12 @@ public class OutboundConnectorRegistrationHelper {
     if (inputVariablesString.isPresent()) {
       inputVariables = inputVariablesString.get().split(",");
     } else {
-      inputVariables = config.get().getInputVariables();
+      if (config.isPresent()) {
+        inputVariables = config.get().getInputVariables();
+      }
     }
     if (inputVariables==null) {
-      envMissing("Variables not specified", name, "INPUT_VARIABLES");
+      throw envMissing("Variables not specified", name, "INPUT_VARIABLES");
     }
     return new OutboundConnectorConfiguration(name, type.get(), inputVariables, function);
   }
