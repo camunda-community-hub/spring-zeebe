@@ -2,8 +2,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
-import io.camunda.connector.api.secret.SecretStore;
-import io.camunda.connector.runtime.util.outbound.ConnectorJobHandler;
+import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -36,7 +35,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private SecretStore secretStore;
+  private SecretProvider secretProvider;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorFunction outboundConnectorFunction;
@@ -52,12 +51,12 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
                                        DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                       SecretStore secretStore,
+                                       SecretProvider secretProvider,
                                        OutboundConnectorFunction outboundConnectorFunction,
                                        JsonMapper jsonMapper) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
-    this.secretStore = secretStore;
+    this.secretProvider = secretProvider;
     this.outboundConnectorFunction = outboundConnectorFunction;
     this.jsonMapper = jsonMapper;
   }
@@ -66,7 +65,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
     if (outboundConnectorFunction!=null) {
       LOG.trace("Handle {} and execute connector function {}", job, outboundConnectorFunction);
-      new ConnectorJobHandler(outboundConnectorFunction).handle(jobClient, job);
+      new SpringConnectorJobHandler(outboundConnectorFunction, secretProvider).handle(jobClient, job);
     } else { // "normal" @JobWorker
       // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
       List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
