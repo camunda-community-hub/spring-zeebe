@@ -44,7 +44,7 @@ public class AbstractZeebeTestExecutionListener {
     testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
     testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(zeebeClient);
 
-    LOGGER.info("...deployments and workers stated.");
+    LOGGER.info("...deployments and workers started.");
   }
 
   public ZeebeClient createClient(TestContext testContext, ZeebeTestEngine zeebeEngine) {
