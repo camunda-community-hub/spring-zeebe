@@ -22,7 +22,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.1.2</zeebe.version>
-    <connector.version>0.3.0-alpha1</connector.version>
+    <connector.version>0.3.0-SNAPSHOT</connector.version>
     <spring-boot.version>2.7.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
 
@@ -222,6 +222,17 @@
       <id>zeebe-snapshots</id>
       <name>Zeebe Snapshot Repository</name>
       <url>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>connectors-snapshots</id>
+      <name>Connectors Snapshot Repository</name>
+      <url>https://artifacts.camunda.com/artifactory/connectors-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
