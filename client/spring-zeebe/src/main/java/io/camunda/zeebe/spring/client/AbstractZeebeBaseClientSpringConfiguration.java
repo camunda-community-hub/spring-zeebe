@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client;
 
-import io.camunda.connector.api.secret.SecretStore;
+import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
@@ -32,16 +32,15 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   }
 
   @Bean
-  public SecretStore secretStore(Environment env) {
-    return new SecretStore(
-      new SpringSecretProvider(env));
+  public SecretProvider secretProvider(Environment env) {
+    return new SpringSecretProvider(env);
   }
 
   @Bean
   public JobWorkerManager jobWorkerManager(final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                           SecretStore secretStore,
+                                           SecretProvider secretProvider,
                                            @Autowired(required = false) JsonMapper jsonMapper) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy, secretStore, jsonMapper);
+    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper);
   }
 
   @Bean

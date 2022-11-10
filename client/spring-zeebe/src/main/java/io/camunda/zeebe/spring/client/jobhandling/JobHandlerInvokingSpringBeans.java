@@ -2,9 +2,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
-import io.camunda.connector.api.secret.SecretStore;
-import io.camunda.connector.runtime.util.ConnectorHelper;
-import io.camunda.connector.runtime.util.outbound.JobHandlerContext;
+import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -37,7 +35,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
   private ZeebeWorkerValue workerValue;
   private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private SecretStore secretStore;
+  private SecretProvider secretProvider;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorFunction outboundConnectorFunction;
@@ -53,49 +51,48 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
                                        DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                       SecretStore secretStore,
+                                       SecretProvider secretProvider,
                                        OutboundConnectorFunction outboundConnectorFunction,
                                        JsonMapper jsonMapper) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
-    this.secretStore = secretStore;
+    this.secretProvider = secretProvider;
     this.outboundConnectorFunction = outboundConnectorFunction;
     this.jsonMapper = jsonMapper;
   }
 
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
-    try {
-      Object result = null;
-      if (outboundConnectorFunction!=null) {
-        Object functionResult = outboundConnectorFunction.execute(
-          createJobHandlerContext(job));
-        result = ConnectorHelper.createOutputVariables(
-          functionResult,
-          job.getCustomHeaders());
-      } else { // "normal" @JobWorker
-        // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
-        List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
-        result = workerValue.getMethodInfo().invoke(args.toArray());
-      }
+    if (outboundConnectorFunction!=null) {
+      LOG.trace("Handle {} and execute connector function {}", job, outboundConnectorFunction);
+      new SpringConnectorJobHandler(outboundConnectorFunction, secretProvider, commandExceptionHandlingStrategy).handle(jobClient, job);
+    } else { // "normal" @JobWorker
+      // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
+      List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
+      LOG.trace("Handle {} and invoke worker {}", job, workerValue);
+      try {
+        Object result = workerValue.getMethodInfo().invoke(args.toArray());
 
-      // normal exceptions are handled by JobRunnableFactory
-      // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
-      // which leads to retrying
-      if (workerValue.getAutoComplete()) {
+        // normal exceptions are handled by JobRunnableFactory
+        // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
+        // which leads to retrying
+        if (workerValue.getAutoComplete()) {
+          LOG.trace("Auto completing {}", job);
+          CommandWrapper command = new CommandWrapper(
+            createCompleteCommand(jobClient, job, result),
+            job,
+            commandExceptionHandlingStrategy);
+          command.executeAsync();
+        }
+      }
+      catch (ZeebeBpmnError bpmnError) {
+        LOG.trace("Catched BPMN error on {}", job);
         CommandWrapper command = new CommandWrapper(
-          createCompleteCommand(jobClient, job, result),
+          createThrowErrorCommand(jobClient, job, bpmnError),
           job,
           commandExceptionHandlingStrategy);
         command.executeAsync();
       }
-    }
-    catch (ZeebeBpmnError bpmnError) {
-      CommandWrapper command = new CommandWrapper(
-        createThrowErrorCommand(jobClient, job, bpmnError),
-        job,
-        commandExceptionHandlingStrategy);
-      command.executeAsync();
     }
   }
 
@@ -136,11 +133,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     return args;
   }
 
-  protected JobHandlerContext createJobHandlerContext(ActivatedJob job) {
-    return new JobHandlerContext(job, secretStore);
-  }
-
-  public FinalCommandStep createCompleteCommand(JobClient jobClient, ActivatedJob job, Object result) {
+  public static FinalCommandStep createCompleteCommand(JobClient jobClient, ActivatedJob job, Object result) {
     CompleteJobCommandStep1 completeCommand = jobClient.newCompleteCommand(job.getKey());
     if (result != null) {
       if (result.getClass().isAssignableFrom(Map.class)) {
