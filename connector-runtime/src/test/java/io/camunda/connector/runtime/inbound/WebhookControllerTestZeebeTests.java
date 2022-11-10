@@ -16,12 +16,6 @@
  */
 package io.camunda.connector.runtime.inbound;
 
-import static io.camunda.connector.runtime.inbound.WebhookControllerPlainJavaTests.webhookProperties;
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
@@ -29,10 +23,6 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +30,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
+
+import static io.camunda.connector.runtime.inbound.WebhookControllerPlainJavaTests.webhookProperties;
+import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
+import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
     classes = InboundConnectorRuntimeConfiguration.class,
@@ -49,7 +49,6 @@ import org.springframework.http.ResponseEntity;
     })
 @ZeebeSpringTest
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class WebhookControllerTestZeebeTests {
 
   @Test
