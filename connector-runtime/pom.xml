@@ -68,7 +68,19 @@
             </dependency>
           </dependencies>
           <configuration>
-            <transformers combine.children="append">
+            <shadedArtifactAttached>true</shadedArtifactAttached>
+            <shadedClassifierName>with-dependencies</shadedClassifierName>
+            <!-- no need for this since we are not consuming this artifact downstream -->
+            <createDependencyReducedPom>false</createDependencyReducedPom>
+            <transformers>
+              <!-- This is needed if you have dependencies that use Service Loader. Most Google Cloud client libraries does. -->
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              <!-- This is needed to not repeat licenses in the META-INF directory -->
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+              <!-- This is needed to merge existing NOTICE files and keep them downstream -->
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                <addHeader>false</addHeader>
+              </transformer>
               <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>META-INF/spring.handlers</resource>
               </transformer>
@@ -95,14 +107,14 @@
               </transformer>
             </transformers>
           </configuration>
-         <executions>
-           <execution>
-             <phase>package</phase>
-             <goals>
-               <goal>shade</goal>
-             </goals>
-           </execution>
-         </executions>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
     </plugins>
   </build>
