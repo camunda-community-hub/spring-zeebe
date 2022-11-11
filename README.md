@@ -150,9 +150,16 @@ An example test case is [available here](https://github.com/camunda-community-hu
 
 ## Run OutboundConnectors
 
-You can directly run `OutboundConnectorFunction`s using spring-zeebe, you just have to make sure they are exposed as Spring Beans. See [Connector SDK](https://github.com/camunda/connector-sdk) for details on connectors overall.
+Consult the [Connector SDK](https://github.com/camunda/connector-sdk) for details on Connectors in general.
 
-So, for example, if you have the following outbound connector function:
+You can run `OutboundConnectorFunction`s using Spring Zeebe with any of the following options:
+
+* Expose them as Spring beans and run them directly in your own application.
+* Run them using the pre-packaged [Connector runtime](./connector-runtime) application.
+
+### Run OutboundConnector as Spring bean
+
+If you have the following outbound Connector function:
 
 ```
 @OutboundConnector(
@@ -175,7 +182,7 @@ public class ConnectorFactory {
 }
 ```
 
-Now a worker for this connector will be started in the background.
+Now a worker for this Connector will be started in the background.
 
 
 # Documentation
