@@ -19,6 +19,10 @@
       <artifactId>connector-runtime-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>connector-validation</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>spring-zeebe-starter</artifactId>
     </dependency>
