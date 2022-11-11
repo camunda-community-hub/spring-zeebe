@@ -75,6 +75,11 @@
         <version>${connector.version}</version>
       </dependency>
       <dependency>
+        <groupId>io.camunda.connector</groupId>
+        <artifactId>connector-validation</artifactId>
+        <version>${connector.version}</version>
+      </dependency>
+      <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
         <version>${zeebe.version}</version>
