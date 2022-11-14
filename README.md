@@ -330,7 +330,7 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 }
 ```
 
-### Programtaically completing jobs
+### Programmatically completing jobs
 
 Your job worker code can also complete the job itself. This gives you more control about when exactly you want to complete the job (e.g. allowing the completion to be moved to reactive callbacks):
 
