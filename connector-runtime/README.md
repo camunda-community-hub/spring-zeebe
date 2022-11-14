@@ -56,7 +56,73 @@ Example adding a connector jar by using volumes
 docker run --rm --name=connectors -d -v $PWD/connector.jar:/opt/app/ camunda/connectors:0.2.2
 ```
 
+# Building Connector runtime bundles
 
+Often, you want to build one application/deployment, that not only contains the pure runtime, but also some connectors themselves.
+
+There are two ways of achieving this:
+
+1. Create a Maven build that depends on this runtime, but also add connectors as dependencies. 
+2. Add connectors to the classpath of the runtime.
+
+The **first approach (Maven)** has the clear advantage, that Maven resolves possible dependency conflicts, 
+for example because two connectors use different versions of Jackson.
+
+For example:
+
+```xml
+  <dependencies>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>spring-zeebe-connector-runtime</artifactId>
+      <version>${version.spring-zeebe}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>connector-http-json</artifactId>
+      <version>${version.connector-http-json}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>connector-sqs</artifactId>
+      <version>${version.connector-sqs}</version>
+    </dependency>
+  </dependencies>
+```
+
+We generally recommend preferring this approach.
+
+
+The **second approach (Classpath)** has the advantage, that you con build a runtime by pure 
+command line or Docker instructions, without any Java knowledge.
+
+
+To minimize the risk of connectors bringing different versions of the same library, 
+we recommend to use [Maven Shade Relocate](https://maven.apache.org/plugins/maven-shade-plugin/examples/class-relocation.html)
+to relocate common libraries. A [example can be found in the SQS connector](https://github.com/camunda/connector-sqs/blob/main/pom.xml#L111): 
+
+```xml
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <relocations>
+            <relocation>
+              <pattern>com.fasterxml.jackson</pattern>
+              <shadedPattern>connectorsqs.com.fasterxml.jackson</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+```
+
+Now SQS bundles its own copy of Jackson.
+
+See also [Docker: Custom set of connectors](https://docs.camunda.io/docs/self-managed/platform-deployment/docker/#custom-set-of-connectors).
 
 # Configuration Options
 
