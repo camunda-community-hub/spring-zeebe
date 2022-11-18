@@ -45,7 +45,7 @@ public class SpringConnectorJobHandler extends ConnectorJobHandler {
 
   @Override protected void completeJob(JobClient client, ActivatedJob job, ConnectorResult result) {
     new CommandWrapper(
-      JobHandlerInvokingSpringBeans.createCompleteCommand(client, job, result),
+      JobHandlerInvokingSpringBeans.createCompleteCommand(client, job, result.getVariables()),
       job,
       commandExceptionHandlingStrategy).executeAsync();
   }
