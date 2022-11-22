@@ -1,6 +1,7 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
@@ -20,8 +21,8 @@ public class AnnotationProcessorConfiguration {
   }
 
   @Bean
-  public OutboundConnectorAnnotationProcessor outboundConnectorAnnotationProcessor(final JobWorkerManager jobWorkerManager) {
-    return new OutboundConnectorAnnotationProcessor(jobWorkerManager);
+  public OutboundConnectorAnnotationProcessor outboundConnectorAnnotationProcessor(final OutboundConnectorManager outboundConnectorManager) {
+    return new OutboundConnectorAnnotationProcessor(outboundConnectorManager);
   }
 
   @Bean

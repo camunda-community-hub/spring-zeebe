@@ -5,9 +5,10 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
+import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import io.camunda.zeebe.spring.client.jobhandling.SpringSecretProvider;
+import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -22,18 +23,14 @@ import java.util.concurrent.ScheduledExecutorService;
  * The subclasses add the differences for prod/test
  */
 @Import({
-  AnnotationProcessorConfiguration.class
+  AnnotationProcessorConfiguration.class,
+  ConnectorConfiguration.class
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
     return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService());
-  }
-
-  @Bean
-  public SecretProvider secretProvider(Environment env) {
-    return new SpringSecretProvider(env);
   }
 
   @Bean
