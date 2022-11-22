@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.jobhandling;
+package io.camunda.zeebe.spring.client.connector;
 
 import io.camunda.connector.api.secret.SecretProvider;
 import org.springframework.core.env.Environment;
