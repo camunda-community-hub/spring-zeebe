@@ -13,11 +13,29 @@ public class SpringConnectorPropertyResolver implements ConnectorPropertyResolve
 
   @Override
   public boolean containsProperty(String key) {
-    return environment.containsProperty(key);
+    if (environment.containsProperty(key)) {
+      return true;
+    } else if (environment.containsProperty(createSpringFormattedKey(key))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
   public String getProperty(String key) {
-    return environment.getProperty(key);
+    if (environment.containsProperty(key)) {
+      return environment.getProperty(key);
+    }
+    // Check if maybe a ENV_VARIABLE_FORMAT was provided - lowercase it:
+    String alternativeKey = createSpringFormattedKey(key);
+    if (environment.containsProperty(alternativeKey)) {
+      return environment.getProperty(alternativeKey);
+    }
+    return null;
+  }
+
+  private String createSpringFormattedKey(String key) {
+    return key.toLowerCase().replaceAll("_", ".");
   }
 }
