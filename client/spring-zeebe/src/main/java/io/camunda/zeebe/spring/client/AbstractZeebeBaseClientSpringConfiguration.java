@@ -6,13 +6,18 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
+import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,7 +33,15 @@ import java.util.concurrent.ScheduledExecutorService;
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
+  public static class OnMissingCommandExceptionHandlingStrategy implements Condition {
+    @Override
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+      return context.getBeanFactory().getBeanNamesForType(CommandExceptionHandlingStrategy.class).length<=0;
+    }
+  }
+
   @Bean
+  @Conditional(value=OnMissingCommandExceptionHandlingStrategy.class)
   public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
     return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService());
   }
