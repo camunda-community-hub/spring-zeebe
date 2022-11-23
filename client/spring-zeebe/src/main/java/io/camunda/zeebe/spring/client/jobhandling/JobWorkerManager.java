@@ -21,14 +21,14 @@ public class JobWorkerManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final SecretProvider secretProvider;
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
   private JsonMapper jsonMapper;
 
-  public JobWorkerManager(DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+  public JobWorkerManager(CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                           SecretProvider secretProvider,
                           JsonMapper jsonMapper) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;

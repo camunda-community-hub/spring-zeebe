@@ -9,14 +9,12 @@ import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.concurrent.Executors;
@@ -42,12 +40,12 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   @Conditional(value=OnMissingCommandExceptionHandlingStrategy.class)
-  public DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
+  public CommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
     return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService());
   }
 
   @Bean
-  public JobWorkerManager jobWorkerManager(final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+  public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                            SecretProvider secretProvider,
                                            @Autowired(required = false) JsonMapper jsonMapper) {
     return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper);

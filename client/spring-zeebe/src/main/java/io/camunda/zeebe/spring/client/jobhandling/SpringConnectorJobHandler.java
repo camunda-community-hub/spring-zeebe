@@ -10,10 +10,10 @@ import io.camunda.zeebe.client.api.worker.JobClient;
 
 public class SpringConnectorJobHandler extends ConnectorJobHandler {
 
-  private final DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
   public SpringConnectorJobHandler(OutboundConnectorFunction call, SecretProvider secretProvider,
-    DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+    CommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     super(call, secretProvider);
     this.secretProvider = secretProvider;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;

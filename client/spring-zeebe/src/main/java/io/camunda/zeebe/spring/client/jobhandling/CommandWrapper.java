@@ -15,13 +15,13 @@ public class CommandWrapper {
   private FinalCommandStep<Void> command;
 
   private ActivatedJob job;
-  private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
 
   private long currentRetryDelay = 50l;
   private int invocationCounter = 0;
   private int maxRetries = 20; // TODO: Make configurable
 
-  public CommandWrapper(FinalCommandStep<Void> command, ActivatedJob job, DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public CommandWrapper(FinalCommandStep<Void> command, ActivatedJob job, CommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.command = command;
     this.job = job;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;

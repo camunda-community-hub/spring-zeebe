@@ -34,7 +34,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
   private ZeebeWorkerValue workerValue;
-  private DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private SecretProvider secretProvider;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
@@ -42,7 +42,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private JsonMapper jsonMapper;
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
-                                       DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                        JsonMapper jsonMapper) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
@@ -50,7 +50,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   }
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
-                                       DefaultCommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+                                       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                        SecretProvider secretProvider,
                                        OutboundConnectorFunction outboundConnectorFunction,
                                        JsonMapper jsonMapper) {
