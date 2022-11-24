@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class MicrometerMetricsRecorder implements MetricsRecorder {
 
-  protected static final String METRIC_INVOKER = "camunda_connector_invocations";
+  public static String METRIC_NAME_PREFIX = "camunda.connector.invocations.";
 
   private final Map<String, Counter> executedCounter = new HashMap<>();
   private final Map<String, Counter> failedCounter = new HashMap<>();
@@ -23,22 +23,22 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
     this.meterRegistry = meterRegistry;
   }
 
-  protected Counter newCounter(String action, String jobType) {
-    return meterRegistry.counter(METRIC_INVOKER, "action", action, "type", jobType);
+  protected Counter newCounter(String name, String jobType, String action) {
+    return meterRegistry.counter(METRIC_NAME_PREFIX + name, "action", action, "type", jobType);
   }
 
   @Override
-  public void increaseExecuted(String jobType) {
+  public void increaseExecuted(String name, String jobType) {
     if (!executedCounter.containsKey(jobType)) {
-      executedCounter.put(jobType, newCounter("executed", jobType));
+      executedCounter.put(jobType, newCounter(name, jobType, "executed"));
     }
     executedCounter.get(jobType).increment();
   }
 
   @Override
-  public void increaseFailed(String jobType) {
+  public void increaseFailed(String name, String jobType) {
     if (!failedCounter.containsKey(jobType)) {
-      failedCounter.put(jobType, newCounter("failed", jobType));
+      failedCounter.put(jobType, newCounter(name, jobType, "failed"));
     }
     failedCounter.get(jobType).increment();
   }

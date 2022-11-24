@@ -70,7 +70,7 @@ public class OutboundConnectorManager {
     jobWorkerManager.openWorker(
       client,
       zeebeWorkerValue,
-      connector.getFunction(),
+      connector,
       metricsRecorder);
   }
 

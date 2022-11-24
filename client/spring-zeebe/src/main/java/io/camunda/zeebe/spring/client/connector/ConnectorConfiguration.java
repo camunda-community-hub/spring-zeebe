@@ -23,7 +23,7 @@ public class ConnectorConfiguration {
   @Bean
   @Conditional(value=OnMissingMetricsRecorder.class)
   public MetricsRecorder metricsRecorder() {
-    return new DefaultMetricsRecorder();
+    return new DefaultNoopMetricsRecorder();
   }
 
 
