@@ -15,19 +15,17 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-@ConditionalOnClass(EndpointAutoConfiguration.class)
-@ConditionalOnBean(MeterRegistry.class)
 public class MicrometerMetricsRecorder implements MetricsRecorder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final Map<String, Counter> executedCounter = new HashMap<>();
-  private final Map<String, Counter> failedCounter = new HashMap<>();
-  private final Map<String, Counter> activatedCounter = new HashMap<>();
   private final MeterRegistry meterRegistry;
 
-  @Autowired
+  private final Map<String, Counter> counterActivated = new HashMap<>();
+  private final Map<String, Counter> counterCompleted = new HashMap<>();
+  private final Map<String, Counter> counterFailed = new HashMap<>();
+  private final Map<String, Counter> counterBpmnError = new HashMap<>();
+
   public MicrometerMetricsRecorder(final MeterRegistry meterRegistry) {
     this.meterRegistry = meterRegistry;
     LOGGER.info("Enabling Micrometer based metrics for spring-zeebe (available via Actuator)");
@@ -38,25 +36,30 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
   }
 
   protected void increase(String action, Map<String, Counter> counterMap, String metricName, String jobType) {
-    if (!counterMap.containsKey(jobType)) {
-      counterMap.put(jobType, newCounter(metricName, jobType, action));
+    if (!counterMap.containsKey(action)) {
+      counterMap.put(action, newCounter(metricName, jobType, action));
     }
-    counterMap.get(jobType).increment();
+    counterMap.get(action).increment();
   }
 
   @Override
   public void increaseActivated(String metricName, String jobType) {
-    increase("activated", activatedCounter, metricName, jobType);
+    increase("activated", counterActivated, metricName, jobType);
   }
 
   @Override
-  public void increaseExecuted(String metricName, String jobType) {
-    increase("executed", executedCounter, metricName, jobType);
+  public void increaseCompleted(String metricName, String jobType) {
+    increase("completed", counterCompleted, metricName, jobType);
   }
 
   @Override
   public void increaseFailed(String metricName, String jobType) {
-    increase("failed", failedCounter, metricName, jobType);
+    increase("failed", counterFailed, metricName, jobType);
+  }
+
+  @Override
+  public void increaseBpmnError(String metricName, String jobType) {
+    increase("bpmn-error", counterBpmnError, metricName, jobType);
   }
 
 }

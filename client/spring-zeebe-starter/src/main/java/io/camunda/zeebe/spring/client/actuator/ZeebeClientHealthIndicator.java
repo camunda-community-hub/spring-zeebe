@@ -11,10 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-@Component
-@ConditionalOnProperty(prefix = "management.health.zeebe", name = "enabled", matchIfMissing = true)
-@ConditionalOnClass(HealthIndicator.class)
-@ConditionalOnMissingBean(name = "zeebeClientHealthIndicator")
 public class ZeebeClientHealthIndicator extends AbstractHealthIndicator {
 
   private final ZeebeClient client;

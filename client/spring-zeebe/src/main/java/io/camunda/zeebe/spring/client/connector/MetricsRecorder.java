@@ -6,6 +6,7 @@ public interface MetricsRecorder {
   String METRIC_NAME_JOB = "camunda.job.invocations";
 
   public void increaseActivated(String metricName, String jobType);
-  public void increaseExecuted(String name, String jobType);
-  public void increaseFailed(String name, String jobType);
+  public void increaseCompleted(String metricName, String jobType);
+  public void increaseFailed(String metricName, String jobType);
+  public void increaseBpmnError(String metricName, String jobType);
 }

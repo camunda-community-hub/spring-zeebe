@@ -7,16 +7,20 @@ package io.camunda.zeebe.spring.client.connector;
  * as you can find in the starter module (activated if Actuator is on the classpath)
  */
 public class DefaultNoopMetricsRecorder implements MetricsRecorder {
+
   @Override
   public void increaseActivated(String metricName, String jobType) {
-
   }
 
   @Override
-  public void increaseExecuted(String name, String jobType) {
+  public void increaseCompleted(String metricName, String jobType) {
   }
 
   @Override
-  public void increaseFailed(String name, String jobType) {
+  public void increaseFailed(String metricName, String jobType) {
+  }
+
+  @Override
+  public void increaseBpmnError(String metricName, String jobType) {
   }
 }
