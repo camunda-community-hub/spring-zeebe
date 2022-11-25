@@ -24,7 +24,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.1.1</version>
+  <version>8.1.6</version>
 </dependency>
 ```
 
@@ -34,7 +34,7 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>8.1.1</version>
+  <version>8.1.4</version>
 </dependency>
 ```
 
