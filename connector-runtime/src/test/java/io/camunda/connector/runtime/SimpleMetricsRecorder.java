@@ -24,6 +24,9 @@ public class SimpleMetricsRecorder implements MetricsRecorder {
   }
 
   public long getCount(String metricName, String action, String type) {
+    if (!counters.containsKey(key(metricName, action, type))) {
+      return 0;
+    }
     return counters.get(key(metricName, action, type)).get();
   }
 }
