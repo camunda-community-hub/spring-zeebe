@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.runtime.SimpleMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;

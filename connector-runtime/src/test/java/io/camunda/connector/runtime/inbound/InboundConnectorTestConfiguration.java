@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.camunda.connector.runtime.SimpleMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.connector.runtime.inbound.operate.OperateClientLifecycle;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.exception.OperateException;

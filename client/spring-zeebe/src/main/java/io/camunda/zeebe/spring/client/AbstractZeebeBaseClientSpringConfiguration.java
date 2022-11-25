@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
 import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
@@ -28,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * The subclasses add the differences for prod/test
  */
 @Import({
+  MetricsDefaultConfiguration.class,
   AnnotationProcessorConfiguration.class,
   ConnectorConfiguration.class
 })
@@ -67,19 +69,6 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
       .backoffFactor(1.5)
       .jitterFactor(0.2)
       .build();
-  }
-
-  public static class OnMissingMetricsRecorder implements Condition {
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-      return context.getBeanFactory().getBeanNamesForType(MetricsRecorder.class).length<=0;
-    }
-  }
-
-  @Bean
-  @Conditional(value=OnMissingMetricsRecorder.class)
-  public MetricsRecorder noopMetricsRecorder() {
-    return new DefaultNoopMetricsRecorder();
   }
 
 }

@@ -1,11 +1,14 @@
-package io.camunda.connector.runtime;
-
-import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+package io.camunda.zeebe.spring.client.metrics;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Super simple class to record metrics in memory.
+ * Typically used for test cases
+ */
 public class SimpleMetricsRecorder implements MetricsRecorder {
+
   public HashMap<String, AtomicLong> counters = new HashMap<>();
 
   @Override
