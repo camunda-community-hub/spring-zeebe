@@ -12,7 +12,6 @@ import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrate
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -78,7 +77,7 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(MetricsRecorder.class)
+  @Conditional(value=OnMissingMetricsRecorder.class)
   public MetricsRecorder metricsRecorder() {
     return new DefaultNoopMetricsRecorder();
   }
