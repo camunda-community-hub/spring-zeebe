@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+
+import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -64,6 +66,7 @@ class InboundWebhookRestControllerTest {
   private ZeebeClient zeebeClient;
 
   @Mock private FeelEngineWrapper feelEngine;
+  @Mock private MetricsRecorder metrics;
   @Spy private ObjectMapper jsonMapper;
 
   @InjectMocks private InboundWebhookRestController controller;
