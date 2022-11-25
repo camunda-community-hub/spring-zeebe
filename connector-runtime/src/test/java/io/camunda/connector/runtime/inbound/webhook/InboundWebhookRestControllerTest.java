@@ -29,9 +29,6 @@ import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
-import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
-import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
-import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.io.IOException;
@@ -39,7 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;

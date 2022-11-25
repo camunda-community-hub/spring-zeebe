@@ -1,6 +1,5 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
-import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -9,7 +8,7 @@ import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

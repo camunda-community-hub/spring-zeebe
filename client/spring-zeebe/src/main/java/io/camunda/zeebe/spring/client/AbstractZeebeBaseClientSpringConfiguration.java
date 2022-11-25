@@ -6,8 +6,8 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
-import io.camunda.zeebe.spring.client.connector.DefaultNoopMetricsRecorder;
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
@@ -78,7 +78,7 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   @Conditional(value=OnMissingMetricsRecorder.class)
-  public MetricsRecorder metricsRecorder() {
+  public MetricsRecorder noopMetricsRecorder() {
     return new DefaultNoopMetricsRecorder();
   }
 

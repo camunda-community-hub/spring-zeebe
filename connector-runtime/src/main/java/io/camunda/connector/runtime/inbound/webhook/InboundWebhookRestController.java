@@ -26,7 +26,7 @@ import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,13 +1,14 @@
 package io.camunda.zeebe.spring.client.actuator;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.connector.DefaultNoopMetricsRecorder;
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.AbstractZeebeBaseClientSpringConfiguration;
+import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,10 +17,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
+@AutoConfigureBefore(AbstractZeebeBaseClientSpringConfiguration.class)
 public class ZeebeActuatorConfiguration {
 
   @Bean
-  @Primary
   @ConditionalOnClass(EndpointAutoConfiguration.class) // only if actuator is on classpath
   public MetricsRecorder micrometerMetricsRecorder(final @Autowired(required = false) MeterRegistry meterRegistry) {
     if (meterRegistry==null) {

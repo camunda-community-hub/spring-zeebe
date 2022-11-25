@@ -1,6 +1,6 @@
 package io.camunda.connector.runtime;
 
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;

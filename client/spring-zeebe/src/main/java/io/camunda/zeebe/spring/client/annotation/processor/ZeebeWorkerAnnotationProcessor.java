@@ -7,7 +7,6 @@ import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCust
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

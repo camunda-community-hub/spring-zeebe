@@ -26,7 +26,7 @@ import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.exception.OperateException;
 import java.util.ArrayList;
 
-import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

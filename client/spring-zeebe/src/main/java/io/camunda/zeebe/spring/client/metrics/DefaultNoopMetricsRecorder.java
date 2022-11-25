@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.connector;
+package io.camunda.zeebe.spring.client.metrics;
 
 /**
  * Default implementation for MetricsRecorder
