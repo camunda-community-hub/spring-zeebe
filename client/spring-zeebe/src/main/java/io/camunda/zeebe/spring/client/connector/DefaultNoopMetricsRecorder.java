@@ -9,18 +9,7 @@ package io.camunda.zeebe.spring.client.connector;
 public class DefaultNoopMetricsRecorder implements MetricsRecorder {
 
   @Override
-  public void increaseActivated(String metricName, String jobType) {
-  }
-
-  @Override
-  public void increaseCompleted(String metricName, String jobType) {
-  }
-
-  @Override
-  public void increaseFailed(String metricName, String jobType) {
-  }
-
-  @Override
-  public void increaseBpmnError(String metricName, String jobType) {
+  public void increase(String metricName, String action, String type) {
+    // ignore
   }
 }

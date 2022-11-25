@@ -76,13 +76,22 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
       LOG.trace("Handle {} and invoke worker {}", job, workerValue);
       try {
-        Object result = workerValue.getMethodInfo().invoke(args.toArray());
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_ACTIVATED, job.getType());
+        Object result = null;
+        try {
+          result = workerValue.getMethodInfo().invoke(args.toArray());
+        } catch (Throwable t) {
+          metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, job.getType());
+          // normal exceptions are handled by JobRunnableFactory
+          // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
+          // which leads to retrying
+          throw t;
+        }
 
-        // normal exceptions are handled by JobRunnableFactory
-        // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
-        // which leads to retrying
         if (workerValue.getAutoComplete()) {
           LOG.trace("Auto completing {}", job);
+          // TODO: We should probably move the metrics recording to the callback of a successful command execution to avoid wrong counts
+          metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, job.getType());
           CommandWrapper command = new CommandWrapper(
             createCompleteCommand(jobClient, job, result),
             job,
@@ -92,6 +101,8 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       }
       catch (ZeebeBpmnError bpmnError) {
         LOG.trace("Catched BPMN error on {}", job);
+        // TODO: We should probably move the metrics recording to the callback of a successful command execution to avoid wrong counts
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, job.getType());
         CommandWrapper command = new CommandWrapper(
           createThrowErrorCommand(jobClient, job, bpmnError),
           job,
