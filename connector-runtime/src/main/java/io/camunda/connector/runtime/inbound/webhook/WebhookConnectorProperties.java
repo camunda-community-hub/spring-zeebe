@@ -33,16 +33,14 @@ public class WebhookConnectorProperties {
 
   public WebhookConnectorProperties(InboundConnectorProperties properties) {
     this.genericProperties = properties;
-    this.context = readProperty("inbound.context");
-    this.activationCondition = readProperty("inbound.activationCondition");
-    this.variableMapping = readProperty("inbound.variableMapping");
-    this.shouldValidateHmac =
-        genericProperties
-            .getProperties()
-            .getOrDefault("inbound.shouldValidateHmac", HMACSwitchCustomerChoice.disabled.name());
-    this.hmacSecret = genericProperties.getProperties().get("inbound.hmacSecret");
-    this.hmacHeader = genericProperties.getProperties().get("inbound.hmacHeader");
-    this.hmacAlgorithm = genericProperties.getProperties().get("inbound.hmacAlgorithm");
+
+    this.context = readPropertyRequired("inbound.context");
+    this.activationCondition = readPropertyNullable("inbound.activationCondition");
+    this.variableMapping = readPropertyNullable("inbound.variableMapping");
+    this.shouldValidateHmac = readPropertyWithDefault("inbound.shouldValidateHmac",  HMACSwitchCustomerChoice.disabled.name());
+    this.hmacSecret = readPropertyNullable("inbound.hmacSecret");
+    this.hmacHeader = readPropertyNullable("inbound.hmacHeader");
+    this.hmacAlgorithm = readPropertyNullable("inbound.hmacAlgorithm");
   }
 
   public String getConnectorIdentifier() {
@@ -56,8 +54,19 @@ public class WebhookConnectorProperties {
         + genericProperties.getVersion();
   }
 
-  public String readProperty(String propertyName) {
-    String result = genericProperties.getProperties().get(propertyName);
+  protected String readPropertyWithDefault(String propertyName, String defaultValue) {
+    return genericProperties
+      .getProperties()
+      .getOrDefault(propertyName, defaultValue);
+
+  }
+
+  protected String readPropertyNullable(String propertyName) {
+    return genericProperties.getProperties().get(propertyName);
+  }
+
+  protected String readPropertyRequired(String propertyName) {
+    String result = readPropertyNullable(propertyName);
     if (result == null) {
       throw new IllegalArgumentException(
           "Property '" + propertyName + "' must be set for connector");
