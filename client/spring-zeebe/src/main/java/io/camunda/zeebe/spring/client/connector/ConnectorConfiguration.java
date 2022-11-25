@@ -28,8 +28,8 @@ public class ConnectorConfiguration {
 
 
   @Bean
-  public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager, final MetricsRecorder metricsRecorder) {
-    return new OutboundConnectorManager(jobWorkerManager, metricsRecorder);
+  public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager) {
+    return new OutboundConnectorManager(jobWorkerManager);
   }
 
   public static class OnMissingSecretProvider implements Condition {

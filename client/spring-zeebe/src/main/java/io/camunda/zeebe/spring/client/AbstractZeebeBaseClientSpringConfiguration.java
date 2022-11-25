@@ -6,6 +6,7 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
+import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
@@ -46,9 +47,10 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                           SecretProvider secretProvider,
-                                           @Autowired(required = false) JsonMapper jsonMapper) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper);
+                                           final SecretProvider secretProvider,
+                                           @Autowired(required = false) JsonMapper jsonMapper,
+                                           final MetricsRecorder metricsRecorder) {
+    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper, metricsRecorder);
   }
 
   @Bean

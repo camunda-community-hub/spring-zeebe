@@ -35,21 +35,25 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
     .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
-  private ZeebeWorkerValue workerValue;
-  private CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private SecretProvider secretProvider;
+
+  private final ZeebeWorkerValue workerValue;
+  private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
+  private final SecretProvider secretProvider;
+  private final JsonMapper jsonMapper;
+  private final MetricsRecorder metricsRecorder;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorConfiguration outboundConnectorConfiguration;
-  private JsonMapper jsonMapper;
-  private MetricsRecorder metricsRecorder;
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
                                        CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                       JsonMapper jsonMapper) {
+                                       JsonMapper jsonMapper,
+                                       MetricsRecorder metricsRecorder) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.jsonMapper = jsonMapper;
+    this.metricsRecorder = metricsRecorder;
+    this.secretProvider = null;
   }
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,

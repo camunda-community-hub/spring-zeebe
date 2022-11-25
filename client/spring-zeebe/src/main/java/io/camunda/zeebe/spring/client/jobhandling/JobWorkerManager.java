@@ -25,27 +25,30 @@ public class JobWorkerManager {
 
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final SecretProvider secretProvider;
+  private final JsonMapper jsonMapper;
+  private final MetricsRecorder metricsRecorder;
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
-  private JsonMapper jsonMapper;
 
   public JobWorkerManager(CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                           SecretProvider secretProvider,
-                          JsonMapper jsonMapper) {
+                          JsonMapper jsonMapper,
+                          MetricsRecorder metricsRecorder) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.secretProvider = secretProvider;
     this.jsonMapper = jsonMapper;
+    this.metricsRecorder = metricsRecorder;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
     return openWorker(
       client,
       zeebeWorkerValue,
-      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, jsonMapper));
+      new JobHandlerInvokingSpringBeans(zeebeWorkerValue, commandExceptionHandlingStrategy, jsonMapper, metricsRecorder));
   }
 
-  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, OutboundConnectorConfiguration connector, MetricsRecorder metricsRecorder) {
+  public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue, OutboundConnectorConfiguration connector) {
     return openWorker(
       client,
       zeebeWorkerValue,
