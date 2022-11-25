@@ -6,11 +6,13 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
+import io.camunda.zeebe.spring.client.connector.DefaultNoopMetricsRecorder;
 import io.camunda.zeebe.spring.client.connector.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -67,4 +69,18 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
       .jitterFactor(0.2)
       .build();
   }
+
+  public static class OnMissingMetricsRecorder implements Condition {
+    @Override
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+      return context.getBeanFactory().getBeanNamesForType(MetricsRecorder.class).length<=0;
+    }
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(MetricsRecorder.class)
+  public MetricsRecorder metricsRecorder() {
+    return new DefaultNoopMetricsRecorder();
+  }
+
 }

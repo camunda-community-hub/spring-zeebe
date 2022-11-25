@@ -13,20 +13,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class ConnectorConfiguration {
 
-  public static class OnMissingMetricsRecorder implements Condition {
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-      return context.getBeanFactory().getBeanNamesForType(MetricsRecorder.class).length<=0;
-    }
-  }
-
-  @Bean
-  @Conditional(value=OnMissingMetricsRecorder.class)
-  public MetricsRecorder metricsRecorder() {
-    return new DefaultNoopMetricsRecorder();
-  }
-
-
   @Bean
   public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager) {
     return new OutboundConnectorManager(jobWorkerManager);

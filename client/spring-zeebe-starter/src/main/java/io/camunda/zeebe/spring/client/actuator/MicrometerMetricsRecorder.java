@@ -30,7 +30,7 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
   public void increase(String metricName, String action, String jobType) {
     String key = metricName + "#" + action;
     if (!counters.containsKey(key)) {
-      counters.put(action, newCounter(metricName, action, jobType));
+      counters.put(key, newCounter(metricName, action, jobType));
     }
     counters.get(key).increment();
   }
