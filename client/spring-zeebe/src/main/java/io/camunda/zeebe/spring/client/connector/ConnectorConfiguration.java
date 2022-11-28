@@ -3,8 +3,6 @@ package io.camunda.zeebe.spring.client.connector;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.config.ConnectorConfigurationUtil;
 import io.camunda.connector.impl.config.ConnectorPropertyResolver;
-import io.camunda.zeebe.spring.client.AbstractZeebeBaseClientSpringConfiguration;
-import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;

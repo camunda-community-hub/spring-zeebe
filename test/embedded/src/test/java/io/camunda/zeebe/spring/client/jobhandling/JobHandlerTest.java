@@ -9,12 +9,14 @@ import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
-  classes = {JobHandlerTest.class, JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class},
+  classes = {
+    JobHandlerTest.TestMetricsConfiguration.class,
+    JobHandlerTest.class,
+    JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class
+  },
   properties = { "zeebe.client.worker.default-type=DefaultType" }
 )
 @ZeebeSpringTest
@@ -41,9 +47,11 @@ public class JobHandlerTest {
   @Autowired
   private ZeebeClient client;
 
+  @Autowired
+  private SimpleMetricsRecorder metrics;
+
   @TestConfiguration
   public static class ZeebeCustomizerDisableWorkerConfiguration {
-
     @Bean
     public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
       return zeebeWorker -> {
@@ -51,6 +59,15 @@ public class JobHandlerTest {
           zeebeWorker.setEnabled(false);
         }
       };
+    }
+  }
+
+  @TestConfiguration
+  @AutoConfigureBefore(MetricsDefaultConfiguration.class)
+  public static class TestMetricsConfiguration {
+    @Bean
+    public MetricsRecorder testMetricsRecorder() {
+      return new SimpleMetricsRecorder();
     }
   }
 
@@ -71,6 +88,11 @@ public class JobHandlerTest {
 
   @Test
   public void testAutoComplete() {
+    long activatedAtStart = metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
+    long completedAtStart = metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
+    long failedAtStart = metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, "test1");
+    long bpmnErrorAtStart = metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1");
+
     BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test1")
       .startEvent()
       .serviceTask().zeebeJobType("test1")
@@ -84,6 +106,11 @@ public class JobHandlerTest {
 
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
+
+    assertEquals(activatedAtStart+1, metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_ACTIVATED, "test1"));
+    assertEquals(completedAtStart+1, metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1"));
+    assertEquals(failedAtStart, metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, "test1"));
+    assertEquals(bpmnErrorAtStart, metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1"));
   }
 
   @JobWorker(type = "test2", autoComplete = true)

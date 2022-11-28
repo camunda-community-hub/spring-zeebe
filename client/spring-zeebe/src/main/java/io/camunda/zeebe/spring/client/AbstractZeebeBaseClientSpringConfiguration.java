@@ -6,6 +6,9 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
+import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
@@ -28,6 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Import({
   AnnotationProcessorConfiguration.class,
   ConnectorConfiguration.class
+  //MetricsDefaultConfiguration.class // Until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
@@ -46,9 +50,13 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                           SecretProvider secretProvider,
-                                           @Autowired(required = false) JsonMapper jsonMapper) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper);
+                                           final SecretProvider secretProvider,
+                                           @Autowired(required = false) JsonMapper jsonMapper,
+                                           @Autowired(required = false) MetricsRecorder metricsRecorder) {
+    if (metricsRecorder==null) { // Workaround until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
+      metricsRecorder = new DefaultNoopMetricsRecorder();
+    }
+    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper, metricsRecorder);
   }
 
   @Bean
@@ -65,4 +73,5 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
       .jitterFactor(0.2)
       .build();
   }
+
 }

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
+import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
@@ -45,6 +46,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,6 +56,13 @@ import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 public class WebhookControllerPlainJavaTests {
+
+  private SimpleMetricsRecorder metrics;
+
+  @BeforeEach
+  public void setupMetrics() {
+    metrics = new SimpleMetricsRecorder();
+  }
 
   @Test
   public void multipleWebhooksOnSameContextPath() throws IOException {
@@ -62,7 +73,7 @@ public class WebhookControllerPlainJavaTests {
     when(zeebeClient.newCreateInstanceCommand()).thenReturn(new CreateCommandDummy());
     InboundWebhookRestController controller =
         new InboundWebhookRestController(
-            registry, connectorContext, zeebeClient, new FeelEngineWrapper(), new ObjectMapper());
+            registry, connectorContext, zeebeClient, new FeelEngineWrapper(), new ObjectMapper(), metrics);
 
     registry.reset();
     // registry.markProcessDefinitionChecked(123, "processA", 1);
@@ -81,6 +92,9 @@ public class WebhookControllerPlainJavaTests {
     assertEquals(
         Set.of("webhook-myPath-processA-1", "webhook-myPath-processB-1"),
         responseEntity.getBody().getExecutedConnectors().keySet());
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED, InboundConnectorProperties.TYPE_WEBHOOK));
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED, InboundConnectorProperties.TYPE_WEBHOOK));
+    assertEquals(0, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED, InboundConnectorProperties.TYPE_WEBHOOK));
   }
 
   @Test

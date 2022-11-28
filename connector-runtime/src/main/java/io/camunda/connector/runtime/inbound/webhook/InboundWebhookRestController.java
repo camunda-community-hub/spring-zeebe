@@ -18,6 +18,7 @@ package io.camunda.connector.runtime.inbound.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
+import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACAlgoCustomerChoice;
 import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
@@ -25,6 +26,7 @@ import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,19 +59,21 @@ public class InboundWebhookRestController {
   private final ZeebeClient zeebeClient;
   private final FeelEngineWrapper feelEngine;
   private final ObjectMapper jsonMapper;
+  private final MetricsRecorder metricsRecorder;
 
   @Autowired
   public InboundWebhookRestController(
-      final InboundConnectorRegistry registry,
-      final InboundConnectorContext connectorContext,
-      final ZeebeClient zeebeClient,
-      final FeelEngineWrapper feelEngine,
-      final ObjectMapper jsonMapper) {
+    final InboundConnectorRegistry registry,
+    final InboundConnectorContext connectorContext,
+    final ZeebeClient zeebeClient,
+    final FeelEngineWrapper feelEngine,
+    final ObjectMapper jsonMapper, MetricsRecorder metricsRecorder) {
     this.registry = registry;
     this.connectorContext = connectorContext;
     this.zeebeClient = zeebeClient;
     this.feelEngine = feelEngine;
     this.jsonMapper = jsonMapper;
+    this.metricsRecorder = metricsRecorder;
   }
 
   @PostMapping("/inbound/{context}")
@@ -85,6 +89,7 @@ public class InboundWebhookRestController {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "No webhook found for context: " + context);
     }
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , InboundConnectorProperties.TYPE_WEBHOOK);
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
@@ -122,10 +127,12 @@ public class InboundWebhookRestController {
         }
       } catch (Exception exception) {
         LOG.error("Webhook {} failed to create process instance", connectorProperties, exception);
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED , InboundConnectorProperties.TYPE_WEBHOOK);
         response.addException(connectorProperties, exception);
       }
     }
 
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , InboundConnectorProperties.TYPE_WEBHOOK);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

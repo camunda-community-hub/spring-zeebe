@@ -54,7 +54,7 @@ public class HMACSignatureValidator {
     final String providedHmac = headers.get(hmacHeader.toLowerCase());
     LOG.debug("Given HMAC from webhook call: {}", providedHmac);
 
-    if (providedHmac == null || providedHmac.isBlank()) {
+    if (providedHmac == null || providedHmac.length()==0) {
       return false;
     }
 

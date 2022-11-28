@@ -19,7 +19,6 @@ public class OutboundConnectorManager {
 
   private final Set<OutboundConnectorConfiguration> outboundConnectors = new TreeSet<>(new OutboundConnectorConfigurationComparator());
   private final JobWorkerManager jobWorkerManager;
-  private boolean nonSpringConnectorsLoaded = false;
 
   public OutboundConnectorManager(JobWorkerManager jobWorkerManager) {
     this.jobWorkerManager = jobWorkerManager;
@@ -68,7 +67,7 @@ public class OutboundConnectorManager {
     jobWorkerManager.openWorker(
       client,
       zeebeWorkerValue,
-      connector.getFunction());
+      connector);
   }
 
   public void stop(ZeebeClient client) {
