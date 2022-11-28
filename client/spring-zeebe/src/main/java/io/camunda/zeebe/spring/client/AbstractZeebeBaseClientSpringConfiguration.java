@@ -29,9 +29,9 @@ import java.util.concurrent.ScheduledExecutorService;
  * The subclasses add the differences for prod/test
  */
 @Import({
-  MetricsDefaultConfiguration.class,
   AnnotationProcessorConfiguration.class,
   ConnectorConfiguration.class
+  //MetricsDefaultConfiguration.class // Until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
@@ -52,7 +52,10 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                            final SecretProvider secretProvider,
                                            @Autowired(required = false) JsonMapper jsonMapper,
-                                           final MetricsRecorder metricsRecorder) {
+                                           @Autowired(required = false) MetricsRecorder metricsRecorder) {
+    if (metricsRecorder==null) { // Workaround until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
+      metricsRecorder = new DefaultNoopMetricsRecorder();
+    }
     return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper, metricsRecorder);
   }
 

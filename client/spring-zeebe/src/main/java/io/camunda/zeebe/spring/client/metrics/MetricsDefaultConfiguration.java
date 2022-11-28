@@ -15,8 +15,11 @@ public class MetricsDefaultConfiguration {
     }
   }
 
-  @Bean
-  @Conditional(value=OnMissingMetricsRecorder.class)
+//  @Bean
+//  @Conditional(value=MetricsDefaultConfiguration.OnMissingMetricsRecorder.class)
+  /**
+   * This is currently not used until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
+   */
   public MetricsRecorder noopMetricsRecorder() {
     return new DefaultNoopMetricsRecorder();
   }

@@ -9,8 +9,6 @@ import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
@@ -22,7 +20,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -69,7 +66,6 @@ public class JobHandlerTest {
   @AutoConfigureBefore(MetricsDefaultConfiguration.class)
   public static class TestMetricsConfiguration {
     @Bean
-    @Primary
     public MetricsRecorder testMetricsRecorder() {
       return new SimpleMetricsRecorder();
     }

@@ -21,10 +21,12 @@ public class ZeebeActuatorConfiguration {
 
   @Bean
   @ConditionalOnClass(EndpointAutoConfiguration.class) // only if actuator is on classpath
-  public MetricsRecorder micrometerMetricsRecorder(final @Autowired(required = false) MeterRegistry meterRegistry) {
+  public MetricsRecorder micrometerMetricsRecorder(
+    // ConditionalOnBean does not work, because the MetricsRecorder is created too late
+    final @Autowired(required = false) MeterRegistry meterRegistry) {
+
     if (meterRegistry==null) {
       // We might have Actuator on the classpath without starting a MetricsRecorder in some cases
-      // ConditionalOnBean does not work, because the MetricsRecorder is created too late
       return new DefaultNoopMetricsRecorder();
     } else {
       return new MicrometerMetricsRecorder(meterRegistry);
