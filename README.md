@@ -503,6 +503,30 @@ zeebe.client.worker.override.foo.timeout=10000
 
 You could also provide a custom class that can customize the `JobWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
 
+
+## Observing metrics
+
+Spring-zeebe-starter will provide some out-of-the-box metrics, that can be leveraged via [Spring Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/). Whenever actuator is on the classpath, you can access the following metrics:
+
+* `camunda.job.invocations`: Number of invocations of job workers (tagging the job type)
+* `camunda.connector.inbound.invocations`: Number of invocations of any inbound connectors (tagging the connector type)
+* `camunda.connector.outbound.invocations`: Number of invocations of any outbound connectors (tagging the connector type)
+
+For all of those metrics, the following actions are recorded:
+
+* `activated`: The job/connector was activated and started to process an item
+* `completed`: The processing was completed successfully
+* `failed`: The processing failed with some exception
+* `bpmn-error`: The processing completed by throwing an BpmnError (which means there was no technical problem)
+
+In a default setup, you can can enable metrics to be served via http:
+
+```properties
+management.endpoints.web.exposure.include=metrics
+```
+
+And then access them via http://localhost:8080/actuator/metrics/. 
+
 # Code of Conduct
 
 This project adheres to the Contributor Covenant [Code of Conduct](/.github/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to code-of-conduct@zeebe.io.
