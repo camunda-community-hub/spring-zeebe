@@ -174,6 +174,8 @@ When running against a self-managed environment you might also need to configure
 ```properties
 camunda.operate.client.keycloak-url=http://localhost:18080
 camunda.operate.client.keycloak-realm=camunda-platform
+camunda.operate.client.client-id=xxx
+camunda.operate.client.client-secret=xxx
 ```
 
 
