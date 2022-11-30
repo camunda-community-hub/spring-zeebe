@@ -17,15 +17,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureBefore(MetricsDefaultConfiguration.class)
+@ConditionalOnClass(EndpointAutoConfiguration.class) // only if actuator is on classpath
 public class ZeebeActuatorConfiguration {
-
   @Bean
-  @ConditionalOnClass(EndpointAutoConfiguration.class) // only if actuator is on classpath
   public MetricsRecorder micrometerMetricsRecorder(
-    // ConditionalOnBean does not work, because the MetricsRecorder is created too late
-    final @Autowired(required = false) MeterRegistry meterRegistry) {
+          // ConditionalOnBean does not work, because the MetricsRecorder is created too late
+          final @Autowired(required = false) MeterRegistry meterRegistry) {
 
-    if (meterRegistry==null) {
+    if (meterRegistry == null) {
       // We might have Actuator on the classpath without starting a MetricsRecorder in some cases
       return new DefaultNoopMetricsRecorder();
     } else {
@@ -40,5 +39,4 @@ public class ZeebeActuatorConfiguration {
   public ZeebeClientHealthIndicator zeebeClientHealthIndicator(ZeebeClient client) {
     return new ZeebeClientHealthIndicator(client);
   }
-
 }
