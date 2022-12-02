@@ -116,7 +116,7 @@ public class ProcessDefinitionImporter {
 
     if (InboundConnectorProperties.TYPE_WEBHOOK.equals(properties.getType())) {
 
-      LOG.debug("Found inbound webhook connector: " + properties);
+      LOG.info("Found inbound webhook connector: " + properties);
       registry.registerWebhookConnector(properties);
 
     } else {
