@@ -49,6 +49,21 @@ public class OperateClientFactory {
   @Value("${zeebe.client.cloud.client-secret:#{null}}")
   private String clientSecret;
 
+  @Value("${zeebe.client.cloud.authUrl:#{null}}")
+  private String authUrlZeebe;
+
+  @Value("${zeebe.client.cloud.baseUrl:#{null}}")
+  private String audienceZeebe;
+
+  private static final String DEFAULT_AUTH_URL = "https://login.cloud.camunda.io/oauth/token";
+  private static final String DEFAULT_AUDIENCE = "operate.camunda.io";
+
+  @Value("${camunda.operate.client.authUrl:#{null}}")
+  private String authUrlOperate;
+
+  @Value("${camunda.operate.client.baseUrl:#{null}}")
+  private String audienceOperate;
+
   // Specific properties to overwrite for Operate
   @Value("${camunda.operate.client.client-id:#{null}}")
   private String operateClientId;
@@ -71,14 +86,18 @@ public class OperateClientFactory {
   @Value("${camunda.operate.client.keycloak-realm:#{null}}")
   private String operateKeycloakRealm;
 
+  // TODO: This currently assumes PROD in Cloud - do we want to support DEV and INT?
+  // and make it configurable? At the moment the workaround is to set the operateUrl yourself
+  public static String operateCloudBaseUrl = "operate.camunda.io";
+
   private String getOperateUrl() {
-    if (clusterId != null) {
-      String url = "https://" + region + ".operate.camunda.io/" + clusterId + "/";
-      LOG.debug("Connecting to Camunda Operate SaaS via URL: " + url);
-      return url;
-    } else if (operateUrl != null) {
+    if (operateUrl != null) {
       LOG.debug("Connecting to Camunda Operate on URL: " + operateUrl);
       return operateUrl;
+    } else if (clusterId != null) {
+      String url = "https://" + region + "." + operateCloudBaseUrl + "/" + clusterId + "/";
+      LOG.debug("Connecting to Camunda Operate SaaS via URL: " + url);
+      return url;
     }
     throw new IllegalArgumentException(
         "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
@@ -100,10 +119,10 @@ public class OperateClientFactory {
     } else {
       if (operateClientId != null) {
         LOG.debug("Authenticating with Camunda Operate using client id and secret");
-        return new SaasAuthentication(operateClientId, operateClientSecret);
+        return new SaasAuthentication(getAuthUrl(), getAudience(), operateClientId, operateClientSecret);
       } else if (clientId != null) {
         LOG.debug("Authenticating with Camunda Operate using client id and secret");
-        return new SaasAuthentication(clientId, clientSecret);
+        return new SaasAuthentication(getAuthUrl(), getAudience(), clientId, clientSecret);
       } else if (operateUsername != null) {
         LOG.debug("Authenticating with Camunda Operate using username and password");
         return new SimpleAuthentication("demo", "demo", operateUrl);
@@ -111,6 +130,26 @@ public class OperateClientFactory {
     }
     throw new IllegalArgumentException(
         "In order to connect to Camunda Operate you need to configure authentication properly.");
+  }
+
+  public String getAuthUrl() {
+    if (authUrlOperate!=null) {
+      return authUrlOperate;
+    } else if (authUrlZeebe!=null) {
+      return authUrlZeebe;
+    } else {
+      return DEFAULT_AUTH_URL;
+    }
+  }
+
+  public String getAudience() {
+    if (audienceOperate!=null) {
+      return audienceOperate;
+    } else if (audienceZeebe!=null) {
+      return audienceZeebe;
+    } else {
+      return DEFAULT_AUDIENCE;
+    }
   }
 
   public CamundaOperateClient camundaOperateClient() throws OperateException {
