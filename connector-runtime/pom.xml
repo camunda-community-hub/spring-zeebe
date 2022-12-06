@@ -103,6 +103,12 @@
                   <resource>META-INF/spring.factories</resource>
               </transformer>
               <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                <resource>META-INF/spring-autoconfigure-metadata.properties</resource>
+              </transformer>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                <resource>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</resource>
+              </transformer>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>META-INF/spring.schemas</resource>
               </transformer>
               <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
