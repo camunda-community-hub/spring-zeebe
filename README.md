@@ -251,7 +251,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variab
 }
 ```
 
-With `@Variable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also overwrite this and force that all variables are loaded anyway:
+With `@Variable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
 
 ```java
 @JobWorker(type = "foo", fetchAllVariables = true)
@@ -362,7 +362,7 @@ send().whenComplete((result, exception) -> {})
 This registers a callback to be executed if the command on the workflow engine was executed or resulted in an exception. This allows for parallelism.
 This is discussed in more detail in [this blog post about writing good workers for Camunda Cloud](https://blog.bernd-ruecker.com/writing-good-workers-for-camunda-cloud-61d322cad862).
 
-
+Note that when completing jobs programmatically, you must specify `autoComplete = false`.  Otherwise, there is a race condition between your programmatic job completion and the Spring integration job completion, this can lead to unpredictable results.
 
 
 
@@ -479,7 +479,7 @@ class SomeClass {
 }
 ```
 
-You can also overwrite this setting via the your `application.properties` file:
+You can also override this setting via your `application.properties` file:
 
 ```properties
 zeebe.client.worker.override.foo.enabled=false
@@ -494,7 +494,7 @@ This is especially useful, if you have a bigger code base including many workers
 
 ### Overriding `JobWorker` values via configuration file
 
-You can override the `JobWorker` annotation's values, as you could see in the example above where the `enabled` property is overwritten:
+You can override the `JobWorker` annotation's values, as you could see in the example above where the `enabled` property is overridden:
 
 ```properties
 zeebe.client.worker.override.foo.enabled=false
@@ -502,7 +502,7 @@ zeebe.client.worker.override.foo.enabled=false
 
 In this case, `foo` is the type of the worker that we want to customize.
 
-You can overwrite all supported configuration options for a worker, e.g.:
+You can override all supported configuration options for a worker, e.g.:
 
 ```properties
 zeebe.client.worker.override.foo.timeout=10000
