@@ -57,6 +57,13 @@ zeebe.client.broker.gateway-address=127.0.0.1:26500
 zeebe.client.security.plaintext=true
 ```
 
+You can enforce the right connection mode, for example if multiple contradicting properties are set:
+
+```properties
+zeebe.client.connection-mode=CLOUD
+zeebe.client.connection-mode=ADDRESS
+```
+
 ## Connect to Zeebe
 
 Add the `@EnableZeebeClient` annotation to your Spring Boot Application:

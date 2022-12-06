@@ -24,6 +24,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT = (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
 
+  public static final String CONNECTION_MODE_CLOUD = "CLOUD";
+  public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
+  /**
+   * Connection mode can be set to "CLOUD" (connect to SaaS with properties), or "ADDRESS" (to use a manually set address to the broker)
+   * If not set, "CLOUD" is used if a `zeebe.client.cloud.cluster-id` property is set, "ADDRESS" otherwise.
+   */
+  private String connectionMode;
+
   @NestedConfigurationProperty
   private Broker broker = new Broker();
 
@@ -509,7 +517,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   @Override
   public String getGatewayAddress() {
-    if (cloud.isConfigured()) {
+    if (connectionMode!=null && connectionMode.length()>0) {
+      if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
+        return cloud.getGatewayAddress();
+      } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
+        return broker.getGatewayAddress();
+      } else {
+        throw new RuntimeException("Value '"+connectionMode+"' for ConnectionMode is invalid, valid values are " + CONNECTION_MODE_CLOUD + " or " + CONNECTION_MODE_ADDRESS);
+      }
+    } else if (cloud.isConfigured()) {
       return cloud.getGatewayAddress();
     } else {
       return broker.getGatewayAddress();
