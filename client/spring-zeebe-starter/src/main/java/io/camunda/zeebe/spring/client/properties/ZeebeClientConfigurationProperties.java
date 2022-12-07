@@ -523,7 +523,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public String getGatewayAddress() {
     if (connectionMode!=null && connectionMode.length()>0) {
-      LOGGER.info("Using connection mode '{}' to connect to Zeebe: ", connectionMode);
+      LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
       if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
         return cloud.getGatewayAddress();
       } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
@@ -536,6 +536,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     } else {
       return broker.getGatewayAddress();
     }
+  }
+
+  public String getConnectionMode() {
+    return connectionMode;
+  }
+
+  public void setConnectionMode(String connectionMode) {
+    this.connectionMode = connectionMode;
   }
 
   @Override
