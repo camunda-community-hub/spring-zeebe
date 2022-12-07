@@ -5,11 +5,14 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.grpc.ClientInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Lazy;
 
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +23,8 @@ import java.util.Properties;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT = (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
@@ -518,6 +523,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public String getGatewayAddress() {
     if (connectionMode!=null && connectionMode.length()>0) {
+      LOGGER.info("Using connection mode '{}' to connect to Zeebe: ", connectionMode);
       if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
         return cloud.getGatewayAddress();
       } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
