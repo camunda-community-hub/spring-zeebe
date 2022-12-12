@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureBefore(MetricsDefaultConfiguration.class)
-@ConditionalOnClass(EndpointAutoConfiguration.class) // only if actuator is on classpath
+@ConditionalOnClass({EndpointAutoConfiguration.class, MeterRegistry.class}) // only if actuator is on classpath
 public class ZeebeActuatorConfiguration {
   @Bean
   public MetricsRecorder micrometerMetricsRecorder(
