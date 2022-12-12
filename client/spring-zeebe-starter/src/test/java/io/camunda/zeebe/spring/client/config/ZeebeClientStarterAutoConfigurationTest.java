@@ -16,7 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +73,8 @@ public class ZeebeClientStarterAutoConfigurationTest {
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig()).isNotNull();
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)).isFalse();
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)).isFalse();
+    //should serialise OffsetDateTime
+    assertThat(jsonMapper.toJson(new Date().toInstant().atOffset(ZoneOffset.UTC))).isNotNull();
   }
 
   @Test
