@@ -1,7 +1,6 @@
 package io.camunda.zeebe.spring.client.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
@@ -78,7 +77,7 @@ public class ZeebeClientStarterAutoConfiguration {
    */
   @Bean(name = "zeebeJsonMapper")
   @ConditionalOnMissingBean
-  public JsonMapper jsonMapper() {
-    return new ZeebeObjectMapper(new ObjectMapper().registerModule(new JavaTimeModule()));
+  public JsonMapper jsonMapper(ObjectMapper objectMapper) {
+    return new ZeebeObjectMapper(objectMapper);
   }
 }

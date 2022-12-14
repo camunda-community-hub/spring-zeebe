@@ -44,6 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ZeebeClientStarterAutoConfigurationTest {
 
   public static class TestConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+      return new ObjectMapper();
+    }
+
     @Bean
     public ZeebeClient zeebeClient() {
       return ZeebeClient.newClient();
@@ -73,8 +79,6 @@ public class ZeebeClientStarterAutoConfigurationTest {
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig()).isNotNull();
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)).isFalse();
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)).isFalse();
-    //should serialise OffsetDateTime
-    assertThat(jsonMapper.toJson(new Date().toInstant().atOffset(ZoneOffset.UTC))).isNotNull();
   }
 
   @Test

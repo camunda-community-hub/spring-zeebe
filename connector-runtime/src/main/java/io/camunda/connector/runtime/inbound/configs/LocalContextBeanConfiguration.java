@@ -30,11 +30,6 @@ import org.springframework.context.annotation.Configuration;
 public class LocalContextBeanConfiguration {
 
   @Bean
-  public ObjectMapper jacksonMapper() {
-    return new ObjectMapper();
-  }
-
-  @Bean
   @ConditionalOnMissingBean
   protected SecretProvider getSecretProvider() {
     Iterator<SecretProvider> secretProviders = ServiceLoader.load(SecretProvider.class).iterator();
