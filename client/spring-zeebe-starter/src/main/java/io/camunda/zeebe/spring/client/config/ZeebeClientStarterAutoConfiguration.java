@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
@@ -76,7 +77,7 @@ public class ZeebeClientStarterAutoConfiguration {
    */
   @Bean(name = "zeebeJsonMapper")
   @ConditionalOnMissingBean
-  public JsonMapper jsonMapper() {
-    return new ZeebeObjectMapper();
+  public JsonMapper jsonMapper(ObjectMapper objectMapper) {
+    return new ZeebeObjectMapper(objectMapper);
   }
 }

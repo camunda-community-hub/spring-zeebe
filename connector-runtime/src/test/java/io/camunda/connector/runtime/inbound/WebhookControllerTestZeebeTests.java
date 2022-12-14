@@ -16,6 +16,7 @@
  */
 package io.camunda.connector.runtime.inbound;
 
+import io.camunda.connector.runtime.ConnectorRuntimeApplication;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
@@ -42,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
-    classes = InboundConnectorRuntimeConfiguration.class,
+    classes = ConnectorRuntimeApplication.class,
     properties = {
       "spring.main.allow-bean-definition-overriding=true",
       "camunda.connector.webhook.enabled=true"

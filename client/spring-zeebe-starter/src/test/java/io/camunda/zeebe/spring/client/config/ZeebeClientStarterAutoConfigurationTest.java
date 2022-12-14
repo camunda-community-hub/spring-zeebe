@@ -16,7 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +44,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ZeebeClientStarterAutoConfigurationTest {
 
   public static class TestConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+      return new ObjectMapper();
+    }
+
     @Bean
     public ZeebeClient zeebeClient() {
       return ZeebeClient.newClient();
