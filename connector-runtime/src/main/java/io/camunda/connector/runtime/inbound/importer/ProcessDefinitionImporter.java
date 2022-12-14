@@ -65,6 +65,11 @@ public class ProcessDefinitionImporter {
 
     List<ProcessDefinition> processDefinitions =
         camundaOperateClient.searchProcessDefinitions(processDefinitionQuery);
+    
+    if (processDefinitions==null) {
+      LOG.trace("... returned no process definitions.");
+      return;
+    }
     LOG.trace("... returned " + processDefinitions.size() + " process definitions.");
 
     for (ProcessDefinition processDefinition : processDefinitions) {
