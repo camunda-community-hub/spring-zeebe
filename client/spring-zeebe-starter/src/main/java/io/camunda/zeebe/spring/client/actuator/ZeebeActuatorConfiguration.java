@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 @AutoConfigureBefore(MetricsDefaultConfiguration.class)
@@ -22,7 +23,7 @@ public class ZeebeActuatorConfiguration {
   @Bean
   public MetricsRecorder micrometerMetricsRecorder(
           // ConditionalOnBean does not work, because the MetricsRecorder is created too late
-          final @Autowired(required = false) MeterRegistry meterRegistry) {
+          final @Autowired(required = false) @Lazy MeterRegistry meterRegistry) {
 
     if (meterRegistry == null) {
       // We might have Actuator on the classpath without starting a MetricsRecorder in some cases
