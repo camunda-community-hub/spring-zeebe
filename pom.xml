@@ -10,7 +10,7 @@
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-root</artifactId>
   <name>pom/spring-zeebe</name>
-  <version>8.1.14-SNAPSHOT</version>
+  <version>8.1.13</version>
   <packaging>pom</packaging>
 
   <properties>
