@@ -12,4 +12,6 @@ public interface MetricsRecorder {
   String ACTION_BPMN_ERROR = "bpmn-error";
 
   public void increase(String metricName, String action, String type);
+
+  public void executeWithTimer(String metricName, Runnable methodToExecute);
 }

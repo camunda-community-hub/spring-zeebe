@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.actuator;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,12 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
       counters.put(key, newCounter(metricName, action, jobType));
     }
     counters.get(key).increment();
+  }
+
+  @Override
+  public void executeWithTimer(String metricName, Runnable methodToExecute) {
+    Timer timer = meterRegistry.timer(metricName);
+    timer.record(methodToExecute);
   }
 
 }

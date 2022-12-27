@@ -73,7 +73,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
     if (outboundConnectorConfiguration!=null) {
       LOG.trace("Handle {} and execute connector {}", job, outboundConnectorConfiguration);
-      new SpringConnectorJobHandler(outboundConnectorConfiguration, secretProvider, commandExceptionHandlingStrategy, metricsRecorder).handle(jobClient, job);
+      metricsRecorder.executeWithTimer(job.getType(), () -> {
+        new SpringConnectorJobHandler(outboundConnectorConfiguration, secretProvider, commandExceptionHandlingStrategy, metricsRecorder).handle(jobClient, job);
+      });
+
     } else { // "normal" @JobWorker
       // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
       List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());

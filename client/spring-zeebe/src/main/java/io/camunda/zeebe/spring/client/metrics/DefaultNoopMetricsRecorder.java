@@ -12,4 +12,9 @@ public class DefaultNoopMetricsRecorder implements MetricsRecorder {
   public void increase(String metricName, String action, String type) {
     // ignore
   }
+
+  @Override
+  public void executeWithTimer(String metricName, Runnable methodToExecute) {
+    // ignore
+  }
 }
