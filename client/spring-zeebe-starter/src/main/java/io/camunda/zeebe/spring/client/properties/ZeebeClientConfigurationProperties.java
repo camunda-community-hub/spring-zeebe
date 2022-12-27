@@ -63,7 +63,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
    * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
    * interface upstream
    */
-  private ArrayList<ClientInterceptor> interceptors = new ArrayList<>();
+  @Lazy
+  @Autowired(required = false)
+  private List<ClientInterceptor> interceptors;
 
   private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
 
@@ -113,10 +115,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   public void setJob(Job job) {
     this.job = job;
-  }
-
-  public void setInterceptors(ArrayList<ClientInterceptor> interceptors) {
-    this.interceptors = interceptors;
   }
 
   public Duration getRequestTimeout() {

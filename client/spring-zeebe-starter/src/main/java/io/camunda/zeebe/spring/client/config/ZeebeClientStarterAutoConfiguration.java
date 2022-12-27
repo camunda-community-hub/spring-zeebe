@@ -3,22 +3,28 @@ package io.camunda.zeebe.spring.client.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
-import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.actuator.ZeebeActuatorConfiguration;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientObjectFactory;
+import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientObjectFactoryImpl;
 import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
-import io.grpc.ClientInterceptor;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
+import java.util.Collections;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-
-import java.util.List;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.Nullable;
 
 @Import(ZeebeActuatorConfiguration.class)
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
@@ -31,33 +37,25 @@ public class ZeebeClientStarterAutoConfiguration {
     this.configurationProperties = configurationProperties;
   }
 
+  @ConditionalOnBean(ZeebeClientBuilder.class)
   @Bean
-  @Primary
-  public ZeebeClientBuilder builder(JsonMapper jsonMapper,
-                                    @Autowired(required = false) List<ClientInterceptor> clientInterceptorList) {
-    final ZeebeClientBuilderImpl builder = new ZeebeClientBuilderImpl();
+  public ZeebeClientObjectFactory customBuilderZeebeClientObjectFactory(ZeebeClientBuilder builder) {
+    return new ZeebeClientObjectFactoryImpl.FromBuilder(builder);
+  }
 
-    builder.gatewayAddress(configurationProperties.getGatewayAddress());
-    builder.defaultJobPollInterval(configurationProperties.getDefaultJobPollInterval());
-    builder.defaultJobTimeout(configurationProperties.getDefaultJobTimeout());
-    builder.defaultJobWorkerMaxJobsActive(configurationProperties.getDefaultJobWorkerMaxJobsActive());
-    builder.defaultJobWorkerName(configurationProperties.getDefaultJobWorkerName());
-    builder.defaultMessageTimeToLive(configurationProperties.getDefaultMessageTimeToLive());
-    builder.numJobWorkerExecutionThreads(configurationProperties.getNumJobWorkerExecutionThreads());
-    builder.defaultRequestTimeout(configurationProperties.getDefaultRequestTimeout());
-    builder.credentialsProvider(configurationProperties.getCredentialsProvider());
-    builder.caCertificatePath(configurationProperties.getCaCertificatePath());
-    if (configurationProperties.isPlaintextConnectionEnabled()) {
-      builder.usePlaintext();
-    }
-    builder.withJsonMapper(jsonMapper);
-    final List<ClientInterceptor> legacyInterceptors = configurationProperties.getInterceptors();
-    if (!legacyInterceptors.isEmpty()) {
-      builder.withInterceptors(legacyInterceptors.toArray(new ClientInterceptor[0]));
-    } else if (clientInterceptorList != null && !clientInterceptorList.isEmpty()) {
-      builder.withInterceptors(clientInterceptorList.toArray(new ClientInterceptor[0]));
-    }
-    return builder;
+  /**
+   * Defines a {@link ZeebeClientObjectFactory} to create ZeebeClient
+   * instances based on {@link ZeebeClientConfigurationProperties}
+   */
+  @ConditionalOnMissingBean(ZeebeClientObjectFactory.class)
+  @Bean
+  public ZeebeClientObjectFactory configPropertiesZeebeClientObjectFactory(
+    final @Autowired(required = false) @Lazy MeterRegistry meterRegistry) {
+
+    return new ZeebeClientObjectFactoryImpl.FromConfiguration(
+      configurationProperties,
+      () -> initZeebeClientThreadPool(meterRegistry)
+    );
   }
 
   @Bean("propertyBasedZeebeWorkerValueCustomizer")
@@ -79,5 +77,17 @@ public class ZeebeClientStarterAutoConfiguration {
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper(ObjectMapper objectMapper) {
     return new ZeebeObjectMapper(objectMapper);
+  }
+
+  private ScheduledExecutorService initZeebeClientThreadPool(@Nullable MeterRegistry meterRegistry) {
+    ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(configurationProperties.getNumJobWorkerExecutionThreads());
+
+    if (meterRegistry != null) {
+      MeterBinder threadPoolMetrics = new ExecutorServiceMetrics(
+        threadPool, "zeebe_client_thread_pool", Collections.emptyList());
+      threadPoolMetrics.bindTo(meterRegistry);
+    }
+
+    return threadPool;
   }
 }
