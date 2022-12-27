@@ -29,7 +29,7 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
 
   @Override
   public void increase(String metricName, String action, String jobType) {
-    String key = metricName + "#" + action;
+    String key = metricName + "#" + action + '#' + jobType;
     if (!counters.containsKey(key)) {
       counters.put(key, newCounter(metricName, action, jobType));
     }

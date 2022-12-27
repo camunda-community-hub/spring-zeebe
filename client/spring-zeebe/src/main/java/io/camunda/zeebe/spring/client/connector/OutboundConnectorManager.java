@@ -63,6 +63,7 @@ public class OutboundConnectorManager {
     ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue()
       .setName(connector.getName())
       .setType(connector.getType())
+      .setFetchVariables(connector.getInputVariables())
       .setAutoComplete(true);
     jobWorkerManager.openWorker(
       client,
