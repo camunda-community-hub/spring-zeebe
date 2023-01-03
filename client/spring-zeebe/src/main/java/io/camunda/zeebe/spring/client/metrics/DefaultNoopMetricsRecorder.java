@@ -15,6 +15,6 @@ public class DefaultNoopMetricsRecorder implements MetricsRecorder {
 
   @Override
   public void executeWithTimer(String metricName, Runnable methodToExecute) {
-    // ignore
+    methodToExecute.run();
   }
 }
