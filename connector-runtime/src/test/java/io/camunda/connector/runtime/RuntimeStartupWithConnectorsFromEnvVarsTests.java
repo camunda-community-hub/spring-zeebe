@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorRegistrationHelper;
+import io.camunda.connector.runtime.util.ConnectorDiscoveryHelper;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
@@ -49,15 +49,15 @@ class RuntimeStartupWithConnectorsFromEnvVarsTests {
 
   @BeforeTestClass
   public static void prepare() throws Exception {
-    OutboundConnectorRegistrationHelper.addHardwiredEnvironmentVariable(
+    ConnectorDiscoveryHelper.addHardwiredEnvironmentVariable(
         "CONNECTOR_TEST2_FUNCTION", "io.camunda.connector.http.HttpJsonFunction");
-    OutboundConnectorRegistrationHelper.addHardwiredEnvironmentVariable(
+    ConnectorDiscoveryHelper.addHardwiredEnvironmentVariable(
         "CONNECTOR_TEST2_TYPE", "non-default-TEST-task-type");
   }
 
   @AfterTestClass
   public static void cleanup() throws Exception {
-    OutboundConnectorRegistrationHelper.clearHardwiredEnvironmentVariable();
+    ConnectorDiscoveryHelper.clearHardwiredEnvironmentVariable();
   }
 
   @Test

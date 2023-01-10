@@ -18,10 +18,12 @@ package io.camunda.connector.runtime.inbound.registry;
 
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import java.util.*;
+
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InboundConnectorRegistry {
+public class WebhookConnectorRegistry {
 
   private Set<Long> registeredProcessDefinitionKeys = new HashSet<>();
   private Map<String, List<WebhookConnectorProperties>> registeredWebhookConnectorsByContextPath =
@@ -30,6 +32,8 @@ public class InboundConnectorRegistry {
       new HashMap<>();
   private Map<String, TreeSet<Integer>> processDefinitionVersionsByBpmnId = new HashMap<>();
   private boolean webhookRegistrationDirty = true;
+
+  //private Map<String, >
 
   /**
    * Reset registry and forget about all connectors, especially useful in tests when the context
@@ -144,13 +148,4 @@ public class InboundConnectorRegistry {
     return registeredWebhookConnectorsByContextPath;
   }
 
-  public void registerOtherInboundConnector(InboundConnectorProperties properties) {
-    // registeredInboundConnectors.add(properties);
-    // Now all known connectors on the classpath need to be known
-    // Somehow the type of the connector must resolve to either a
-    // PollingInboundConnectorFunction function1 = null;
-    // SubscriptionInboundConnector function2 = null;
-    // Then this runtime will either start a Subscription or some polling component
-    // TODO: Will be addded at a later state
-  }
 }

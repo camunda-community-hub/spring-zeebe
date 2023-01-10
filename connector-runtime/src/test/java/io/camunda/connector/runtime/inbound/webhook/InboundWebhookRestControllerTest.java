@@ -26,10 +26,10 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +56,7 @@ class InboundWebhookRestControllerTest {
       "{\"key\":\"value\"}".getBytes(StandardCharsets.UTF_8);
   private static final Map<String, String> DEFAULT_HEADERS = Map.of("x-signature", "sha1=aabbccdd");
 
-  @Mock private InboundConnectorRegistry registry;
+  @Mock private WebhookConnectorRegistry registry;
   @Mock private InboundConnectorContext connectorContext;
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)

@@ -17,8 +17,8 @@
 package io.camunda.connector.runtime.inbound.webhook;
 
 import io.camunda.connector.api.annotation.Secret;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
 
 public class WebhookConnectorProperties {
 

@@ -25,9 +25,9 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
@@ -66,7 +66,7 @@ public class WebhookControllerPlainJavaTests {
 
   @Test
   public void multipleWebhooksOnSameContextPath() throws IOException {
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
     InboundConnectorContext connectorContext =
         InboundConnectorContextBuilder.create().secret("DUMMY_SECRET", "s3cr3T").build();
     ZeebeClient zeebeClient = mock(ZeebeClient.class);
@@ -100,7 +100,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleVersions() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, "processA", 1, "myPath");
     register(registry, "processA", 2, "myPath");
@@ -121,7 +121,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleVersionsDisableWebhook() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, "processA", 1, "myPath");
     register(registry, "processA", 2, "myPath");
@@ -141,7 +141,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleVersionsDisableWebhook2() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, "processA", 1, "myPath");
     register(registry, "processA", 2, "myPath");
@@ -155,7 +155,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleVersionsReenablingWebhook2() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, "processA", 1, "myPath");
     register(registry, "processA", 2, null);
@@ -170,7 +170,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleProcessDefinitionsAndVersions() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, 1, "processA", 1, "myPath");
     register(registry, 2, "processA", 2, "myPath");
@@ -189,7 +189,7 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void webhookMultipleProcessDefinitionsAndVersionsAndDisabledWebhook() throws IOException {
     // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnectorRegistry registry = new WebhookConnectorRegistry();
 
     register(registry, 1, "processA", 1, "myPath");
     register(registry, 2, "processA", 2, "myPath");
@@ -208,12 +208,12 @@ public class WebhookControllerPlainJavaTests {
   private static long nextProcessDefinitionKey = 1;
 
   public static void register(
-      InboundConnectorRegistry registry, String bpmnProcessId, int version, String contextPath) {
+          WebhookConnectorRegistry registry, String bpmnProcessId, int version, String contextPath) {
     register(registry, ++nextProcessDefinitionKey, bpmnProcessId, version, contextPath);
   }
 
   public static void register(
-      InboundConnectorRegistry registry,
+      WebhookConnectorRegistry registry,
       long processDefinitionKey,
       String bpmnProcessId,
       int version,

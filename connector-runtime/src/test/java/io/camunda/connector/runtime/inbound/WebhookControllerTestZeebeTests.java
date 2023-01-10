@@ -17,7 +17,7 @@
 package io.camunda.connector.runtime.inbound;
 
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -55,7 +55,7 @@ class WebhookControllerTestZeebeTests {
   @Test
   public void contextLoaded() {}
 
-  @Autowired private InboundConnectorRegistry registry;
+  @Autowired private WebhookConnectorRegistry registry;
 
   @Autowired private ZeebeClient zeebeClient;
 

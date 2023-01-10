@@ -16,8 +16,9 @@
  */
 package io.camunda.connector.runtime.inbound.importer;
 
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
+import io.camunda.connector.runtime.inbound.subscription.InboundConnectorManager;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.dto.ProcessDefinition;
 import io.camunda.operate.exception.OperateException;
@@ -46,13 +47,15 @@ public class ProcessDefinitionImporter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProcessDefinitionImporter.class);
 
-  private InboundConnectorRegistry registry;
-  private CamundaOperateClient camundaOperateClient;
+  private final WebhookConnectorRegistry webhookConnectorRegistry;
+  private final InboundConnectorManager inboundSubscriptionManager;
+  private final CamundaOperateClient camundaOperateClient;
 
   @Autowired
   public ProcessDefinitionImporter(
-      InboundConnectorRegistry registry, CamundaOperateClient camundaOperateClient) {
-    this.registry = registry;
+    WebhookConnectorRegistry registry, InboundConnectorManager inboundSubscriptionManager, CamundaOperateClient camundaOperateClient) {
+    this.webhookConnectorRegistry = registry;
+    this.inboundSubscriptionManager = inboundSubscriptionManager;
     this.camundaOperateClient = camundaOperateClient;
   }
 
@@ -65,7 +68,7 @@ public class ProcessDefinitionImporter {
 
     List<ProcessDefinition> processDefinitions =
         camundaOperateClient.searchProcessDefinitions(processDefinitionQuery);
-    
+
     if (processDefinitions==null) {
       LOG.trace("... returned no process definitions.");
       return;
@@ -74,9 +77,9 @@ public class ProcessDefinitionImporter {
 
     for (ProcessDefinition processDefinition : processDefinitions) {
 
-      if (!registry.processDefinitionChecked(processDefinition.getKey())) {
+      if (!webhookConnectorRegistry.processDefinitionChecked(processDefinition.getKey())) {
         LOG.debug("Check " + processDefinition + " for connectors.");
-        registry.markProcessDefinitionChecked(
+        webhookConnectorRegistry.markProcessDefinitionChecked(
             processDefinition.getKey(),
             processDefinition.getBpmnProcessId(),
             processDefinition.getVersion().intValue());
@@ -88,7 +91,7 @@ public class ProcessDefinitionImporter {
     }
 
     // Make sure all webhooks endpoints are properly set
-    registry.rewireWebhookEndpoints();
+    webhookConnectorRegistry.rewireWebhookEndpoints();
   }
 
   private void processBpmnXml(ProcessDefinition processDefinition, String resource) {
@@ -122,12 +125,12 @@ public class ProcessDefinitionImporter {
     if (InboundConnectorProperties.TYPE_WEBHOOK.equals(properties.getType())) {
 
       LOG.info("Found inbound webhook connector: " + properties);
-      registry.registerWebhookConnector(properties);
+      webhookConnectorRegistry.registerWebhookConnector(properties);
 
     } else {
 
-      LOG.warn("Found other connector than webhook, which is not yet supported: " + properties);
-      // registry.registerOtherInboundConnector(properties);
+      LOG.info("Found inbound connector: " + properties);
+      inboundSubscriptionManager.foundInboundConnector(properties);
 
     }
   }

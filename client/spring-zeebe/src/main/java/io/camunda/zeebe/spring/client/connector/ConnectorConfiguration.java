@@ -14,8 +14,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class ConnectorConfiguration {
 
   @Bean
-  public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager) {
-    return new OutboundConnectorManager(jobWorkerManager);
+  public ConnectorDiscoverer connectorDiscoverer() {
+    return new ConnectorDiscoverer();
+  }
+
+  @Bean
+  public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager, final ConnectorDiscoverer connectorDiscoverer) {
+    return new OutboundConnectorManager(jobWorkerManager, connectorDiscoverer);
   }
 
   public static class OnMissingSecretProvider implements Condition {
