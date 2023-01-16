@@ -26,8 +26,9 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
+import io.camunda.connector.runtime.inbound.event.StartEventInboundTarget;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -56,7 +57,7 @@ class InboundWebhookRestControllerTest {
       "{\"key\":\"value\"}".getBytes(StandardCharsets.UTF_8);
   private static final Map<String, String> DEFAULT_HEADERS = Map.of("x-signature", "sha1=aabbccdd");
 
-  @Mock private InboundConnectorRegistry registry;
+  @Mock private WebhookConnectorRegistry registry;
   @Mock private InboundConnectorContext connectorContext;
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -73,15 +74,13 @@ class InboundWebhookRestControllerTest {
     final String evaluationExpression = "=a=b";
     final String variablesMapping = "={x: response.key}";
     InboundConnectorProperties connectorProps =
-        new InboundConnectorProperties(
-            "proc-id",
-            1,
-            2,
-            Map.of(
-                "inbound.context", DEFAULT_CONTEXT,
-                "inbound.activationCondition", evaluationExpression,
-                "inbound.variableMapping", variablesMapping,
-                "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.disabled.name()));
+      new InboundConnectorProperties(
+        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        Map.of(
+          "inbound.context", DEFAULT_CONTEXT,
+          "inbound.activationCondition", evaluationExpression,
+          "inbound.variableMapping", variablesMapping,
+          "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.disabled.name()));
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -111,18 +110,16 @@ class InboundWebhookRestControllerTest {
   @Test
   void inbound_HmacValidationFailed_ReturnsUnauthorizedConnectorMessage() throws IOException {
     InboundConnectorProperties connectorProps =
-        new InboundConnectorProperties(
-            "proc-id",
-            1,
-            2,
-            Map.of(
-                "inbound.context", DEFAULT_CONTEXT,
-                "inbound.activationCondition", "",
-                "inbound.variableMapping", "",
-                "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.enabled.name(),
-                "inbound.hmacSecret", "",
-                "inbound.hmacHeader", "hmac-header",
-                "inbound.hmacAlgorithm", "sha_256"));
+      new InboundConnectorProperties(
+        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        Map.of(
+          "inbound.context", DEFAULT_CONTEXT,
+          "inbound.activationCondition", "",
+          "inbound.variableMapping", "",
+          "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.enabled.name(),
+          "inbound.hmacSecret", "",
+          "inbound.hmacHeader", "hmac-header",
+          "inbound.hmacAlgorithm", "sha_256"));
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -143,19 +140,17 @@ class InboundWebhookRestControllerTest {
   void inbound_ActivationConditionFailed_ReturnsUnactivatedConnectorMessage() throws IOException {
     final String evaluationExpression = "=a=b";
     InboundConnectorProperties connectorProps =
-        new InboundConnectorProperties(
-            "proc-id",
-            1,
-            2,
-            Map.of(
-                "inbound.context",
-                DEFAULT_CONTEXT,
-                "inbound.activationCondition",
-                evaluationExpression,
-                "inbound.variableMapping",
-                "",
-                "inbound.shouldValidateHmac",
-                HMACSwitchCustomerChoice.disabled.name()));
+      new InboundConnectorProperties(
+        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        Map.of(
+          "inbound.context",
+          DEFAULT_CONTEXT,
+          "inbound.activationCondition",
+          evaluationExpression,
+          "inbound.variableMapping",
+          "",
+          "inbound.shouldValidateHmac",
+          HMACSwitchCustomerChoice.disabled.name()));
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -177,19 +172,17 @@ class InboundWebhookRestControllerTest {
   void inbound_ExceptionThrown_ReturnsExceptionConnectorMessage() throws IOException {
     final String evaluationExpression = "=a=b";
     InboundConnectorProperties connectorProps =
-        new InboundConnectorProperties(
-            "proc-id",
-            1,
-            2,
-            Map.of(
-                "inbound.context",
-                DEFAULT_CONTEXT,
-                "inbound.activationCondition",
-                evaluationExpression,
-                "inbound.variableMapping",
-                "",
-                "inbound.shouldValidateHmac",
-                HMACSwitchCustomerChoice.disabled.name()));
+      new InboundConnectorProperties(
+        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        Map.of(
+          "inbound.context",
+          DEFAULT_CONTEXT,
+          "inbound.activationCondition",
+          evaluationExpression,
+          "inbound.variableMapping",
+          "",
+          "inbound.shouldValidateHmac",
+          HMACSwitchCustomerChoice.disabled.name()));
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));

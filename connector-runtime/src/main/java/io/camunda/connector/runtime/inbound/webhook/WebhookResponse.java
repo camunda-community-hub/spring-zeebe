@@ -16,7 +16,7 @@
  */
 package io.camunda.connector.runtime.inbound.webhook;
 
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.connector.api.inbound.InboundConnectorResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +27,7 @@ public class WebhookResponse {
 
   private List<String> unauthorizedConnectors = new ArrayList<>();
   private List<String> unactivatedConnectors = new ArrayList<>();
-  private Map<String, ProcessInstanceEvent> executedConnectors = new HashMap<>();
+  private Map<String, InboundConnectorResult> executedConnectors = new HashMap<>();
   private List<String> errors = new ArrayList<>();
 
   public void addUnauthorizedConnector(WebhookConnectorProperties connectorProperties) {
@@ -39,8 +39,8 @@ public class WebhookResponse {
   }
 
   public void addExecutedConnector(
-      WebhookConnectorProperties connectorProperties, ProcessInstanceEvent processInstanceEvent) {
-    executedConnectors.put(connectorProperties.getConnectorIdentifier(), processInstanceEvent);
+      WebhookConnectorProperties connectorProperties, InboundConnectorResult result) {
+    executedConnectors.put(connectorProperties.getConnectorIdentifier(), result);
   }
 
   public void addException(WebhookConnectorProperties connectorProperties, Exception exception) {
@@ -55,7 +55,7 @@ public class WebhookResponse {
     return unactivatedConnectors;
   }
 
-  public Map<String, ProcessInstanceEvent> getExecutedConnectors() {
+  public Map<String, InboundConnectorResult> getExecutedConnectors() {
     return executedConnectors;
   }
 

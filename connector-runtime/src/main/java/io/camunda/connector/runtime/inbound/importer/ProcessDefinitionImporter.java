@@ -16,23 +16,38 @@
  */
 package io.camunda.connector.runtime.inbound.importer;
 
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
+import io.camunda.connector.api.inbound.InboundConnectorTarget;
+import io.camunda.connector.runtime.inbound.event.MessageInboundTarget;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
+import io.camunda.connector.runtime.inbound.event.StartEventInboundTarget;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.dto.ProcessDefinition;
 import io.camunda.operate.exception.OperateException;
 import io.camunda.operate.search.SearchQuery;
 import io.camunda.operate.search.Sort;
 import io.camunda.operate.search.SortOrder;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
+import io.camunda.zeebe.model.bpmn.instance.FlowNode;
+import io.camunda.zeebe.model.bpmn.instance.IntermediateCatchEvent;
+import io.camunda.zeebe.model.bpmn.instance.Message;
+import io.camunda.zeebe.model.bpmn.instance.MessageEventDefinition;
 import io.camunda.zeebe.model.bpmn.instance.Process;
+import io.camunda.zeebe.model.bpmn.instance.ReceiveTask;
 import io.camunda.zeebe.model.bpmn.instance.StartEvent;
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeProperties;
+import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeSubscription;
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +61,16 @@ public class ProcessDefinitionImporter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProcessDefinitionImporter.class);
 
-  private InboundConnectorRegistry registry;
+  private WebhookConnectorRegistry registry;
   private CamundaOperateClient camundaOperateClient;
+  private ZeebeClient zeebeClient;
 
   @Autowired
   public ProcessDefinitionImporter(
-      InboundConnectorRegistry registry, CamundaOperateClient camundaOperateClient) {
+      WebhookConnectorRegistry registry, CamundaOperateClient camundaOperateClient, ZeebeClient zeebeClient) {
     this.registry = registry;
     this.camundaOperateClient = camundaOperateClient;
+    this.zeebeClient = zeebeClient;
   }
 
   @Scheduled(fixedDelayString = "${camunda.connector.polling.interval:5000}")
@@ -65,7 +82,7 @@ public class ProcessDefinitionImporter {
 
     List<ProcessDefinition> processDefinitions =
         camundaOperateClient.searchProcessDefinitions(processDefinitionQuery);
-    
+
     if (processDefinitions==null) {
       LOG.trace("... returned no process definitions.");
       return;
@@ -94,21 +111,49 @@ public class ProcessDefinitionImporter {
   private void processBpmnXml(ProcessDefinition processDefinition, String resource) {
     final BpmnModelInstance bpmnModelInstance =
         Bpmn.readModelFromStream(new ByteArrayInputStream(resource.getBytes()));
-    bpmnModelInstance.getDefinitions().getChildElementsByType(Process.class).stream()
-        .flatMap(process -> process.getChildElementsByType(StartEvent.class).stream())
-        .map(startEvent -> startEvent.getSingleExtensionElement(ZeebeProperties.class))
-        .filter(Objects::nonNull)
-        .forEach(zeebeProperties -> processZeebeProperties(processDefinition, zeebeProperties));
-    // TODO: Also process intermediate catching message events and Receive Tasks
+    Collection<Process> processes = bpmnModelInstance.getDefinitions().getChildElementsByType(Process.class);
+
+    // process StartEvent
+    processes.stream()
+      .flatMap(process -> process.getChildElementsByType(StartEvent.class).stream())
+      .forEach(startEvent -> {
+        ZeebeProperties zeebeProperties = startEvent.getSingleExtensionElement(ZeebeProperties.class);
+        if (zeebeProperties == null) {
+          return;
+        }
+
+        InboundConnectorTarget startEventTarget = new StartEventInboundTarget(
+          processDefinition.getKey(), processDefinition.getBpmnProcessId(),
+          processDefinition.getVersion().intValue(), zeebeClient);
+
+        processZeebeProperties(startEventTarget, zeebeProperties);
+      });
+
+    // process Message definitions
+    processes.stream()
+      .flatMap(process -> process.getChildElementsByType(Message.class).stream())
+      .forEach(message -> {
+        ZeebeSubscription subscription = message.getSingleExtensionElement(ZeebeSubscription.class);
+        ZeebeProperties zeebeProperties = message.getSingleExtensionElement(ZeebeProperties.class);
+        if (zeebeProperties == null || subscription == null) {
+          return;
+        }
+
+        InboundConnectorTarget messageTarget = new MessageInboundTarget(
+          processDefinition.getBpmnProcessId(), processDefinition.getVersion().intValue(), processDefinition.getKey(),
+          message.getName(), subscription.getCorrelationKey(),
+          zeebeClient);
+
+        processZeebeProperties(messageTarget, zeebeProperties);
+      });
   }
 
   private void processZeebeProperties(
-      ProcessDefinition processDefinition, ZeebeProperties zeebeProperties) {
+      InboundConnectorTarget connectorTarget, ZeebeProperties zeebeProperties) {
+
     InboundConnectorProperties properties =
         new InboundConnectorProperties(
-            processDefinition.getBpmnProcessId(),
-            processDefinition.getVersion().intValue(),
-            processDefinition.getKey(),
+            connectorTarget,
             zeebeProperties.getProperties().stream()
                 // Avoid issue with OpenJDK when collecting null values
                 // -->

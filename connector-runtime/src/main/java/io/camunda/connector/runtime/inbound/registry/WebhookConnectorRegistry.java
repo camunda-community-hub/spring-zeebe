@@ -16,12 +16,14 @@
  */
 package io.camunda.connector.runtime.inbound.registry;
 
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
+import io.camunda.connector.api.inbound.InboundConnectorTarget;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InboundConnectorRegistry {
+public class WebhookConnectorRegistry {
 
   private Set<Long> registeredProcessDefinitionKeys = new HashSet<>();
   private Map<String, List<WebhookConnectorProperties>> registeredWebhookConnectorsByContextPath =
@@ -69,7 +71,9 @@ public class InboundConnectorRegistry {
     WebhookConnectorProperties webhookConnectorProperties =
         new WebhookConnectorProperties(properties);
 
-    String bpmnId = webhookConnectorProperties.getBpmnProcessId();
+    InboundConnectorTarget connectorTarget = properties.getConnectorTarget();
+    String bpmnId = connectorTarget.getBpmnProcessId();
+
     if (!sortedWebhookConnectorsByBpmnId.containsKey(bpmnId)) {
       sortedWebhookConnectorsByBpmnId.put(
           bpmnId, new TreeSet<>(new WebhookConnectorPropertyComparator()));
@@ -100,7 +104,7 @@ public class InboundConnectorRegistry {
 
       // Now check if the webhook was removed in a later version
       // which disables this activation
-      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getVersion()) {
+      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getConnectorTarget().getVersion()) {
         candidatesByContext.remove(lastConnector.getContext());
       }
 

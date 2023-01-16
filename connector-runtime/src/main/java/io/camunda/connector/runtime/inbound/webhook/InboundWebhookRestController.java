@@ -18,14 +18,14 @@ package io.camunda.connector.runtime.inbound.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
+import io.camunda.connector.api.inbound.InboundConnectorResult;
+import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACAlgoCustomerChoice;
 import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class InboundWebhookRestController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InboundWebhookRestController.class);
 
-  private final InboundConnectorRegistry registry;
+  private final WebhookConnectorRegistry registry;
   private final InboundConnectorContext connectorContext;
   private final ZeebeClient zeebeClient;
   private final FeelEngineWrapper feelEngine;
@@ -63,7 +63,7 @@ public class InboundWebhookRestController {
 
   @Autowired
   public InboundWebhookRestController(
-    final InboundConnectorRegistry registry,
+    final WebhookConnectorRegistry registry,
     final InboundConnectorContext connectorContext,
     final ZeebeClient zeebeClient,
     final FeelEngineWrapper feelEngine,
@@ -116,8 +116,9 @@ public class InboundWebhookRestController {
             LOG.debug("Should not activate {} :: {}", context, webhookContext);
             response.addUnactivatedConnector(connectorProperties);
           } else {
-            ProcessInstanceEvent processInstanceEvent =
-                executeWebhookConnector(connectorProperties, webhookContext);
+            Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
+            InboundConnectorResult processInstanceEvent = connectorProperties.getConnectorTarget().triggerEvent(variables);
+
             LOG.debug(
                 "Webhook {} created process instance {}",
                 connectorProperties,
@@ -156,26 +157,6 @@ public class InboundWebhookRestController {
             HMACAlgoCustomerChoice.valueOf(connectorProperties.getHmacAlgorithm()));
 
     return validator.isRequestValid();
-  }
-
-  /**
-   * This could be potentially moved to an interface? See
-   * https://github.com/camunda/connector-sdk-inbound-webhook/issues/26
-   *
-   * @return
-   */
-  private ProcessInstanceEvent executeWebhookConnector(
-          WebhookConnectorProperties connectorProperties, Map<String, Object> webhookContext) {
-    final Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
-
-    return zeebeClient
-        .newCreateInstanceCommand()
-        .bpmnProcessId(connectorProperties.getBpmnProcessId())
-        .version(connectorProperties.getVersion())
-        .variables(variables)
-        .send()
-        .join();
-    // throw fail("Failed to start process instance", connectorProperties, exception);
   }
 
   private Map<String, Object> extractVariables(
