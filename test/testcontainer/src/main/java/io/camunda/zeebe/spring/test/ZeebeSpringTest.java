@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 // this creates the engine and the client
-@Import({ZeebeTestClientSpringConfiguration.class})
+@Import({TestContainerZeebeEngineConfiguration.class, ZeebeTestClientSpringConfiguration.class})
 // this listener hooks up into test execution
 @TestExecutionListeners(listeners = ZeebeTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public @interface ZeebeSpringTest {

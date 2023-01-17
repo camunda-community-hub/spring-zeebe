@@ -13,17 +13,21 @@ import java.util.Arrays;
  * Dynamic proxy to delegate to a {@link ZeebeTestEngine} which allows to swap the {@link ZeebeTestEngine} object under the hood.
  * This is used in test environments, where the while ZeebeEngine is re-initialized for every test case
  */
-public class ZeebeTestEngineProxy extends AbstractInvocationHandler {
+public class ZeebeTestEngineProxy<T extends ZeebeTestEngine> extends AbstractInvocationHandler {
 
-  private ZeebeTestEngine delegate;
+  private T delegate;
 
-  public void swapZeebeEngine(ZeebeTestEngine client) {
+  public void swapZeebeEngine(T client) {
     this.delegate = client;
   }
 
   public void removeZeebeEngine() {
   this.delegate = null;
 }
+
+  public T getCurrentEngine() {
+    return delegate;
+  }
 
   @Override
   protected Object handleInvocation(Object proxy, Method method, @Nullable Object[] args) throws Throwable {

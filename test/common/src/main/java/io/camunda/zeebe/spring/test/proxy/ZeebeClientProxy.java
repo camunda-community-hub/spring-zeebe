@@ -23,6 +23,10 @@ public class ZeebeClientProxy extends AbstractInvocationHandler  {
     this.delegate = null;
   }
 
+  public ZeebeClient getCurrentZeebeClient() {
+    return delegate;
+  }
+
   @Override
   protected Object handleInvocation(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
     if (delegate==null) {

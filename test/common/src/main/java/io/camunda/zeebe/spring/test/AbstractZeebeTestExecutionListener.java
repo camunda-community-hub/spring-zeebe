@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 /**
  * Base class for the two different ZeebeTestExecutionListener classes provided for in-memory vs Testcontainer tests
@@ -22,24 +23,18 @@ public class AbstractZeebeTestExecutionListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private ZeebeClient zeebeClient;
-
   /**
    * Registers the ZeebeEngine for test case in relevant places and creates the ZeebeClient
    */
   public void setupWithZeebeEngine(TestContext testContext, ZeebeTestEngine zeebeEngine) {
 
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).swapZeebeEngine(zeebeEngine);
-
-    BpmnAssert.initRecordStream(
-      RecordStream.of(zeebeEngine.getRecordStreamSource()));
-
-    ZeebeTestThreadSupport.setEngineForCurrentThread(zeebeEngine);
+    EngineUtils.initZeebeEngine(zeebeEngine);
 
     LOGGER.info("Test engine setup. Now starting deployments and workers...");
 
     // Not using zeebeEngine.createClient(); to be able to set JsonMapper
-    zeebeClient = createClient(testContext, zeebeEngine);
+    final ZeebeClient zeebeClient = createClient(testContext, zeebeEngine);
 
     testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
     testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(zeebeClient);
@@ -48,7 +43,7 @@ public class AbstractZeebeTestExecutionListener {
   }
 
   public ZeebeClient createClient(TestContext testContext, ZeebeTestEngine zeebeEngine) {
-    // Maybe use more of the normal config properties (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)? 
+    // Maybe use more of the normal config properties (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
     ZeebeClientBuilder builder = ZeebeClient.newClientBuilder()
       .gatewayAddress(zeebeEngine.getGatewayAddress()).usePlaintext();
     if (testContext.getApplicationContext().getBeanNamesForType(JsonMapper.class).length>0) {
@@ -74,9 +69,12 @@ public class AbstractZeebeTestExecutionListener {
     BpmnAssert.resetRecordStream();
     ZeebeTestThreadSupport.cleanupEngineForCurrentThread();
 
-    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).stopAll(zeebeClient);
-    testContext.getApplicationContext().getBean(ZeebeClientProxy.class).removeZeebeClient();
-    zeebeClient.close();
+    final ZeebeClientProxy zeebeClientProxy = testContext.getApplicationContext().getBean(ZeebeClientProxy.class);
+    Optional.ofNullable(zeebeClientProxy.getCurrentZeebeClient()).ifPresent(zeebeClient -> {
+      testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).stopAll(zeebeClient);
+      zeebeClient.close();
+    });
+    zeebeClientProxy.removeZeebeClient();
 
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
   }
