@@ -9,11 +9,10 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 ## Version Compatibility
 
-| Spring Zeebe version | Camunda Platform (Zeebe Java Client) version | Spring Boot version |
-| -------------------- | ------------------------ | ----------------- |
-| 8.1.x                | 8.1.x                    | 2.7.x             |
-
-We are **not** yet supporting Spring Boot 3.x, see [#289](https://github.com/camunda-community-hub/spring-zeebe/issues/289).
+| Spring Zeebe version | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
+|----------------------| ------------------------ |-----------------------------| ----------------------------|
+| >= 8.1.15            | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.0.x  |
+| < 8.1.14             | 8.1.x                    | 2.7.5  | = 2.7.x (no 3.0.x)            |
 
 ## Examples
 
