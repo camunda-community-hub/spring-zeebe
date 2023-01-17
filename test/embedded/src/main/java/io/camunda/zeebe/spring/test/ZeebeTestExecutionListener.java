@@ -8,7 +8,7 @@ import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import java.lang.invoke.MethodHandles;
 
@@ -22,7 +22,7 @@ public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListen
   private ZeebeTestEngine zeebeEngine;
 
   public void beforeTestMethod(@NonNull TestContext testContext) {
-    int randomPort = SocketUtils.findAvailableTcpPort(); // can be replaced with TestSocketUtils once available: https://github.com/spring-projects/spring-framework/issues/28210
+    int randomPort = TestSocketUtils.findAvailableTcpPort(); // can be replaced with TestSocketUtils once available: https://github.com/spring-projects/spring-framework/pull/29132
 
     LOGGER.info("Create Zeebe in-memory engine for test run on random port: " + randomPort + "...");
     zeebeEngine = EngineFactory.create(randomPort);
