@@ -1,8 +1,6 @@
 package io.camunda.zeebe.spring.test;
 
-import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.extension.testcontainer.ContainerizedEngine;
-import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 
 /**
  * Test execution listener binding the Zeebe engine to current test context.
@@ -34,19 +31,15 @@ public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListen
   }
 
   public void beforeTestMethod(@NonNull TestContext testContext) {
-    LOGGER.info("Create Zeebe Testcontainer engine");
-    if (Optional.ofNullable(testContext.getAttribute("NOT_STARTED")).map(o -> (Boolean) o).orElse(false)) {
-      containerizedEngine.start();
-      setupWithZeebeEngine(testContext, containerizedEngine);
-    }
-    // TODO: Play nicely with this. It probably should be somewhere in the parent class
-    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(testContext.getApplicationContext().getBean(ZeebeClient.class));
+    setupWithZeebeEngine(testContext, containerizedEngine, zeebeTestEngine -> {
+      LOGGER.info("Create Zeebe Testcontainer engine");
+      zeebeTestEngine.start();
+      return zeebeTestEngine;
+    });
   }
 
   public void afterTestMethod(@NonNull TestContext testContext) {
-    cleanup(testContext, containerizedEngine);
-    containerizedEngine.reset();
-    testContext.setAttribute("NOT_STARTED", Boolean.TRUE);
+    cleanup(testContext, containerizedEngine, ContainerizedEngine::reset);
   }
 
   @Override

@@ -15,6 +15,8 @@ import org.springframework.test.context.TestContext;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 /**
  * Base class for the two different ZeebeTestExecutionListener classes provided for in-memory vs Testcontainer tests
@@ -23,23 +25,24 @@ public class AbstractZeebeTestExecutionListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * Registers the ZeebeEngine for test case in relevant places and creates the ZeebeClient
-   */
-  public void setupWithZeebeEngine(TestContext testContext, ZeebeTestEngine zeebeEngine) {
+  public <T extends ZeebeTestEngine> void setupWithZeebeEngine(TestContext testContext, T zeebeEngine, final UnaryOperator<T> startCallback) {
 
-    testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).swapZeebeEngine(zeebeEngine);
-    EngineUtils.initZeebeEngine(zeebeEngine);
+    if (Optional.ofNullable(testContext.getAttribute("NOT_STARTED")).map(o -> (Boolean) o).orElse(false)) {
+      zeebeEngine = startCallback.apply(zeebeEngine);
+      testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).swapZeebeEngine(zeebeEngine);
+      EngineUtils.initZeebeEngine(zeebeEngine);
 
-    LOGGER.info("Test engine setup. Now starting deployments and workers...");
+      LOGGER.info("Test engine setup. Now starting deployments and workers...");
 
-    // Not using zeebeEngine.createClient(); to be able to set JsonMapper
-    final ZeebeClient zeebeClient = createClient(testContext, zeebeEngine);
+      // Not using zeebeEngine.createClient(); to be able to set JsonMapper
+      final ZeebeClient zeebeClient = createClient(testContext, zeebeEngine);
 
-    testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
-    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(zeebeClient);
+      testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
+      testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(zeebeClient);
 
-    LOGGER.info("...deployments and workers started.");
+      LOGGER.info("...deployments and workers started.");
+    }
+    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(testContext.getApplicationContext().getBean(ZeebeClient.class));
   }
 
   public ZeebeClient createClient(TestContext testContext, ZeebeTestEngine zeebeEngine) {
@@ -53,7 +56,7 @@ public class AbstractZeebeTestExecutionListener {
     return builder.build();
   }
 
-  public void cleanup(TestContext testContext, ZeebeTestEngine zeebeEngine) {
+  public <T extends ZeebeTestEngine> void cleanup(TestContext testContext, T zeebeEngine, final Consumer<T> cleanupCallback) {
 
     if (testContext.getTestException()!=null) {
       LOGGER.warn("Test failure on '"+testContext.getTestMethod()+"'. Tracing workflow engine internals on INFO for debugging purposes:");
@@ -77,5 +80,8 @@ public class AbstractZeebeTestExecutionListener {
     zeebeClientProxy.removeZeebeClient();
 
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
+
+    cleanupCallback.accept(zeebeEngine);
+    testContext.setAttribute("NOT_STARTED", Boolean.TRUE);
   }
 }
