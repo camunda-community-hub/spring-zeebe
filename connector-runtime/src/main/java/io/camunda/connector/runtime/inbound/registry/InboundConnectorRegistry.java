@@ -17,13 +17,13 @@
 package io.camunda.connector.runtime.inbound.registry;
 
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.api.inbound.InboundConnectorTarget;
+import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class WebhookConnectorRegistry {
+public class InboundConnectorRegistry {
 
   private Set<Long> registeredProcessDefinitionKeys = new HashSet<>();
   private Map<String, List<WebhookConnectorProperties>> registeredWebhookConnectorsByContextPath =
@@ -71,8 +71,8 @@ public class WebhookConnectorRegistry {
     WebhookConnectorProperties webhookConnectorProperties =
         new WebhookConnectorProperties(properties);
 
-    InboundConnectorTarget connectorTarget = properties.getConnectorTarget();
-    String bpmnId = connectorTarget.getBpmnProcessId();
+    ProcessCorrelationPoint correlationPoint = properties.getCorrelationPoint();
+    String bpmnId = correlationPoint.getBpmnProcessId();
 
     if (!sortedWebhookConnectorsByBpmnId.containsKey(bpmnId)) {
       sortedWebhookConnectorsByBpmnId.put(

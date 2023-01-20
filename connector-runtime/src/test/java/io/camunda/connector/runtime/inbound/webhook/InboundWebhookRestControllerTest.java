@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.event.StartEventInboundTarget;
-import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
+import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -57,7 +57,7 @@ class InboundWebhookRestControllerTest {
       "{\"key\":\"value\"}".getBytes(StandardCharsets.UTF_8);
   private static final Map<String, String> DEFAULT_HEADERS = Map.of("x-signature", "sha1=aabbccdd");
 
-  @Mock private WebhookConnectorRegistry registry;
+  @Mock private InboundConnectorRegistry registry;
   @Mock private InboundConnectorContext connectorContext;
 
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -75,7 +75,7 @@ class InboundWebhookRestControllerTest {
     final String variablesMapping = "={x: response.key}";
     InboundConnectorProperties connectorProps =
       new InboundConnectorProperties(
-        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        new StartEventCorrelationPoint(1, "proc-id", 2),
         Map.of(
           "inbound.context", DEFAULT_CONTEXT,
           "inbound.activationCondition", evaluationExpression,
@@ -111,7 +111,7 @@ class InboundWebhookRestControllerTest {
   void inbound_HmacValidationFailed_ReturnsUnauthorizedConnectorMessage() throws IOException {
     InboundConnectorProperties connectorProps =
       new InboundConnectorProperties(
-        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        new StartEventCorrelationPoint(1, "proc-id", 2),
         Map.of(
           "inbound.context", DEFAULT_CONTEXT,
           "inbound.activationCondition", "",
@@ -141,7 +141,7 @@ class InboundWebhookRestControllerTest {
     final String evaluationExpression = "=a=b";
     InboundConnectorProperties connectorProps =
       new InboundConnectorProperties(
-        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        new StartEventCorrelationPoint(1, "proc-id", 2),
         Map.of(
           "inbound.context",
           DEFAULT_CONTEXT,
@@ -173,7 +173,7 @@ class InboundWebhookRestControllerTest {
     final String evaluationExpression = "=a=b";
     InboundConnectorProperties connectorProps =
       new InboundConnectorProperties(
-        new StartEventInboundTarget(1, "proc-id", 2, zeebeClient),
+        new StartEventCorrelationPoint(1, "proc-id", 2),
         Map.of(
           "inbound.context",
           DEFAULT_CONTEXT,

@@ -18,8 +18,9 @@ package io.camunda.connector.runtime.inbound;
 
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
-import io.camunda.connector.runtime.inbound.event.StartEventInboundTarget;
-import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
+import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.runtime.inbound.correlation.result.StartEventInboundConnectorResult;
+import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -58,7 +59,7 @@ class WebhookControllerTestZeebeTests {
   @Test
   public void contextLoaded() {}
 
-  @Autowired private WebhookConnectorRegistry registry;
+  @Autowired private InboundConnectorRegistry registry;
 
   @Autowired private ZeebeClient zeebeClient;
 
@@ -72,9 +73,8 @@ class WebhookControllerTestZeebeTests {
     deployProcess("processB");
 
     registry.reset();
-    registry.registerWebhookConnector(webhookProperties("processA", "myPath", zeebeClient));
-    registry.registerWebhookConnector(webhookProperties("processB", "myPath", zeebeClient));
-    ;
+    registry.registerWebhookConnector(webhookProperties("processA", "myPath"));
+    registry.registerWebhookConnector(webhookProperties("processB", "myPath"));
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
@@ -89,16 +89,16 @@ class WebhookControllerTestZeebeTests {
 
     InboundConnectorResult piA =
         responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processA-1");
-    assertInstanceOf(StartEventInboundTarget.Response.class, piA);
-    ProcessInstanceEvent piEventA = ((StartEventInboundTarget.Response) piA).getProcessInstanceEvent();
+    assertInstanceOf(StartEventInboundConnectorResult.class, piA);
+    ProcessInstanceEvent piEventA = ((StartEventInboundConnectorResult) piA).getResponseData();
 
     waitForProcessInstanceCompleted(piEventA);
     assertThat(piEventA).isCompleted();
 
     InboundConnectorResult piB =
         responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processB-1");
-    assertInstanceOf(StartEventInboundTarget.Response.class, piB);
-    ProcessInstanceEvent piEventB = ((StartEventInboundTarget.Response) piB).getProcessInstanceEvent();
+    assertInstanceOf(StartEventInboundConnectorResult.class, piB);
+    ProcessInstanceEvent piEventB = ((StartEventInboundConnectorResult) piB).getResponseData();
 
     waitForProcessInstanceCompleted(piEventB);
     assertThat(piEventB).isCompleted();

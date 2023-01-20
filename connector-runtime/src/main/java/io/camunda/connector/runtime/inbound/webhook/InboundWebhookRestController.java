@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
-import io.camunda.connector.runtime.inbound.registry.WebhookConnectorRegistry;
+import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACAlgoCustomerChoice;
 import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
@@ -54,7 +54,7 @@ public class InboundWebhookRestController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InboundWebhookRestController.class);
 
-  private final WebhookConnectorRegistry registry;
+  private final InboundConnectorRegistry registry;
   private final InboundConnectorContext connectorContext;
   private final ZeebeClient zeebeClient;
   private final FeelEngineWrapper feelEngine;
@@ -63,7 +63,7 @@ public class InboundWebhookRestController {
 
   @Autowired
   public InboundWebhookRestController(
-    final WebhookConnectorRegistry registry,
+    final InboundConnectorRegistry registry,
     final InboundConnectorContext connectorContext,
     final ZeebeClient zeebeClient,
     final FeelEngineWrapper feelEngine,
@@ -117,13 +117,15 @@ public class InboundWebhookRestController {
             response.addUnactivatedConnector(connectorProperties);
           } else {
             Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
-            InboundConnectorResult processInstanceEvent = connectorProperties.getConnectorTarget().triggerEvent(variables);
+            InboundConnectorResult result = connectorContext
+              .correlate(connectorProperties.getConnectorTarget(), variables);
 
             LOG.debug(
                 "Webhook {} created process instance {}",
                 connectorProperties,
-                processInstanceEvent);
-            response.addExecutedConnector(connectorProperties, processInstanceEvent);
+                result);
+
+            response.addExecutedConnector(connectorProperties, result);
           }
         }
       } catch (Exception exception) {
