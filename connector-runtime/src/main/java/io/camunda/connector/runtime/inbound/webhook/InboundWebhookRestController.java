@@ -118,7 +118,7 @@ public class InboundWebhookRestController {
           } else {
             Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
             InboundConnectorResult result = connectorContext
-              .correlate(connectorProperties.getConnectorTarget(), variables);
+              .correlate(connectorProperties.getCorrelationPoint(), variables);
 
             LOG.debug(
                 "Webhook {} created process instance {}",

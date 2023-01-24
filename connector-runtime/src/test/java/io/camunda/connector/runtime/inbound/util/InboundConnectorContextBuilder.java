@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.connector.runtime.inbound;
+package io.camunda.connector.runtime.inbound.util;
 
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.api.inbound.InboundConnectorResult;
-import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.api.secret.SecretProvider;
-import io.camunda.connector.impl.context.AbstractConnectorContext;
+import io.camunda.connector.runtime.inbound.context.InboundJobHandlerContext;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.util.HashMap;
 import java.util.Map;
 
 public class InboundConnectorContextBuilder {
   protected final Map<String, String> secrets = new HashMap<>();
   protected SecretProvider secretProvider = secrets::get;
+  protected ZeebeClient zeebeClient;
 
   public static InboundConnectorContextBuilder create() {
     return new InboundConnectorContextBuilder();
@@ -55,25 +55,16 @@ public class InboundConnectorContextBuilder {
     return this;
   }
 
+  public InboundConnectorContextBuilder zeebeClient(ZeebeClient zeebeClient) {
+    this.zeebeClient = zeebeClient;
+    return this;
+  }
+
   /**
    * @return the {@link InboundConnectorContext} including all
    *     previously defined properties
    */
-  public TestInboundConnectorContext build() {
-    return new TestInboundConnectorContext(secretProvider);
-  }
-
-  public class TestInboundConnectorContext extends AbstractConnectorContext
-      implements InboundConnectorContext {
-
-    protected TestInboundConnectorContext(SecretProvider secretProvider) {
-      super(secretProvider);
-    }
-
-    @Override
-    public InboundConnectorResult correlate(ProcessCorrelationPoint processCorrelationPoint,
-      Map<String, Object> map) {
-      return null;
-    }
+  public InboundJobHandlerContext build() {
+    return new InboundJobHandlerContext(secretProvider, zeebeClient);
   }
 }

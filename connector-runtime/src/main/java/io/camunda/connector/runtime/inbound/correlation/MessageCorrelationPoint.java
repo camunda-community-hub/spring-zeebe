@@ -4,6 +4,9 @@ import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Properties of a message published by an Inbound Connector
+ */
 public class MessageCorrelationPoint extends ProcessCorrelationPoint {
 
   public static final String TYPE_NAME = "MESSAGE";
@@ -12,12 +15,12 @@ public class MessageCorrelationPoint extends ProcessCorrelationPoint {
   private final String messageName;
   private final String correlationKey;
 
-  public MessageCorrelationPoint(String bpmnProcessId, int version, long processDefinitionKey,
+  public MessageCorrelationPoint(long processDefinitionKey, String bpmnProcessId, int version,
     String messageName, String correlationKey) {
     super(bpmnProcessId, version, processDefinitionKey);
     this.messageName = messageName;
     this.correlationKey = correlationKey;
-    LOG.debug("Registered a MessageInboundTarget: " + this);
+    LOG.debug("Created inbound correlation point: " + this);
   }
 
   public String getMessageName() {
@@ -30,7 +33,7 @@ public class MessageCorrelationPoint extends ProcessCorrelationPoint {
 
   @Override
   public String toString() {
-    return "IntermediateEvent{" +
+    return "MessageCorrelationPoint{" +
       "messageName='" + messageName + '\'' +
       ", correlationKey='" + correlationKey + '\'' +
       '}';

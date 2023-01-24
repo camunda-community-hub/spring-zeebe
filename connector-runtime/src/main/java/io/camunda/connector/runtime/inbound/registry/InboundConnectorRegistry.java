@@ -20,10 +20,14 @@ import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InboundConnectorRegistry {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorRegistry.class);
 
   private Set<Long> registeredProcessDefinitionKeys = new HashSet<>();
   private Map<String, List<WebhookConnectorProperties>> registeredWebhookConnectorsByContextPath =
@@ -104,7 +108,7 @@ public class InboundConnectorRegistry {
 
       // Now check if the webhook was removed in a later version
       // which disables this activation
-      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getConnectorTarget().getVersion()) {
+      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getCorrelationPoint().getVersion()) {
         candidatesByContext.remove(lastConnector.getContext());
       }
 

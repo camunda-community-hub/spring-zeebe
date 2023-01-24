@@ -18,5 +18,6 @@ public class StartEventInboundConnectorResult extends InboundConnectorResult {
       String.valueOf(processInstanceEvent.getProcessDefinitionKey()),
       processInstanceEvent
     );
+    this.responseData = processInstanceEvent;
   }
 }

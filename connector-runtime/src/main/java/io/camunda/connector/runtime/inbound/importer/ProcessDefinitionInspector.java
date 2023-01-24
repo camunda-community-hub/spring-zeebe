@@ -8,6 +8,7 @@ import io.camunda.operate.dto.ProcessDefinition;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.instance.BaseElement;
 import io.camunda.zeebe.model.bpmn.instance.IntermediateCatchEvent;
+import io.camunda.zeebe.model.bpmn.instance.Message;
 import io.camunda.zeebe.model.bpmn.instance.MessageEventDefinition;
 import io.camunda.zeebe.model.bpmn.instance.Process;
 import io.camunda.zeebe.model.bpmn.instance.ReceiveTask;
@@ -122,8 +123,12 @@ public class ProcessDefinitionInspector {
     String key = subscription.getCorrelationKey();
     String name = msgDef.getMessage().getName();
 
-    return Optional.of(new MessageCorrelationPoint(processDefinition.getBpmnProcessId(),
-      processDefinition.getVersion().intValue(), processDefinition.getKey(), name, key));
+    return Optional.of(new MessageCorrelationPoint(
+      processDefinition.getKey(),
+      processDefinition.getBpmnProcessId(),
+      processDefinition.getVersion().intValue(),
+      name,
+      key));
   }
 
   private Optional<ProcessCorrelationPoint> handleStartEvent(StartEvent startEvent) {
@@ -134,7 +139,14 @@ public class ProcessDefinitionInspector {
   }
 
   private Optional<ProcessCorrelationPoint> handleReceiveTask(ReceiveTask receiveTask) {
-    // TODO: implement me
-    throw new RuntimeException("Not implemented");
+    Message message = receiveTask.getMessage();
+    ZeebeSubscription subscription = message.getSingleExtensionElement(ZeebeSubscription.class);
+
+    return Optional.of(new MessageCorrelationPoint(
+      processDefinition.getKey(),
+      processDefinition.getBpmnProcessId(),
+      processDefinition.getVersion().intValue(),
+      message.getName(),
+      subscription.getCorrelationKey()));
   }
 }

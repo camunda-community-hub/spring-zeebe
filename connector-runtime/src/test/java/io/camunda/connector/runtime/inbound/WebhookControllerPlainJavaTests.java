@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
+import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
@@ -34,14 +36,7 @@ import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.ZeebeFuture;
-import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
-import io.camunda.zeebe.client.api.command.FinalCommandStep;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl;
 import java.io.IOException;
-import java.io.InputStream;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +62,11 @@ public class WebhookControllerPlainJavaTests {
   @Test
   public void multipleWebhooksOnSameContextPath() throws IOException {
     InboundConnectorRegistry registry = new InboundConnectorRegistry();
-    InboundConnectorContext connectorContext =
-        InboundConnectorContextBuilder.create().secret("DUMMY_SECRET", "s3cr3T").build();
     ZeebeClient zeebeClient = mock(ZeebeClient.class);
+    InboundConnectorContext connectorContext = InboundConnectorContextBuilder.create()
+      .secret("DUMMY_SECRET", "s3cr3T")
+      .zeebeClient(zeebeClient)
+      .build();
     when(zeebeClient.newCreateInstanceCommand()).thenReturn(new CreateCommandDummy());
     InboundWebhookRestController controller =
         new InboundWebhookRestController(
@@ -109,12 +106,12 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getConnectorTarget().getVersion()); // And the newest one
+    assertEquals(2, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
 
     Collection<WebhookConnectorProperties> connectors2 =
         registry.getWebhookConnectorByContextPath("myPath2");
     assertEquals(1, connectors2.size()); // only one
-    assertEquals(4, connectors2.iterator().next().getConnectorTarget().getVersion()); // And the newest one
+    assertEquals(4, connectors2.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
   }
 
   @Test
@@ -130,7 +127,7 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getConnectorTarget().getVersion()); // And the newest one
+    assertEquals(2, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
 
     Collection<WebhookConnectorProperties> connectors2 =
         registry.getWebhookConnectorByContextPath("myPath2");
@@ -163,7 +160,7 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(3, connectors1.iterator().next().getConnectorTarget().getVersion()); // And the newest one
+    assertEquals(3, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
   }
 
   @Test
@@ -181,7 +178,7 @@ public class WebhookControllerPlainJavaTests {
         registry.getWebhookConnectorByContextPath("myPath");
     assertThat(connectors1)
         .hasSize(2)
-        .extracting((properties -> properties.getConnectorTarget().getProcessDefinitionKey()))
+        .extracting((properties -> properties.getCorrelationPoint().getProcessDefinitionKey()))
         .containsExactly(2L, 5L);
   }
 
@@ -200,7 +197,7 @@ public class WebhookControllerPlainJavaTests {
         registry.getWebhookConnectorByContextPath("myPath");
     assertThat(connectors1)
         .hasSize(1)
-        .extracting(properties -> properties.getConnectorTarget().getProcessDefinitionKey())
+        .extracting(properties -> properties.getCorrelationPoint().getProcessDefinitionKey())
         .containsExactly(5L);
   }
 
@@ -241,78 +238,5 @@ public class WebhookControllerPlainJavaTests {
             "inbound.secret", "TEST",
             "inbound.activationCondition", "=true",
             "inbound.variableMapping", "={}"));
-  }
-
-  public static class ProcessInstanceEventDummy implements ProcessInstanceEvent {
-    public long getProcessDefinitionKey() {
-      return 0;
-    }
-
-    public String getBpmnProcessId() {
-      return null;
-    }
-
-    public int getVersion() {
-      return 0;
-    }
-
-    public long getProcessInstanceKey() {
-      return 0;
-    }
-  }
-
-  public static class CreateCommandDummy
-      implements CreateProcessInstanceCommandStep1,
-          CreateProcessInstanceCommandStep1.CreateProcessInstanceCommandStep2,
-          CreateProcessInstanceCommandStep1.CreateProcessInstanceCommandStep3 {
-    public CreateProcessInstanceCommandStep2 bpmnProcessId(String bpmnProcessId) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 processDefinitionKey(long processDefinitionKey) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 version(int version) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 latestVersion() {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 variables(InputStream variables) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 variables(String variables) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 variables(Map<String, Object> variables) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 variables(Object variables) {
-      return this;
-    }
-
-    public CreateProcessInstanceCommandStep3 startBeforeElement(String elementId) {
-      return this;
-    }
-
-    public CreateProcessInstanceWithResultCommandStep1 withResult() {
-      return null;
-    }
-
-    public FinalCommandStep<ProcessInstanceEvent> requestTimeout(Duration requestTimeout) {
-      return null;
-    }
-
-    public ZeebeFuture<ProcessInstanceEvent> send() {
-      ZeebeClientFutureImpl future = new ZeebeClientFutureImpl<>();
-      future.complete(new ProcessInstanceEventDummy());
-      return future;
-    }
   }
 }

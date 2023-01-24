@@ -15,5 +15,6 @@ public class MessageInboundConnectorResult extends InboundConnectorResult {
   public MessageInboundConnectorResult(
     PublishMessageResponse publishMessageResponse, String correlationKey) {
     super(MessageCorrelationPoint.TYPE_NAME, correlationKey, publishMessageResponse);
+    this.responseData = publishMessageResponse;
   }
 }

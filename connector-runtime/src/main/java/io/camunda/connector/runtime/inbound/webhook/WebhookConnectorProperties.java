@@ -141,7 +141,7 @@ public class WebhookConnectorProperties {
     return genericProperties.getType();
   }
 
-  public ProcessCorrelationPoint getConnectorTarget() {
+  public ProcessCorrelationPoint getCorrelationPoint() {
     return genericProperties.getCorrelationPoint();
   }
 

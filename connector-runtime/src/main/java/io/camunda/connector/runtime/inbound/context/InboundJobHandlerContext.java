@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InboundJobHandlerContext extends AbstractConnectorContext implements InboundConnectorContext {
-  private final Logger LOG = LoggerFactory.getLogger(InboundJobHandlerContext.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InboundJobHandlerContext.class);
 
   private final ZeebeClient zeebeClient;
 
@@ -53,7 +53,7 @@ public class InboundJobHandlerContext extends AbstractConnectorContext implement
         .send()
         .join();
 
-      LOG.debug("Created a process instance with key" + result.getProcessInstanceKey());
+      LOG.info("Created a process instance with key" + result.getProcessInstanceKey());
       return new StartEventInboundConnectorResult(result);
 
     } catch (Exception e) {
@@ -72,7 +72,7 @@ public class InboundJobHandlerContext extends AbstractConnectorContext implement
         .send()
         .join();
 
-      LOG.debug("Published message with key: " + response.getMessageKey());
+      LOG.info("Published message with key: " + response.getMessageKey());
       return new MessageInboundConnectorResult(response, correlationPoint.getCorrelationKey());
 
     } catch (Exception e) {

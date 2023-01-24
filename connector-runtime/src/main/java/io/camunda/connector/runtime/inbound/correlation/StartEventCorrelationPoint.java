@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Inbound connector is mapped to a StartEvent
+ * Properties of a StartEvent triggered by an Inbound Connector
  */
 public class StartEventCorrelationPoint extends ProcessCorrelationPoint {
 
@@ -15,12 +15,12 @@ public class StartEventCorrelationPoint extends ProcessCorrelationPoint {
 
   public StartEventCorrelationPoint(long processDefinitionKey, String bpmnProcessId, int version) {
     super(bpmnProcessId, version, processDefinitionKey);
-    LOG.debug("Registered a StartEventInboundTarget: " + this);
+    LOG.debug("Created inbound correlation point: " + this);
   }
 
   @Override
   public String toString() {
-    return "StartEvent{" +
+    return "StartEventCorrelationPoint{" +
       "processDefinitionKey=" + processDefinitionKey +
       ", bpmnProcessId='" + bpmnProcessId + '\'' +
       ", version=" + version +

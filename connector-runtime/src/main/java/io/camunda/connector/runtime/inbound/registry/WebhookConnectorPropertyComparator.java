@@ -23,12 +23,12 @@ public class WebhookConnectorPropertyComparator implements Comparator<WebhookCon
 
   @Override
   public int compare(WebhookConnectorProperties o1, WebhookConnectorProperties o2) {
-    if (o1 == null || o1.getConnectorTarget() == null) {
+    if (o1 == null || o1.getCorrelationPoint() == null) {
       return 1;
     }
-    if (o2 == null || o2.getConnectorTarget() == null) {
+    if (o2 == null || o2.getCorrelationPoint() == null) {
       return -1;
     }
-    return o1.getConnectorTarget().compareTo(o2.getConnectorTarget());
+    return o1.getCorrelationPoint().compareTo(o2.getCorrelationPoint());
   }
 }
