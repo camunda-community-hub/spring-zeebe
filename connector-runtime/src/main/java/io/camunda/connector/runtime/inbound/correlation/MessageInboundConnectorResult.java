@@ -1,7 +1,7 @@
-package io.camunda.connector.runtime.inbound.correlation.result;
+package io.camunda.connector.runtime.inbound.correlation;
 
 import io.camunda.connector.api.inbound.InboundConnectorResult;
-import io.camunda.connector.runtime.inbound.correlation.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 
 public class MessageInboundConnectorResult extends InboundConnectorResult {

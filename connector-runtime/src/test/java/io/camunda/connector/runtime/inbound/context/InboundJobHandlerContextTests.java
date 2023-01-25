@@ -1,8 +1,8 @@
-package io.camunda.connector.runtime.inbound;
+package io.camunda.connector.runtime.inbound.context;
 
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.runtime.inbound.correlation.MessageCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
 import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
 import io.camunda.connector.runtime.inbound.util.command.PublishMessageCommandDummy;
@@ -57,8 +57,9 @@ public class InboundJobHandlerContextTests {
   @Test
   public void message_shouldCallCorrectZeebeMethod() {
     // given
-    var point = new MessageCorrelationPoint(0, "process1", 0, "msg1", "key");
-    Map<String, Object> variables = Map.of("testKey", "testValue");
+    var correlationKeyValue = "someTestCorrelationKeyValue";
+    var point = new MessageCorrelationPoint(0, "process1", 0, "msg1", "=correlationKey");
+    Map<String, Object> variables = Map.of("correlationKey", correlationKeyValue);
 
     var dummyCommand = spy(new PublishMessageCommandDummy());
     when(zeebeClient.newPublishMessageCommand()).thenReturn(dummyCommand);
@@ -71,7 +72,7 @@ public class InboundJobHandlerContextTests {
     verifyNoMoreInteractions(zeebeClient);
 
     verify(dummyCommand).messageName(point.getMessageName());
-    verify(dummyCommand).correlationKey(point.getCorrelationKey());
+    verify(dummyCommand).correlationKey(correlationKeyValue);
     verify(dummyCommand).variables(variables);
     verify(dummyCommand).send();
   }

@@ -18,8 +18,7 @@ package io.camunda.connector.runtime.inbound;
 
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.result.StartEventInboundConnectorResult;
+import io.camunda.connector.runtime.inbound.correlation.StartEventInboundConnectorResult;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;

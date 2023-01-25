@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
 import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;

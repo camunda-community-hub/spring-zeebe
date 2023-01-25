@@ -6,10 +6,11 @@ import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.context.AbstractConnectorContext;
-import io.camunda.connector.runtime.inbound.correlation.MessageCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.result.MessageInboundConnectorResult;
-import io.camunda.connector.runtime.inbound.correlation.result.StartEventInboundConnectorResult;
+import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
+import io.camunda.connector.runtime.inbound.correlation.MessageInboundConnectorResult;
+import io.camunda.connector.runtime.inbound.correlation.StartEventInboundConnectorResult;
+import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
@@ -22,11 +23,14 @@ public class InboundJobHandlerContext extends AbstractConnectorContext implement
 
   private final ZeebeClient zeebeClient;
 
+  private final FeelEngineWrapper feelEngine;
+
   public InboundJobHandlerContext(
     SecretProvider secretProvider,
-    ZeebeClient zeebeClient) {
+    ZeebeClient zeebeClient, FeelEngineWrapper feelEngine) {
     super(secretProvider);
     this.zeebeClient = zeebeClient;
+    this.feelEngine = feelEngine;
   }
 
   @Override
@@ -64,16 +68,19 @@ public class InboundJobHandlerContext extends AbstractConnectorContext implement
 
   private InboundConnectorResult triggerMessage(
     MessageCorrelationPoint correlationPoint, Map<String, Object> variables) {
+
+    String correlationKey = feelEngine.evaluate(correlationPoint.getCorrelationKeyMapping(), variables);
+
     try {
       PublishMessageResponse response = zeebeClient.newPublishMessageCommand()
         .messageName(correlationPoint.getMessageName())
-        .correlationKey(correlationPoint.getCorrelationKey())
+        .correlationKey(correlationKey)
         .variables(variables)
         .send()
         .join();
 
       LOG.info("Published message with key: " + response.getMessageKey());
-      return new MessageInboundConnectorResult(response, correlationPoint.getCorrelationKey());
+      return new MessageInboundConnectorResult(response, correlationKey);
 
     } catch (Exception e) {
       throw new ConnectorException(

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;

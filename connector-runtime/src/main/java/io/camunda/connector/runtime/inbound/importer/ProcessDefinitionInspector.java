@@ -2,8 +2,8 @@ package io.camunda.connector.runtime.inbound.importer;
 
 import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.MessageCorrelationPoint;
-import io.camunda.connector.runtime.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
 import io.camunda.operate.dto.ProcessDefinition;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.instance.BaseElement;
@@ -14,7 +14,7 @@ import io.camunda.zeebe.model.bpmn.instance.Process;
 import io.camunda.zeebe.model.bpmn.instance.ReceiveTask;
 import io.camunda.zeebe.model.bpmn.instance.StartEvent;
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeProperties;
-import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeSubscription;
+import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,22 +113,21 @@ public class ProcessDefinitionInspector {
         new IllegalStateException("Sanity check failed: IntermediateCatchEvent " +
           catchEvent + " must contain at least one event definition"));
 
-    ZeebeSubscription subscription = msgDef.getMessage()
-      .getSingleExtensionElement(ZeebeSubscription.class);
-    if (subscription == null) {
-      LOG.warn("Sanity check failed: no ZeebeSubscription matching the event definition");
+    String name = msgDef.getMessage().getName();
+
+    ZeebeProperties zeebeProperties = catchEvent.getSingleExtensionElement(ZeebeProperties.class);
+    if (zeebeProperties == null) {
+      LOG.warn("Missing correlation key mapping");
       return Optional.empty();
     }
-
-    String key = subscription.getCorrelationKey();
-    String name = msgDef.getMessage().getName();
+    String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
     return Optional.of(new MessageCorrelationPoint(
       processDefinition.getKey(),
       processDefinition.getBpmnProcessId(),
       processDefinition.getVersion().intValue(),
       name,
-      key));
+      correlationKeyMapping));
   }
 
   private Optional<ProcessCorrelationPoint> handleStartEvent(StartEvent startEvent) {
@@ -140,13 +139,27 @@ public class ProcessDefinitionInspector {
 
   private Optional<ProcessCorrelationPoint> handleReceiveTask(ReceiveTask receiveTask) {
     Message message = receiveTask.getMessage();
-    ZeebeSubscription subscription = message.getSingleExtensionElement(ZeebeSubscription.class);
+
+    ZeebeProperties zeebeProperties = receiveTask.getSingleExtensionElement(ZeebeProperties.class);
+    if (zeebeProperties == null) {
+      LOG.warn("Missing correlation key mapping");
+      return Optional.empty();
+    }
+    String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
     return Optional.of(new MessageCorrelationPoint(
       processDefinition.getKey(),
       processDefinition.getBpmnProcessId(),
       processDefinition.getVersion().intValue(),
       message.getName(),
-      subscription.getCorrelationKey()));
+      correlationKeyMapping));
+  }
+
+  private String extractCorrelationKeyMapping(ZeebeProperties properties) {
+    return properties.getProperties().stream()
+      .filter(property -> property.getName().equals("inbound.correlationKeyMapping"))
+      .findAny()
+      .map(ZeebeProperty::getValue)
+      .orElse(null);
   }
 }
