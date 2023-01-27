@@ -29,5 +29,5 @@ vscode_workspace.code-workspace
 *.project
 *.classpath
 *.factorypath
-.vscode/*
+.vscode/
 .attach_pid*
