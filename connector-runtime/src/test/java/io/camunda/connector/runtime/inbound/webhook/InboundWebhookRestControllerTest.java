@@ -80,7 +80,10 @@ class InboundWebhookRestControllerTest {
           "inbound.context", DEFAULT_CONTEXT,
           "inbound.activationCondition", evaluationExpression,
           "inbound.variableMapping", variablesMapping,
-          "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.disabled.name()));
+          "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.disabled.name()),
+        "proc-id",
+        2,
+        1);
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -119,7 +122,11 @@ class InboundWebhookRestControllerTest {
           "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.enabled.name(),
           "inbound.hmacSecret", "",
           "inbound.hmacHeader", "hmac-header",
-          "inbound.hmacAlgorithm", "sha_256"));
+          "inbound.hmacAlgorithm", "sha_256"),
+        "proc-id",
+        2,
+        1
+        );
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -150,7 +157,10 @@ class InboundWebhookRestControllerTest {
           "inbound.variableMapping",
           "",
           "inbound.shouldValidateHmac",
-          HMACSwitchCustomerChoice.disabled.name()));
+          HMACSwitchCustomerChoice.disabled.name()),
+        "proc-id",
+        2,
+        1);
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
@@ -182,7 +192,10 @@ class InboundWebhookRestControllerTest {
           "inbound.variableMapping",
           "",
           "inbound.shouldValidateHmac",
-          HMACSwitchCustomerChoice.disabled.name()));
+          HMACSwitchCustomerChoice.disabled.name()),
+        "proc-id",
+        2,
+        1);
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
     when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));

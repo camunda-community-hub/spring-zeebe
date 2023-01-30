@@ -106,12 +106,12 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
+    assertEquals(2, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
 
     Collection<WebhookConnectorProperties> connectors2 =
         registry.getWebhookConnectorByContextPath("myPath2");
     assertEquals(1, connectors2.size()); // only one
-    assertEquals(4, connectors2.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
+    assertEquals(4, connectors2.iterator().next().getProcessDefinitionVersion()); // And the newest one
   }
 
   @Test
@@ -127,7 +127,7 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
+    assertEquals(2, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
 
     Collection<WebhookConnectorProperties> connectors2 =
         registry.getWebhookConnectorByContextPath("myPath2");
@@ -160,7 +160,7 @@ public class WebhookControllerPlainJavaTests {
     Collection<WebhookConnectorProperties> connectors1 =
         registry.getWebhookConnectorByContextPath("myPath");
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(3, connectors1.iterator().next().getCorrelationPoint().getVersion()); // And the newest one
+    assertEquals(3, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
   }
 
   @Test
@@ -178,7 +178,7 @@ public class WebhookControllerPlainJavaTests {
         registry.getWebhookConnectorByContextPath("myPath");
     assertThat(connectors1)
         .hasSize(2)
-        .extracting((properties -> properties.getCorrelationPoint().getProcessDefinitionKey()))
+        .extracting((WebhookConnectorProperties::getProcessDefinitionKey))
         .containsExactly(2L, 5L);
   }
 
@@ -197,7 +197,7 @@ public class WebhookControllerPlainJavaTests {
         registry.getWebhookConnectorByContextPath("myPath");
     assertThat(connectors1)
         .hasSize(1)
-        .extracting(properties -> properties.getCorrelationPoint().getProcessDefinitionKey())
+        .extracting(WebhookConnectorProperties::getProcessDefinitionKey)
         .containsExactly(5L);
   }
 
@@ -231,12 +231,15 @@ public class WebhookControllerPlainJavaTests {
 
     return new InboundConnectorProperties(
       new StartEventCorrelationPoint(processDefinitionKey, bpmnProcessId, version),
-        Map.of(
-            "inbound.type", "webhook",
-            "inbound.context", contextPath,
-            "inbound.secretExtractor", "=\"TEST\"",
-            "inbound.secret", "TEST",
-            "inbound.activationCondition", "=true",
-            "inbound.variableMapping", "={}"));
+      Map.of(
+        "inbound.type", "webhook",
+        "inbound.context", contextPath,
+        "inbound.secretExtractor", "=\"TEST\"",
+        "inbound.secret", "TEST",
+        "inbound.activationCondition", "=true",
+        "inbound.variableMapping", "={}"),
+      bpmnProcessId,
+      version,
+      processDefinitionKey);
   }
 }

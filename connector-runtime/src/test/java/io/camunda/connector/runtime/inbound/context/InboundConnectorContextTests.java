@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class InboundJobHandlerContextTests {
+public class InboundConnectorContextTests {
 
   private ZeebeClient zeebeClient;
   private InboundConnectorContext connectorContext;
@@ -58,7 +58,7 @@ public class InboundJobHandlerContextTests {
   public void message_shouldCallCorrectZeebeMethod() {
     // given
     var correlationKeyValue = "someTestCorrelationKeyValue";
-    var point = new MessageCorrelationPoint(0, "process1", 0, "msg1", "=correlationKey");
+    var point = new MessageCorrelationPoint("msg1", "=correlationKey");
     Map<String, Object> variables = Map.of("correlationKey", correlationKeyValue);
 
     var dummyCommand = spy(new PublishMessageCommandDummy());

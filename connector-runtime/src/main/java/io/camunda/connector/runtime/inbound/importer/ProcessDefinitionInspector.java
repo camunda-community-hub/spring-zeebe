@@ -24,8 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Inspects the imported process definitions and extracts
- * Inbound Connector definitions as {@link ProcessCorrelationPoint}.
+ * Inspects the imported process definitions and extracts Inbound Connector definitions as {@link ProcessCorrelationPoint}.
  */
 public class ProcessDefinitionInspector {
 
@@ -84,7 +83,10 @@ public class ProcessDefinitionInspector {
           .collect(
             HashMap::new,
             (m, zeebeProperty) -> m.put(zeebeProperty.getName(), zeebeProperty.getValue()),
-            HashMap::putAll));
+            HashMap::putAll),
+        processDefinition.getBpmnProcessId(),
+        processDefinition.getVersion().intValue(),
+        processDefinition.getKey());
 
       discoveredConnectors.add(properties);
     }
@@ -122,12 +124,7 @@ public class ProcessDefinitionInspector {
     }
     String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
-    return Optional.of(new MessageCorrelationPoint(
-      processDefinition.getKey(),
-      processDefinition.getBpmnProcessId(),
-      processDefinition.getVersion().intValue(),
-      name,
-      correlationKeyMapping));
+    return Optional.of(new MessageCorrelationPoint(name, correlationKeyMapping));
   }
 
   private Optional<ProcessCorrelationPoint> handleStartEvent(StartEvent startEvent) {
@@ -147,12 +144,7 @@ public class ProcessDefinitionInspector {
     }
     String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
-    return Optional.of(new MessageCorrelationPoint(
-      processDefinition.getKey(),
-      processDefinition.getBpmnProcessId(),
-      processDefinition.getVersion().intValue(),
-      message.getName(),
-      correlationKeyMapping));
+    return Optional.of(new MessageCorrelationPoint(message.getName(), correlationKeyMapping));
   }
 
   private String extractCorrelationKeyMapping(ZeebeProperties properties) {

@@ -16,9 +16,8 @@
  */
 package io.camunda.connector.runtime.inbound.util;
 
-import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.secret.SecretProvider;
-import io.camunda.connector.runtime.inbound.context.InboundJobHandlerContext;
+import io.camunda.connector.runtime.inbound.context.InboundConnectorContext;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.util.HashMap;
@@ -68,10 +67,10 @@ public class InboundConnectorContextBuilder {
   }
 
   /**
-   * @return the {@link InboundConnectorContext} including all
+   * @return the {@link io.camunda.connector.api.inbound.InboundConnectorContext} including all
    *     previously defined properties
    */
-  public InboundJobHandlerContext build() {
-    return new InboundJobHandlerContext(secretProvider, zeebeClient, feelEngine);
+  public InboundConnectorContext build() {
+    return new InboundConnectorContext(secretProvider, zeebeClient, feelEngine);
   }
 }

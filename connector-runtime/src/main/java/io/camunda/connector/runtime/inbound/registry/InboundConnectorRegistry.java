@@ -76,7 +76,7 @@ public class InboundConnectorRegistry {
         new WebhookConnectorProperties(properties);
 
     ProcessCorrelationPoint correlationPoint = properties.getCorrelationPoint();
-    String bpmnId = correlationPoint.getBpmnProcessId();
+    String bpmnId = properties.getBpmnProcessId();
 
     if (!sortedWebhookConnectorsByBpmnId.containsKey(bpmnId)) {
       sortedWebhookConnectorsByBpmnId.put(
@@ -108,7 +108,7 @@ public class InboundConnectorRegistry {
 
       // Now check if the webhook was removed in a later version
       // which disables this activation
-      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getCorrelationPoint().getVersion()) {
+      if (hasLatestVersion(bpmnId) && getLatestVersion(bpmnId) > lastConnector.getProcessDefinitionVersion()) {
         candidatesByContext.remove(lastConnector.getContext());
       }
 

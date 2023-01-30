@@ -50,9 +50,9 @@ public class WebhookConnectorProperties {
       + "-"
       + getContext()
       + "-"
-      + genericProperties.getCorrelationPoint().getBpmnProcessId()
+      + genericProperties.getBpmnProcessId()
       + "-"
-      + genericProperties.getCorrelationPoint().getVersion();
+      + genericProperties.getVersion();
   }
 
   protected String readPropertyWithDefault(String propertyName, String defaultValue) {
@@ -143,6 +143,18 @@ public class WebhookConnectorProperties {
 
   public ProcessCorrelationPoint getCorrelationPoint() {
     return genericProperties.getCorrelationPoint();
+  }
+
+  public String getBpmnProcessId() {
+    return genericProperties.getBpmnProcessId();
+  }
+
+  public int getProcessDefinitionVersion() {
+    return genericProperties.getVersion();
+  }
+
+  public long getProcessDefinitionKey() {
+    return genericProperties.getProcessDefinitionKey();
   }
 
   @Override

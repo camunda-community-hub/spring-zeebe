@@ -1,7 +1,6 @@
 package io.camunda.connector.runtime.inbound.context;
 
 import io.camunda.connector.api.error.ConnectorException;
-import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.api.secret.SecretProvider;
@@ -18,14 +17,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InboundJobHandlerContext extends AbstractConnectorContext implements InboundConnectorContext {
-  private static final Logger LOG = LoggerFactory.getLogger(InboundJobHandlerContext.class);
+public class InboundConnectorContext extends AbstractConnectorContext implements
+  io.camunda.connector.api.inbound.InboundConnectorContext {
+  private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorContext.class);
 
   private final ZeebeClient zeebeClient;
 
   private final FeelEngineWrapper feelEngine;
 
-  public InboundJobHandlerContext(
+  public InboundConnectorContext(
     SecretProvider secretProvider,
     ZeebeClient zeebeClient, FeelEngineWrapper feelEngine) {
     super(secretProvider);
@@ -69,7 +69,7 @@ public class InboundJobHandlerContext extends AbstractConnectorContext implement
   private InboundConnectorResult triggerMessage(
     MessageCorrelationPoint correlationPoint, Map<String, Object> variables) {
 
-    String correlationKey = feelEngine.evaluate(correlationPoint.getCorrelationKeyMapping(), variables);
+    String correlationKey = feelEngine.evaluate(correlationPoint.getCorrelationKeyExpression(), variables);
 
     try {
       PublishMessageResponse response = zeebeClient.newPublishMessageCommand()
