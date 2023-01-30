@@ -17,7 +17,8 @@
 package io.camunda.connector.runtime.inbound.webhook;
 
 import io.camunda.connector.api.annotation.Secret;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorProperties;
+import io.camunda.connector.api.inbound.InboundConnectorProperties;
+import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 
 public class WebhookConnectorProperties {
@@ -136,16 +137,20 @@ public class WebhookConnectorProperties {
     this.hmacAlgorithm = hmacAlgorithm;
   }
 
+  public String getType() {
+    return genericProperties.getType();
+  }
+
+  public ProcessCorrelationPoint getCorrelationPoint() {
+    return genericProperties.getCorrelationPoint();
+  }
+
   public String getBpmnProcessId() {
     return genericProperties.getBpmnProcessId();
   }
 
-  public int getVersion() {
+  public int getProcessDefinitionVersion() {
     return genericProperties.getVersion();
-  }
-
-  public String getType() {
-    return genericProperties.getType();
   }
 
   public long getProcessDefinitionKey() {

@@ -16,10 +16,10 @@
  */
 package io.camunda.connector.runtime.inbound.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.secret.SecretProvider;
-import io.camunda.connector.runtime.util.inbound.InboundJobHandlerContext;
+import io.camunda.connector.runtime.inbound.context.InboundConnectorContextImpl;
+import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,7 +40,10 @@ public class LocalContextBeanConfiguration {
   }
 
   @Bean
-  public InboundConnectorContext jobHandlerContext(final SecretProvider secretProvider) {
-    return new InboundJobHandlerContext(secretProvider);
+  public io.camunda.connector.api.inbound.InboundConnectorContext jobHandlerContext(
+    final SecretProvider secretProvider,
+    final ZeebeClient zeebeClient,
+    final FeelEngineWrapper feelEngine) {
+    return new InboundConnectorContextImpl(secretProvider, zeebeClient, feelEngine);
   }
 }

@@ -16,7 +16,9 @@
  */
 package io.camunda.connector.runtime.inbound;
 
+import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
+import io.camunda.connector.runtime.inbound.correlation.StartEventInboundConnectorResult;
 import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
@@ -40,6 +42,7 @@ import static io.camunda.connector.runtime.inbound.WebhookControllerPlainJavaTes
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
@@ -71,7 +74,6 @@ class WebhookControllerTestZeebeTests {
     registry.reset();
     registry.registerWebhookConnector(webhookProperties("processA", "myPath"));
     registry.registerWebhookConnector(webhookProperties("processB", "myPath"));
-    ;
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
@@ -84,15 +86,21 @@ class WebhookControllerTestZeebeTests {
         Set.of("webhook-myPath-processA-1", "webhook-myPath-processB-1"),
         responseEntity.getBody().getExecutedConnectors().keySet());
 
-    ProcessInstanceEvent piA =
+    InboundConnectorResult piA =
         responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processA-1");
-    waitForProcessInstanceCompleted(piA);
-    assertThat(piA).isCompleted();
+    assertInstanceOf(StartEventInboundConnectorResult.class, piA);
+    ProcessInstanceEvent piEventA = ((StartEventInboundConnectorResult) piA).getResponseData();
 
-    ProcessInstanceEvent piB =
+    waitForProcessInstanceCompleted(piEventA);
+    assertThat(piEventA).isCompleted();
+
+    InboundConnectorResult piB =
         responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processB-1");
-    waitForProcessInstanceCompleted(piB);
-    assertThat(piB).isCompleted();
+    assertInstanceOf(StartEventInboundConnectorResult.class, piB);
+    ProcessInstanceEvent piEventB = ((StartEventInboundConnectorResult) piB).getResponseData();
+
+    waitForProcessInstanceCompleted(piEventB);
+    assertThat(piEventB).isCompleted();
   }
 
   public void deployProcess(String bpmnProcessId) {
