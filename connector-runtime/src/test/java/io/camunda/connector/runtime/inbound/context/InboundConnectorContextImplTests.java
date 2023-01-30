@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class InboundConnectorContextTests {
+public class InboundConnectorContextImplTests {
 
   private ZeebeClient zeebeClient;
   private InboundConnectorContext connectorContext;

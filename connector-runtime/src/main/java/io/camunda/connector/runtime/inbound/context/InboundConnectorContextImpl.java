@@ -1,6 +1,7 @@
 package io.camunda.connector.runtime.inbound.context;
 
 import io.camunda.connector.api.error.ConnectorException;
+import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.api.secret.SecretProvider;
@@ -17,15 +18,16 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InboundConnectorContext extends AbstractConnectorContext implements
-  io.camunda.connector.api.inbound.InboundConnectorContext {
-  private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorContext.class);
+public class InboundConnectorContextImpl extends AbstractConnectorContext
+  implements InboundConnectorContext {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorContextImpl.class);
 
   private final ZeebeClient zeebeClient;
 
   private final FeelEngineWrapper feelEngine;
 
-  public InboundConnectorContext(
+  public InboundConnectorContextImpl(
     SecretProvider secretProvider,
     ZeebeClient zeebeClient, FeelEngineWrapper feelEngine) {
     super(secretProvider);
