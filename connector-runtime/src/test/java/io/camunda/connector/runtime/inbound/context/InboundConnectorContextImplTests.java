@@ -50,7 +50,7 @@ public class InboundConnectorContextImplTests {
 
     verify(dummyCommand).bpmnProcessId(point.getBpmnProcessId());
     verify(dummyCommand).version(point.getVersion());
-    verify(dummyCommand).variables(variables);
+    verify(dummyCommand).variables((Object) variables);
     verify(dummyCommand).send();
   }
 
@@ -73,7 +73,7 @@ public class InboundConnectorContextImplTests {
 
     verify(dummyCommand).messageName(point.getMessageName());
     verify(dummyCommand).correlationKey(correlationKeyValue);
-    verify(dummyCommand).variables(variables);
+    verify(dummyCommand).variables((Object) variables);
     verify(dummyCommand).send();
   }
 }
