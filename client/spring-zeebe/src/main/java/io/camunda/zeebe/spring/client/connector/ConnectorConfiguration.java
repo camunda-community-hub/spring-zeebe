@@ -3,6 +3,8 @@ package io.camunda.zeebe.spring.client.connector;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.config.ConnectorConfigurationUtil;
 import io.camunda.connector.impl.config.ConnectorPropertyResolver;
+import io.camunda.connector.runtime.util.outbound.DefaultOutboundConnectorFactory;
+import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -14,8 +16,16 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class ConnectorConfiguration {
 
   @Bean
-  public OutboundConnectorManager outboundConnectorManager(final JobWorkerManager jobWorkerManager) {
-    return new OutboundConnectorManager(jobWorkerManager);
+  public OutboundConnectorFactory outboundConnectorFactory() {
+    return new DefaultOutboundConnectorFactory();
+  }
+
+  @Bean
+  public OutboundConnectorManager outboundConnectorManager(
+    final JobWorkerManager jobWorkerManager,
+    final OutboundConnectorFactory outboundConnectorFactory) {
+
+    return new OutboundConnectorManager(jobWorkerManager, outboundConnectorFactory);
   }
 
   public static class OnMissingSecretProvider implements Condition {

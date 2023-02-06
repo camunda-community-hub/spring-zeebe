@@ -1,5 +1,4 @@
-/*
- * Copyright Camunda Services GmbH and/or licensed to Camunda Services GmbH
+/* Copyright Camunda Services GmbH and/or licensed to Camunda Services GmbH
  * under one or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information regarding copyright
  * ownership. Camunda licenses this file to you under the Apache License,
@@ -17,8 +16,8 @@
 package io.camunda.connector.runtime.inbound.webhook;
 
 import io.camunda.connector.api.annotation.Secret;
-import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
+import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 
 public class WebhookConnectorProperties {

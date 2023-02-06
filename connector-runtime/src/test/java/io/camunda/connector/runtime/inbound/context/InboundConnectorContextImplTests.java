@@ -1,8 +1,8 @@
 package io.camunda.connector.runtime.inbound.context;
 
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
-import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
 import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
 import io.camunda.connector.runtime.inbound.util.command.PublishMessageCommandDummy;

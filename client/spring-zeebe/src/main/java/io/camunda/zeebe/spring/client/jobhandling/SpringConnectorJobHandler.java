@@ -1,10 +1,12 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
 import io.camunda.connector.api.error.BpmnError;
+import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
 import io.camunda.connector.runtime.util.outbound.ConnectorJobHandler;
 import io.camunda.connector.runtime.util.outbound.ConnectorResult;
+import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
@@ -15,9 +17,14 @@ public class SpringConnectorJobHandler extends ConnectorJobHandler {
   private final OutboundConnectorConfiguration connectorConfiguration;
   private final MetricsRecorder metrics;
 
-  public SpringConnectorJobHandler(OutboundConnectorConfiguration connectorConfiguration, SecretProvider secretProvider,
-                                   CommandExceptionHandlingStrategy commandExceptionHandlingStrategy, MetricsRecorder metrics) {
-    super(connectorConfiguration.getFunction(), secretProvider);
+  public SpringConnectorJobHandler(
+    OutboundConnectorConfiguration connectorConfiguration,
+    OutboundConnectorFunction connectorFunction,
+    SecretProvider secretProvider,
+    CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
+    MetricsRecorder metrics) {
+
+    super(connectorFunction, secretProvider);
     this.connectorConfiguration = connectorConfiguration;
     this.metrics = metrics;
     this.secretProvider = secretProvider;

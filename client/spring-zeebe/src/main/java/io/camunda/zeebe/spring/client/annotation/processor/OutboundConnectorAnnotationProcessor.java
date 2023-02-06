@@ -3,21 +3,15 @@ package io.camunda.zeebe.spring.client.annotation.processor;
 import io.camunda.connector.api.annotation.OutboundConnector;
 import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorRegistrationHelper;
+import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
-import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  */
@@ -26,9 +20,13 @@ public class OutboundConnectorAnnotationProcessor extends AbstractZeebeAnnotatio
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final OutboundConnectorManager outboundConnectorManager;
+  private final OutboundConnectorFactory outboundConnectorFactory;
 
-  public OutboundConnectorAnnotationProcessor(final OutboundConnectorManager outboundConnectorManager) {
+  public OutboundConnectorAnnotationProcessor(
+    final OutboundConnectorManager outboundConnectorManager,
+    final OutboundConnectorFactory outboundConnectorFactory) {
     this.outboundConnectorManager = outboundConnectorManager;
+    this.outboundConnectorFactory = outboundConnectorFactory;
   }
 
   @Override
@@ -36,18 +34,19 @@ public class OutboundConnectorAnnotationProcessor extends AbstractZeebeAnnotatio
     return beanInfo.hasClassAnnotation(OutboundConnector.class);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void configureFor(ClassInfo beanInfo) {
     Optional<OutboundConnector> annotation = beanInfo.getAnnotation(OutboundConnector.class);
     if (annotation.isPresent()) {
-      OutboundConnectorConfiguration connector = new OutboundConnectorConfiguration()
-            .setFunction((OutboundConnectorFunction) beanInfo.getBean())
-            .setType(annotation.get().type())
-            .setName(annotation.get().name())
-            .setInputVariables(annotation.get().inputVariables());
+      OutboundConnectorConfiguration connector = new OutboundConnectorConfiguration(
+        annotation.get().name(),
+        annotation.get().inputVariables(),
+        annotation.get().type(),
+        (Class<? extends OutboundConnectorFunction>) beanInfo.getTargetClass());
 
       LOGGER.info("Configuring outbound connector {} of bean '{}'", connector, beanInfo.getBeanName());
-      outboundConnectorManager.addConnectorDefinition(connector);
+      outboundConnectorFactory.registerConfiguration(connector);
     }
   }
 

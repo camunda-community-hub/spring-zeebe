@@ -1,8 +1,10 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.connector.api.outbound.OutboundConnectorFunction;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
+import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -40,6 +42,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private final SecretProvider secretProvider;
   private final JsonMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
+  private final OutboundConnectorFactory outboundConnectorFactory;
 
   // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
   private OutboundConnectorConfiguration outboundConnectorConfiguration;
@@ -53,68 +56,89 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
     this.secretProvider = null;
+    this.outboundConnectorFactory = null;
   }
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
                                        CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                        SecretProvider secretProvider,
-                                       OutboundConnectorConfiguration connector,
+                                       OutboundConnectorConfiguration connectorConfiguration,
+                                       OutboundConnectorFactory outboundConnectorFactory,
                                        JsonMapper jsonMapper,
                                        MetricsRecorder metricsRecorder) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.secretProvider = secretProvider;
-    this.outboundConnectorConfiguration = connector;
+    this.outboundConnectorConfiguration = connectorConfiguration;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
+    this.outboundConnectorFactory = outboundConnectorFactory;
   }
 
   @Override
-  public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
+  public void handle(JobClient jobClient, ActivatedJob job) {
     if (outboundConnectorConfiguration!=null) {
-      LOG.trace("Handle {} and execute connector {}", job, outboundConnectorConfiguration);
-      metricsRecorder.executeWithTimer(job.getType(), () -> {
-        new SpringConnectorJobHandler(outboundConnectorConfiguration, secretProvider, commandExceptionHandlingStrategy, metricsRecorder).handle(jobClient, job);
-      });
-
+      handleConnectorJobWorker(jobClient, job);
     } else { // "normal" @JobWorker
-      // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
-      List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
-      LOG.trace("Handle {} and invoke worker {}", job, workerValue);
-      try {
-        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_ACTIVATED, job.getType());
-        Object result = null;
-        try {
-          result = workerValue.getMethodInfo().invoke(args.toArray());
-        } catch (Throwable t) {
-          metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, job.getType());
-          // normal exceptions are handled by JobRunnableFactory
-          // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
-          // which leads to retrying
-          throw t;
-        }
+      handleRegularJobWorker(jobClient, job);
+    }
+  }
 
-        if (workerValue.getAutoComplete()) {
-          LOG.trace("Auto completing {}", job);
-          // TODO: We should probably move the metrics recording to the callback of a successful command execution to avoid wrong counts
-          metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, job.getType());
-          CommandWrapper command = new CommandWrapper(
-            createCompleteCommand(jobClient, job, result),
-            job,
-            commandExceptionHandlingStrategy);
-          command.executeAsync();
-        }
+  private void handleConnectorJobWorker(JobClient jobClient, ActivatedJob job) {
+    if (outboundConnectorFactory == null) {
+      throw new IllegalStateException("Connector factory is not initialized");
+    }
+    OutboundConnectorFunction connectorFunction = outboundConnectorFactory
+      .getInstance(outboundConnectorConfiguration.getType());
+
+    LOG.trace("Handle {} and execute connector {}", job, outboundConnectorConfiguration);
+
+    metricsRecorder.executeWithTimer(job.getType(), () -> new SpringConnectorJobHandler(
+      outboundConnectorConfiguration,
+      connectorFunction,
+      secretProvider,
+      commandExceptionHandlingStrategy,
+      metricsRecorder
+    ).handle(jobClient, job));
+  }
+
+  private void handleRegularJobWorker(JobClient jobClient, ActivatedJob job) {
+    // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
+    List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
+    LOG.trace("Handle {} and invoke worker {}", job, workerValue);
+    try {
+      metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_ACTIVATED, job.getType());
+      Object result = null;
+      try {
+        result = workerValue.getMethodInfo().invoke(args.toArray());
+      } catch (Throwable t) {
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, job.getType());
+        // normal exceptions are handled by JobRunnableFactory
+        // (https://github.com/camunda-cloud/zeebe/blob/develop/clients/java/src/main/java/io/camunda/zeebe/client/impl/worker/JobRunnableFactory.java#L45)
+        // which leads to retrying
+        throw t;
       }
-      catch (ZeebeBpmnError bpmnError) {
-        LOG.trace("Catched BPMN error on {}", job);
+
+      if (workerValue.getAutoComplete()) {
+        LOG.trace("Auto completing {}", job);
         // TODO: We should probably move the metrics recording to the callback of a successful command execution to avoid wrong counts
-        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, job.getType());
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, job.getType());
         CommandWrapper command = new CommandWrapper(
-          createThrowErrorCommand(jobClient, job, bpmnError),
+          createCompleteCommand(jobClient, job, result),
           job,
           commandExceptionHandlingStrategy);
         command.executeAsync();
       }
+    }
+    catch (ZeebeBpmnError bpmnError) {
+      LOG.trace("Catched BPMN error on {}", job);
+      // TODO: We should probably move the metrics recording to the callback of a successful command execution to avoid wrong counts
+      metricsRecorder.increase(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, job.getType());
+      CommandWrapper command = new CommandWrapper(
+        createThrowErrorCommand(jobClient, job, bpmnError),
+        job,
+        commandExceptionHandlingStrategy);
+      command.executeAsync();
     }
   }
 

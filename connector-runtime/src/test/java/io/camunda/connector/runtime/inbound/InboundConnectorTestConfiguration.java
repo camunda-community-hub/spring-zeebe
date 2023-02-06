@@ -44,7 +44,7 @@ public class InboundConnectorTestConfiguration {
 
   @Bean
   @Primary
-  public MetricsRecorder metricsRecorder() throws OperateException {
+  public MetricsRecorder metricsRecorder() {
     return new SimpleMetricsRecorder();
   }
 }
