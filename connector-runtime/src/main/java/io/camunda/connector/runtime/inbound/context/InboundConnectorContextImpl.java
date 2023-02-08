@@ -14,7 +14,6 @@ import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ public class InboundConnectorContextImpl extends AbstractConnectorContext
   }
 
   @Override
-  public InboundConnectorResult correlate(ProcessCorrelationPoint correlationPoint, Map<String, Object> variables) {
+  public InboundConnectorResult correlate(ProcessCorrelationPoint correlationPoint, Object variables) {
 
     if (correlationPoint instanceof StartEventCorrelationPoint) {
       return triggerStartEvent((StartEventCorrelationPoint) correlationPoint, variables);
@@ -49,7 +48,7 @@ public class InboundConnectorContextImpl extends AbstractConnectorContext
   }
 
   private InboundConnectorResult triggerStartEvent(
-    StartEventCorrelationPoint correlationPoint, Map<String, Object> variables) {
+    StartEventCorrelationPoint correlationPoint, Object variables) {
     try {
       ProcessInstanceEvent result = zeebeClient
         .newCreateInstanceCommand()
@@ -69,7 +68,7 @@ public class InboundConnectorContextImpl extends AbstractConnectorContext
   }
 
   private InboundConnectorResult triggerMessage(
-    MessageCorrelationPoint correlationPoint, Map<String, Object> variables) {
+    MessageCorrelationPoint correlationPoint, Object variables) {
 
     String correlationKey = feelEngine.evaluate(correlationPoint.getCorrelationKeyExpression(), variables);
 
