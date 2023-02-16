@@ -18,14 +18,11 @@ package io.camunda.connector.runtime.inbound.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.signature.HMACAlgoCustomerChoice;
 import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
-import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,24 +51,21 @@ public class InboundWebhookRestController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InboundWebhookRestController.class);
 
-  private final InboundConnectorRegistry registry;
   private final InboundConnectorContext connectorContext;
-  private final ZeebeClient zeebeClient;
   private final FeelEngineWrapper feelEngine;
+  private final WebhookConnector webhookConnector;
   private final ObjectMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
 
   @Autowired
   public InboundWebhookRestController(
-    final InboundConnectorRegistry registry,
     final InboundConnectorContext connectorContext,
-    final ZeebeClient zeebeClient,
     final FeelEngineWrapper feelEngine,
+    final WebhookConnector webhookConnector,
     final ObjectMapper jsonMapper, MetricsRecorder metricsRecorder) {
-    this.registry = registry;
     this.connectorContext = connectorContext;
-    this.zeebeClient = zeebeClient;
     this.feelEngine = feelEngine;
+    this.webhookConnector = webhookConnector;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
   }
@@ -85,11 +79,11 @@ public class InboundWebhookRestController {
 
     LOG.debug("Received inbound hook on {}", context);
 
-    if (!registry.containsContextPath(context)) {
+    if (!webhookConnector.containsContextPath(context)) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "No webhook found for context: " + context);
     }
-    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , InboundConnectorProperties.TYPE_WEBHOOK);
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , WebhookConnector.TYPE_WEBHOOK);
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
@@ -103,7 +97,7 @@ public class InboundWebhookRestController {
 
     WebhookResponse response = new WebhookResponse();
     Collection<WebhookConnectorProperties> connectors =
-        registry.getWebhookConnectorByContextPath(context);
+        webhookConnector.getWebhookConnectorByContextPath(context);
     for (WebhookConnectorProperties connectorProperties : connectors) {
       connectorContext.replaceSecrets(connectorProperties);
 
@@ -130,12 +124,12 @@ public class InboundWebhookRestController {
         }
       } catch (Exception exception) {
         LOG.error("Webhook {} failed to create process instance", connectorProperties, exception);
-        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED , InboundConnectorProperties.TYPE_WEBHOOK);
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED , WebhookConnector.TYPE_WEBHOOK);
         response.addException(connectorProperties, exception);
       }
     }
 
-    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , InboundConnectorProperties.TYPE_WEBHOOK);
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , WebhookConnector.TYPE_WEBHOOK);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

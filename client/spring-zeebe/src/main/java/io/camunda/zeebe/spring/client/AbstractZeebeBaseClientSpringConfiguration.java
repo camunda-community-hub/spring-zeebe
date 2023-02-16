@@ -1,13 +1,13 @@
 package io.camunda.zeebe.spring.client;
 
 import io.camunda.connector.api.secret.SecretProvider;
+import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
 import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
-import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
@@ -51,12 +51,13 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
   @Bean
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                            final SecretProvider secretProvider,
+                                           final OutboundConnectorFactory connectorFactory,
                                            @Autowired(required = false) JsonMapper jsonMapper,
                                            @Autowired(required = false) MetricsRecorder metricsRecorder) {
     if (metricsRecorder==null) { // Workaround until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
       metricsRecorder = new DefaultNoopMetricsRecorder();
     }
-    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, jsonMapper, metricsRecorder);
+    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, connectorFactory, jsonMapper, metricsRecorder);
   }
 
   @Bean

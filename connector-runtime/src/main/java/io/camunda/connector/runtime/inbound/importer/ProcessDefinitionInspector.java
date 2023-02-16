@@ -1,10 +1,12 @@
 package io.camunda.connector.runtime.inbound.importer;
 
-import io.camunda.connector.api.inbound.InboundConnectorProperties;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
-import io.camunda.connector.impl.inbound.MessageCorrelationPoint;
-import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
+import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.dto.ProcessDefinition;
+import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.instance.BaseElement;
 import io.camunda.zeebe.model.bpmn.instance.IntermediateCatchEvent;
@@ -22,10 +24,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Inspects the imported process definitions and extracts Inbound Connector definitions as {@link ProcessCorrelationPoint}.
  */
+@Component
 public class ProcessDefinitionInspector {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProcessDefinitionInspector.class);
@@ -38,24 +42,29 @@ public class ProcessDefinitionInspector {
     INBOUND_ELIGIBLE_TYPES.add(ReceiveTask.class);
   }
 
-  private final ProcessDefinition processDefinition;
-  private final BpmnModelInstance modelInstance;
+  private final CamundaOperateClient operate;
 
-  public ProcessDefinitionInspector(ProcessDefinition processDefinition,
-    BpmnModelInstance modelInstance) {
-    this.processDefinition = processDefinition;
-    this.modelInstance = modelInstance;
+  public ProcessDefinitionInspector(CamundaOperateClient operate) {
+    this.operate = operate;
   }
 
-  public List<InboundConnectorProperties> findInboundConnectors() {
+  public List<InboundConnectorProperties> findInboundConnectors(
+    ProcessDefinition processDefinition) throws OperateException {
+
+    LOG.debug("Check " + processDefinition + " for connectors.");
+
+    BpmnModelInstance modelInstance = operate.getProcessDefinitionModel(processDefinition.getKey());
+
     return modelInstance.getDefinitions()
       .getChildElementsByType(Process.class)
       .stream()
-      .flatMap(process -> inspectBpmnProcess(process).stream())
+      .flatMap(process -> inspectBpmnProcess(process, processDefinition).stream())
       .collect(Collectors.toList());
   }
 
-  private List<InboundConnectorProperties> inspectBpmnProcess(Process process) {
+  private List<InboundConnectorProperties> inspectBpmnProcess(
+    Process process, ProcessDefinition definition) {
+
     List<BaseElement> inboundEligibleElements = INBOUND_ELIGIBLE_TYPES.stream()
       .flatMap(type -> process.getChildElementsByType(type).stream())
       .collect(Collectors.toList());
@@ -67,8 +76,8 @@ public class ProcessDefinitionInspector {
       if (zeebeProperties == null) {
         continue;
       }
-      Optional<ProcessCorrelationPoint> maybeTarget = handleElement(element);
-      if (!maybeTarget.isPresent()) {
+      Optional<ProcessCorrelationPoint> maybeTarget = handleElement(element, definition);
+      if (maybeTarget.isEmpty()) {
         continue;
       }
       ProcessCorrelationPoint target = maybeTarget.get();
@@ -84,18 +93,20 @@ public class ProcessDefinitionInspector {
             HashMap::new,
             (m, zeebeProperty) -> m.put(zeebeProperty.getName(), zeebeProperty.getValue()),
             HashMap::putAll),
-        processDefinition.getBpmnProcessId(),
-        processDefinition.getVersion().intValue(),
-        processDefinition.getKey());
+        definition.getBpmnProcessId(),
+        definition.getVersion().intValue(),
+        definition.getKey());
 
       discoveredConnectors.add(properties);
     }
     return discoveredConnectors;
   }
 
-  private Optional<ProcessCorrelationPoint> handleElement(BaseElement element) {
+  private Optional<ProcessCorrelationPoint> handleElement(
+    BaseElement element, ProcessDefinition definition) {
+
     if (element instanceof StartEvent) {
-      return handleStartEvent((StartEvent) element);
+      return handleStartEvent(definition);
     } else if (element instanceof IntermediateCatchEvent) {
       return handleIntermediateCatchEvent((IntermediateCatchEvent) element);
     } else if (element instanceof ReceiveTask) {
@@ -127,11 +138,12 @@ public class ProcessDefinitionInspector {
     return Optional.of(new MessageCorrelationPoint(name, correlationKeyMapping));
   }
 
-  private Optional<ProcessCorrelationPoint> handleStartEvent(StartEvent startEvent) {
+  private Optional<ProcessCorrelationPoint> handleStartEvent(ProcessDefinition definition) {
+
     return Optional.of(new StartEventCorrelationPoint(
-      processDefinition.getKey(),
-      processDefinition.getBpmnProcessId(),
-      processDefinition.getVersion().intValue()));
+      definition.getKey(),
+      definition.getBpmnProcessId(),
+      definition.getVersion().intValue()));
   }
 
   private Optional<ProcessCorrelationPoint> handleReceiveTask(ReceiveTask receiveTask) {

@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.camunda.connector.runtime.inbound;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,12 +25,12 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
+import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
 import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
+import io.camunda.connector.runtime.inbound.webhook.WebhookConnector;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
@@ -54,29 +54,31 @@ public class WebhookControllerPlainJavaTests {
 
   private SimpleMetricsRecorder metrics;
 
+  ZeebeClient zeebeClient;
+  InboundConnectorContext connectorContext;
+
   @BeforeEach
   public void setupMetrics() {
     metrics = new SimpleMetricsRecorder();
+    zeebeClient = mock(ZeebeClient.class);
+    connectorContext = InboundConnectorContextBuilder.create()
+      .secret("DUMMY_SECRET", "s3cr3T")
+      .zeebeClient(zeebeClient)
+      .build();
   }
 
   @Test
   public void multipleWebhooksOnSameContextPath() throws IOException {
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-    ZeebeClient zeebeClient = mock(ZeebeClient.class);
-    InboundConnectorContext connectorContext = InboundConnectorContextBuilder.create()
-      .secret("DUMMY_SECRET", "s3cr3T")
-      .zeebeClient(zeebeClient)
-      .build();
+    WebhookConnector webhook = new WebhookConnector();
+
+
     when(zeebeClient.newCreateInstanceCommand()).thenReturn(new CreateCommandDummy());
     InboundWebhookRestController controller =
         new InboundWebhookRestController(
-            registry, connectorContext, zeebeClient, new FeelEngineWrapper(), new ObjectMapper(), metrics);
+            connectorContext, new FeelEngineWrapper(), webhook, new ObjectMapper(), metrics);
 
-    registry.reset();
-    // registry.markProcessDefinitionChecked(123, "processA", 1);
-    registry.registerWebhookConnector(webhookProperties("processA", "myPath"));
-    // registry.markProcessDefinitionChecked(124, "processB", 1);
-    registry.registerWebhookConnector(webhookProperties("processB", "myPath"));
+    webhook.activate(webhookProperties("processA", 1, "myPath"), connectorContext);
+    webhook.activate(webhookProperties("processB", 1, "myPath"), connectorContext);
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
@@ -88,142 +90,43 @@ public class WebhookControllerPlainJavaTests {
     assertEquals(
         Set.of("webhook-myPath-processA-1", "webhook-myPath-processB-1"),
         responseEntity.getBody().getExecutedConnectors().keySet());
-    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED, InboundConnectorProperties.TYPE_WEBHOOK));
-    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED, InboundConnectorProperties.TYPE_WEBHOOK));
-    assertEquals(0, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED, InboundConnectorProperties.TYPE_WEBHOOK));
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED, WebhookConnector.TYPE_WEBHOOK));
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED, WebhookConnector.TYPE_WEBHOOK));
+    assertEquals(0, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED, WebhookConnector.TYPE_WEBHOOK));
   }
 
-  @Test
-  public void webhookMultipleVersions() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-
-    register(registry, "processA", 1, "myPath");
-    register(registry, "processA", 2, "myPath");
-    register(registry, "processA", 3, "myPath2");
-    register(registry, "processA", 4, "myPath2");
-
-    Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
-    assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
-
-    Collection<WebhookConnectorProperties> connectors2 =
-        registry.getWebhookConnectorByContextPath("myPath2");
-    assertEquals(1, connectors2.size()); // only one
-    assertEquals(4, connectors2.iterator().next().getProcessDefinitionVersion()); // And the newest one
-  }
 
   @Test
   public void webhookMultipleVersionsDisableWebhook() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
+    WebhookConnector webhook = new WebhookConnector();
 
-    register(registry, "processA", 1, "myPath");
-    register(registry, "processA", 2, "myPath");
-    register(registry, "processA", 3, "myPath2");
-    register(registry, "processA", 4, null); // disabling Webhook on "myPath2"
+    var processA1 = webhookProperties("processA", 1, "myPath");
+    var processA2 = webhookProperties("processA", 2, "myPath");
+    var processB1 = webhookProperties("processB", 1, "myPath2");
+
+    webhook.activate(processA1, connectorContext);
+    webhook.deactivate(processA1);
+    webhook.activate(processA2, connectorContext);
+
+    webhook.activate(processB1, connectorContext);
+    webhook.deactivate(processB1);
 
     Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
+        webhook.getWebhookConnectorByContextPath("myPath");
+
     assertEquals(1, connectors1.size()); // only one
     assertEquals(2, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
 
     Collection<WebhookConnectorProperties> connectors2 =
-        registry.getWebhookConnectorByContextPath("myPath2");
-    assertNull(connectors2); // No one - as it was disabled
+        webhook.getWebhookConnectorByContextPath("myPath2");
+    assertEquals(0, connectors2.size()); // No one - as it was disabled
   }
 
-  @Test
-  public void webhookMultipleVersionsDisableWebhook2() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-
-    register(registry, "processA", 1, "myPath");
-    register(registry, "processA", 2, "myPath");
-    register(registry, "processA", 3, null); // disabling Webhook on "myPath2"
-
-    Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
-    assertNull(connectors1); // No one - as it was disabled
-  }
-
-  @Test
-  public void webhookMultipleVersionsReenablingWebhook2() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-
-    register(registry, "processA", 1, "myPath");
-    register(registry, "processA", 2, null);
-    register(registry, "processA", 3, "myPath"); // disabling Webhook on "myPath2"
-
-    Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
-    assertEquals(1, connectors1.size()); // only one
-    assertEquals(3, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
-  }
-
-  @Test
-  public void webhookMultipleProcessDefinitionsAndVersions() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-
-    register(registry, 1, "processA", 1, "myPath");
-    register(registry, 2, "processA", 2, "myPath");
-    register(registry, 3, "processA", 3, "myPath2");
-    register(registry, 4, "processB", 1, "myPath");
-    register(registry, 5, "processB", 2, "myPath");
-
-    Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
-    assertThat(connectors1)
-        .hasSize(2)
-        .extracting((WebhookConnectorProperties::getProcessDefinitionKey))
-        .containsExactly(2L, 5L);
-  }
-
-  @Test
-  public void webhookMultipleProcessDefinitionsAndVersionsAndDisabledWebhook() throws IOException {
-    // see https://github.com/camunda/connector-sdk-inbound-webhook/issues/24#issue-1416083859
-    InboundConnectorRegistry registry = new InboundConnectorRegistry();
-
-    register(registry, 1, "processA", 1, "myPath");
-    register(registry, 2, "processA", 2, "myPath");
-    register(registry, 3, "processA", 3, null); // disabling Webhook on "myPath"
-    register(registry, 4, "processB", 1, "myPath");
-    register(registry, 5, "processB", 2, "myPath");
-
-    Collection<WebhookConnectorProperties> connectors1 =
-        registry.getWebhookConnectorByContextPath("myPath");
-    assertThat(connectors1)
-        .hasSize(1)
-        .extracting(WebhookConnectorProperties::getProcessDefinitionKey)
-        .containsExactly(5L);
-  }
-
-  private static long nextProcessDefinitionKey = 1;
-
-  public static void register(
-      InboundConnectorRegistry registry, String bpmnProcessId, int version, String contextPath) {
-    register(registry, ++nextProcessDefinitionKey, bpmnProcessId, version, contextPath);
-  }
-
-  public static void register(
-      InboundConnectorRegistry registry,
-      long processDefinitionKey,
-      String bpmnProcessId,
-      int version,
-      String contextPath) {
-    registry.markProcessDefinitionChecked(processDefinitionKey, bpmnProcessId, version);
-    if (contextPath != null) {
-      registry.registerWebhookConnector(
-          webhookProperties(processDefinitionKey, bpmnProcessId, version, contextPath));
-    }
-  }
+  private static long nextProcessDefinitionKey = 0L;
 
   public static InboundConnectorProperties webhookProperties(
-      String bpmnProcessId, String contextPath) {
-    return webhookProperties(123l, bpmnProcessId, 1, contextPath);
+      String bpmnProcessId, int version, String contextPath) {
+    return webhookProperties(++nextProcessDefinitionKey, bpmnProcessId, version, contextPath);
   }
 
   public static InboundConnectorProperties webhookProperties(

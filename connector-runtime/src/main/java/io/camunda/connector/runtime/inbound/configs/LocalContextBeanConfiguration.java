@@ -16,6 +16,7 @@
  */
 package io.camunda.connector.runtime.inbound.configs;
 
+import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.runtime.inbound.context.InboundConnectorContextImpl;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
@@ -40,7 +41,7 @@ public class LocalContextBeanConfiguration {
   }
 
   @Bean
-  public io.camunda.connector.api.inbound.InboundConnectorContext jobHandlerContext(
+  public InboundConnectorContext jobHandlerContext(
     final SecretProvider secretProvider,
     final ZeebeClient zeebeClient,
     final FeelEngineWrapper feelEngine) {

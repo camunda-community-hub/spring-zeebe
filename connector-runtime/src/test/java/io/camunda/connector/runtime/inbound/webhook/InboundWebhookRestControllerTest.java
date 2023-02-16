@@ -26,12 +26,10 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
-import io.camunda.connector.api.inbound.InboundConnectorProperties;
-import io.camunda.connector.impl.inbound.StartEventCorrelationPoint;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
+import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -40,7 +38,6 @@ import java.util.Map;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -57,11 +54,8 @@ class InboundWebhookRestControllerTest {
       "{\"key\":\"value\"}".getBytes(StandardCharsets.UTF_8);
   private static final Map<String, String> DEFAULT_HEADERS = Map.of("x-signature", "sha1=aabbccdd");
 
-  @Mock private InboundConnectorRegistry registry;
+  @Mock private WebhookConnector registry;
   @Mock private InboundConnectorContext connectorContext;
-
-  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-  private ZeebeClient zeebeClient;
 
   @Mock private FeelEngineWrapper feelEngine;
   @Mock private MetricsRecorder metrics;

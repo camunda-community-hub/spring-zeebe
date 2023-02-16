@@ -16,11 +16,12 @@
  */
 package io.camunda.connector.runtime.inbound;
 
+import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
 import io.camunda.connector.runtime.inbound.correlation.StartEventInboundConnectorResult;
-import io.camunda.connector.runtime.inbound.registry.InboundConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
+import io.camunda.connector.runtime.inbound.webhook.WebhookConnector;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -29,6 +30,7 @@ import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,11 +60,13 @@ class WebhookControllerTestZeebeTests {
   @Test
   public void contextLoaded() {}
 
-  @Autowired private InboundConnectorRegistry registry;
+  @Autowired private WebhookConnector webhook;
 
   @Autowired private ZeebeClient zeebeClient;
 
   @Autowired @InjectMocks private InboundWebhookRestController controller;
+
+  @Mock private InboundConnectorContext connectorContext;
 
   // This test is wired by Spring - but this is not really giving us any advantage
   // Better move to plain Java as shown in InboundWebhookRestControllerTests
@@ -71,9 +75,8 @@ class WebhookControllerTestZeebeTests {
     deployProcess("processA");
     deployProcess("processB");
 
-    registry.reset();
-    registry.registerWebhookConnector(webhookProperties("processA", "myPath"));
-    registry.registerWebhookConnector(webhookProperties("processB", "myPath"));
+    webhook.activate(webhookProperties("processA", 1, "myPath"), connectorContext);
+    webhook.activate(webhookProperties("processB", 1, "myPath"), connectorContext);
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
