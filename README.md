@@ -1,6 +1,6 @@
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community) ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce) [![](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#stable-)
 
-# We search YOU to improve Spring Zeebe!
+***We search YOU to improve Spring Zeebe!***
 
 We currently search for a software engineer with profound Java and Spring Boot experience to take care of the Java SDK of Camunda Platform 8, where Spring Zeebe is an important part of. You can find the job description and more information here: [Senior Developer Experience Engineer](https://camunda.com/jobs/?gh_jid=5391333003). We can hire globally for a remote setup and look forward to your application!
 
@@ -15,10 +15,10 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 ## Version Compatibility
 
-| Spring Zeebe version | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
-|----------------------| ------------------------ |-----------------------------| ----------------------------|
-| >= 8.1.15            | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.0.x  |
-| < 8.1.14             | 8.1.x                    | 2.7.5  | = 2.7.x (no 3.0.x)            |
+| Spring Zeebe version | JDK | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
+|----------------------| --- | ------------------------ |-----------------------------| ----------------------------|
+| >= 8.1.15            | > 11 | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.0.x  |
+| < 8.1.14             | > 11 | 8.1.x                    | 2.7.5  | = 2.7.x (no 3.0.x)            |
 
 ## Examples
 
