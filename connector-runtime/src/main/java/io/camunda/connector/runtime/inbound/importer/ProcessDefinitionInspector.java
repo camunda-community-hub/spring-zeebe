@@ -20,6 +20,7 @@ import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -55,10 +56,21 @@ public class ProcessDefinitionInspector {
 
     BpmnModelInstance modelInstance = operate.getProcessDefinitionModel(processDefinition.getKey());
 
-    return modelInstance.getDefinitions()
+    Map<String, List<InboundConnectorProperties>> connectorDefinitions = modelInstance
+      .getDefinitions()
       .getChildElementsByType(Process.class)
       .stream()
       .flatMap(process -> inspectBpmnProcess(process, processDefinition).stream())
+      .collect(Collectors.groupingBy(InboundConnectorProperties::getExecutionId));
+
+    return connectorDefinitions.entrySet().stream()
+      .map(entry -> {
+        if (entry.getValue().size() > 1) {
+          LOG.info("Found multiple connector definitions with the same deduplication ID: "
+            + entry.getKey() + ". It will be ignored");
+        }
+        return entry.getValue().get(0);
+      })
       .collect(Collectors.toList());
   }
 

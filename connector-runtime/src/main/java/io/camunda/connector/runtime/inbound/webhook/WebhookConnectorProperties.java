@@ -19,6 +19,7 @@ import io.camunda.connector.api.annotation.Secret;
 import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
+import java.util.Objects;
 
 public class WebhookConnectorProperties {
 
@@ -45,8 +46,6 @@ public class WebhookConnectorProperties {
 
   public String getConnectorIdentifier() {
     return ""
-      + genericProperties.getType()
-      + "-"
       + getContext()
       + "-"
       + genericProperties.getBpmnProcessId()
@@ -154,6 +153,29 @@ public class WebhookConnectorProperties {
 
   public long getProcessDefinitionKey() {
     return genericProperties.getProcessDefinitionKey();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    WebhookConnectorProperties that = (WebhookConnectorProperties) o;
+    return Objects.equals(genericProperties, that.genericProperties)
+      && Objects.equals(context, that.context) && Objects.equals(
+      activationCondition, that.activationCondition) && Objects.equals(variableMapping,
+      that.variableMapping) && Objects.equals(shouldValidateHmac, that.shouldValidateHmac)
+      && Objects.equals(hmacSecret, that.hmacSecret) && Objects.equals(
+      hmacHeader, that.hmacHeader) && Objects.equals(hmacAlgorithm, that.hmacAlgorithm);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(genericProperties, context, activationCondition, variableMapping,
+      shouldValidateHmac, hmacSecret, hmacHeader, hmacAlgorithm);
   }
 
   @Override

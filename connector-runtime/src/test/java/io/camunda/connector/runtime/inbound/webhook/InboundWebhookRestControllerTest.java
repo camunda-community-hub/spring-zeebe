@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
+import io.camunda.connector.test.inbound.InboundConnectorContextBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -54,9 +56,7 @@ class InboundWebhookRestControllerTest {
       "{\"key\":\"value\"}".getBytes(StandardCharsets.UTF_8);
   private static final Map<String, String> DEFAULT_HEADERS = Map.of("x-signature", "sha1=aabbccdd");
 
-  @Mock private WebhookConnector registry;
-  @Mock private InboundConnectorContext connectorContext;
-
+  @Mock private WebhookConnectorRegistry registry;
   @Mock private FeelEngineWrapper feelEngine;
   @Mock private MetricsRecorder metrics;
   @Spy private ObjectMapper jsonMapper;
@@ -78,9 +78,15 @@ class InboundWebhookRestControllerTest {
         "proc-id",
         2,
         1);
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
-    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
+
     when(feelEngine.evaluate(eq(evaluationExpression), any(Map.class))).thenReturn(true);
     when(feelEngine.evaluate(eq(variablesMapping), any(Map.class))).thenReturn(Map.of());
 
@@ -121,9 +127,14 @@ class InboundWebhookRestControllerTest {
         2,
         1
         );
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
-    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
 
     ResponseEntity<WebhookResponse> response =
         controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS);
@@ -155,9 +166,15 @@ class InboundWebhookRestControllerTest {
         "proc-id",
         2,
         1);
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
-    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
+
     when(feelEngine.evaluate(anyString(), any(Map.class))).thenReturn(false);
 
     ResponseEntity<WebhookResponse> response =
@@ -190,9 +207,14 @@ class InboundWebhookRestControllerTest {
         "proc-id",
         2,
         1);
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
     WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
-    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT)).thenReturn(List.of(props));
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
 
     final String exceptionMessage = "Something went wrong";
     when(feelEngine.evaluate(anyString(), any(Map.class)))
