@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty("camunda.connector.webhook.enabled")
 public class WebhookConnectorRegistry {
 
-  public static final String TYPE_WEBHOOK = "io.camunda.webhook:1";
+  public static final String TYPE_WEBHOOK = "io.camunda:webhook:1";
 
   private final Logger LOG = LoggerFactory.getLogger(WebhookConnectorRegistry.class);
 
