@@ -16,13 +16,15 @@
  */
 package io.camunda.connector.runtime.inbound;
 
-import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorResult;
+import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
-import io.camunda.connector.runtime.inbound.correlation.StartEventInboundConnectorResult;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
-import io.camunda.connector.runtime.inbound.webhook.WebhookConnector;
+import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
+import io.camunda.connector.runtime.util.inbound.InboundConnectorContextImpl;
+import io.camunda.connector.runtime.util.inbound.correlation.InboundCorrelationHandler;
+import io.camunda.connector.runtime.util.inbound.correlation.StartEventInboundConnectorResult;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.model.bpmn.Bpmn;
@@ -30,7 +32,6 @@ import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,13 +61,15 @@ class WebhookControllerTestZeebeTests {
   @Test
   public void contextLoaded() {}
 
-  @Autowired private WebhookConnector webhook;
+  @Autowired private WebhookConnectorRegistry webhook;
 
   @Autowired private ZeebeClient zeebeClient;
 
-  @Autowired @InjectMocks private InboundWebhookRestController controller;
+  @Autowired private SecretProvider secretProvider;
 
-  @Mock private InboundConnectorContext connectorContext;
+  @Autowired private InboundCorrelationHandler correlationHandler;
+
+  @Autowired @InjectMocks private InboundWebhookRestController controller;
 
   // This test is wired by Spring - but this is not really giving us any advantage
   // Better move to plain Java as shown in InboundWebhookRestControllerTests
@@ -75,8 +78,14 @@ class WebhookControllerTestZeebeTests {
     deployProcess("processA");
     deployProcess("processB");
 
-    webhook.activate(webhookProperties("processA", 1, "myPath"), connectorContext);
-    webhook.activate(webhookProperties("processB", 1, "myPath"), connectorContext);
+    var webhookA = new InboundConnectorContextImpl(
+      secretProvider, webhookProperties("processA", 1, "myPath"), correlationHandler);
+
+    var webhookB = new InboundConnectorContextImpl(
+      secretProvider, webhookProperties("processB", 1, "myPath"), correlationHandler);
+
+    webhook.activateEndpoint(webhookA);
+    webhook.activateEndpoint(webhookB);
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
@@ -86,11 +95,11 @@ class WebhookControllerTestZeebeTests {
     assertTrue(responseEntity.getBody().getUnactivatedConnectors().isEmpty());
     assertEquals(2, responseEntity.getBody().getExecutedConnectors().size());
     assertEquals(
-        Set.of("webhook-myPath-processA-1", "webhook-myPath-processB-1"),
+        Set.of("myPath-processA-1", "myPath-processB-1"),
         responseEntity.getBody().getExecutedConnectors().keySet());
 
     InboundConnectorResult piA =
-        responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processA-1");
+        responseEntity.getBody().getExecutedConnectors().get("myPath-processA-1");
     assertInstanceOf(StartEventInboundConnectorResult.class, piA);
     ProcessInstanceEvent piEventA = ((StartEventInboundConnectorResult) piA).getResponseData();
 
@@ -98,7 +107,7 @@ class WebhookControllerTestZeebeTests {
     assertThat(piEventA).isCompleted();
 
     InboundConnectorResult piB =
-        responseEntity.getBody().getExecutedConnectors().get("webhook-myPath-processB-1");
+        responseEntity.getBody().getExecutedConnectors().get("myPath-processB-1");
     assertInstanceOf(StartEventInboundConnectorResult.class, piB);
     ProcessInstanceEvent piEventB = ((StartEventInboundConnectorResult) piB).getResponseData();
 

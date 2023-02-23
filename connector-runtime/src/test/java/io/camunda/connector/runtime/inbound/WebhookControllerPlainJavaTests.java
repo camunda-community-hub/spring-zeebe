@@ -18,24 +18,18 @@
 package io.camunda.connector.runtime.inbound;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
-import io.camunda.connector.runtime.inbound.util.InboundConnectorContextBuilder;
-import io.camunda.connector.runtime.inbound.util.command.CreateCommandDummy;
-import io.camunda.connector.runtime.inbound.webhook.WebhookConnector;
+import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorRegistry;
+import io.camunda.connector.test.inbound.InboundConnectorContextBuilder;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
-import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,33 +46,36 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 public class WebhookControllerPlainJavaTests {
 
+  private static final String CONNECTOR_SECRET_NAME = "DUMMY_SECRET";
+  private static final String CONNECTOR_SECRET_VALUE = "s3cr3T";
+
   private SimpleMetricsRecorder metrics;
 
-  ZeebeClient zeebeClient;
-  InboundConnectorContext connectorContext;
 
   @BeforeEach
   public void setupMetrics() {
     metrics = new SimpleMetricsRecorder();
-    zeebeClient = mock(ZeebeClient.class);
-    connectorContext = InboundConnectorContextBuilder.create()
-      .secret("DUMMY_SECRET", "s3cr3T")
-      .zeebeClient(zeebeClient)
-      .build();
   }
 
   @Test
   public void multipleWebhooksOnSameContextPath() throws IOException {
-    WebhookConnector webhook = new WebhookConnector();
+    WebhookConnectorRegistry webhook = new WebhookConnectorRegistry();
 
+    InboundConnectorContext webhookA = new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processA", 1, "myPath"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
 
-    when(zeebeClient.newCreateInstanceCommand()).thenReturn(new CreateCommandDummy());
+    InboundConnectorContext webhookB = new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processB", 1, "myPath"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
+
     InboundWebhookRestController controller =
-        new InboundWebhookRestController(
-            connectorContext, new FeelEngineWrapper(), webhook, new ObjectMapper(), metrics);
+        new InboundWebhookRestController(new FeelEngineWrapper(), webhook, new ObjectMapper(), metrics);
 
-    webhook.activate(webhookProperties("processA", 1, "myPath"), connectorContext);
-    webhook.activate(webhookProperties("processB", 1, "myPath"), connectorContext);
+    webhook.activateEndpoint(webhookA);
+    webhook.activateEndpoint(webhookB);
 
     ResponseEntity<WebhookResponse> responseEntity =
         controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
@@ -88,36 +85,48 @@ public class WebhookControllerPlainJavaTests {
     assertTrue(responseEntity.getBody().getUnactivatedConnectors().isEmpty());
     assertEquals(2, responseEntity.getBody().getExecutedConnectors().size());
     assertEquals(
-        Set.of("webhook-myPath-processA-1", "webhook-myPath-processB-1"),
+        Set.of("myPath-processA-1", "myPath-processB-1"),
         responseEntity.getBody().getExecutedConnectors().keySet());
-    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED, WebhookConnector.TYPE_WEBHOOK));
-    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED, WebhookConnector.TYPE_WEBHOOK));
-    assertEquals(0, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED, WebhookConnector.TYPE_WEBHOOK));
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED, WebhookConnectorRegistry.TYPE_WEBHOOK));
+    assertEquals(1, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED, WebhookConnectorRegistry.TYPE_WEBHOOK));
+    assertEquals(0, metrics.getCount(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED, WebhookConnectorRegistry.TYPE_WEBHOOK));
   }
 
 
   @Test
-  public void webhookMultipleVersionsDisableWebhook() throws IOException {
-    WebhookConnector webhook = new WebhookConnector();
+  public void webhookMultipleVersionsDisableWebhook() {
+    WebhookConnectorRegistry webhook = new WebhookConnectorRegistry();
 
-    var processA1 = webhookProperties("processA", 1, "myPath");
-    var processA2 = webhookProperties("processA", 2, "myPath");
-    var processB1 = webhookProperties("processB", 1, "myPath2");
+    var processA1 = new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processA", 1, "myPath"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
 
-    webhook.activate(processA1, connectorContext);
-    webhook.deactivate(processA1);
-    webhook.activate(processA2, connectorContext);
+    var processA2 = new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processA", 2, "myPath"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
 
-    webhook.activate(processB1, connectorContext);
-    webhook.deactivate(processB1);
+    var processB1 =  new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processB", 1, "myPath2"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
 
-    Collection<WebhookConnectorProperties> connectors1 =
+    webhook.activateEndpoint(processA1);
+    webhook.deactivateEndpoint(processA1.getProperties());
+
+    webhook.activateEndpoint(processA2);
+
+    webhook.activateEndpoint(processB1);
+    webhook.deactivateEndpoint(processB1.getProperties());
+
+    Collection<InboundConnectorContext> connectors1 =
         webhook.getWebhookConnectorByContextPath("myPath");
 
     assertEquals(1, connectors1.size()); // only one
-    assertEquals(2, connectors1.iterator().next().getProcessDefinitionVersion()); // And the newest one
+    assertEquals(2, connectors1.iterator().next().getProperties().getVersion()); // And the newest one
 
-    Collection<WebhookConnectorProperties> connectors2 =
+    Collection<InboundConnectorContext> connectors2 =
         webhook.getWebhookConnectorByContextPath("myPath2");
     assertEquals(0, connectors2.size()); // No one - as it was disabled
   }

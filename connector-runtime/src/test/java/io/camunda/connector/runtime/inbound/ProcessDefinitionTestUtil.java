@@ -1,4 +1,4 @@
-package io.camunda.connector.runtime.inbound.util;
+package io.camunda.connector.runtime.inbound;
 
 import static org.mockito.Mockito.when;
 

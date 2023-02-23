@@ -1,10 +1,10 @@
-package io.camunda.connector.runtime.inbound.lifecycle.spring;
+package io.camunda.connector.runtime.inbound.lifecycle;
 
 import io.camunda.connector.impl.ConnectorUtil;
 import io.camunda.connector.impl.inbound.InboundConnectorConfiguration;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
 import io.camunda.connector.runtime.inbound.TestInboundConnector;
-import io.camunda.connector.runtime.inbound.lifecycle.SpringInboundConnectorFactory;
+import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorExecutable;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,14 +14,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
   classes = {ConnectorRuntimeApplication.class},
   properties = {
     "spring.main.allow-bean-definition-overriding=true",
-    "camunda.connector.webhook.enabled=false"
+    "camunda.connector.webhook.enabled=true"
   })
 @ExtendWith(MockitoExtension.class)
 public class SpringInboundConnectorFactoryTest {
@@ -30,17 +29,12 @@ public class SpringInboundConnectorFactoryTest {
   private SpringInboundConnectorFactory factory;
 
   @Test
-  void shouldDiscoverConnectorFromSpringContext() {
+  void shouldDiscoverConnectorsAndActivateWebhook() {
 
-    // given: 1 connector from SPI and 2 from Spring context
+    var webhookConfig =
+      ConnectorUtil.getRequiredInboundConnectorConfiguration(WebhookConnectorExecutable.class);
     var spiConnectorConfig = ConnectorUtil
       .getRequiredInboundConnectorConfiguration(TestInboundConnector.class);
-    var firstSpringConnectorConfig = ConnectorUtil
-      .getRequiredInboundConnectorConfiguration(
-        ConnectorsConfiguration.FirstInboundConnector.class);
-    var secondSpringConnectorConfig = ConnectorUtil
-      .getRequiredInboundConnectorConfiguration(
-        ConnectorsConfiguration.SecondInboundConnector.class);
 
     // when
 
@@ -49,24 +43,14 @@ public class SpringInboundConnectorFactoryTest {
 
     // then
 
-    assertEquals(3, registeredConnectors.size());
+    assertEquals(2, registeredConnectors.size());
     assertTrue(registeredConnectors.containsAll(
-      List.of(
-        firstSpringConnectorConfig,
-        secondSpringConnectorConfig,
-        spiConnectorConfig)));
+      List.of(webhookConfig, spiConnectorConfig)));
 
-    // check that spring connectors are singletons
+    // check that SPI connectors are request-scoped
 
-    var firstInstance = factory.getInstance(firstSpringConnectorConfig.getType());
-    var secondInstance = factory.getInstance(firstSpringConnectorConfig.getType());
-
-    assertSame(firstInstance, secondInstance);
-
-    // check that SPI connectors are disposable
-
-    firstInstance = factory.getInstance(spiConnectorConfig.getType());
-    secondInstance = factory.getInstance(spiConnectorConfig.getType());
+    var firstInstance = factory.getInstance(spiConnectorConfig.getType());
+    var secondInstance = factory.getInstance(spiConnectorConfig.getType());
 
     assertNotSame(firstInstance, secondInstance);
   }

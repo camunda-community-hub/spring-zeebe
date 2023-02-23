@@ -28,7 +28,7 @@
   "properties":[
     {
       "type":"Hidden",
-      "value":"webhook",
+      "value":"io.camunda:webhook:1",
       "binding":{
         "type":"zeebe:property",
         "name":"inbound.type"

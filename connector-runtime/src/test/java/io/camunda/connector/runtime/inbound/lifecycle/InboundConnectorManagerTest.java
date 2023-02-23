@@ -1,6 +1,6 @@
 package io.camunda.connector.runtime.inbound.lifecycle;
 
-import static io.camunda.connector.runtime.inbound.util.ProcessDefinitionTestUtil.processDefinition;
+import static io.camunda.connector.runtime.inbound.ProcessDefinitionTestUtil.processDefinition;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,14 +14,17 @@ import static org.mockito.Mockito.when;
 
 import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorExecutable;
+import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.ConnectorUtil;
 import io.camunda.connector.impl.inbound.InboundConnectorConfiguration;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
 import io.camunda.connector.runtime.inbound.TestInboundConnector;
 import io.camunda.connector.runtime.inbound.importer.ProcessDefinitionInspector;
-import io.camunda.connector.runtime.inbound.util.ProcessDefinitionTestUtil;
+import io.camunda.connector.runtime.inbound.ProcessDefinitionTestUtil;
+import io.camunda.connector.runtime.util.inbound.InboundConnectorContextImpl;
 import io.camunda.connector.runtime.util.inbound.InboundConnectorFactory;
+import io.camunda.connector.runtime.util.inbound.correlation.InboundCorrelationHandler;
 import io.camunda.operate.dto.ProcessDefinition;
 import java.util.Collections;
 import java.util.List;
@@ -38,19 +41,23 @@ public class InboundConnectorManagerTest {
   private ProcessDefinitionTestUtil procDefUtil;
   private InboundConnectorFactory factory;
   private InboundConnectorExecutable mockExecutable;
+  private SecretProvider secretProvider;
+  private InboundCorrelationHandler correlationHandler;
 
 
   @BeforeEach
   void resetMocks() {
-    InboundConnectorContext context = mock(InboundConnectorContext.class);
+    correlationHandler = mock(InboundCorrelationHandler.class);
 
     mockExecutable = spy(new TestInboundConnector());
     factory = mock(InboundConnectorFactory.class);
     when(factory.getInstance(any())).thenReturn(mockExecutable);
 
+    secretProvider = mock(SecretProvider.class);
+
     ProcessDefinitionInspector inspector = mock(ProcessDefinitionInspector.class);
 
-    manager = new InboundConnectorManager(factory, context, inspector);
+    manager = new InboundConnectorManager(factory, correlationHandler, inspector, secretProvider);
     procDefUtil = new ProcessDefinitionTestUtil(manager, inspector);
   }
 
@@ -66,7 +73,8 @@ public class InboundConnectorManagerTest {
     // then
     assertTrue(manager.isProcessDefinitionRegistered(process.getKey()));
     verify(factory, times(1)).getInstance(connector.getType());
-    verify(mockExecutable, times(1)).activate(eq(connector), any());
+    verify(mockExecutable, times(1))
+      .activate(eq(inboundContext(connector)));
   }
 
   @Test
@@ -83,7 +91,8 @@ public class InboundConnectorManagerTest {
     assertTrue(manager.isProcessDefinitionRegistered(process.getKey()));
     verify(factory, times(2)).getInstance(connectors.get(0).getType());
     for (var connector : connectors) {
-      verify(mockExecutable, times(1)).activate(eq(connector), any());
+      verify(mockExecutable, times(1)).
+        activate(eq(inboundContext(connector)));
     }
   }
 
@@ -105,9 +114,9 @@ public class InboundConnectorManagerTest {
 
     verify(factory, times(2)).getInstance(connector1.getType());
 
-    verify(mockExecutable, times(1)).activate(eq(connector1), any());
-    verify(mockExecutable, times(1)).deactivate(eq(connector1));
-    verify(mockExecutable, times(1)).activate(eq(connector2), any());
+    verify(mockExecutable, times(1)).activate(eq(inboundContext(connector1)));
+    verify(mockExecutable, times(1)).deactivate();
+    verify(mockExecutable, times(1)).activate(eq(inboundContext(connector2)));
     verifyNoMoreInteractions(mockExecutable);
   }
 
@@ -144,13 +153,16 @@ public class InboundConnectorManagerTest {
     // then
     assertTrue(manager.isProcessDefinitionRegistered(process1.getKey()));
 
-
     assertTrue(manager.isProcessDefinitionRegistered(process2.getKey()));
     verify(factory, times(1)).getInstance(connector2.getType());
-    verify(mockExecutable, times(1)).activate(eq(connector2), any());
+    verify(mockExecutable, times(1)).activate(inboundContext(connector2));
 
     verifyNoMoreInteractions(factory);
     verifyNoMoreInteractions(mockExecutable);
+  }
+
+  private InboundConnectorContext inboundContext(InboundConnectorProperties properties) {
+    return new InboundConnectorContextImpl(secretProvider, properties, correlationHandler);
   }
 
   private final static InboundConnectorConfiguration connectorConfig = ConnectorUtil

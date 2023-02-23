@@ -51,21 +51,18 @@ public class InboundWebhookRestController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InboundWebhookRestController.class);
 
-  private final InboundConnectorContext connectorContext;
   private final FeelEngineWrapper feelEngine;
-  private final WebhookConnector webhookConnector;
+  private final WebhookConnectorRegistry webhookConnectorRegistry;
   private final ObjectMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
 
   @Autowired
   public InboundWebhookRestController(
-    final InboundConnectorContext connectorContext,
     final FeelEngineWrapper feelEngine,
-    final WebhookConnector webhookConnector,
+    final WebhookConnectorRegistry webhookConnectorRegistry,
     final ObjectMapper jsonMapper, MetricsRecorder metricsRecorder) {
-    this.connectorContext = connectorContext;
     this.feelEngine = feelEngine;
-    this.webhookConnector = webhookConnector;
+    this.webhookConnectorRegistry = webhookConnectorRegistry;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
   }
@@ -79,11 +76,11 @@ public class InboundWebhookRestController {
 
     LOG.debug("Received inbound hook on {}", context);
 
-    if (!webhookConnector.containsContextPath(context)) {
+    if (!webhookConnectorRegistry.containsContextPath(context)) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, "No webhook found for context: " + context);
     }
-    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , WebhookConnector.TYPE_WEBHOOK);
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , WebhookConnectorRegistry.TYPE_WEBHOOK);
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
@@ -96,9 +93,12 @@ public class InboundWebhookRestController {
     final Map<String, Object> webhookContext = Collections.singletonMap("request", request);
 
     WebhookResponse response = new WebhookResponse();
-    Collection<WebhookConnectorProperties> connectors =
-        webhookConnector.getWebhookConnectorByContextPath(context);
-    for (WebhookConnectorProperties connectorProperties : connectors) {
+    Collection<InboundConnectorContext> connectors =
+        webhookConnectorRegistry.getWebhookConnectorByContextPath(context);
+    for (InboundConnectorContext connectorContext : connectors) {
+      WebhookConnectorProperties connectorProperties =
+        new WebhookConnectorProperties(connectorContext.getProperties());
+
       connectorContext.replaceSecrets(connectorProperties);
 
       try {
@@ -111,8 +111,7 @@ public class InboundWebhookRestController {
             response.addUnactivatedConnector(connectorProperties);
           } else {
             Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
-            InboundConnectorResult result = connectorContext
-              .correlate(connectorProperties.getCorrelationPoint(), variables);
+            InboundConnectorResult result = connectorContext.correlate(variables);
 
             LOG.debug(
                 "Webhook {} created process instance {}",
@@ -124,12 +123,12 @@ public class InboundWebhookRestController {
         }
       } catch (Exception exception) {
         LOG.error("Webhook {} failed to create process instance", connectorProperties, exception);
-        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED , WebhookConnector.TYPE_WEBHOOK);
+        metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_FAILED , WebhookConnectorRegistry.TYPE_WEBHOOK);
         response.addException(connectorProperties, exception);
       }
     }
 
-    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , WebhookConnector.TYPE_WEBHOOK);
+    metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , WebhookConnectorRegistry.TYPE_WEBHOOK);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
