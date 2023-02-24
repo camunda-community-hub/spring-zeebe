@@ -76,7 +76,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   }
 
   @Override
-  public void handle(JobClient jobClient, ActivatedJob job) {
+  public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
     if (outboundConnectorConfiguration!=null) {
       handleConnectorJobWorker(jobClient, job);
     } else { // "normal" @JobWorker
@@ -102,7 +102,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     ).handle(jobClient, job));
   }
 
-  private void handleRegularJobWorker(JobClient jobClient, ActivatedJob job) {
+  private void handleRegularJobWorker(JobClient jobClient, ActivatedJob job) throws Exception {
     // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
     List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
     LOG.trace("Handle {} and invoke worker {}", job, workerValue);
