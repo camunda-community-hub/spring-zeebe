@@ -41,13 +41,13 @@ public class MethodInfo implements BeanInfo {
     return method.getName();
   }
 
-  public Object invoke(final Object... args) {
+  public Object invoke(final Object... args) throws Exception {
     try {
       return method.invoke(getBean(), args);
     } catch (InvocationTargetException e) {
       final Throwable targetException = e.getTargetException();
-      if (targetException instanceof RuntimeException) {
-        throw (RuntimeException) targetException;
+      if (targetException instanceof Exception) {
+        throw (Exception) targetException;
       }
       else {
         throw new RuntimeException("Failed to invoke method: " + method.getName(), targetException);
