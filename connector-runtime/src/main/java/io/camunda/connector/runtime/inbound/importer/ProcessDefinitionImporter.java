@@ -57,6 +57,7 @@ public class ProcessDefinitionImporter {
     SearchResult<ProcessDefinition> result;
     do {
       LOG.trace("Running paginated query");
+      // automatically sorted by process definition key, i.e. in chronological order of deployment
       SearchQuery processDefinitionQuery = new SearchQuery.Builder()
         .searchAfter(paginationIndex)
         .size(20)

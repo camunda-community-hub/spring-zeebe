@@ -116,6 +116,9 @@ public class OperateClientFactory {
             .keycloakUrl(operateKeycloakUrl)
             .keycloakRealm(operateKeycloakRealm);
       }
+      throw new IllegalArgumentException(
+        "Failed to authenticate with Camunda Operate using Keycloak: "
+          + "please configure client ID and client secret values.");
     } else {
       if (operateClientId != null) {
         LOG.debug("Authenticating with Camunda Operate using client id and secret");
@@ -123,13 +126,15 @@ public class OperateClientFactory {
       } else if (clientId != null) {
         LOG.debug("Authenticating with Camunda Operate using client id and secret");
         return new SaasAuthentication(getAuthUrl(), getAudience(), clientId, clientSecret);
-      } else if (operateUsername != null) {
+      } else if (operateUsername != null && operatePassword != null) {
         LOG.debug("Authenticating with Camunda Operate using username and password");
-        return new SimpleAuthentication("demo", "demo", operateUrl);
+        return new SimpleAuthentication(operateUsername, operatePassword, operateUrl);
       }
     }
     throw new IllegalArgumentException(
-        "In order to connect to Camunda Operate you need to configure authentication properly.");
+        "In order to connect to Camunda Operate you need to configure authentication properly. "
+          + "You can use password-based authentication, or authenticate with Keycloak. "
+          + "Please configure either one of the methods.");
   }
 
   public String getAuthUrl() {
