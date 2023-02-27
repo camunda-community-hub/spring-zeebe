@@ -107,6 +107,12 @@ public class OperateClientLifecycle extends CamundaOperateClient
   }
 
   @Override
+  public <T> SearchResult<T> search(SearchQuery query, Class<T> resultType)
+    throws OperateException {
+    return get().search(query, resultType);
+  }
+
+  @Override
   public ProcessDefinition getProcessDefinition(Long key) throws OperateException {
     return get().getProcessDefinition(key);
   }
