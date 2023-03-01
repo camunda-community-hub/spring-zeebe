@@ -29,7 +29,7 @@ public class InboundConnectorRestController {
 
     var activeConnectors = inboundManager.getActiveConnectorsByBpmnId();
     var filteredByBpmnProcessId = filterByBpmnProcessId(activeConnectors, bpmnProcessId);
-    var filteredByType = filterByType(filteredByBpmnProcessId, type);
+    var filteredByType = filterByConnectorType(filteredByBpmnProcessId, type);
 
     // TODO: replace this with a general solution
     // e.g. consider an optional method in InboundConnectorExecutable that returns data to be shown in Modeler
@@ -37,7 +37,7 @@ public class InboundConnectorRestController {
       .map(
         properties ->
           new ActiveInboundConnectorResponse(
-            properties.getBpmnProcessId(), properties.getType(), extractData(properties)))
+            properties.getBpmnProcessId(), properties.getType(), extractPublicConnectorData(properties)))
       .collect(Collectors.toList());
   }
 
@@ -51,7 +51,7 @@ public class InboundConnectorRestController {
       .collect(Collectors.toList());
   }
 
-  private List<InboundConnectorProperties> filterByType(
+  private List<InboundConnectorProperties> filterByConnectorType(
     List<InboundConnectorProperties> properties, String type) {
     if (type == null) {
       return properties;
@@ -61,7 +61,7 @@ public class InboundConnectorRestController {
       .collect(Collectors.toList());
   }
 
-  private Map<String, Object> extractData(InboundConnectorProperties properties) {
+  private Map<String, Object> extractPublicConnectorData(InboundConnectorProperties properties) {
     if (WebhookConnectorRegistry.TYPE_WEBHOOK.equals(properties.getType())) {
       WebhookConnectorProperties webhookProps = new WebhookConnectorProperties(properties);
       return Map.of("path", webhookProps.getContext());
