@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
+import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
 import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import org.springframework.context.event.EventListener;
 
@@ -17,7 +18,7 @@ public class ZeebeClientEventListener {
   }
 
   @EventListener
-  public void handleStop(ZeebeClientCreatedEvent evt) {
+  public void handleStop(ZeebeClientClosingEvent evt) {
     zeebeAnnotationProcessorRegistry.stopAll(evt.getClient());
   }
 
