@@ -4,6 +4,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
+import io.camunda.zeebe.spring.client.event.ClientStoppedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 
@@ -37,6 +38,7 @@ public class ZeebeAnnotationLifecycle implements SmartLifecycle {
 
   @Override
   public void stop() {
+    publisher.publishEvent(new ClientStoppedEvent());
     annotationProcessorRegistry.stopAll(client);
     this.running = false;
   }
