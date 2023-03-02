@@ -38,6 +38,6 @@ public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListen
 
   @Override
   public int getOrder() {
-    return Integer.MAX_VALUE;
+    return Ordered.HIGHEST_PRECEDENCE;
   }
 }

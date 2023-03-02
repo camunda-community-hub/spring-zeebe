@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Import;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(ZeebeClientSpringConfiguration.class)
 @Documented
 @Inherited
+@Deprecated // This annotation has no effect any more and will be removed in some later version of spring-zeebe, see https://github.com/camunda-community-hub/spring-zeebe/issues/275
 public @interface EnableZeebeClient {
 
 }

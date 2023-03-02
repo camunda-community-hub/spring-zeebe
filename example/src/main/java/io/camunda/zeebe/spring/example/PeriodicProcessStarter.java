@@ -1,7 +1,7 @@
 package io.camunda.zeebe.spring.example;
 
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,10 @@ public class PeriodicProcessStarter {
   private static Logger log = LoggerFactory.getLogger(ExampleApplication.class);
 
   @Autowired
-  private ZeebeClientLifecycle client;
+  private ZeebeClient client;
 
   @Scheduled(fixedRate = 5000L)
   public void startProcesses() {
-    if (!client.isRunning()) {
-      return;
-    }
-
     final ProcessInstanceEvent event =
       client
         .newCreateInstanceCommand()

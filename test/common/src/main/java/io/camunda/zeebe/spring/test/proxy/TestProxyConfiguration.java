@@ -2,13 +2,32 @@ package io.camunda.zeebe.spring.test.proxy;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Proxy;
 
 public class TestProxyConfiguration {
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  /*
+  @Bean
+  @Primary
+  public ObjectFactory<ZeebeClient> testZeebeClientObjectFactory() {
+    return new ObjectFactory<ZeebeClient>() {
+      @Override
+      public ZeebeClient getObject() throws BeansException {
+        LOG.info("Not creating any real ZeebeClient in test environment");
+        return null;
+      }
+    };
+  }
+*/
   @Bean
   public ZeebeClientProxy zeebeClientProxy() {
     return new ZeebeClientProxy();
