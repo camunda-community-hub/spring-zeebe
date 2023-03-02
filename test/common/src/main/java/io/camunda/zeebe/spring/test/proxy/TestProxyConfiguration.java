@@ -15,19 +15,6 @@ import java.lang.reflect.Proxy;
 public class TestProxyConfiguration {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /*
-  @Bean
-  @Primary
-  public ObjectFactory<ZeebeClient> testZeebeClientObjectFactory() {
-    return new ObjectFactory<ZeebeClient>() {
-      @Override
-      public ZeebeClient getObject() throws BeansException {
-        LOG.info("Not creating any real ZeebeClient in test environment");
-        return null;
-      }
-    };
-  }
-*/
   @Bean
   public ZeebeClientProxy zeebeClientProxy() {
     return new ZeebeClientProxy();
