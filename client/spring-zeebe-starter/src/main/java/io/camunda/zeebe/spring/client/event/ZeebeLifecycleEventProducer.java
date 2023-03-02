@@ -1,10 +1,8 @@
-package io.camunda.zeebe.spring.client.lifecycle;
+package io.camunda.zeebe.spring.client.event;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
-import io.camunda.zeebe.spring.client.event.ClientStartedEvent;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
-import io.camunda.zeebe.spring.client.event.ClientStoppedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 
@@ -14,32 +12,32 @@ import org.springframework.context.SmartLifecycle;
  *
  * Created by {@link ZeebeClientConfiguration} (only for production code, not for tests)
  */
-public class ZeebeAnnotationLifecycle implements SmartLifecycle {
+public class ZeebeLifecycleEventProducer implements SmartLifecycle {
 
   protected boolean running = false;
 
-  private final ZeebeAnnotationProcessorRegistry annotationProcessorRegistry;
   private final ApplicationEventPublisher publisher;
 
   private final ZeebeClient client;
 
-  public ZeebeAnnotationLifecycle(final ZeebeClient client, final ZeebeAnnotationProcessorRegistry annotationProcessorRegistry, final ApplicationEventPublisher publisher) {
+  public ZeebeLifecycleEventProducer(final ZeebeClient client, final ApplicationEventPublisher publisher) {
     this.client = client;
-    this.annotationProcessorRegistry = annotationProcessorRegistry;
     this.publisher = publisher;
   }
 
   @Override
   public void start() {
-    publisher.publishEvent(new ClientStartedEvent());
-    annotationProcessorRegistry.startAll(client);
+    publisher.publishEvent(new ClientStartedEvent()); // keep old deprecated event for a bit before delting it
+    publisher.publishEvent(new ZeebeClientCreatedEvent(this, client));
+
     this.running = true;
   }
 
   @Override
   public void stop() {
-    publisher.publishEvent(new ClientStoppedEvent());
-    annotationProcessorRegistry.stopAll(client);
+    publisher.publishEvent(new ClientStoppedEvent()); // keep old deprecated event for a bit before delting it
+    publisher.publishEvent(new ZeebeClientClosingEvent(this, client));
+
     this.running = false;
   }
 

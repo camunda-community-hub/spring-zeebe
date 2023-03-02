@@ -7,7 +7,7 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.actuator.ZeebeActuatorConfiguration;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
-import io.camunda.zeebe.spring.client.lifecycle.ZeebeAnnotationLifecycle;
+import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
@@ -45,9 +45,9 @@ public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseClientSpringC
   }
 
   @Bean
-  @ConditionalOnMissingBean(SpringZeebeTestContext.class) // only run if we are not running in a test case - as then the lifecycle is controlled by the test
-  public ZeebeAnnotationLifecycle zeebeAnnotationLifecycle(final ZeebeClient client, final ZeebeAnnotationProcessorRegistry registry, final ApplicationEventPublisher publisher) {
-    return new ZeebeAnnotationLifecycle(client, registry, publisher);
+  @ConditionalOnMissingBean(SpringZeebeTestContext.class) // only run if we are not running in a test case - as otherwise the the lifecycle is controlled by the test
+  public ZeebeLifecycleEventProducer zeebeAnnotationLifecycle(final ZeebeClient client, final ApplicationEventPublisher publisher) {
+    return new ZeebeLifecycleEventProducer(client, publisher);
   }
 
   @Bean("propertyBasedZeebeWorkerValueCustomizer")
