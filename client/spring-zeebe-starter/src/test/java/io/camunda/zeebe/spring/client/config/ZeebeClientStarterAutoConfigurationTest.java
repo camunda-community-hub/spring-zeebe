@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.api.JsonMapper;
+import io.camunda.zeebe.spring.client.SpringZeebeAutoConfiguration;
+import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
-import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.security.plaintext=true"
   }
 )
-@ContextConfiguration(classes = { ZeebeClientStarterAutoConfiguration.class, ZeebeClientStarterAutoConfigurationTest.TestConfig.class })
+@ContextConfiguration(classes = { SpringZeebeAutoConfiguration.class, ZeebeClientStarterAutoConfigurationTest.TestConfig.class })
 public class ZeebeClientStarterAutoConfigurationTest {
 
   public static class TestConfig {
@@ -50,16 +50,17 @@ public class ZeebeClientStarterAutoConfigurationTest {
       return new ObjectMapper();
     }
 
-    @Bean
+/*    @Bean
     public ZeebeClient zeebeClient() {
       return ZeebeClient.newClient();
     }
+    */
   }
 
   @Autowired
   private JsonMapper jsonMapper;
   @Autowired
-  private ZeebeClientStarterAutoConfiguration autoConfiguration;
+  private ZeebeClientConfiguration autoConfiguration;
   @Autowired
   private ApplicationContext applicationContext;
 

@@ -7,10 +7,13 @@ import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
+import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
+import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import io.camunda.zeebe.spring.test.proxy.ZeebeClientProxy;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.TestContext;
 
 import java.lang.invoke.MethodHandles;
@@ -42,13 +45,13 @@ public class AbstractZeebeTestExecutionListener {
     zeebeClient = createClient(testContext, zeebeEngine);
 
     testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
-    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).startAll(zeebeClient);
+    testContext.getApplicationContext().publishEvent(new ZeebeClientCreatedEvent(this, zeebeClient));
 
     LOGGER.info("...deployments and workers started.");
   }
 
   public ZeebeClient createClient(TestContext testContext, ZeebeTestEngine zeebeEngine) {
-    // Maybe use more of the normal config properties (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)? 
+    // Maybe use more of the normal config properties (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
     ZeebeClientBuilder builder = ZeebeClient.newClientBuilder()
       .gatewayAddress(zeebeEngine.getGatewayAddress()).usePlaintext();
     if (testContext.getApplicationContext().getBeanNamesForType(JsonMapper.class).length>0) {
@@ -74,10 +77,9 @@ public class AbstractZeebeTestExecutionListener {
     BpmnAssert.resetRecordStream();
     ZeebeTestThreadSupport.cleanupEngineForCurrentThread();
 
-    testContext.getApplicationContext().getBean(ZeebeAnnotationProcessorRegistry.class).stopAll(zeebeClient);
+    testContext.getApplicationContext().publishEvent(new ZeebeClientClosingEvent(this, zeebeClient));
     testContext.getApplicationContext().getBean(ZeebeClientProxy.class).removeZeebeClient();
     zeebeClient.close();
-
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
   }
 }

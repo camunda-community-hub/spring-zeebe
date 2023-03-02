@@ -419,6 +419,14 @@ public void handleJobFoo() {
 
 ## Additional Configuration Options
 
+### Disabling ZeebeClient
+
+If you don't want to use a ZeebeClient for certain scenarios, you can switch it off by setting:
+
+```properties
+zeebe.client.enabled=false
+```
+
 ### Configuring Self-managed Zeebe Connection
 
 ```properties

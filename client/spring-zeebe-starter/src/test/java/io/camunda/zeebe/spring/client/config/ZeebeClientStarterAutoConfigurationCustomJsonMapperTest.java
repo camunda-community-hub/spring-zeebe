@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.ZeebeClientBuilder;
-import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
+import io.camunda.zeebe.spring.client.SpringZeebeAutoConfiguration;
+import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.security.plaintext=true"
   }
 )
-@ContextConfiguration(classes = { ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.TestConfig.class, ZeebeClientStarterAutoConfiguration.class })
+@ContextConfiguration(classes = { ZeebeClientStarterAutoConfigurationCustomJsonMapperTest.TestConfig.class, SpringZeebeAutoConfiguration.class })
 public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
   public static class TestConfig {
-    @Bean
-    public ZeebeClient zeebeClient() {
-      return ZeebeClient.newClient();
-    }
 
     @Primary
     @Bean(name = "overridingJsonMapper")
@@ -75,7 +72,7 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
   @Autowired
   private io.camunda.zeebe.client.api.JsonMapper jsonMapper;
   @Autowired
-  private ZeebeClientStarterAutoConfiguration autoConfiguration;
+  private ZeebeClientConfiguration autoConfiguration;
   @Autowired
   private ApplicationContext applicationContext;
 

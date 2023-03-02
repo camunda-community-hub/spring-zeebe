@@ -1,1 +1,1 @@
-io.camunda.zeebe.spring.client.config.ZeebeClientStarterAutoConfiguration
+io.camunda.zeebe.spring.client.SpringZeebeAutoConfiguration

@@ -37,6 +37,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
    */
   private String connectionMode;
 
+  private boolean enabled = true;
+
   @NestedConfigurationProperty
   private Broker broker = new Broker();
 
@@ -125,6 +127,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
 
   public void setRequestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
   @Override

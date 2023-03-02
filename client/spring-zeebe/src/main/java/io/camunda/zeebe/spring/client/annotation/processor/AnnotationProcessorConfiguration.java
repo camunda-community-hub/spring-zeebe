@@ -3,8 +3,10 @@ package io.camunda.zeebe.spring.client.annotation.processor;
 import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
+import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 import java.util.List;
@@ -14,6 +16,11 @@ public class AnnotationProcessorConfiguration {
   @Bean
   public ZeebeAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry(final List<AbstractZeebeAnnotationProcessor> processors) {
     return new ZeebeAnnotationProcessorRegistry(processors);
+  }
+
+  @Bean
+  public ZeebeClientEventListener zeebeClientEventListener(final ZeebeAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
+    return new ZeebeClientEventListener(zeebeAnnotationProcessorRegistry);
   }
 
   @Bean
