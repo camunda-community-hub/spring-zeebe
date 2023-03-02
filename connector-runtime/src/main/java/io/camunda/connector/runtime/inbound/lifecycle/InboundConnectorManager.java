@@ -82,6 +82,10 @@ public class InboundConnectorManager {
     }
   }
 
+  public Map<String, Set<InboundConnectorProperties>> getActiveConnectorsByBpmnId() {
+    return activeConnectorsByBpmnId;
+  }
+
   private void handleLatestBpmnVersion(String bpmnId, List<InboundConnectorProperties> connectors) {
     var alreadyActiveConnectors = activeConnectorsByBpmnId.get(bpmnId);
     if (alreadyActiveConnectors != null) {
