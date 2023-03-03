@@ -232,4 +232,80 @@ class InboundWebhookRestControllerTest {
     assertThat(response.getBody().getErrors())
         .contains(props.getConnectorIdentifier() + ">" + exceptionMessage);
   }
+
+  @Test
+  void inbound_requestWithEmptyBodyAndDisabledHmac_returnsExecuted() throws IOException {
+    InboundConnectorProperties connectorProps =
+      new InboundConnectorProperties(
+        new StartEventCorrelationPoint(1, "proc-id", 2),
+        Map.of(
+          "inbound.context",
+          DEFAULT_CONTEXT,
+          "inbound.variableMapping",
+          "",
+          "inbound.shouldValidateHmac",
+          HMACSwitchCustomerChoice.disabled.name()),
+        "proc-id",
+        2,
+        1);
+
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
+    WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
+
+    when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
+
+    ResponseEntity<WebhookResponse> response =
+      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS);
+
+    verify(connectorContext).replaceSecrets(props);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody().getUnauthorizedConnectors()).isEmpty();
+    assertThat(response.getBody().getExecutedConnectors()).isNotEmpty();
+    assertThat(response.getBody().getExecutedConnectors())
+      .containsKey(props.getConnectorIdentifier());
+    assertThat(response.getBody().getUnactivatedConnectors()).isEmpty();
+  }
+
+  @Test
+  void inbound_requestWithEmptyBodyAndEnabledHmac_returnsUnauthorized() throws IOException {
+    InboundConnectorProperties connectorProps =
+      new InboundConnectorProperties(
+        new StartEventCorrelationPoint(1, "proc-id", 2),
+        Map.of(
+          "inbound.context", DEFAULT_CONTEXT,
+          "inbound.variableMapping", "",
+          "inbound.shouldValidateHmac", HMACSwitchCustomerChoice.enabled.name(),
+          "inbound.hmacSecret", "",
+          "inbound.hmacHeader", "hmac-header",
+          "inbound.hmacAlgorithm", "sha_256"),
+        "proc-id",
+        2,
+        1);
+
+    InboundConnectorContext connectorContext = spy(
+      new InboundConnectorContextBuilder().properties(connectorProps).build());
+
+    WebhookConnectorProperties props = new WebhookConnectorProperties(connectorProps);
+
+    when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(true);
+
+    when(registry.getWebhookConnectorByContextPath(DEFAULT_CONTEXT))
+      .thenReturn(List.of(connectorContext));
+
+    ResponseEntity<WebhookResponse> response =
+      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS);
+
+    verify(connectorContext).replaceSecrets(props);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody().getUnauthorizedConnectors()).isNotEmpty();
+    assertThat(response.getBody().getUnauthorizedConnectors())
+      .contains(props.getConnectorIdentifier());
+    assertThat(response.getBody().getExecutedConnectors()).isEmpty();
+    assertThat(response.getBody().getUnactivatedConnectors()).isEmpty();
+  }
 }
