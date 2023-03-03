@@ -70,7 +70,7 @@ public class InboundWebhookRestController {
   @PostMapping("/inbound/{context}")
   public ResponseEntity<WebhookResponse> inbound(
       @PathVariable String context,
-      @RequestBody byte[] bodyAsByteArray, // required to calculate HMAC
+      @RequestBody(required = false) byte[] bodyAsByteArray, // raw form required to calculate HMAC
       @RequestHeader Map<String, String> headers)
       throws IOException {
 
@@ -84,8 +84,9 @@ public class InboundWebhookRestController {
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
-    // TODO: Check if that always works (can we have an empty body for example?)
-    Map bodyAsMap = jsonMapper.readValue(bodyAsByteArray, Map.class);
+    Map bodyAsMap = bodyAsByteArray == null
+      ? Collections.emptyMap()
+      : jsonMapper.readValue(bodyAsByteArray, Map.class);
 
     HashMap<String, Object> request = new HashMap<>();
     request.put("body", bodyAsMap);
