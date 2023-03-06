@@ -30,6 +30,8 @@ public class ZeebeClientConfiguration {
   public ZeebeClientConfiguration(ZeebeClientConfigurationProperties configurationProperties, ZeebeClientExecutorService zeebeClientExecutorService, JsonMapper jsonMapper) {
     this.configurationProperties = configurationProperties;
     configurationProperties.setJsonMapper(jsonMapper); // make sure to set it lazy
+    configurationProperties.applyOverrides(); // make sure environment variables and other legacy config options are taken into account
+
     this.zeebeClientExecutorService = zeebeClientExecutorService;
   }
 
