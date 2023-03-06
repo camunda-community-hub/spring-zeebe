@@ -44,8 +44,11 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
   @Bean
   @Conditional(value=OnMissingCommandExceptionHandlingStrategy.class)
-  public CommandExceptionHandlingStrategy commandExceptionHandlingStrategy() {
-    return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService());
+  public CommandExceptionHandlingStrategy commandExceptionHandlingStrategy(@Autowired(required = false) ScheduledExecutorService scheduledExecutorService) {
+    if (scheduledExecutorService==null) {
+      scheduledExecutorService = defaultScheduledExecutorService();
+    }
+    return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService);
   }
 
   @Bean
@@ -60,8 +63,7 @@ public abstract class AbstractZeebeBaseClientSpringConfiguration {
     return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, connectorFactory, jsonMapper, metricsRecorder);
   }
 
-  @Bean
-  public ScheduledExecutorService scheduledExecutorService() {
+  public ScheduledExecutorService defaultScheduledExecutorService() {
     return Executors.newSingleThreadScheduledExecutor();
   }
 
