@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -80,6 +81,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
    * Environment variables are taking precendence over Spring properties.
    * Legacy config options are read only if no real property is set
    */
+  @PostConstruct
   public void applyOverrides() {
     if (Environment.system().isDefined("ZEEBE_INSECURE_CONNECTION")) {
       security.plaintext = Environment.system().getBoolean("ZEEBE_INSECURE_CONNECTION");
