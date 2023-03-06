@@ -61,7 +61,7 @@ public class ProcessDefinitionInspector {
       .getChildElementsByType(Process.class)
       .stream()
       .flatMap(process -> inspectBpmnProcess(process, processDefinition).stream())
-      .collect(Collectors.groupingBy(InboundConnectorProperties::getExecutionId));
+      .collect(Collectors.groupingBy(InboundConnectorProperties::getCorrelationPointId));
 
     return connectorDefinitions.entrySet().stream()
       .map(entry -> {

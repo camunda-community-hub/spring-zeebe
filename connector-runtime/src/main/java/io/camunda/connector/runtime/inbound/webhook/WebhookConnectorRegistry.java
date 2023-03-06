@@ -18,7 +18,7 @@ public class WebhookConnectorRegistry {
 
   private final Logger LOG = LoggerFactory.getLogger(WebhookConnectorRegistry.class);
 
-  // active endpoints grouped by context path (additionally indexed by executionId for faster lookup)
+  // active endpoints grouped by context path (additionally indexed by correlationPointId for faster lookup)
   private final Map<String, Map<String, InboundConnectorContext>> activeEndpointsByContext =
     new HashMap<>();
 
@@ -40,10 +40,10 @@ public class WebhookConnectorRegistry {
       (context, endpoints) -> {
         if (endpoints == null) {
           Map<String, InboundConnectorContext> newEndpoints = new HashMap<>();
-          newEndpoints.put(properties.getExecutionId(), connectorContext);
+          newEndpoints.put(properties.getCorrelationPointId(), connectorContext);
           return newEndpoints;
         }
-        endpoints.put(properties.getExecutionId(), connectorContext);
+        endpoints.put(properties.getCorrelationPointId(), connectorContext);
         return endpoints;
       });
   }
@@ -55,12 +55,12 @@ public class WebhookConnectorRegistry {
     activeEndpointsByContext.compute(
       webhookProperties.getContext(),
       (context, endpoints) -> {
-        if (endpoints == null || !endpoints.containsKey(inboundConnectorProperties.getExecutionId())) {
+        if (endpoints == null || !endpoints.containsKey(inboundConnectorProperties.getCorrelationPointId())) {
           LOG.warn("Attempted to disable non-existing webhook endpoint. "
             + "This indicates a potential error in the connector lifecycle.");
           return endpoints;
         }
-        endpoints.remove(inboundConnectorProperties.getExecutionId());
+        endpoints.remove(inboundConnectorProperties.getCorrelationPointId());
         return endpoints;
       });
   }

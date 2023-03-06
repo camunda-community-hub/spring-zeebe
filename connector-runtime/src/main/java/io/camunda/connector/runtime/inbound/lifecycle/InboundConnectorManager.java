@@ -33,7 +33,7 @@ public class InboundConnectorManager {
 
   // TODO: consider using external storage instead of these collections to allow multi-instance setup
   private final Set<Long> registeredProcessDefinitionKeys = new HashSet<>();
-  private final Map<String, InboundConnectorExecutable> activeConnectorsByExecutionId =
+  private final Map<String, InboundConnectorExecutable> activeConnectorsByCorrelationPointId =
     new ConcurrentHashMap<>();
   private final Map<String, Set<InboundConnectorProperties>> activeConnectorsByBpmnId = new HashMap<>();
 
@@ -95,14 +95,15 @@ public class InboundConnectorManager {
   }
 
   private void deactivateConnector(InboundConnectorProperties properties) {
+    InboundConnectorExecutable executable =
+      activeConnectorsByCorrelationPointId.get(properties.getCorrelationPointId());
 
-    InboundConnectorExecutable executable = activeConnectorsByExecutionId.get(properties.getExecutionId());
     if (executable == null) {
       throw new IllegalStateException("Connector executable not found for properties " + properties);
     }
     try {
       executable.deactivate();
-      activeConnectorsByExecutionId.remove(properties.getExecutionId());
+      activeConnectorsByCorrelationPointId.remove(properties.getCorrelationPointId());
       activeConnectorsByBpmnId.get(properties.getBpmnProcessId()).remove(properties);
     } catch (Exception e) {
       // log and continue with other connectors anyway
@@ -118,7 +119,7 @@ public class InboundConnectorManager {
       executable.activate(
         new InboundConnectorContextImpl(secretProvider, newProperties, correlationHandler));
 
-      activeConnectorsByExecutionId.put(newProperties.getExecutionId(), executable);
+      activeConnectorsByCorrelationPointId.put(newProperties.getCorrelationPointId(), executable);
       activeConnectorsByBpmnId.compute(
         newProperties.getBpmnProcessId(),
         (bpmnId, connectorPropertiesSet) -> {
