@@ -7,12 +7,15 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.actuator.ZeebeActuatorConfiguration;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
+import io.camunda.zeebe.spring.client.concurrent.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,6 +23,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 
 import java.lang.invoke.MethodHandles;
 
@@ -71,4 +75,9 @@ public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseClientSpringC
     return new ZeebeObjectMapper(objectMapper);
   }
 
+  @Bean
+  @ConditionalOnMissingBean(ZeebeClientExecutorService.class)
+  public ZeebeClientExecutorService zeebeClientThreadPool(@Autowired(required = false) MeterRegistry meterRegistry) {
+    return ZeebeClientExecutorService.createDefault(configurationProperties, meterRegistry);
+  }
 }

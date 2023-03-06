@@ -50,11 +50,6 @@ public class ZeebeClientStarterAutoConfigurationTest {
       return new ObjectMapper();
     }
 
-/*    @Bean
-    public ZeebeClient zeebeClient() {
-      return ZeebeClient.newClient();
-    }
-    */
   }
 
   @Autowired
@@ -82,19 +77,4 @@ public class ZeebeClientStarterAutoConfigurationTest {
     assertThat(((ObjectMapper)objectMapper).getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)).isFalse();
   }
 
-  @Test
-  void testBuilder() {
-    ZeebeClientBuilder builder = autoConfiguration.builder(jsonMapper, Collections.emptyList());
-
-    assertThat(builder).isNotNull();
-
-    ZeebeClient client = builder.build();
-    assertThat(client.getConfiguration().getJsonMapper()).isSameAs(jsonMapper);
-    assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost12345");
-    assertThat(client.getConfiguration().getDefaultRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
-    assertThat(client.getConfiguration().getCaCertificatePath()).isEqualTo("aPath");
-    assertThat(client.getConfiguration().isPlaintextConnectionEnabled()).isTrue();
-    assertThat(client.getConfiguration().getDefaultJobWorkerMaxJobsActive()).isEqualTo(99);
-    assertThat(client.getConfiguration().getDefaultJobPollInterval()).isEqualTo(Duration.ofSeconds(99));
-  }
 }

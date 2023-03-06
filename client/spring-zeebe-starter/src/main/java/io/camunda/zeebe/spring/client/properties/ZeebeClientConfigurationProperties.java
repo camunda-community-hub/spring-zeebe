@@ -638,4 +638,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   public JsonMapper getJsonMapper() {
     return jsonMapper;
   }
+
+  public void setJsonMapper(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
+  }
 }
