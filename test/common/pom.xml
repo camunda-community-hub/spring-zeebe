@@ -20,7 +20,7 @@
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>spring-zeebe</artifactId>
+      <artifactId>spring-zeebe-starter</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

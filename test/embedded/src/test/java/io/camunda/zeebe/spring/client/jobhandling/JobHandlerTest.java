@@ -10,7 +10,7 @@ import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
-import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
+import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
-  classes = {
-    JobHandlerTest.TestMetricsConfiguration.class,
+  classes={
     JobHandlerTest.class,
+    JobHandlerTest.TestMetricsConfiguration.class,
     JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class
   },
   properties = { "zeebe.client.worker.default-type=DefaultType" }

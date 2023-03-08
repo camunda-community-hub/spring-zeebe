@@ -1,18 +1,20 @@
 package io.camunda.zeebe.spring.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
-import io.camunda.zeebe.spring.client.connector.ConnectorConfiguration;
-import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
+import io.camunda.zeebe.spring.client.configuration.ConnectorConfiguration;
+import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
+import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -20,8 +22,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 /**
  * Abstract class pulling up all configuration that is needed for production as well as for tests.
@@ -30,41 +32,34 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 @Import({
   AnnotationProcessorConfiguration.class,
-  ConnectorConfiguration.class
-  //MetricsDefaultConfiguration.class // Until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
+  ConnectorConfiguration.class,
+  MetricsDefaultConfiguration.class
 })
 public abstract class AbstractZeebeBaseClientSpringConfiguration {
 
-  public static class OnMissingCommandExceptionHandlingStrategy implements Condition {
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-      return context.getBeanFactory().getBeanNamesForType(CommandExceptionHandlingStrategy.class).length<=0;
-    }
+  public static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
+    .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ZeebeClientExecutorService zeebeClientExecutorService() {
+    return ZeebeClientExecutorService.createDefault();
   }
 
   @Bean
-  @Conditional(value=OnMissingCommandExceptionHandlingStrategy.class)
-  public CommandExceptionHandlingStrategy commandExceptionHandlingStrategy(@Autowired(required = false) ScheduledExecutorService scheduledExecutorService) {
-    if (scheduledExecutorService==null) {
-      scheduledExecutorService = defaultScheduledExecutorService();
-    }
-    return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService);
+  @ConditionalOnMissingBean
+  public CommandExceptionHandlingStrategy commandExceptionHandlingStrategy(ZeebeClientExecutorService scheduledExecutorService) {
+    return new DefaultCommandExceptionHandlingStrategy(backoffSupplier(), scheduledExecutorService.get());
   }
 
   @Bean
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
                                            final SecretProvider secretProvider,
                                            final OutboundConnectorFactory connectorFactory,
-                                           @Autowired(required = false) JsonMapper jsonMapper,
-                                           @Autowired(required = false) MetricsRecorder metricsRecorder) {
-    if (metricsRecorder==null) { // Workaround until https://github.com/camunda-community-hub/spring-zeebe/issues/275 is resolved
-      metricsRecorder = new DefaultNoopMetricsRecorder();
-    }
+                                           final JsonMapper jsonMapper,
+                                           final MetricsRecorder metricsRecorder) {
     return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, connectorFactory, jsonMapper, metricsRecorder);
-  }
-
-  public ScheduledExecutorService defaultScheduledExecutorService() {
-    return Executors.newSingleThreadScheduledExecutor();
   }
 
   @Bean
