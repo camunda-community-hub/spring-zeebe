@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.CredentialsProvider;
+import io.camunda.zeebe.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
@@ -26,7 +27,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 @ConfigurationProperties(prefix = "zeebe.client")
-public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
+public class ZeebeClientConfigurationProperties implements ZeebeClientConfiguration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -63,15 +64,13 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @NestedConfigurationProperty
   private Job job = new Job();
 
-  @Lazy
+  @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
   private JsonMapper jsonMapper;
 
-  /**
-   * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
-   * interface upstream
-   */
-  private ArrayList<ClientInterceptor> interceptors = new ArrayList<>();
+  @Lazy
+  @Autowired(required = false)
+  private List<ClientInterceptor> interceptors;
 
   public ZeebeClientConfigurationProperties(@Autowired org.springframework.core.env.Environment environment) {
     this.environment = environment;
@@ -159,7 +158,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     this.job = job;
   }
 
-  public void setInterceptors(ArrayList<ClientInterceptor> interceptors) {
+  public void setInterceptors(List<ClientInterceptor> interceptors) {
     this.interceptors = interceptors;
   }
 
