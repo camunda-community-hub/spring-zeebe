@@ -16,11 +16,7 @@ import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlin
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -35,7 +31,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
   ConnectorConfiguration.class,
   MetricsDefaultConfiguration.class
 })
-public abstract class AbstractZeebeBaseClientSpringConfiguration {
+public abstract class AbstractZeebeBaseConfiguration {
 
   public static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
     .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)

@@ -78,7 +78,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   /**
    * Make sure environment variables and other legacy config options are taken into account.
-   * Environment variables are taking precendence over Spring properties.
+   * Environment variables are taking precedence over Spring properties.
    * Legacy config options are read only if no real property is set
    */
   @PostConstruct

@@ -37,7 +37,7 @@ import java.lang.invoke.MethodHandles;
   ExecutorServiceConfiguration.class,
   ZeebeActuatorConfiguration.class})
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseClientSpringConfiguration {
+public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -6,14 +6,13 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
-import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
 import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
 import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import io.camunda.zeebe.spring.test.proxy.ZeebeClientProxy;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
+import io.camunda.zeebe.spring.test.threads.ZeebeTestThreadSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.TestContext;
 
 import java.lang.invoke.MethodHandles;
@@ -58,6 +57,7 @@ public class AbstractZeebeTestExecutionListener {
       JsonMapper jsonMapper = testContext.getApplicationContext().getBean(JsonMapper.class);
       builder.withJsonMapper(jsonMapper);
     }
+    //builder.applyEnvironmentVariableOverrides(false);
     return builder.build();
   }
 

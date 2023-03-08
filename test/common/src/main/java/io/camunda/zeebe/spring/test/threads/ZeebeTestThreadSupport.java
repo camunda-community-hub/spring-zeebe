@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.test;
+package io.camunda.zeebe.spring.test.threads;
 
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
