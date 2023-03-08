@@ -44,6 +44,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
    */
   private String connectionMode;
 
+  private boolean applyEnvironmentVariableOverrides = false; // the default is NOT to overwrite anything by environment variables in a Spring Boot world - it is unintuitive
+
   private boolean enabled = true;
 
   @NestedConfigurationProperty
@@ -83,17 +85,19 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
    */
   @PostConstruct
   public void applyOverrides() {
-    if (Environment.system().isDefined("ZEEBE_INSECURE_CONNECTION")) {
-      security.plaintext = Environment.system().getBoolean("ZEEBE_INSECURE_CONNECTION");
-    }
-    if (Environment.system().isDefined("ZEEBE_CA_CERTIFICATE_PATH")) {
-      security.certPath = Environment.system().get("ZEEBE_CA_CERTIFICATE_PATH");
-    }
-    if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
-      broker.keepAlive = Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
-    }
-    if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
-      security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
+    if (isApplyEnvironmentVariableOverrides()) {
+      if (Environment.system().isDefined("ZEEBE_INSECURE_CONNECTION")) {
+        security.plaintext = Environment.system().getBoolean("ZEEBE_INSECURE_CONNECTION");
+      }
+      if (Environment.system().isDefined("ZEEBE_CA_CERTIFICATE_PATH")) {
+        security.certPath = Environment.system().get("ZEEBE_CA_CERTIFICATE_PATH");
+      }
+      if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
+        broker.keepAlive = Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
+      }
+      if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
+        security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
+      }
     }
 
     // Java Client has some name differences in properties - support those as well in case people use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
@@ -176,6 +180,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
+  }
+
+  public boolean isApplyEnvironmentVariableOverrides() {
+    return applyEnvironmentVariableOverrides;
+  }
+
+  public void setApplyEnvironmentVariableOverrides(boolean applyEnvironmentVariableOverrides) {
+    this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
   @Override
