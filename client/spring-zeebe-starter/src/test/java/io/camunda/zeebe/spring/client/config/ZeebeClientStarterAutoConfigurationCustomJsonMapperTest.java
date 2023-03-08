@@ -3,10 +3,9 @@ package io.camunda.zeebe.spring.client.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.ZeebeClientBuilder;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.SpringZeebeAutoConfiguration;
-import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,11 +96,10 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
   @Test
   void testBuilder() {
-    ZeebeClientBuilder builder = autoConfiguration.builder(jsonMapper, Collections.emptyList());
+    //ZeebeClientBuilder builder = autoConfiguration.builder(jsonMapper, Collections.emptyList());
+    //assertThat(builder).isNotNull();
 
-    assertThat(builder).isNotNull();
-
-    ZeebeClient client = builder.build();
+    ZeebeClient client = applicationContext.getBean(ZeebeClient.class) ;
     assertThat(client.getConfiguration().getJsonMapper()).isSameAs(jsonMapper);
     assertThat(client.getConfiguration().getJsonMapper()).isSameAs(applicationContext.getBean("overridingJsonMapper"));
     assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost12345");

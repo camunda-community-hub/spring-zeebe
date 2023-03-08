@@ -6,7 +6,8 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.actuator.ZeebeActuatorConfiguration;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
-import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientConfiguration;
+import io.camunda.zeebe.spring.client.configuration.ExecutorServiceConfiguration;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
@@ -33,9 +34,10 @@ import java.lang.invoke.MethodHandles;
 @ConditionalOnProperty(prefix = "zeebe.client", name = "enabled", havingValue = "true",  matchIfMissing = true)
 @Import({
   ZeebeClientConfiguration.class,
+  ExecutorServiceConfiguration.class,
   ZeebeActuatorConfiguration.class})
 @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseClientSpringConfiguration {
+public class SpringZeebeAutoConfiguration extends AbstractZeebeBaseConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

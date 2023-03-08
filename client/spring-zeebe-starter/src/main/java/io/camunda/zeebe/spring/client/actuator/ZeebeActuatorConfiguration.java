@@ -2,7 +2,7 @@ package io.camunda.zeebe.spring.client.actuator;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
-import io.camunda.zeebe.spring.client.metrics.MetricsDefaultConfiguration;
+import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -33,10 +33,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
-  private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
-    .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
-
   private final ZeebeWorkerValue workerValue;
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final SecretProvider secretProvider;
@@ -204,10 +200,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private <T>T mapZeebeVariable(Object toMap, Class<T> clazz) {
     if (toMap != null && !clazz.isInstance(toMap)) {
-      if (jsonMapper != null) {
+//      if (jsonMapper != null) {
         return jsonMapper.fromJson(jsonMapper.toJson(toMap), clazz);
-      }
-      return DEFAULT_OBJECT_MAPPER.convertValue(toMap, clazz);
+//      }
+//      return DEFAULT_OBJECT_MAPPER.convertValue(toMap, clazz);
     } else {
       return clazz.cast(toMap);
     }

@@ -1,17 +1,10 @@
 package io.camunda.zeebe.spring.client.event;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.ZeebeClientConfiguration;
-import io.camunda.zeebe.spring.client.annotation.processor.ZeebeAnnotationProcessorRegistry;
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 
-/**
- * Lifecycle implementation that also directly acts as a ZeebeClient by delegating all methods to the
- * ZeebeClient that is controlled (and kept in the delegate field)
- *
- * Created by {@link ZeebeClientConfiguration} (only for production code, not for tests)
- */
 public class ZeebeLifecycleEventProducer implements SmartLifecycle {
 
   protected boolean running = false;

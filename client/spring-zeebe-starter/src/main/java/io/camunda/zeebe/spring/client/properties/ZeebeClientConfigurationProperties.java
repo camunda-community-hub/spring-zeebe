@@ -1,8 +1,12 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.CredentialsProvider;
+import io.camunda.zeebe.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
+import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
+import io.camunda.zeebe.client.impl.util.Environment;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.grpc.ClientInterceptor;
 import org.slf4j.Logger;
@@ -12,6 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,12 +27,14 @@ import java.util.Objects;
 import java.util.Properties;
 
 @ConfigurationProperties(prefix = "zeebe.client")
-public class ZeebeClientConfigurationProperties implements ZeebeClientProperties {
+public class ZeebeClientConfigurationProperties implements ZeebeClientConfiguration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT = (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+
+  private final org.springframework.core.env.Environment environment;
 
   public static final String CONNECTION_MODE_CLOUD = "CLOUD";
   public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
@@ -57,15 +64,49 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @NestedConfigurationProperty
   private Job job = new Job();
 
-  @Lazy
+  @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
   private JsonMapper jsonMapper;
 
+  @Lazy
+  @Autowired(required = false)
+  private List<ClientInterceptor> interceptors;
+
+  public ZeebeClientConfigurationProperties(@Autowired org.springframework.core.env.Environment environment) {
+    this.environment = environment;
+  }
+
   /**
-   * TODO: Think about how to support this in Spring Boot and potentially even remove it from the ZeebeClientProperties
-   * interface upstream
+   * Make sure environment variables and other legacy config options are taken into account.
+   * Environment variables are taking precedence over Spring properties.
+   * Legacy config options are read only if no real property is set
    */
-  private ArrayList<ClientInterceptor> interceptors = new ArrayList<>();
+  @PostConstruct
+  public void applyOverrides() {
+    if (Environment.system().isDefined("ZEEBE_INSECURE_CONNECTION")) {
+      security.plaintext = Environment.system().getBoolean("ZEEBE_INSECURE_CONNECTION");
+    }
+    if (Environment.system().isDefined("ZEEBE_CA_CERTIFICATE_PATH")) {
+      security.certPath = Environment.system().get("ZEEBE_CA_CERTIFICATE_PATH");
+    }
+    if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
+      broker.keepAlive = Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
+    }
+    if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
+      security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
+    }
+
+    // Java Client has some name differences in properties - support those as well in case people use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
+    if (broker.gatewayAddress==null && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+      broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
+    }
+    if (cloud.clientSecret==null && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
+      cloud.clientSecret = environment.getProperty(ClientProperties.CLOUD_CLIENT_SECRET);
+    }
+    if (worker.defaultName ==null && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
+      worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
+    }
+  }
 
   private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
 
@@ -117,7 +158,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
     this.job = job;
   }
 
-  public void setInterceptors(ArrayList<ClientInterceptor> interceptors) {
+  public void setInterceptors(List<ClientInterceptor> interceptors) {
     this.interceptors = interceptors;
   }
 
@@ -621,9 +662,18 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
         .authorizationServerUrl(cloud.authUrl)
         .credentialsCachePath(cloud.credentialsCachePath)
         .build();
+    } else if (Environment.system().get("ZEEBE_CLIENT_ID") != null && Environment.system().get("ZEEBE_CLIENT_SECRET") != null) {
+      // Copied from ZeebeClientBuilderImpl
+      OAuthCredentialsProviderBuilder builder = CredentialsProvider.newCredentialsProviderBuilder();
+      int separatorIndex = broker.gatewayAddress.lastIndexOf(58); //":"
+      if (separatorIndex > 0) {
+        builder.audience(broker.gatewayAddress.substring(0, separatorIndex));
+      }
+      return builder.build();
     }
     return null;
   }
+
   @Override
   public Duration getKeepAlive() {
     return broker.getKeepAlive();
@@ -637,5 +687,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
   @Override
   public JsonMapper getJsonMapper() {
     return jsonMapper;
+  }
+
+  public void setJsonMapper(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
   }
 }
