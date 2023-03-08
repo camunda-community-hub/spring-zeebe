@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.CredentialsProvider;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
@@ -96,17 +97,15 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientProperties
       security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
     }
 
-    if (broker.gatewayAddress==null && environment.containsProperty("zeebe.client.gateway.address")) {
-      broker.gatewayAddress = environment.getProperty("zeebe.client.gateway.address");
+    // Java Client has some name differences in properties - support those as well in case people use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
+    if (broker.gatewayAddress==null && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+      broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
     }
-    if (broker.gatewayAddress==null && environment.containsProperty("zeebe.client.gateway.address")) {
-      broker.gatewayAddress = environment.getProperty("zeebe.client.gateway.address");
+    if (cloud.clientSecret==null && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
+      cloud.clientSecret = environment.getProperty(ClientProperties.CLOUD_CLIENT_SECRET);
     }
-    if (cloud.clientSecret==null && environment.containsProperty("zeebe.client.cloud.secret")) {
-      cloud.clientSecret = environment.getProperty("zeebe.client.cloud.secret");
-    }
-    if (worker.defaultName ==null && environment.containsProperty("zeebe.client.worker.name")) {
-      worker.defaultName = environment.getProperty("zeebe.client.worker.name");
+    if (worker.defaultName ==null && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
+      worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
     }
   }
 

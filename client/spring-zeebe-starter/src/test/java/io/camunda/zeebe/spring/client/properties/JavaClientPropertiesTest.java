@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.gateway.address=localhost12345",
     "zeebe.client.job.pollinterval=99s",
     "zeebe.client.worker.name=testName",
+    "zeebe.client.cloud.secret=processOrchestration"
   }
 )
 @ContextConfiguration(classes = JavaClientPropertiesTest.TestConfig.class)
@@ -53,4 +54,10 @@ public class JavaClientPropertiesTest {
   public void hasJobPollInterval() throws Exception {
     assertThat(properties.getJob().getPollInterval()).isEqualTo(Duration.ofSeconds(99));
   }
+
+  @Test
+  public void hasCloudSecret() throws Exception {
+    assertThat(properties.getCloud().getClientSecret()).isEqualTo("processOrchestration");
+  }
+
 }
