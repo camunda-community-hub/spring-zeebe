@@ -57,7 +57,7 @@ public class AbstractZeebeTestExecutionListener {
       JsonMapper jsonMapper = testContext.getApplicationContext().getBean(JsonMapper.class);
       builder.withJsonMapper(jsonMapper);
     }
-    //builder.applyEnvironmentVariableOverrides(false);
+    builder.applyEnvironmentVariableOverrides(false);
     return builder.build();
   }
 
