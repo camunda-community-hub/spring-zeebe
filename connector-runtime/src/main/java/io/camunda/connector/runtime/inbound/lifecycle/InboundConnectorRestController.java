@@ -5,6 +5,7 @@ import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorRegistry;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,10 @@ public class InboundConnectorRestController {
   private List<InboundConnectorProperties> filterByBpmnProcessId(
     Map<String, Set<InboundConnectorProperties>> connectors, String bpmnProcessId) {
     if (bpmnProcessId != null) {
+      Set<InboundConnectorProperties> connectorsForBpmnId = connectors.get(bpmnProcessId);
+      if (connectorsForBpmnId == null) {
+        return Collections.emptyList();
+      }
       return new ArrayList<>(connectors.get(bpmnProcessId));
     }
     return connectors.values().stream()
