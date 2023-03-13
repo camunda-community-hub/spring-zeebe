@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>io.camunda.spring</groupId>
-      <artifactId>java-client-annotations</artifactId>
+      <artifactId>spring-client-annotations</artifactId>
     </dependency>
   </dependencies>
 </project>

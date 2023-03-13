@@ -37,10 +37,8 @@
   </properties>
 
   <modules>
-    <!-- Pure Java modules -->
-    <module>java-client-annotations</module>
-
     <!-- Spring dependant modules -->
+    <module>spring-client-annotations</module>
     <module>spring-client-common</module>
     <module>spring-client-zeebe</module>
 
@@ -102,7 +100,7 @@
 
       <dependency>
         <groupId>io.camunda.spring</groupId>
-        <artifactId>java-client-annotations</artifactId>
+        <artifactId>spring-client-annotations</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

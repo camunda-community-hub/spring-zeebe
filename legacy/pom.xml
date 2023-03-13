@@ -9,6 +9,7 @@
 
   <artifactId>spring-zeebe-legacy-artifacts</artifactId>
   <packaging>pom</packaging>
+  <name>[legacy] spring-zeebe-legacy-artifacts</name>
 
   <modules>
     <module>spring-zeebe</module>

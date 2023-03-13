@@ -11,6 +11,7 @@
   <!-- This module simply provides the new artifact under the old name -->
   <groupId>io.camunda</groupId>
   <artifactId>spring-zeebe-test-testcontainer</artifactId>
+  <name>[legacy] spring-zeebe-test-testcontainer</name>
 
   <dependencies>
     <dependency>
