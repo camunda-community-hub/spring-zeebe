@@ -41,6 +41,7 @@
     <module>java-client-annotations</module>
 
     <!-- Spring dependant modules -->
+    <module>spring-client-common</module>
     <module>spring-client-zeebe</module>
 
     <!-- Spring Boot dependant modules -->
@@ -99,6 +100,16 @@
         <version>${zeebe.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>io.camunda.spring</groupId>
+        <artifactId>java-client-annotations</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.spring</groupId>
+        <artifactId>spring-client-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>io.camunda.spring</groupId>
         <artifactId>spring-client-zeebe</artifactId>
