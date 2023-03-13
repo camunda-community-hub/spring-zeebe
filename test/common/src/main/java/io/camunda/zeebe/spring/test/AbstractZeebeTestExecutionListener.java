@@ -10,7 +10,6 @@ import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
 import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import io.camunda.zeebe.spring.test.proxy.ZeebeClientProxy;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
-import io.camunda.zeebe.spring.test.threads.ZeebeTestThreadSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;

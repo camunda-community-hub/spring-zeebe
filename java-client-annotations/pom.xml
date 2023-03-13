@@ -5,23 +5,11 @@
     <groupId>io.camunda.spring</groupId>
     <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
   </parent>
 
   <groupId>io.camunda.spring</groupId>
-  <artifactId>spring-boot-starter-camunda-test-testcontainer</artifactId>
+  <artifactId>java-client-annotations</artifactId>
 
   <dependencies>
-    <dependency>
-      <groupId>io.camunda.spring</groupId>
-      <artifactId>spring-boot-starter-camunda-test-common</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
-
 </project>

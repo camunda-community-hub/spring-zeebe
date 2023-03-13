@@ -2,17 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.camunda</groupId>
-    <artifactId>spring-zeebe-root</artifactId>
+    <groupId>io.camunda.spring</groupId>
+    <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>spring-zeebe-client-root</artifactId>
-  <name>pom/spring-zeebe-client</name>
+  <artifactId>spring-zeebe-legacy-artifacts</artifactId>
   <packaging>pom</packaging>
 
   <modules>
     <module>spring-zeebe</module>
     <module>spring-zeebe-starter</module>
+    <module>spring-zeebe-test</module>
+    <module>spring-zeebe-test-testcontainer</module>
   </modules>
 </project>
