@@ -9,6 +9,7 @@
 
   <description>Camunda Connector - Self-contained runtime that can connect to any Zeebe/Operate instance</description>
   <artifactId>spring-zeebe-connector-runtime</artifactId>
+  <name>[to be moved] spring-zeebe-connector-runtime</name>
   <packaging>jar</packaging>
 
   <properties>
