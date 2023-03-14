@@ -5,10 +5,13 @@
     <groupId>io.camunda.spring</groupId>
     <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
   </parent>
 
-  <groupId>io.camunda.spring</groupId>
-  <artifactId>spring-boot-starter-camunda-example</artifactId>
+  <!-- This module simply provides the new artifact under the old name -->
+  <groupId>io.camunda</groupId>
+  <artifactId>spring-zeebe-starter</artifactId>
+  <name>[legacy] spring-zeebe-starter</name>
 
   <dependencies>
     <dependency>
@@ -17,23 +20,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring-boot.version}</version>
-        <configuration>
-          <layout>ZIP</layout>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

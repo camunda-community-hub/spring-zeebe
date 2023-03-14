@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.camunda</groupId>
-    <artifactId>spring-zeebe-root</artifactId>
-    <relativePath>../pom.xml</relativePath>
+    <groupId>io.camunda.spring</groupId>
+    <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
   </parent>
 
   <description>Camunda Connector - Self-contained runtime that can connect to any Zeebe/Operate instance</description>
   <artifactId>spring-zeebe-connector-runtime</artifactId>
+  <name>[to be moved] spring-zeebe-connector-runtime</name>
   <packaging>jar</packaging>
 
   <properties>
@@ -32,8 +32,8 @@
       <artifactId>connector-validation</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-zeebe-starter</artifactId>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>spring-boot-starter-camunda</artifactId>
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
@@ -61,8 +61,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-zeebe-test</artifactId>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>spring-boot-starter-camunda-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -8,20 +8,15 @@
     <relativePath>../..</relativePath>
   </parent>
 
-  <groupId>io.camunda.spring</groupId>
-  <artifactId>spring-boot-starter-camunda-test-testcontainer</artifactId>
+  <!-- This module simply provides the new artifact under the old name -->
+  <groupId>io.camunda</groupId>
+  <artifactId>spring-zeebe</artifactId>
+  <name>[legacy] spring-zeebe</name>
 
   <dependencies>
     <dependency>
       <groupId>io.camunda.spring</groupId>
-      <artifactId>spring-boot-starter-camunda-test-common</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-      <scope>compile</scope>
+      <artifactId>spring-client-zeebe</artifactId>
     </dependency>
   </dependencies>
-
 </project>

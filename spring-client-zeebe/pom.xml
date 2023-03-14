@@ -5,35 +5,46 @@
     <groupId>io.camunda.spring</groupId>
     <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
   </parent>
 
   <groupId>io.camunda.spring</groupId>
-  <artifactId>spring-boot-starter-camunda-test</artifactId>
-
-  <properties>
-    <version.java>17</version.java>
-    <java.version>${version.java}</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-  </properties>
+  <artifactId>spring-client-zeebe</artifactId>
 
   <dependencies>
     <dependency>
       <groupId>io.camunda.spring</groupId>
-      <artifactId>spring-boot-starter-camunda-test-common</artifactId>
-      <scope>compile</scope>
+      <artifactId>spring-client-common</artifactId>
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension</artifactId>
-      <scope>compile</scope>
+      <artifactId>zeebe-client-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>connector-runtime-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
 
+  </dependencies>
 </project>

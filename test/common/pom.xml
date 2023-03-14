@@ -2,15 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.camunda</groupId>
-    <artifactId>spring-zeebe-root</artifactId>
+    <groupId>io.camunda.spring</groupId>
+    <artifactId>spring-client-root</artifactId>
     <version>8.2.0-alpha2-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
+    <relativePath>../..</relativePath>
   </parent>
 
-  <groupId>io.camunda</groupId>
-  <artifactId>spring-zeebe-test-common</artifactId>
-  <name>test/spring-zeebe-test-common</name>
+  <groupId>io.camunda.spring</groupId>
+  <artifactId>spring-boot-starter-camunda-test-common</artifactId>
 
   <dependencies>
     <dependency>
@@ -19,8 +18,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-zeebe-starter</artifactId>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>spring-boot-starter-camunda</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
