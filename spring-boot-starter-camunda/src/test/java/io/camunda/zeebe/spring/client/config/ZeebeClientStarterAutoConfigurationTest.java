@@ -3,8 +3,8 @@ package io.camunda.zeebe.spring.client.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.api.JsonMapper;
-import io.camunda.zeebe.spring.client.SpringZeebeAutoConfiguration;
-import io.camunda.zeebe.spring.client.configuration.ZeebeClientConfiguration;
+import io.camunda.zeebe.spring.client.CamundaAutoConfiguration;
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.security.plaintext=true"
   }
 )
-@ContextConfiguration(classes = { SpringZeebeAutoConfiguration.class, ZeebeClientStarterAutoConfigurationTest.TestConfig.class })
+@ContextConfiguration(classes = { CamundaAutoConfiguration.class, ZeebeClientStarterAutoConfigurationTest.TestConfig.class })
 public class ZeebeClientStarterAutoConfigurationTest {
 
   public static class TestConfig {
@@ -51,7 +51,7 @@ public class ZeebeClientStarterAutoConfigurationTest {
   @Autowired
   private JsonMapper jsonMapper;
   @Autowired
-  private ZeebeClientConfiguration autoConfiguration;
+  private ZeebeClientProdAutoConfiguration autoConfiguration;
   @Autowired
   private ApplicationContext applicationContext;
 

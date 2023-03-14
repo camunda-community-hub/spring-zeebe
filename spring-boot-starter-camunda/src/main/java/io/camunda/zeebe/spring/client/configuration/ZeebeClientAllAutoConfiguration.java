@@ -1,41 +1,34 @@
-package io.camunda.zeebe.spring.client;
+package io.camunda.zeebe.spring.client.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
-import io.camunda.zeebe.spring.client.configuration.ConnectorConfiguration;
-import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
-import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
-import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
+import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
+import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+@ConditionalOnProperty(prefix = "zeebe.client", name = "enabled", havingValue = "true",  matchIfMissing = true)
+@Import(AnnotationProcessorConfiguration.class)
+@EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
+public class ZeebeClientAllAutoConfiguration {
 
-/**
- * Abstract class pulling up all configuration that is needed for production as well as for tests.
- *
- * The subclasses add the differences for prod/test
- */
-@Import({
-  AnnotationProcessorConfiguration.class,
-  ConnectorConfiguration.class,
-  MetricsDefaultConfiguration.class
-})
-public abstract class AbstractZeebeBaseConfiguration {
-
-  public static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
-    .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+  private final ZeebeClientConfigurationProperties configurationProperties;
+  public ZeebeClientAllAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties) {
+    this.configurationProperties = configurationProperties;
+  }
 
   @Bean
   @ConditionalOnMissingBean
@@ -67,5 +60,12 @@ public abstract class AbstractZeebeBaseConfiguration {
       .jitterFactor(0.2)
       .build();
   }
+
+  @Bean("propertyBasedZeebeWorkerValueCustomizer")
+  @ConditionalOnMissingBean(name = "propertyBasedZeebeWorkerValueCustomizer")
+  public ZeebeWorkerValueCustomizer propertyBasedZeebeWorkerValueCustomizer() {
+    return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
+  }
+
 
 }

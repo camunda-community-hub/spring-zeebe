@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@Configuration
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnMissingBean(ZeebeClientExecutorService.class)
 public class ExecutorServiceConfiguration {
