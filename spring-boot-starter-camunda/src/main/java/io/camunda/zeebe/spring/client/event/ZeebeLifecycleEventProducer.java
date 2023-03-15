@@ -1,7 +1,6 @@
 package io.camunda.zeebe.spring.client.event;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.configuration.ZeebeClientConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.SmartLifecycle;
 

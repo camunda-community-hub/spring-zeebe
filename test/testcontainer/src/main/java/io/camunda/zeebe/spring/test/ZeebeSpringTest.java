@@ -15,8 +15,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-// this creates the engine and the client
-@Import({ZeebeTestConfiguration.class})
+// this pulls in the Configuration NOT as AutoConfiguration but directly creates beans, so the marker is present
+// when the normal CamundaAutoConfiguration is used by the normal meta-inf/services  way
+@Import({CamundaTestAutoConfiguration.class})
 // this listener hooks up into test execution
 @TestExecutionListeners(listeners = ZeebeTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public @interface ZeebeSpringTest {

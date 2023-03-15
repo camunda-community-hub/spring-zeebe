@@ -6,21 +6,35 @@ import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
+import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import io.grpc.ManagedChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.lang.invoke.MethodHandles;
 
-public class ZeebeClientConfiguration {
+/*
+ * All configurations that will only be used in production code - meaning NO TEST cases
+ */
+@ConditionalOnProperty(prefix = "zeebe.client", name = "enabled", havingValue = "true",  matchIfMissing = true)
+@ConditionalOnMissingBean(SpringZeebeTestContext.class)
+@ImportAutoConfiguration({
+  ExecutorServiceConfiguration.class, ZeebeActuatorConfiguration.class
+})
+@AutoConfigureBefore(ZeebeClientAllAutoConfiguration.class)
+public class ZeebeClientProdAutoConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ZeebeClientConfigurationProperties configurationProperties;
   private final ZeebeClientExecutorService zeebeClientExecutorService;
 
-  public ZeebeClientConfiguration(ZeebeClientConfigurationProperties configurationProperties, ZeebeClientExecutorService zeebeClientExecutorService, JsonMapper jsonMapper) {
+  public ZeebeClientProdAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties, ZeebeClientExecutorService zeebeClientExecutorService, JsonMapper jsonMapper) {
     this.configurationProperties = configurationProperties;
     configurationProperties.setJsonMapper(jsonMapper); // Replace JsonMapper proxy (because of lazy) with real bean
     configurationProperties.applyOverrides(); // make sure environment variables and other legacy config options are taken into account (duplicate, also done by  qPostConstruct, whatever)

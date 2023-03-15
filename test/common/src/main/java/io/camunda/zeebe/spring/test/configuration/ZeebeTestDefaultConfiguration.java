@@ -6,7 +6,8 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-import static io.camunda.zeebe.spring.client.AbstractZeebeBaseConfiguration.DEFAULT_OBJECT_MAPPER;
+import static io.camunda.zeebe.spring.client.CamundaAutoConfiguration.DEFAULT_OBJECT_MAPPER;
+
 
 /**
  * Fallback values if certain beans are missing

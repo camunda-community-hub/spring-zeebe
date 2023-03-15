@@ -10,6 +10,7 @@ import io.camunda.zeebe.spring.client.connector.SpringConnectorPropertyResolver;
 import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-@Configuration
+@ConditionalOnProperty(prefix = "zeebe.client", name = "enabled", havingValue = "true",  matchIfMissing = true)
 public class ConnectorConfiguration {
 
   @Bean
