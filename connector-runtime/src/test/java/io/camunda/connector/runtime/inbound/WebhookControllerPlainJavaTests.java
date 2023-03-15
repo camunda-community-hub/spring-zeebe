@@ -18,6 +18,7 @@
 package io.camunda.connector.runtime.inbound;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,6 +130,24 @@ public class WebhookControllerPlainJavaTests {
     Collection<InboundConnectorContext> connectors2 =
         webhook.getWebhookConnectorByContextPath("myPath2");
     assertEquals(0, connectors2.size()); // No one - as it was disabled
+  }
+
+  @Test
+  public void webhookDeactivation_shouldReturnNotFound() {
+    WebhookConnectorRegistry webhook = new WebhookConnectorRegistry();
+
+    // given
+    var processA1 = new InboundConnectorContextBuilder()
+      .properties(webhookProperties("processA", 1, "myPath"))
+      .secret(CONNECTOR_SECRET_NAME, CONNECTOR_SECRET_VALUE)
+      .build();
+
+    //when
+    webhook.activateEndpoint(processA1);
+    webhook.deactivateEndpoint(processA1.getProperties());
+
+    // then
+    assertFalse(webhook.containsContextPath("myPath"));
   }
 
   private static long nextProcessDefinitionKey = 0L;

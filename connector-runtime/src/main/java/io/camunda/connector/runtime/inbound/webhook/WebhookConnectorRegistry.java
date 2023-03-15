@@ -23,7 +23,8 @@ public class WebhookConnectorRegistry {
     new HashMap<>();
 
   public boolean containsContextPath(String context) {
-    return activeEndpointsByContext.containsKey(context);
+    return activeEndpointsByContext.containsKey(context) &&
+      !activeEndpointsByContext.get(context).isEmpty();
   }
 
   public List<InboundConnectorContext> getWebhookConnectorByContextPath(String context) {
