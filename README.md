@@ -354,7 +354,7 @@ public Map<String, Object> handleJobFoo(final ActivatedJob job) {
 Your job worker code can also complete the job itself. This gives you more control about when exactly you want to complete the job (e.g. allowing the completion to be moved to reactive callbacks):
 
 ```java
-@JobWorker(type = "foo")
+@JobWorker(type = "foo", autoComplete = false)
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // do whatever you need to do
   client.newCompleteCommand(job.getKey()) 
