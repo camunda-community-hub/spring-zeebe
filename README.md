@@ -2,9 +2,9 @@
 
 ***We search YOU to improve Spring Zeebe!***
 
-We currently search for a software engineer with profound Java and Spring Boot experience to take care of the Java SDK of Camunda Platform 8, where Spring Zeebe is an important part of. You can find the job description and more information here: [Senior Developer Experience Engineer](https://camunda.com/jobs/?gh_jid=5391333003). We can hire globally for a remote setup and look forward to your application!
+We are currently searching for a software engineer with profound Java and Spring Boot experience to take care of the Java SDK of Camunda Platform 8, which includes Spring Zeebe as an important part. You can find the job description and more information here: [Senior Developer Experience Engineer](https://camunda.com/jobs/?gh_jid=5391333003). We can hire globally for a remote setup and are looking forward to your application!
 
-Thanks for listening - no back to documentation :-) 
+Thanks for listening - now back to documentation :-) 
 
 # Spring Zeebe
 
