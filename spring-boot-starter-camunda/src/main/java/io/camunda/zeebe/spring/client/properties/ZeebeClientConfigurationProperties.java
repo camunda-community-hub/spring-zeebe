@@ -74,7 +74,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @Autowired(required = false)
   private List<ClientInterceptor> interceptors;
 
-  public ZeebeClientConfigurationProperties(@Autowired org.springframework.core.env.Environment environment) {
+  @Autowired
+  public ZeebeClientConfigurationProperties(org.springframework.core.env.Environment environment) {
     this.environment = environment;
   }
 
