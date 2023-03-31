@@ -9,7 +9,7 @@ import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
 import io.camunda.zeebe.spring.client.connector.SpringConnectorPropertyResolver;
 import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -30,9 +30,10 @@ public class ConnectorConfiguration {
   @Bean
   public OutboundConnectorManager outboundConnectorManager(
     final JobWorkerManager jobWorkerManager,
-    final OutboundConnectorFactory outboundConnectorFactory) {
+    final OutboundConnectorFactory outboundConnectorFactory,
+    final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties) {
 
-    return new OutboundConnectorManager(jobWorkerManager, outboundConnectorFactory);
+    return new OutboundConnectorManager(jobWorkerManager, outboundConnectorFactory,zeebeClientConfigurationProperties);
   }
 
   @Bean

@@ -66,6 +66,9 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @NestedConfigurationProperty
   private Job job = new Job();
 
+  @NestedConfigurationProperty
+  private Connector connector=new Connector();
+
   @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
   private JsonMapper jsonMapper;
@@ -165,6 +168,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   public void setJob(Job job) {
     this.job = job;
   }
+
+  public Connector   getConnector() {return connector;}
+
+  public void setConnector(Connector connector) {this.connector = connector;}
 
   public void setInterceptors(List<ClientInterceptor> interceptors) {
     this.interceptors = interceptors;
@@ -583,6 +590,44 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
         "plaintext=" + plaintext +
         ", overrideAuthority='" + overrideAuthority + '\'' +
         ", certPath='" + certPath + '\'' +
+        '}';
+    }
+  }
+
+  public static class Connector{
+    private boolean enabled=true;
+    private Map<String,ZeebeWorkerValue> properties=new HashMap<>();
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
+    public Map<String,ZeebeWorkerValue>   getProperties() {
+      return properties;
+    }
+    public void setProperties(Map<String,ZeebeWorkerValue> properties) {
+      this.properties = properties;
+    }
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      Connector connectors = (Connector) o;
+        return Objects.equals(enabled, connectors.enabled) &&
+        Objects.equals(properties, connectors.properties);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(enabled,properties);
+    }
+
+    @Override
+    public String toString() {
+      return "Connector{" +
+        "enabled=" + enabled +
+        ", overrideAuthority='" + properties + '\''+
         '}';
     }
   }
