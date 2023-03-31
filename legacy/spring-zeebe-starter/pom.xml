@@ -13,11 +13,11 @@
   <artifactId>spring-zeebe-starter</artifactId>
   <name>[legacy] spring-zeebe-starter</name>
 
-  <dependencies>
-    <dependency>
+  <distributionManagement>
+    <relocation>
       <groupId>io.camunda.spring</groupId>
       <artifactId>spring-boot-starter-camunda</artifactId>
-    </dependency>
-  </dependencies>
+    </relocation>
+  </distributionManagement>
 
 </project>

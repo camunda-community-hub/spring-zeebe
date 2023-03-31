@@ -13,10 +13,11 @@
   <artifactId>spring-zeebe-test-testcontainer</artifactId>
   <name>[legacy] spring-zeebe-test-testcontainer</name>
 
-  <dependencies>
-    <dependency>
+  <distributionManagement>
+    <relocation>
       <groupId>io.camunda.spring</groupId>
       <artifactId>spring-boot-starter-camunda-test-testcontainer</artifactId>
-    </dependency>
-  </dependencies>
+    </relocation>
+  </distributionManagement>
+
 </project>
