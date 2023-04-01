@@ -7,12 +7,12 @@ import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
-import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
+import io.camunda.zeebe.spring.client.connector.Filter.ZeebeConnectorFilter;import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlingStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeConnectorFilter;import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -65,6 +65,12 @@ public class ZeebeClientAllAutoConfiguration {
   @ConditionalOnMissingBean(name = "propertyBasedZeebeWorkerValueCustomizer")
   public ZeebeWorkerValueCustomizer propertyBasedZeebeWorkerValueCustomizer() {
     return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
+  }
+
+  @Bean("propertyBasedZeebeConnectorFilter")
+  @ConditionalOnMissingBean(name = "propertyBasedZeebeConnectorFilter")
+  public ZeebeConnectorFilter propertyBasedZeebeConnectorFilter(){
+    return new PropertyBasedZeebeConnectorFilter(this.configurationProperties);
   }
 
 
