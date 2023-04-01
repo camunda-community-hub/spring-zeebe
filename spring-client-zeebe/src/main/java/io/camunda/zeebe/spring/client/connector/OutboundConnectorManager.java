@@ -39,10 +39,8 @@ public class OutboundConnectorManager {
       new TreeSet<>(new OutboundConnectorConfigurationComparator());
 
     outboundConnectors.addAll(connectorFactory.getConfigurations());
-    //todo:for test,recover after test
-    List<OutboundConnectorConfiguration>middlerresult=outboundConnectors.stream().filter(connector -> !isDisabled(connector)).collect(Collectors.toList());
-    middlerresult.forEach(connector -> openWorkerForOutboundConnector(client, connector));
-//    outboundConnectors.stream().filter(connector-> !isDisabled(connector)).forEach(connector -> openWorkerForOutboundConnector(client, connector));
+
+    outboundConnectors.stream().filter(connector-> !isDisabled(connector)).forEach(connector -> openWorkerForOutboundConnector(client, connector));
   }
 
   public void openWorkerForOutboundConnector(ZeebeClient client, OutboundConnectorConfiguration connector) {
@@ -62,7 +60,7 @@ public class OutboundConnectorManager {
     filters.stream()
         .forEach(
             connectorFilter -> {
-              result[0] = result[0] || (connectorFilter.filter(connector) == null);
+              result[0] = result[0] || connectorFilter.disable(connector);
             });
     return result[0];
   }

@@ -5,7 +5,7 @@ import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;import io.camunda.zeebe.spring.client.connector.Filter.ZeebeConnectorFilter;import java.util.Map;
 
 
-public class PropertyBasedZeebeConnectorFilter extends ZeebeConnectorFilter{
+public class PropertyBasedZeebeConnectorFilter implements ZeebeConnectorFilter{
 
   private final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties;
 
@@ -13,9 +13,8 @@ public class PropertyBasedZeebeConnectorFilter extends ZeebeConnectorFilter{
       this.zeebeClientConfigurationProperties=zeebeClientConfigurationProperties;
   }
 
-
   @Override
-  protected boolean disable(OutboundConnectorConfiguration connector) {
+  public boolean disable(OutboundConnectorConfiguration connector) {
     if(Boolean.FALSE.equals(zeebeClientConfigurationProperties.getConnector().isEnabled()))
       return true;
 
