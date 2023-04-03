@@ -4,6 +4,7 @@ import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
 import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
+import io.camunda.connector.runtime.inbound.configs.InboundPollingConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.dto.ProcessDefinition;
 import io.camunda.operate.exception.OperateException;
@@ -25,14 +26,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
  * Inspects the imported process definitions and extracts Inbound Connector definitions as {@link ProcessCorrelationPoint}.
  */
 @Component
-@ConditionalOnProperty("camunda.connector.polling.enabled")
+@ConditionalOnBean(InboundPollingConfiguration.class)
 public class ProcessDefinitionInspector {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProcessDefinitionInspector.class);
