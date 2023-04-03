@@ -3,33 +3,37 @@ package io.camunda.zeebe.spring.client.connector;
 import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
 import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
-import io.camunda.zeebe.spring.client.connector.Filter.ZeebeConnectorFilter;import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
+import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;import java.util.Set;
-import java.util.TreeSet;import java.util.concurrent.atomic.AtomicBoolean;import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class OutboundConnectorManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private final JobWorkerManager jobWorkerManager;
-
   private final OutboundConnectorFactory connectorFactory;
-
-  private List<ZeebeConnectorFilter> filters;
-
+  private final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers;
+  private Map<String, ZeebeWorkerValue> zeebeWorkerValuesByName = new HashMap<>();
 
   public OutboundConnectorManager(
     JobWorkerManager jobWorkerManager,
     OutboundConnectorFactory connectorFactory,
-    List<ZeebeConnectorFilter> filters
+    List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers
   ) {
     this.jobWorkerManager = jobWorkerManager;
     this.connectorFactory = connectorFactory;
-    this.filters=filters;
+    this.zeebeWorkerValueCustomizers = zeebeWorkerValueCustomizers;
   }
 
   public void start(final ZeebeClient client) {
@@ -40,7 +44,7 @@ public class OutboundConnectorManager {
 
     outboundConnectors.addAll(connectorFactory.getConfigurations());
 
-    outboundConnectors.stream().filter(connector-> !isDisabled(connector)).forEach(connector -> openWorkerForOutboundConnector(client, connector));
+    outboundConnectors.stream().forEach(connector -> openWorkerForOutboundConnector(client, connector));
   }
 
   public void openWorkerForOutboundConnector(ZeebeClient client, OutboundConnectorConfiguration connector) {
@@ -49,24 +53,24 @@ public class OutboundConnectorManager {
       .setType(connector.getType())
       .setFetchVariables(connector.getInputVariables())
       .setAutoComplete(true);
-    jobWorkerManager.openWorker(
-      client,
-      zeebeWorkerValue,
-      connector);
-  }
+    zeebeWorkerValueCustomizers.forEach(customizer -> customizer.customize(zeebeWorkerValue));
 
-  private boolean isDisabled(OutboundConnectorConfiguration connector){
-    final boolean[] result = {false};
-    filters.stream()
-        .forEach(
-            connectorFilter -> {
-              result[0] = result[0] || connectorFilter.disable(connector);
-            });
-    return result[0];
+    zeebeWorkerValuesByName.put(zeebeWorkerValue.getName(), zeebeWorkerValue);
+
+    if (zeebeWorkerValue.getEnabled()==null || zeebeWorkerValue.getEnabled()==Boolean.TRUE) {
+      jobWorkerManager.openWorker(
+        client,
+        zeebeWorkerValue,
+        connector);
+    }
   }
 
   public void stop(ZeebeClient client) {
     jobWorkerManager.closeAllOpenWorkers();
+  }
+
+  public ZeebeWorkerValue getZeebeWorkerValue(String name) {
+    return zeebeWorkerValuesByName.get(name);
   }
 
 }

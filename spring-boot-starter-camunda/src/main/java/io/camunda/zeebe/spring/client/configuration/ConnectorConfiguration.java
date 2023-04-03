@@ -5,6 +5,7 @@ import io.camunda.connector.impl.config.ConnectorConfigurationUtil;
 import io.camunda.connector.impl.config.ConnectorPropertyResolver;
 import io.camunda.connector.runtime.util.outbound.DefaultOutboundConnectorFactory;
 import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
+import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;import io.camunda.zeebe.spring.client.connector.Filter.ZeebeConnectorFilter;import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
 import io.camunda.zeebe.spring.client.connector.SpringConnectorPropertyResolver;
 import io.camunda.zeebe.spring.client.connector.SpringSecretProvider;
@@ -16,9 +17,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;import java.util.List;
 
-@ConditionalOnProperty(prefix = "zeebe.client", name = "enabled", havingValue = "true",  matchIfMissing = true)
+@ConditionalOnProperty(prefix = "zeebe.client", name = {"enabled", "worker.connectors.enabled"}, havingValue = "true",  matchIfMissing = true)
 public class ConnectorConfiguration {
-
 
 @Bean
   public OutboundConnectorFactory outboundConnectorFactory() {
@@ -29,9 +29,9 @@ public class ConnectorConfiguration {
   public OutboundConnectorManager outboundConnectorManager(
     final JobWorkerManager jobWorkerManager,
     final OutboundConnectorFactory outboundConnectorFactory,
-    final List<ZeebeConnectorFilter> filters) {
+    final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
 
-    return new OutboundConnectorManager(jobWorkerManager, outboundConnectorFactory,filters);
+    return new OutboundConnectorManager(jobWorkerManager, outboundConnectorFactory, zeebeWorkerValueCustomizers);
   }
 
   @Bean

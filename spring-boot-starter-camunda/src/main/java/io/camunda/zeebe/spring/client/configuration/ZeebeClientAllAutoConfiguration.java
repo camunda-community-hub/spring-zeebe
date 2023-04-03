@@ -12,7 +12,7 @@ import io.camunda.zeebe.spring.client.jobhandling.DefaultCommandExceptionHandlin
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeConnectorFilter;import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
+import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -66,12 +66,5 @@ public class ZeebeClientAllAutoConfiguration {
   public ZeebeWorkerValueCustomizer propertyBasedZeebeWorkerValueCustomizer() {
     return new PropertyBasedZeebeWorkerValueCustomizer(this.configurationProperties);
   }
-
-  @Bean("propertyBasedZeebeConnectorFilter")
-  @ConditionalOnMissingBean(name = "propertyBasedZeebeConnectorFilter")
-  public ZeebeConnectorFilter propertyBasedZeebeConnectorFilter(){
-    return new PropertyBasedZeebeConnectorFilter(this.configurationProperties);
-  }
-
 
 }

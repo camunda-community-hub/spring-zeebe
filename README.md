@@ -201,7 +201,17 @@ public class ConnectorFactory {
 }
 ```
 
-Now a worker for this Connector will be started in the background.
+Now a worker for this Connector will be started in the background. You can disable this by:
+
+```properties
+zeebe.client.worker.connectors.enabled=false
+```
+
+You can also use `ZeebeWorkerValueCustomizer` or specific properties to configure the workers for the connector, for example disabling specific connectors:
+
+```properties
+zeebe.client.worker.connectors.Twitter.enabled=false
+```
 
 
 # Documentation
