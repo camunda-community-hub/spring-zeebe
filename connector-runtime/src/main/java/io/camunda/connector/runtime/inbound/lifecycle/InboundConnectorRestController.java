@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@ConditionalOnProperty("camunda.connector.polling.enabled")
 public class InboundConnectorRestController {
 
   private final InboundConnectorManager inboundManager;

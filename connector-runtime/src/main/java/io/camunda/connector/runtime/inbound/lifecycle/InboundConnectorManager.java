@@ -20,9 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty("camunda.connector.polling.enabled")
 public class InboundConnectorManager {
   private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorManager.class);
 
