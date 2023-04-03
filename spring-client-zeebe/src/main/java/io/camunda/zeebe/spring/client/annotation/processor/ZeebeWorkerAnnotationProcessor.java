@@ -67,38 +67,41 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
     Optional<JobWorker> methodAnnotation = methodInfo.getAnnotation(JobWorker.class);
     if (methodAnnotation.isPresent()) {
       JobWorker annotation = methodAnnotation.get();
-      return Optional.of(new ZeebeWorkerValue()
-            .setMethodInfo(methodInfo)
-            .setType(annotation.type())
-            .setTimeout(annotation.timeout())
-            .setMaxJobsActive(annotation.maxJobsActive())
-            .setPollInterval(annotation.pollInterval())
-            .setAutoComplete(annotation.autoComplete())
-            .setRequestTimeout(annotation.requestTimeout())
-            .setEnabled(annotation.enabled())
+      ZeebeWorkerValue workerValue = new ZeebeWorkerValue();
+      workerValue.setMethodInfo(methodInfo);
+      workerValue.setType(annotation.type());
+      workerValue.setTimeout(annotation.timeout());
+      workerValue.setMaxJobsActive(annotation.maxJobsActive());
+      workerValue.setPollInterval(annotation.pollInterval());
+      workerValue.setAutoComplete(annotation.autoComplete());
+      workerValue.setRequestTimeout(annotation.requestTimeout());
+      workerValue.setEnabled(annotation.enabled());
 
-            // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
-            .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-            .initializeFetchVariables(annotation.fetchAllVariables(), annotation.fetchVariables(), methodInfo)
-            .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+    // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
+      workerValue.initializeName(annotation.name(), methodInfo, defaultWorkerName);
+      workerValue.initializeFetchVariables(annotation.fetchAllVariables(), annotation.fetchVariables(), methodInfo);
+      workerValue.initializeJobType(annotation.type(), methodInfo, defaultWorkerType);
+      return Optional.of(workerValue);
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
         ZeebeWorker annotation = legacyAnnotation.get();
-        return Optional.of(new ZeebeWorkerValue()
-          .setMethodInfo(methodInfo)
-          .setType(annotation.type())
-          .setTimeout(annotation.timeout())
-          .setMaxJobsActive(annotation.maxJobsActive())
-          .setPollInterval(annotation.pollInterval())
-          .setAutoComplete(annotation.autoComplete())
-          .setRequestTimeout(annotation.requestTimeout())
-          .setEnabled(annotation.enabled())
 
-          // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
-          .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-          .initializeFetchVariables(annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo)
-          .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+        ZeebeWorkerValue workerValue = new ZeebeWorkerValue();
+        workerValue.setMethodInfo(methodInfo);
+        workerValue.setType(annotation.type());
+        workerValue.setTimeout(annotation.timeout());
+        workerValue.setMaxJobsActive(annotation.maxJobsActive());
+        workerValue.setPollInterval(annotation.pollInterval());
+        workerValue.setAutoComplete(annotation.autoComplete());
+        workerValue.setRequestTimeout(annotation.requestTimeout());
+        workerValue.setEnabled(annotation.enabled());
+
+        // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
+        workerValue.initializeName(annotation.name(), methodInfo, defaultWorkerName);
+        workerValue.initializeFetchVariables(annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo);
+        workerValue.initializeJobType(annotation.type(), methodInfo, defaultWorkerType);
+        return Optional.of(workerValue);
       }
     }
     return Optional.empty();

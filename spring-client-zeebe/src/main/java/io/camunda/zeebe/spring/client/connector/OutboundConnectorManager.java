@@ -13,7 +13,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -48,11 +47,11 @@ public class OutboundConnectorManager {
   }
 
   public void openWorkerForOutboundConnector(ZeebeClient client, OutboundConnectorConfiguration connector) {
-    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue()
-      .setName(connector.getName())
-      .setType(connector.getType())
-      .setFetchVariables(connector.getInputVariables())
-      .setAutoComplete(true);
+    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue();
+    zeebeWorkerValue.setName(connector.getName());
+    zeebeWorkerValue.setType(connector.getType());
+    zeebeWorkerValue.setFetchVariables(connector.getInputVariables());
+    zeebeWorkerValue.setAutoComplete(true);
     zeebeWorkerValueCustomizers.forEach(customizer -> customizer.customize(zeebeWorkerValue));
 
     zeebeWorkerValuesByName.put(zeebeWorkerValue.getName(), zeebeWorkerValue);

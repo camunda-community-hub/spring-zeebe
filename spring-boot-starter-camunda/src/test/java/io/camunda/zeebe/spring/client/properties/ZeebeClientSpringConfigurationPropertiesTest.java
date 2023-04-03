@@ -114,6 +114,7 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
 
   @Test
   void shouldFooWorkerDisabled() {
+    assertThat(properties.getWorker().getOverrideByType("foo").getEnabled()).isFalse();
     assertThat(properties.getWorker().getOverride().get("foo").getEnabled()).isFalse();
   }
 

@@ -16,9 +16,6 @@
  */
 package io.camunda.connector.runtime;
 
-import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
-import io.camunda.connector.runtime.util.discovery.EnvVarsConnectorDiscovery;
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.connector.OutboundConnectorManager;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
@@ -26,8 +23,6 @@ import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.AfterTestClass;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.util.Optional;
 
@@ -39,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     properties = {
       "spring.main.allow-bean-definition-overriding=true",
       "camunda.connector.polling.enabled=false",
-      "zeebe.client.worker.connectors.TEST.enabled=false"
+      "zeebe.client.worker.override.org_test_1.enabled=false"
     })
 @ZeebeSpringTest
 class DisableConnectorWorkersTest {

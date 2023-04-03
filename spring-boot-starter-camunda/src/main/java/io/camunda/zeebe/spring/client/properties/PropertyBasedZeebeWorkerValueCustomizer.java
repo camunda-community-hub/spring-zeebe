@@ -15,10 +15,8 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
 
   @Override
   public void customize(ZeebeWorkerValue zeebeWorker) {
-    final Map<String, ZeebeWorkerValue> workerConfigurationMap = zeebeClientConfigurationProperties.getWorker().getOverride();
-    final String workerType = zeebeWorker.getType();
-    if (workerConfigurationMap.containsKey(workerType)) {
-      final ZeebeWorkerValue zeebeWorkerValue = workerConfigurationMap.get(workerType);
+    ZeebeWorkerValue zeebeWorkerValue = zeebeClientConfigurationProperties.getWorker().getOverrideByType(zeebeWorker.getType());
+    if (zeebeWorkerValue!=null) {
       zeebeWorker.merge(zeebeWorkerValue);
     }
   }

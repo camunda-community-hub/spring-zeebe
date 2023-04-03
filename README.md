@@ -207,10 +207,10 @@ Now a worker for this Connector will be started in the background. You can disab
 zeebe.client.worker.connectors.enabled=false
 ```
 
-You can also use `ZeebeWorkerValueCustomizer` or specific properties to configure the workers for the connector, for example disabling specific connectors:
+You can also use `ZeebeWorkerValueCustomizer` or specific properties to configure the workers for the connector, for example disabling specific connectors (using the worker type). When the worker type contains a dot (.) or colon (:) replace this by an underscore (_):
 
 ```properties
-zeebe.client.worker.connectors.Twitter.enabled=false
+zeebe.client.worker.override.io_berndruecker_example_TwitterConnector_1.enabled=false
 ```
 
 

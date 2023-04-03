@@ -389,10 +389,26 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName = null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
+
+    /**
+     * override by worker type. As the Worker type can contain colons (:) which are
+     * problematic in Spring properties, they can be replaced by underscores (_) in the type name
+     */
     private Map<String, ZeebeWorkerValue> override = new HashMap<>();
 
     public Map<String, ZeebeWorkerValue> getOverride() {
       return override;
+    }
+    public ZeebeWorkerValue getOverrideByType(String workerType) {
+      if (override.containsKey(workerType)) {
+        return override.get(workerType);
+      } else {
+        String escapedWorkerType = workerType.replaceAll(":", "_").replaceAll(".", "_");
+        if (override.containsKey(escapedWorkerType)) {
+          return override.get(escapedWorkerType);
+        }
+      }
+      return null;
     }
 
     public void setOverride(Map<String, ZeebeWorkerValue> override) {
