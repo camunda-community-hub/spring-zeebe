@@ -3,6 +3,7 @@ package io.camunda.connector.runtime.inbound.lifecycle;
 import io.camunda.connector.api.inbound.InboundConnectorExecutable;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.runtime.inbound.configs.InboundPollingConfiguration;
 import io.camunda.connector.runtime.inbound.importer.ProcessDefinitionInspector;
 import io.camunda.connector.runtime.util.inbound.InboundConnectorContextImpl;
 import io.camunda.connector.runtime.util.inbound.InboundConnectorFactory;
@@ -20,9 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnBean(InboundPollingConfiguration.class)
 public class InboundConnectorManager {
   private static final Logger LOG = LoggerFactory.getLogger(InboundConnectorManager.class);
 

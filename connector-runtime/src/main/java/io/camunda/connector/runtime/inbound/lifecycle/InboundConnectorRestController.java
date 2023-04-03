@@ -1,6 +1,7 @@
 package io.camunda.connector.runtime.inbound.lifecycle;
 
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.runtime.inbound.configs.InboundPollingConfiguration;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorProperties;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorRegistry;
 import java.util.ArrayList;
@@ -10,11 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@ConditionalOnBean(InboundPollingConfiguration.class)
 public class InboundConnectorRestController {
 
   private final InboundConnectorManager inboundManager;
