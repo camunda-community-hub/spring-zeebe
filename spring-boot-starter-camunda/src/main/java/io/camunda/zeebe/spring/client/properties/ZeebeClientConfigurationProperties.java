@@ -403,7 +403,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       if (override.containsKey(workerType)) {
         return override.get(workerType);
       } else {
-        String escapedWorkerType = workerType.replaceAll(":", "_").replaceAll(".", "_");
+        String escapedWorkerType = workerType.replaceAll(":", "_").replaceAll("\\.", "_");
         if (override.containsKey(escapedWorkerType)) {
           return override.get(escapedWorkerType);
         }
