@@ -66,9 +66,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @NestedConfigurationProperty
   private Job job = new Job();
 
-  @NestedConfigurationProperty
-  private Connector connector=new Connector();
-
   @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
   private JsonMapper jsonMapper;
@@ -168,10 +165,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   public void setJob(Job job) {
     this.job = job;
   }
-
-  public Connector   getConnector() {return connector;}
-
-  public void setConnector(Connector connector) {this.connector = connector;}
 
   public void setInterceptors(List<ClientInterceptor> interceptors) {
     this.interceptors = interceptors;
@@ -396,10 +389,26 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName = null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
+
+    /**
+     * override by worker type. As the Worker type can contain colons (:) which are
+     * problematic in Spring properties, they can be replaced by underscores (_) in the type name
+     */
     private Map<String, ZeebeWorkerValue> override = new HashMap<>();
 
     public Map<String, ZeebeWorkerValue> getOverride() {
       return override;
+    }
+    public ZeebeWorkerValue getOverrideByType(String workerType) {
+      if (override.containsKey(workerType)) {
+        return override.get(workerType);
+      } else {
+        String escapedWorkerType = workerType.replaceAll(":", "_").replaceAll(".", "_");
+        if (override.containsKey(escapedWorkerType)) {
+          return override.get(escapedWorkerType);
+        }
+      }
+      return null;
     }
 
     public void setOverride(Map<String, ZeebeWorkerValue> override) {
@@ -590,44 +599,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
         "plaintext=" + plaintext +
         ", overrideAuthority='" + overrideAuthority + '\'' +
         ", certPath='" + certPath + '\'' +
-        '}';
-    }
-  }
-
-  public static class Connector{
-    private boolean enabled=true;
-    private Map<String,ZeebeWorkerValue> properties=new HashMap<>();
-
-    public boolean isEnabled() {
-      return enabled;
-    }
-    public void setEnabled(boolean enabled) {
-      this.enabled = enabled;
-    }
-    public Map<String,ZeebeWorkerValue>   getProperties() {
-      return properties;
-    }
-    public void setProperties(Map<String,ZeebeWorkerValue> properties) {
-      this.properties = properties;
-    }
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      Connector connectors = (Connector) o;
-        return Objects.equals(enabled, connectors.enabled) &&
-        Objects.equals(properties, connectors.properties);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(enabled,properties);
-    }
-
-    @Override
-    public String toString() {
-      return "Connector{" +
-        "enabled=" + enabled +
-        ", overrideAuthority='" + properties + '\''+
         '}';
     }
   }

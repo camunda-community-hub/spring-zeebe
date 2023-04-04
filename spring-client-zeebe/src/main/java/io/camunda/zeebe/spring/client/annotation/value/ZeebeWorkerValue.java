@@ -108,58 +108,50 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return enabled;
   }
 
-  public ZeebeWorkerValue setEnabled(Boolean enabled) {
+  public void setEnabled(Boolean enabled) {
+    // We cannot return the ZeebeWorkerValue for fluent building
+    // as then this is not recognized as setter of BeanUtils
     this.enabled = enabled;
-    return this;
   }
 
-  public ZeebeWorkerValue setType(String type) {
+  public void setType(String type) {
     this.type = type;
     // You can only set a type of a worker - in this case the name is set equals to the type
     if (name==null) {
       setName(type);
     }
-    return this;
   }
 
-  public ZeebeWorkerValue setName(String name) {
+  public void setName(String name) {
     this.name = name;
-    return this;
   }
 
-  public ZeebeWorkerValue setTimeout(Long timeout) {
+  public void setTimeout(Long timeout) {
     this.timeout = timeout;
-    return this;
   }
 
-  public ZeebeWorkerValue setMaxJobsActive(Integer maxJobsActive) {
+  public void setMaxJobsActive(Integer maxJobsActive) {
     this.maxJobsActive = maxJobsActive;
-    return this;
   }
 
-  public ZeebeWorkerValue setRequestTimeout(Long requestTimeout) {
+  public void setRequestTimeout(Long requestTimeout) {
     this.requestTimeout = requestTimeout;
-    return this;
   }
 
-  public ZeebeWorkerValue setPollInterval(Long pollInterval) {
+  public void setPollInterval(Long pollInterval) {
     this.pollInterval = pollInterval;
-    return this;
   }
 
-  public ZeebeWorkerValue setAutoComplete(Boolean autoComplete) {
+  public void setAutoComplete(Boolean autoComplete) {
     this.autoComplete = autoComplete;
-    return this;
   }
 
-  public ZeebeWorkerValue setFetchVariables(String[] fetchVariables) {
+  public void setFetchVariables(String[] fetchVariables) {
     this.fetchVariables = fetchVariables;
-    return this;
   }
 
-  public ZeebeWorkerValue setMethodInfo(MethodInfo methodInfo) {
+  public void setMethodInfo(MethodInfo methodInfo) {
     this.methodInfo = methodInfo;
-    return this;
   }
 
   public ZeebeWorkerValue merge(ZeebeWorkerValue other) {
