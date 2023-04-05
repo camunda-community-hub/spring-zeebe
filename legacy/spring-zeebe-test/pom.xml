@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda.spring</groupId>
     <artifactId>spring-client-root</artifactId>
-    <version>8.2.0-alpha4</version>
+    <version>8.2.0-alpha5-SNAPSHOT</version>
     <relativePath>../..</relativePath>
   </parent>
 
