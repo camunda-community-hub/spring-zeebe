@@ -18,16 +18,17 @@ package io.camunda.connector.runtime.inbound;
 
 import io.camunda.connector.api.inbound.InboundConnectorResult;
 import io.camunda.connector.api.secret.SecretProvider;
+import io.camunda.connector.impl.inbound.result.ProcessInstance;
+import io.camunda.connector.impl.inbound.result.StartEventCorrelationResult;
 import io.camunda.connector.runtime.ConnectorRuntimeApplication;
 import io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController;
 import io.camunda.connector.runtime.inbound.webhook.WebhookConnectorRegistry;
 import io.camunda.connector.runtime.inbound.webhook.WebhookResponse;
 import io.camunda.connector.runtime.util.inbound.InboundConnectorContextImpl;
 import io.camunda.connector.runtime.util.inbound.correlation.InboundCorrelationHandler;
-import io.camunda.connector.runtime.util.inbound.correlation.StartEventInboundConnectorResult;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.model.bpmn.Bpmn;
+import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,10 +80,16 @@ class WebhookControllerTestZeebeTests {
     deployProcess("processB");
 
     var webhookA = new InboundConnectorContextImpl(
-      secretProvider, webhookProperties("processA", 1, "myPath"), correlationHandler);
+      secretProvider,
+      webhookProperties("processA", 1, "myPath"),
+      correlationHandler,
+      (e) -> {});
 
     var webhookB = new InboundConnectorContextImpl(
-      secretProvider, webhookProperties("processB", 1, "myPath"), correlationHandler);
+      secretProvider,
+      webhookProperties("processB", 1, "myPath"),
+      correlationHandler,
+      (e) -> {});
 
     webhook.activateEndpoint(webhookA);
     webhook.activateEndpoint(webhookB);
@@ -100,19 +107,19 @@ class WebhookControllerTestZeebeTests {
 
     InboundConnectorResult piA =
         responseEntity.getBody().getExecutedConnectors().get("myPath-processA-1");
-    assertInstanceOf(StartEventInboundConnectorResult.class, piA);
-    ProcessInstanceEvent piEventA = ((StartEventInboundConnectorResult) piA).getResponseData();
+    assertInstanceOf(StartEventCorrelationResult.class, piA);
+    ProcessInstance piEventA = ((StartEventCorrelationResult) piA).getResponseData().get();
 
-    waitForProcessInstanceCompleted(piEventA);
-    assertThat(piEventA).isCompleted();
+    waitForProcessInstanceCompleted(piEventA.getProcessInstanceKey());
+    assertThat(new InspectedProcessInstance(piEventA.getProcessInstanceKey())).isCompleted();
 
     InboundConnectorResult piB =
-        responseEntity.getBody().getExecutedConnectors().get("myPath-processB-1");
-    assertInstanceOf(StartEventInboundConnectorResult.class, piB);
-    ProcessInstanceEvent piEventB = ((StartEventInboundConnectorResult) piB).getResponseData();
+      responseEntity.getBody().getExecutedConnectors().get("myPath-processB-1");
+    assertInstanceOf(StartEventCorrelationResult.class, piB);
+    ProcessInstance piEventB = ((StartEventCorrelationResult) piB).getResponseData().get();
 
-    waitForProcessInstanceCompleted(piEventB);
-    assertThat(piEventB).isCompleted();
+    waitForProcessInstanceCompleted(piEventB.getProcessInstanceKey());
+    assertThat(new InspectedProcessInstance(piEventB.getProcessInstanceKey())).isCompleted();
   }
 
   public void deployProcess(String bpmnProcessId) {

@@ -112,7 +112,7 @@ public class InboundWebhookRestController {
             response.addUnactivatedConnector(connectorProperties);
           } else {
             Map<String, Object> variables = extractVariables(connectorProperties, webhookContext);
-            InboundConnectorResult result = connectorContext.correlate(variables);
+            InboundConnectorResult<?> result = connectorContext.correlate(variables);
 
             LOG.debug(
                 "Webhook {} created process instance {}",
@@ -155,6 +155,7 @@ public class InboundWebhookRestController {
     return validator.isRequestValid();
   }
 
+  @Deprecated
   private Map<String, Object> extractVariables(
           WebhookConnectorProperties connectorProperties, Map<String, Object> context) {
 
@@ -162,10 +163,15 @@ public class InboundWebhookRestController {
     if (variableMapping == null) {
       return context;
     }
+    // Variable mapping is now supported on the Connector SDK level (see InboundConnectorProperties).
+    // We still support the old property for backwards compatibility.
+    LOG.warn("Usage of deprecated property `inbound.variableMapping`. "
+      + "Use `resultVariable` and `resultExpression` properties instead.");
+
     return feelEngine.evaluate(variableMapping, context);
-    //      throw fail("Failed to extract variables", connectorProperties, exception);
   }
 
+  @Deprecated
   private boolean activationConditionTriggered(
           WebhookConnectorProperties connectorProperties, Map<String, Object> context) {
 
@@ -174,8 +180,10 @@ public class InboundWebhookRestController {
     if (activationCondition == null || activationCondition.trim().length()==0) {
       return true;
     }
+    // Activation condition is now supported on the Connector SDK level (see InboundConnectorProperties).
+    // We still support the old property for backwards compatibility.
+    LOG.warn("Usage of deprecated property `inbound.activationCondition`. Use `activationCondition` instead.");
     Object shouldActivate = feelEngine.evaluate(activationCondition, context);
     return Boolean.TRUE.equals(shouldActivate);
-    //      throw fail("Failed to check activation", connectorProperties, exception);
   }
 }

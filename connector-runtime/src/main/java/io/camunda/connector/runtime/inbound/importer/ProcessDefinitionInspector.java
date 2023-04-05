@@ -1,7 +1,8 @@
 package io.camunda.connector.runtime.inbound.importer;
 
-import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
+import io.camunda.connector.impl.Constants;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.impl.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
 import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.configs.InboundPollingConfiguration;
@@ -140,17 +141,12 @@ public class ProcessDefinitionInspector {
       .findAny().orElseThrow(() ->
         new IllegalStateException("Sanity check failed: IntermediateCatchEvent " +
           catchEvent + " must contain at least one event definition"));
-
     String name = msgDef.getMessage().getName();
 
-    ZeebeProperties zeebeProperties = catchEvent.getSingleExtensionElement(ZeebeProperties.class);
-    if (zeebeProperties == null) {
-      LOG.warn("Missing correlation key mapping");
-      return Optional.empty();
-    }
-    String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
+    // fail-fast strategy, validating if correlation key expression is set
+    validateRequiredProperty(catchEvent, Constants.CORRELATION_KEY_EXPRESSION_KEYWORD);
 
-    return Optional.of(new MessageCorrelationPoint(name, correlationKeyMapping));
+    return Optional.of(new MessageCorrelationPoint(name));
   }
 
   private Optional<ProcessCorrelationPoint> handleStartEvent(ProcessDefinition definition) {
@@ -164,19 +160,25 @@ public class ProcessDefinitionInspector {
   private Optional<ProcessCorrelationPoint> handleReceiveTask(ReceiveTask receiveTask) {
     Message message = receiveTask.getMessage();
 
-    ZeebeProperties zeebeProperties = receiveTask.getSingleExtensionElement(ZeebeProperties.class);
-    if (zeebeProperties == null) {
-      LOG.warn("Missing correlation key mapping");
-      return Optional.empty();
-    }
-    String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
-
-    return Optional.of(new MessageCorrelationPoint(message.getName(), correlationKeyMapping));
+    // fail-fast strategy, validating if correlation key expression is set
+    validateRequiredProperty(receiveTask, Constants.CORRELATION_KEY_EXPRESSION_KEYWORD);
+    return Optional.of(new MessageCorrelationPoint(message.getName()));
   }
 
-  private String extractCorrelationKeyMapping(ZeebeProperties properties) {
-    return properties.getProperties().stream()
-      .filter(property -> property.getName().equals("inbound.correlationKeyMapping"))
+  private void validateRequiredProperty(BaseElement element, String name) {
+    if (extractProperty(element, name) == null) {
+      throw new IllegalStateException("Missing required property " + name);
+    }
+  }
+
+  private String extractProperty(BaseElement element, String name) {
+    ZeebeProperties zeebeProperties = element.getSingleExtensionElement(ZeebeProperties.class);
+    if (zeebeProperties == null) {
+      LOG.warn("Missing `zeebe:property` mappings on element " + element);
+      return null;
+    }
+    return zeebeProperties.getProperties().stream()
+      .filter(property -> property.getName().equals(name))
       .findAny()
       .map(ZeebeProperty::getValue)
       .orElse(null);
