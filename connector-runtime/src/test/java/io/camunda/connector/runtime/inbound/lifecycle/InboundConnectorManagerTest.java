@@ -16,6 +16,7 @@ import io.camunda.connector.api.inbound.InboundConnectorContext;
 import io.camunda.connector.api.inbound.InboundConnectorExecutable;
 import io.camunda.connector.api.secret.SecretProvider;
 import io.camunda.connector.impl.ConnectorUtil;
+import io.camunda.connector.impl.Constants;
 import io.camunda.connector.impl.inbound.InboundConnectorConfiguration;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
 import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
@@ -161,8 +162,28 @@ public class InboundConnectorManagerTest {
     verifyNoMoreInteractions(mockExecutable);
   }
 
+  @Test
+  void shouldHandleCancellationCallback() throws Exception {
+    // given
+    var process = processDefinition("proc1", 1);
+    var connector = inboundConnector(process);
+
+    // when
+    procDefUtil.deployProcessDefinition(process, connector);
+    var context = ((TestInboundConnector) mockExecutable).getProvidedContext();
+    context.cancel(new RuntimeException("subscription interrupted"));
+
+    // then
+    assertTrue(manager.isProcessDefinitionRegistered(process.getKey()));
+    assertTrue(manager.getActiveConnectorsByBpmnId().get(process.getBpmnProcessId()).isEmpty());
+
+    verify(mockExecutable, times(1))
+      .activate(eq(inboundContext(connector)));
+    verify(mockExecutable, times(1)).deactivate();
+  }
+
   private InboundConnectorContext inboundContext(InboundConnectorProperties properties) {
-    return new InboundConnectorContextImpl(secretProvider, properties, correlationHandler);
+    return new InboundConnectorContextImpl(secretProvider, properties, correlationHandler, (event) -> {});
   }
 
   private final static InboundConnectorConfiguration connectorConfig = ConnectorUtil
@@ -170,8 +191,8 @@ public class InboundConnectorManagerTest {
 
   private static InboundConnectorProperties inboundConnector(ProcessDefinition procDef) {
     return new InboundConnectorProperties(
-      new MessageCorrelationPoint("", ""),
-      Map.of("inbound.type", connectorConfig.getType()),
+      new MessageCorrelationPoint(""),
+      Map.of(Constants.INBOUND_TYPE_KEYWORD, connectorConfig.getType()),
       procDef.getBpmnProcessId(),
       procDef.getVersion().intValue(),
       procDef.getKey());

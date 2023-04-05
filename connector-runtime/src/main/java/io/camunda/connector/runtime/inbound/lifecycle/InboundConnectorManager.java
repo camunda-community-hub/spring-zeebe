@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,10 +118,19 @@ public class InboundConnectorManager {
   private void activateConnector(InboundConnectorProperties newProperties) {
 
     InboundConnectorExecutable executable = connectorFactory.getInstance(newProperties.getType());
+    Consumer<Throwable> cancellationCallback = throwable -> {
+      LOG.error(
+        "Inbound connector failed at correlation point " + newProperties.getCorrelationPointId(),
+        throwable);
+      // TODO: store error for user's convenience
+      // (see https://github.com/camunda-community-hub/spring-zeebe/issues/401)
+      deactivateConnector(newProperties);
+    };
 
     try {
       executable.activate(
-        new InboundConnectorContextImpl(secretProvider, newProperties, correlationHandler));
+        new InboundConnectorContextImpl(
+          secretProvider, newProperties, correlationHandler, cancellationCallback));
 
       activeConnectorsByCorrelationPointId.put(newProperties.getCorrelationPointId(), executable);
       activeConnectorsByBpmnId.compute(
