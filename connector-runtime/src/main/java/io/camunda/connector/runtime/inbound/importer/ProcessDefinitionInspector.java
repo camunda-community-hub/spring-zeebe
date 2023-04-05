@@ -1,7 +1,7 @@
 package io.camunda.connector.runtime.inbound.importer;
 
-import io.camunda.connector.api.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.impl.inbound.InboundConnectorProperties;
+import io.camunda.connector.impl.inbound.ProcessCorrelationPoint;
 import io.camunda.connector.impl.inbound.correlation.MessageCorrelationPoint;
 import io.camunda.connector.impl.inbound.correlation.StartEventCorrelationPoint;
 import io.camunda.connector.runtime.inbound.configs.InboundPollingConfiguration;
@@ -150,7 +150,7 @@ public class ProcessDefinitionInspector {
     }
     String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
-    return Optional.of(new MessageCorrelationPoint(name, correlationKeyMapping));
+    return Optional.of(new MessageCorrelationPoint(name));
   }
 
   private Optional<ProcessCorrelationPoint> handleStartEvent(ProcessDefinition definition) {
@@ -171,7 +171,7 @@ public class ProcessDefinitionInspector {
     }
     String correlationKeyMapping = extractCorrelationKeyMapping(zeebeProperties);
 
-    return Optional.of(new MessageCorrelationPoint(message.getName(), correlationKeyMapping));
+    return Optional.of(new MessageCorrelationPoint(message.getName()));
   }
 
   private String extractCorrelationKeyMapping(ZeebeProperties properties) {
