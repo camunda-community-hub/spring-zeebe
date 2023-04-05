@@ -123,6 +123,7 @@ public class InboundConnectorManager {
         "Inbound connector failed at correlation point " + newProperties.getCorrelationPointId(),
         throwable);
       // TODO: store error for user's convenience
+      // (see https://github.com/camunda-community-hub/spring-zeebe/issues/401)
       deactivateConnector(newProperties);
     };
 
