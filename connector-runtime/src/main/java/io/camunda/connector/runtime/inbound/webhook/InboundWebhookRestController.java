@@ -78,7 +78,7 @@ public class InboundWebhookRestController {
 
     if (!webhookConnectorRegistry.containsContextPath(context)) {
       throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "No webhook found for context: " + context);
+          HttpStatus.NOT_FOUND.value(), "No webhook found for context: " + context, null);
     }
     metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_ACTIVATED , WebhookConnectorRegistry.TYPE_WEBHOOK);
 
@@ -130,7 +130,7 @@ public class InboundWebhookRestController {
     }
 
     metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , WebhookConnectorRegistry.TYPE_WEBHOOK);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.ok(response);
   }
 
   private boolean isValidHmac(
