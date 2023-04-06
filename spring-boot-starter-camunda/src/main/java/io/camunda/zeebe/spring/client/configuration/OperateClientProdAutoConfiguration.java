@@ -8,6 +8,7 @@ import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,14 +26,20 @@ public class OperateClientProdAutoConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @Value("${camunda.operate.client.startup.retry.maxAttempts:24}")
+  private int startupRetryMaxAttempts;
+
+  @Value("${camunda.operate.client.startup.retry.awaitDurationInSeconds:5}")
+  private int startupRetryAwaitDurationInSeconds;
+
   @Bean
   public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
     String operateUrl = props.getOperateUrl();
 
     // Giving 2 minutes for Operate to start-up
     RetryConfig config = RetryConfig.custom()
-      .maxAttempts(24)
-      .waitDuration(Duration.of(5, ChronoUnit.SECONDS))
+      .maxAttempts(startupRetryMaxAttempts)
+      .waitDuration(Duration.of(startupRetryAwaitDurationInSeconds, ChronoUnit.SECONDS))
       .build();
     Retry retry = Retry.of("camundaOperateClient", config);
 
