@@ -9,7 +9,6 @@ import io.camunda.connector.runtime.util.inbound.InboundConnectorContextImpl;
 import io.camunda.connector.runtime.util.inbound.InboundConnectorFactory;
 import io.camunda.connector.runtime.util.inbound.correlation.InboundCorrelationHandler;
 import io.camunda.operate.dto.ProcessDefinition;
-import io.camunda.operate.exception.OperateException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,7 +61,7 @@ public class InboundConnectorManager {
   /**
    * Process a batch of process definitions
    */
-  public void registerProcessDefinitions(List<ProcessDefinition> processDefinitions) throws OperateException {
+  public void registerProcessDefinitions(List<ProcessDefinition> processDefinitions) {
     if (processDefinitions == null || processDefinitions.isEmpty()) {
       return;
     }
@@ -80,9 +79,16 @@ public class InboundConnectorManager {
       .collect(Collectors.toList());
 
     for (ProcessDefinition procDef : relevantProcDefs) {
-      handleLatestBpmnVersion(
-        procDef.getBpmnProcessId(),
-        processDefinitionInspector.findInboundConnectors(procDef));
+      try {
+        handleLatestBpmnVersion(
+          procDef.getBpmnProcessId(),
+          processDefinitionInspector.findInboundConnectors(procDef));
+      } catch (Exception e) {
+        // log and continue with other process definitions anyway
+        LOG.error(
+          "Failed to activate inbound connectors in process '{}'. It will be ignored",
+          procDef.getBpmnProcessId(), e);
+      }
     }
   }
 
