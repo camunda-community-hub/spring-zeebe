@@ -27,6 +27,7 @@
 
     <spring-boot.version>2.7.7</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
+    <resilience4j.version>2.0.2</resilience4j.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -149,6 +150,11 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commons-beanutils.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-retry</artifactId>
+        <version>${resilience4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
