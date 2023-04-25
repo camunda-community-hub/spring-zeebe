@@ -167,42 +167,23 @@ An example test case is [available here](https://github.com/camunda-community-hu
 
 
 
-## Run OutboundConnectors
+## Run Connectors
 
+Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors-bundle) project.
+To run Connectors, use can now use the following dependency in your project:
+
+```xml 
+<dependency>
+  <groupId>io.camunda.connector</groupId>
+  <artifactId>spring-boot-starter-connectors/artifactId>
+  <version>${connectors.version}</version>
+</dependency>
+```
+
+If you have previously used the pure Spring Zeebe project to run Connectors, you should migrate to the new dependency.
+
+You can find the latest version of Connectors on [this page](https://github.com/camunda/connectors-bundle/releases/tag/0.18.2).
 Consult the [Connector SDK](https://github.com/camunda/connector-sdk) for details on Connectors in general.
-
-You can run `OutboundConnectorFunction`s using Spring Zeebe with any of the following options:
-
-* Expose them as Spring beans and run them directly in your own application.
-* Run them using the pre-packaged [Connector runtime](./connector-runtime) application.
-
-### Run OutboundConnector as Spring bean
-
-If you have the following outbound Connector function:
-
-```
-@OutboundConnector(
-        name = "Twitter",
-        inputVariables = {"tweetContent"},
-        type = "io.berndruecker.example.TwitterConnector:1"
-)
-public class TwitterOutboundConnector implements OutboundConnectorFunction {
-```
-
-You can just expose it as a Spring bean:
-
-```
-@Configuration
-public class ConnectorFactory {
-    @Bean
-    public TwitterOutboundConnector twitterOutboundConnector() {
-        return new TwitterOutboundConnector();
-    }
-}
-```
-
-Now a worker for this Connector will be started in the background.
-
 
 # Documentation
 
