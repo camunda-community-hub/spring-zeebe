@@ -24,8 +24,6 @@ import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +41,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -90,18 +89,19 @@ public class InboundWebhookRestController {
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
-    boolean isURLFormContentType =
-      Optional.ofNullable(headers)
-        .map(
-          headersValue ->
-            headersValue.entrySet().stream()
-              .anyMatch(header -> header.getValue().equalsIgnoreCase("application/x-www-form-urlencoded")) )
-        .orElse(false);
-    Map bodyAsMap;
-    if (isURLFormContentType) {
-      List<NameValuePair> parse = URLEncodedUtils.parse(new String(bodyAsByteArray), StandardCharsets.UTF_8);
-      bodyAsMap = parse.stream()
-        .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+    boolean isURLFormContentType = Optional.ofNullable(headers)
+      .map(headersValue -> headersValue.entrySet().stream()
+        .anyMatch(header -> header.getValue().equalsIgnoreCase("application/x-www-form-urlencoded")))
+      .orElse(false);
+
+    Map<String, String> bodyAsMap;
+    if (isURLFormContentType && bodyAsByteArray != null) {
+      String bodyAsString = new String(bodyAsByteArray, StandardCharsets.UTF_8);
+      bodyAsMap = Arrays.stream(bodyAsString.split("&"))
+        .filter(Objects::nonNull)
+        .map(param -> param.split("="))
+        .filter(param -> param.length > 1)
+        .collect(Collectors.toMap(param -> param[0], param -> param[1]));
     } else {
          bodyAsMap = bodyAsByteArray == null
           ? Collections.emptyMap()

@@ -104,7 +104,7 @@ class InboundWebhookRestControllerTest {
 
   @Test
   void inbound_HappyCase_ReturnsExecutedConnectorMessageWhenContentTypeIsUrlForm() throws IOException {
-    final String FORM_URL_REQUEST_BODY = "Key=key&value=value&ID=mySID&NumMedia=0";
+    final String FORM_URL_REQUEST_BODY = "Key=key&value=value&ID=mySID&NumMedia=0&EmptyField=";
     final Map<String, String> HEADERS = Map.of("content-type", "application/x-www-form-urlencoded");
     InboundConnectorProperties connectorProps =
       new InboundConnectorProperties(
