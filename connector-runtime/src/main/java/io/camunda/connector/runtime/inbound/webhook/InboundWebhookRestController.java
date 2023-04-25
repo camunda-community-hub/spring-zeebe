@@ -24,6 +24,8 @@ import io.camunda.connector.runtime.inbound.signature.HMACSignatureValidator;
 import io.camunda.connector.runtime.inbound.signature.HMACSwitchCustomerChoice;
 import io.camunda.connector.runtime.util.feel.FeelEngineWrapper;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +40,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @ConditionalOnProperty("camunda.connector.webhook.enabled")
@@ -84,9 +90,23 @@ public class InboundWebhookRestController {
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
-    Map bodyAsMap = bodyAsByteArray == null
-      ? Collections.emptyMap()
-      : jsonMapper.readValue(bodyAsByteArray, Map.class);
+    boolean isURLFormContentType =
+      Optional.ofNullable(headers)
+        .map(
+          headersValue ->
+            headersValue.entrySet().stream()
+              .anyMatch(header -> header.getValue().equalsIgnoreCase("application/x-www-form-urlencoded")) )
+        .orElse(false);
+    Map bodyAsMap;
+    if (isURLFormContentType) {
+      List<NameValuePair> parse = URLEncodedUtils.parse(new String(bodyAsByteArray), StandardCharsets.UTF_8);
+      bodyAsMap = parse.stream()
+        .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+    } else {
+         bodyAsMap = bodyAsByteArray == null
+          ? Collections.emptyMap()
+          : jsonMapper.readValue(bodyAsByteArray, Map.class);
+      }
 
     HashMap<String, Object> request = new HashMap<>();
     request.put("body", bodyAsMap);
@@ -132,6 +152,7 @@ public class InboundWebhookRestController {
     metricsRecorder.increase(MetricsRecorder.METRIC_NAME_INBOUND_CONNECTOR, MetricsRecorder.ACTION_COMPLETED , WebhookConnectorRegistry.TYPE_WEBHOOK);
     return ResponseEntity.ok(response);
   }
+
 
   private boolean isValidHmac(
       final WebhookConnectorProperties connectorProperties,
