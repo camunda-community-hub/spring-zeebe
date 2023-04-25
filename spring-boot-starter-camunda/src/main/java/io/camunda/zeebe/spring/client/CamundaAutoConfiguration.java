@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import io.camunda.zeebe.spring.client.configuration.ConnectorConfiguration;
 import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.configuration.OperateClientProdAutoConfiguration;
 import io.camunda.zeebe.spring.client.configuration.ZeebeActuatorConfiguration;
@@ -40,8 +39,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 
   ZeebeActuatorConfiguration.class,
   MetricsDefaultConfiguration.class,
-
-  ConnectorConfiguration.class,
 })
 @AutoConfigureAfter(JacksonAutoConfiguration.class) // make sure Spring created ObjectMapper is preferred if available
 public class CamundaAutoConfiguration {

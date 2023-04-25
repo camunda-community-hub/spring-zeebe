@@ -1,7 +1,5 @@
 package io.camunda.zeebe.spring.client.configuration;
 
-import io.camunda.connector.api.secret.SecretProvider;
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
@@ -44,11 +42,9 @@ public class ZeebeClientAllAutoConfiguration {
 
   @Bean
   public JobWorkerManager jobWorkerManager(final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                           final SecretProvider secretProvider,
-                                           final OutboundConnectorFactory connectorFactory,
                                            final JsonMapper jsonMapper,
                                            final MetricsRecorder metricsRecorder) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy, secretProvider, connectorFactory, jsonMapper, metricsRecorder);
+    return new JobWorkerManager(commandExceptionHandlingStrategy, jsonMapper, metricsRecorder);
   }
 
   @Bean
