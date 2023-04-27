@@ -79,7 +79,7 @@ public class WebhookControllerPlainJavaTests {
     webhook.activateEndpoint(webhookB);
 
     ResponseEntity<WebhookResponse> responseEntity =
-        controller.inbound("myPath", "{}".getBytes(), new HashMap<>());
+        controller.inbound("myPath", "{}".getBytes(), new HashMap<>(), "application/json");
 
     assertEquals(200, responseEntity.getStatusCode().value());
     assertTrue(responseEntity.getBody().getUnauthorizedConnectors().isEmpty());

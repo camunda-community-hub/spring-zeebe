@@ -91,7 +91,7 @@ class InboundWebhookRestControllerTest {
     when(feelEngine.evaluate(eq(variablesMapping), any(Map.class))).thenReturn(Map.of());
 
     ResponseEntity<WebhookResponse> response =
-        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS);
+        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -125,7 +125,7 @@ class InboundWebhookRestControllerTest {
       .thenReturn(List.of(connectorContext));
 
     ResponseEntity<WebhookResponse> response =
-      controller.inbound(DEFAULT_CONTEXT, FORM_URL_REQUEST_BODY.getBytes(), HEADERS);
+      controller.inbound(DEFAULT_CONTEXT, FORM_URL_REQUEST_BODY.getBytes(), HEADERS, "application/x-www-form-urlencoded");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -141,7 +141,7 @@ class InboundWebhookRestControllerTest {
     when(registry.containsContextPath(DEFAULT_CONTEXT)).thenReturn(false);
     assertThrows(
         ResponseStatusException.class,
-        () -> controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS));
+        () -> controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS, "application/json"));
   }
 
   @Test
@@ -171,7 +171,7 @@ class InboundWebhookRestControllerTest {
       .thenReturn(List.of(connectorContext));
 
     ResponseEntity<WebhookResponse> response =
-        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS);
+        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -212,7 +212,7 @@ class InboundWebhookRestControllerTest {
     when(feelEngine.evaluate(anyString(), any(Map.class))).thenReturn(false);
 
     ResponseEntity<WebhookResponse> response =
-        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS);
+        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -255,7 +255,7 @@ class InboundWebhookRestControllerTest {
         .thenThrow(new RuntimeException(exceptionMessage));
 
     ResponseEntity<WebhookResponse> response =
-        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS);
+        controller.inbound(DEFAULT_CONTEXT, DEFAULT_REQUEST_BODY, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -294,7 +294,7 @@ class InboundWebhookRestControllerTest {
       .thenReturn(List.of(connectorContext));
 
     ResponseEntity<WebhookResponse> response =
-      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS);
+      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -332,7 +332,7 @@ class InboundWebhookRestControllerTest {
       .thenReturn(List.of(connectorContext));
 
     ResponseEntity<WebhookResponse> response =
-      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS);
+      controller.inbound(DEFAULT_CONTEXT, null, DEFAULT_HEADERS, "application/json");
 
     verify(connectorContext).replaceSecrets(props);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

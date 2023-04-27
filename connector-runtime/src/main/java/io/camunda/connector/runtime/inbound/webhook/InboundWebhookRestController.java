@@ -76,7 +76,7 @@ public class InboundWebhookRestController {
   public ResponseEntity<WebhookResponse> inbound(
       @PathVariable String context,
       @RequestBody(required = false) byte[] bodyAsByteArray, // raw form required to calculate HMAC
-      @RequestHeader Map<String, String> headers)
+      @RequestHeader Map<String, String> headers, @RequestHeader(value = "Content-type", required = false) String contentType)
       throws IOException {
 
     LOG.debug("Received inbound hook on {}", context);
@@ -89,9 +89,8 @@ public class InboundWebhookRestController {
 
     // TODO(nikku): what context do we expose?
     // TODO(igpetrov): handling exceptions? Throw or fail? Maybe spring controller advice?
-    boolean isURLFormContentType = Optional.ofNullable(headers)
-      .map(headersValue -> headersValue.entrySet().stream()
-        .anyMatch(header -> header.getValue().equalsIgnoreCase("application/x-www-form-urlencoded")))
+    boolean isURLFormContentType = Optional.ofNullable(contentType)
+      .map(contentHeaderType -> contentHeaderType.equalsIgnoreCase("application/x-www-form-urlencoded"))
       .orElse(false);
 
     Map<String, String> bodyAsMap;
