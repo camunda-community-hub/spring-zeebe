@@ -19,10 +19,10 @@ public class MethodInfo implements BeanInfo {
 
   private static LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
-  private ClassInfo classInfo;
-  private Method method;
+  protected ClassInfo classInfo;
+  protected Method method;
 
-  private MethodInfo(ClassInfo classInfo, Method method) {
+  protected MethodInfo(ClassInfo classInfo, Method method) {
     this.classInfo = classInfo;
     this.method = method;
   }
