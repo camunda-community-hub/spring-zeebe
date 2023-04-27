@@ -27,6 +27,11 @@ public class MethodInfo implements BeanInfo {
     this.method = method;
   }
 
+  protected MethodInfo(MethodInfo original) {
+    this.classInfo = original.classInfo;
+    this.method = original.method;
+  }
+
   @Override
   public Object getBean() {
     return classInfo.getBean();
