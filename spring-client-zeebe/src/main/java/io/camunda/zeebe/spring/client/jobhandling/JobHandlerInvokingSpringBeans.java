@@ -1,10 +1,5 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.connector.api.outbound.OutboundConnectorFunction;
-import io.camunda.connector.api.secret.SecretProvider;
-import io.camunda.connector.impl.outbound.OutboundConnectorConfiguration;
-import io.camunda.connector.runtime.util.outbound.OutboundConnectorFactory;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
@@ -24,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-
 /**
  * Zeebe JobHandler that invokes a Spring bean
  */
@@ -35,13 +27,8 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private static final Logger LOG = Loggers.JOB_WORKER_LOGGER;
   private final ZeebeWorkerValue workerValue;
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private final SecretProvider secretProvider;
   private final JsonMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
-  private final OutboundConnectorFactory outboundConnectorFactory;
-
-  // This handler can either invoke any normal worker (JobHandler, @ZeebeWorker) or an outbound connector function
-  private OutboundConnectorConfiguration outboundConnectorConfiguration;
 
   public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
                                        CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
@@ -51,54 +38,10 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
-    this.secretProvider = null;
-    this.outboundConnectorFactory = null;
-  }
-
-  public JobHandlerInvokingSpringBeans(ZeebeWorkerValue workerValue,
-                                       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-                                       SecretProvider secretProvider,
-                                       OutboundConnectorConfiguration connectorConfiguration,
-                                       OutboundConnectorFactory outboundConnectorFactory,
-                                       JsonMapper jsonMapper,
-                                       MetricsRecorder metricsRecorder) {
-    this.workerValue = workerValue;
-    this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
-    this.secretProvider = secretProvider;
-    this.outboundConnectorConfiguration = connectorConfiguration;
-    this.jsonMapper = jsonMapper;
-    this.metricsRecorder = metricsRecorder;
-    this.outboundConnectorFactory = outboundConnectorFactory;
   }
 
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
-    if (outboundConnectorConfiguration!=null) {
-      handleConnectorJobWorker(jobClient, job);
-    } else { // "normal" @JobWorker
-      handleRegularJobWorker(jobClient, job);
-    }
-  }
-
-  private void handleConnectorJobWorker(JobClient jobClient, ActivatedJob job) {
-    if (outboundConnectorFactory == null) {
-      throw new IllegalStateException("Connector factory is not initialized");
-    }
-    OutboundConnectorFunction connectorFunction = outboundConnectorFactory
-      .getInstance(outboundConnectorConfiguration.getType());
-
-    LOG.trace("Handle {} and execute connector {}", job, outboundConnectorConfiguration);
-
-    metricsRecorder.executeWithTimer(job.getType(), () -> new SpringConnectorJobHandler(
-      outboundConnectorConfiguration,
-      connectorFunction,
-      secretProvider,
-      commandExceptionHandlingStrategy,
-      metricsRecorder
-    ).handle(jobClient, job));
-  }
-
-  private void handleRegularJobWorker(JobClient jobClient, ActivatedJob job) throws Exception {
     // TODO: Figuring out parameters and assignments could probably also done only once in the beginning to save some computing time on each invocation
     List<Object> args = createParameters(jobClient, job, workerValue.getMethodInfo().getParameters());
     LOG.trace("Handle {} and invoke worker {}", job, workerValue);

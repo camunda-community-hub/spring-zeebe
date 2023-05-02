@@ -53,9 +53,6 @@
 
     <module>example</module>
     <module>legacy</module>
-
-    <!-- Will be moved out of this project soon: -->
-    <module>connector-runtime</module>
   </modules>
 
   <dependencyManagement>
