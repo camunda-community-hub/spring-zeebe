@@ -78,15 +78,7 @@ zeebe.client.connection-mode=ADDRESS
 
 ## Connect to Zeebe
 
-Add the `@EnableZeebeClient` annotation to your Spring Boot Application:
-
-```java
-@SpringBootApplication
-@EnableZeebeClient
-public class MySpringBootApplication {
-```
-
-Now you can inject the ZeebeClient and work with it, e.g. to create new workflow instances:
+You can inject the ZeebeClient and work with it, e.g. to create new workflow instances:
 
 ```java
 @Autowired
