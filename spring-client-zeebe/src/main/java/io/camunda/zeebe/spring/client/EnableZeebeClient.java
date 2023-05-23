@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Import;
 @Documented
 @Inherited
 @Deprecated // This annotation has no effect any more and will be removed in some later version of spring-zeebe, see https://github.com/camunda-community-hub/spring-zeebe/issues/275
+/**
+ *  @deprecated This annotation does not have any effect any more from 8.2.x on and can simply be removed
+ */
 public @interface EnableZeebeClient {
 
 }
