@@ -19,10 +19,6 @@
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-client-java</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.camunda.connector</groupId>
-      <artifactId>connector-runtime-util</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>commons-beanutils</groupId>

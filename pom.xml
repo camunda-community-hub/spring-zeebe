@@ -78,11 +78,6 @@
       </dependency>
       <dependency>
         <groupId>io.camunda.connector</groupId>
-        <artifactId>connector-runtime-util</artifactId>
-        <version>${connector.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda.connector</groupId>
         <artifactId>connector-validation</artifactId>
         <version>${connector.version}</version>
       </dependency>
