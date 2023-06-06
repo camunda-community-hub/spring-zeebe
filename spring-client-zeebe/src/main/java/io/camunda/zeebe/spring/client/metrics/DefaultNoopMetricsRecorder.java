@@ -9,12 +9,12 @@ package io.camunda.zeebe.spring.client.metrics;
 public class DefaultNoopMetricsRecorder implements MetricsRecorder {
 
   @Override
-  public void increase(String metricName, String action, String type) {
+  public void increase(String metricName, String action, String type, int count) {
     // ignore
   }
 
   @Override
-  public void executeWithTimer(String metricName, Runnable methodToExecute) {
+  public void executeWithTimer(String metricName, String jobType, Runnable methodToExecute) {
     methodToExecute.run();
   }
 }
