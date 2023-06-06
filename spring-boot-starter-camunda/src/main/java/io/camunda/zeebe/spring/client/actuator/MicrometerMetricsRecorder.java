@@ -3,7 +3,10 @@ package io.camunda.zeebe.spring.client.actuator;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,21 +27,28 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
   }
 
   protected Counter newCounter(String metricName, String action, String jobType) {
-    return meterRegistry.counter(metricName, "action", action, "type", jobType);
-  }
-
-  @Override
-  public void increase(String metricName, String action, String jobType) {
-    String key = metricName + "#" + action + '#' + jobType;
-    if (!counters.containsKey(key)) {
-      counters.put(key, newCounter(metricName, action, jobType));
+    List<Tag> tags = new ArrayList<>();
+    if (action != null && !action.isEmpty()) {
+      tags.add(Tag.of("action", action));
     }
-    counters.get(key).increment();
+    if (jobType != null && !jobType.isEmpty()) {
+      tags.add(Tag.of("type", jobType));
+    }
+    return meterRegistry.counter(metricName, tags);
   }
 
   @Override
-  public void executeWithTimer(String metricName, Runnable methodToExecute) {
-    Timer timer = meterRegistry.timer(metricName);
+  public void increase(String metricName, String action, String type, int count) {
+    String key = metricName + "#" + action + '#' + type;
+    if (!counters.containsKey(key)) {
+      counters.put(key, newCounter(metricName, action, type));
+    }
+    counters.get(key).increment(count);
+  }
+
+  @Override
+  public void executeWithTimer(String metricName, String jobType, Runnable methodToExecute) {
+    Timer timer = meterRegistry.timer(metricName, "type", jobType);
     timer.record(methodToExecute);
   }
 
