@@ -1,11 +1,5 @@
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community) ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce) [![](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#stable-)
 
-***We search YOU to improve Spring Zeebe!***
-
-We are currently searching for a software engineer with profound Java and Spring Boot experience to take care of the Java SDK of Camunda Platform 8, which includes Spring Zeebe as an important part. You can find the job description and more information here: [Senior Developer Experience Engineer](https://camunda.com/jobs/?gh_jid=5391333003). We can hire globally for a remote setup and are looking forward to your application!
-
-Thanks for listening - now back to documentation :-) 
-
 # Spring Zeebe
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
