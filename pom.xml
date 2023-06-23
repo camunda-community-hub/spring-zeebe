@@ -23,7 +23,7 @@
     <zeebe.version>8.2.3</zeebe.version>
 
     <connector.version>0.8.1</connector.version>
-    <version.operate-client>8.1.7.2</version.operate-client>
+    <version.operate-client>8.1.8.1</version.operate-client>
 
     <spring-boot.version>2.7.7</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
