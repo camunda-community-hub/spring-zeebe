@@ -127,8 +127,8 @@ You can startup an in-memory test engine and do assertions by adding this Maven 
 Note that **the test engines requires Java version >= 17**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a docker installation locally available on the developer machine. Use this dependency:
 
 ```xml
-<!-- 
-  Alternative dependency if you cannot run Java 17, so you will leverage Testcontainer 
+<!--
+  Alternative dependency if you cannot run Java 17, so you will leverage Testcontainer
   Make sure NOT to have spring-zeebe-test on the classpath in parallel!
 -->
 <dependency>
@@ -146,7 +146,7 @@ Then you need to startup the test engine in your test case by adding `@ZeebeSpri
 @SpringBootTest
 @ZeebeSpringTest
 public class TestMyProcess {
-  // ...  
+  // ...
 ```
 
 An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
@@ -158,7 +158,7 @@ An example test case is [available here](https://github.com/camunda-community-hu
 Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors-bundle) project.
 To run Connectors, use can now use the following dependency in your project:
 
-```xml 
+```xml
 <dependency>
   <groupId>io.camunda.connector</groupId>
   <artifactId>spring-boot-starter-connectors/artifactId>
@@ -248,7 +248,7 @@ public ProcessVariables handleFoo(@VariablesAsType MyProcessVariables variables)
   // do whatever you need to do
   variables.getMyAttributeX();
   variables.setMyAttributeY(42);
-  
+
   // return variables object if something has changed, so the changes are submitted to Zeebe
   return variables;
 }
@@ -272,7 +272,7 @@ public void handleJobFoo(final ActivatedJob job) {
 
 ### Auto-completing jobs
 
-By default, the `autoComplete` attribute is set to `true` for any job worker. 
+By default, the `autoComplete` attribute is set to `true` for any job worker.
 
 **Note that the described default behavior of auto-completion was introduced with 8.1 and was different before, see https://github.com/camunda-community-hub/spring-zeebe/issues/239 for details.**
 
@@ -324,7 +324,7 @@ Your job worker code can also complete the job itself. This gives you more contr
 @JobWorker(type = "foo", autoComplete = false)
 public void handleJobFoo(final JobClient client, final ActivatedJob job) {
   // do whatever you need to do
-  client.newCompleteCommand(job.getKey()) 
+  client.newCompleteCommand(job.getKey())
      .send()
      .exceptionally( throwable -> { throw new RuntimeException("Could not complete job " + job, throwable); });
 }
@@ -353,7 +353,7 @@ You can use the `@CustomHeaders` annotation for a parameter to retrieve [custom 
 @JobWorker(type = "foo")
 public void handleFoo(@CustomHeaders Map<String, String> headers){
   // do whatever you need to do
-} 
+}
 ```
 
 Of course you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
@@ -411,7 +411,7 @@ zeebe.client.cloud.port=443
 zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
 ```
 
-As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping). 
+As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping).
 
 
 ### Default task type
@@ -472,11 +472,11 @@ You can also override this setting via your `application.properties` file:
 zeebe.client.worker.override.foo.enabled=false
 ```
 
-This is especially useful, if you have a bigger code base including many workers, but want to start only some of them. Typical use cases are 
+This is especially useful, if you have a bigger code base including many workers, but want to start only some of them. Typical use cases are
 
 * Testing: You only want one specific worker to run at a time
 * Load Balancing: You want to control which workers run on which instance of cluster nodes
-* Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new. 
+* Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new.
 
 
 ### Overriding `JobWorker` values via configuration file
@@ -519,7 +519,7 @@ In a default setup, you can can enable metrics to be served via http:
 management.endpoints.web.exposure.include=metrics
 ```
 
-And then access them via http://localhost:8080/actuator/metrics/. 
+And then access them via http://localhost:8080/actuator/metrics/.
 
 # Code of Conduct
 
