@@ -50,9 +50,9 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 Connections to the Camunda SaaS can be easily configured, create the following entries in your `src/main/resources/application.properties`:
 
 ```properties
-zeebe.client.cloud.cluster-id=xxx
-zeebe.client.cloud.client-id=xxx
-zeebe.client.cloud.client-secret=xxx
+zeebe.client.cloud.clusterId=xxx
+zeebe.client.cloud.clientId=xxx
+zeebe.client.cloud.clientSecret=xxx
 zeebe.client.cloud.region=bru-2
 ```
 
