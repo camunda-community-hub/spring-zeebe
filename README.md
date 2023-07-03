@@ -156,12 +156,12 @@ An example test case is [available here](https://github.com/camunda-community-hu
 ## Run Connectors
 
 Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors-bundle) project.
-To run Connectors, use can now use the following dependency in your project:
+To run Connectors, you can now use the following dependency in your project:
 
 ```xml
 <dependency>
   <groupId>io.camunda.connector</groupId>
-  <artifactId>spring-boot-starter-connectors/artifactId>
+  <artifactId>spring-boot-starter-connectors</artifactId>
   <version>${connectors.version}</version>
 </dependency>
 ```
