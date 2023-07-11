@@ -61,6 +61,9 @@ public class OperateClientConfigurationProperties {
     @Value("${camunda.operate.client.password:#{null}}")
     private String operatePassword;
 
+    @Value("${camunda.operate.client.keycloak-token-url:#{null}}")
+    private String operateKeycloakTokenUrl;
+  
     @Value("${camunda.operate.client.keycloak-url:#{null}}")
     private String operateKeycloakUrl;
 
@@ -85,26 +88,27 @@ public class OperateClientConfigurationProperties {
     }
 
     public AuthInterface getAuthentication(String operateUrl) {
-      if (operateKeycloakUrl != null) {
-        if (operateClientId != null) {
-          LOG.debug("Authenticating with Camunda Operate using Keycloak on " + operateKeycloakUrl);
-          return new SelfManagedAuthentication(operateClientId, operateClientSecret)
-            .keycloakUrl(operateKeycloakUrl)
-            .keycloakRealm(operateKeycloakRealm);
-        } else if (clientId != null) {
-          LOG.debug("Authenticating with Camunda Operate using Keycloak on " + operateKeycloakUrl);
-          return new SelfManagedAuthentication(clientId, clientSecret)
-            .keycloakUrl(operateKeycloakUrl)
-            .keycloakRealm(operateKeycloakRealm);
+      String clientId = operateClientId != null ? operateClientId : this.clientId;
+      String clientSecret = operateClientSecret != null ? operateClientSecret : this.clientSecret;
+
+      if (operateKeycloakUrl != null || operateKeycloakTokenUrl!=null) {
+        if (clientId!=null && clientSecret !=null) {
+          SelfManagedAuthentication authentication = new SelfManagedAuthentication(clientId, clientSecret);
+          if (operateKeycloakUrl!=null) {
+            LOG.debug("Authenticating with Camunda Operate using Keycloak on " + operateKeycloakUrl);
+            return authentication.keycloakUrl(operateKeycloakUrl)
+              .keycloakRealm(operateKeycloakRealm);
+          } else {
+            LOG.debug("Authenticating with Camunda Operate using Keycloak token url " + operateKeycloakTokenUrl);
+            return authentication.keycloakTokenUrl(operateKeycloakTokenUrl);
+          }
         }
+        
         throw new IllegalArgumentException(
           "Failed to authenticate with Camunda Operate using Keycloak: "
             + "please configure client ID and client secret values.");
       } else {
-        if (operateClientId != null) {
-          LOG.debug("Authenticating with Camunda Operate using client id and secret");
-          return new SaasAuthentication(getAuthUrl(), getAudience(), operateClientId, operateClientSecret);
-        } else if (clientId != null) {
+        if (clientId != null) {
           LOG.debug("Authenticating with Camunda Operate using client id and secret");
           return new SaasAuthentication(getAuthUrl(), getAudience(), clientId, clientSecret);
         } else if (operateUsername != null && operatePassword != null) {
