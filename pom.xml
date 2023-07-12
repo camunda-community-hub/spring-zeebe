@@ -20,7 +20,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.2.3</zeebe.version>
+    <zeebe.version>8.2.8</zeebe.version>
 
     <connector.version>0.8.1</connector.version>
     <version.operate-client>8.2.0</version.operate-client>
