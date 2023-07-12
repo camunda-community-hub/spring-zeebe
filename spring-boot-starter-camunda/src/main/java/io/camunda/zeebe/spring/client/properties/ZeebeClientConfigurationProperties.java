@@ -505,6 +505,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   public static class Message {
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
+    private int maxMessageSize;
 
     public Duration getTimeToLive() {
       return timeToLive;
@@ -512,6 +513,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
     public void setTimeToLive(Duration timeToLive) {
       this.timeToLive = timeToLive;
+    }
+
+    public int getMaxMessageSize() {
+      return maxMessageSize;
+    }
+
+    public void setMaxMessageSize(int maxMessageSize) {
+      this.maxMessageSize = maxMessageSize;
     }
 
     @Override
@@ -708,4 +717,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   public void setJsonMapper(JsonMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
   }
+
+  // No @Override to be compatible with 8.2 and 8.3 (was introduced with 8.3)
+  public int getMaxMessageSize() {
+    return message.getMaxMessageSize();
+  }
+
 }
