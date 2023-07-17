@@ -28,9 +28,9 @@ Add the following Maven dependency to your Spring Boot Starter project:
 
 ```xml
 <dependency>
-  <groupId>io.camunda</groupId>
-  <artifactId>spring-zeebe-starter</artifactId>
-  <version>8.2.1</version>
+  <groupId>io.camunda.spring</groupId>
+  <artifactId>spring-boot-starter-camunda</artifactId>
+  <version>8.2.3</version>
 </dependency>
 ```
 
