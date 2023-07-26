@@ -14,12 +14,13 @@ import java.util.Objects;
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 
 /**
- * Helper to wait in the multi-threaded environment for the worker to execute.
+ * Helper to wait in the multithreaded environment for the worker to execute.
  */
 public class ZeebeTestThreadSupport {
 
   private final static ThreadLocal<ZeebeTestEngine> ENGINES = new ThreadLocal<>();
   private final static Duration DEFAULT_DURATION = Duration.ofMillis(5000);
+  private final static Integer DEFAULT_TIMES_PASSED = 1;
   private final static Long DEFAULT_INTERVAL_MILLIS = 100L;
 
   public static void setEngineForCurrentThread(ZeebeTestEngine engine) {
@@ -90,6 +91,10 @@ public class ZeebeTestThreadSupport {
   }
 
   public static void waitForProcessInstanceHasPassedElement(InspectedProcessInstance inspectedProcessInstance, String elementId, Duration duration) {
+    waitForProcessInstanceHasPassedElement(inspectedProcessInstance, elementId, duration, DEFAULT_TIMES_PASSED);
+  }
+
+  public static void waitForProcessInstanceHasPassedElement(InspectedProcessInstance inspectedProcessInstance, String elementId, Duration duration, final int times) {
     final ZeebeTestEngine engine = ENGINES.get();
     if (engine == null) {
       throw new IllegalStateException("No Zeebe engine is initialized for the current thread, annotate the test with @ZeebeSpringTest");
@@ -101,7 +106,7 @@ public class ZeebeTestThreadSupport {
       Thread.sleep(DEFAULT_INTERVAL_MILLIS);
       BpmnAssert.initRecordStream(
         RecordStream.of(Objects.requireNonNull(engine).getRecordStreamSource()));
-      assertThat(inspectedProcessInstance).hasPassedElement(elementId);
+      assertThat(inspectedProcessInstance).hasPassedElement(elementId, times);
     });
   }
 }
