@@ -94,13 +94,13 @@ public class OperateClientConfigurationProperties {
       if (operateKeycloakUrl != null || operateKeycloakTokenUrl!=null) {
         if (clientId!=null && clientSecret !=null) {
           SelfManagedAuthentication authentication = new SelfManagedAuthentication(clientId, clientSecret);
-          if (operateKeycloakUrl!=null) {
+          if (operateKeycloakTokenUrl!=null && !operateKeycloakTokenUrl.equals("")) {
+            LOG.debug("Authenticating with Camunda Operate using Keycloak token url " + operateKeycloakTokenUrl);
+            return authentication.keycloakTokenUrl(operateKeycloakTokenUrl);
+          } else {
             LOG.debug("Authenticating with Camunda Operate using Keycloak on " + operateKeycloakUrl);
             return authentication.keycloakUrl(operateKeycloakUrl)
               .keycloakRealm(operateKeycloakRealm);
-          } else {
-            LOG.debug("Authenticating with Camunda Operate using Keycloak token url " + operateKeycloakTokenUrl);
-            return authentication.keycloakTokenUrl(operateKeycloakTokenUrl);
           }
         }
         
