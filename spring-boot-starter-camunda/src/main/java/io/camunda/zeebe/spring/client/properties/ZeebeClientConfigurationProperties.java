@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -75,6 +76,12 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @Lazy
   @Autowired(required = false)
   private List<ClientInterceptor> interceptors;
+
+  @Lazy
+  @Autowired(required = false)
+  private ScheduledExecutorService scheduledExecutorService;
+
+  private boolean ownsJobWorkerExecutor;
 
   @Autowired
   public ZeebeClientConfigurationProperties(org.springframework.core.env.Environment environment) {
@@ -196,6 +203,24 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
+  public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+    this.scheduledExecutorService = scheduledExecutorService;
+  }
+
+  public void setOwnsJobWorkerExecutor(boolean ownsJobWorkerExecutor) {
+    this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
+  }
+
+  @Override
+  public ScheduledExecutorService jobWorkerExecutor() {
+    return scheduledExecutorService;
+  }
+
+  @Override
+  public boolean ownsJobWorkerExecutor() {
+    return ownsJobWorkerExecutor;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -227,6 +252,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       ", job=" + job +
       ", interceptors=" + interceptors +
       ", requestTimeout=" + requestTimeout +
+      ", scheduledExecutorService=" + scheduledExecutorService +
+      ", ownsJobWorkerExecutor=" + ownsJobWorkerExecutor +
       '}';
   }
 

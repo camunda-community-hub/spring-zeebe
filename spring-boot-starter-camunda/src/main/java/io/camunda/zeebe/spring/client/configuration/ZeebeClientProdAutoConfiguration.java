@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.configuration;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientImpl;
+import io.camunda.zeebe.client.impl.util.ExecutorResource;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
@@ -38,7 +39,6 @@ public class ZeebeClientProdAutoConfiguration {
     this.configurationProperties = configurationProperties;
     configurationProperties.setJsonMapper(jsonMapper); // Replace JsonMapper proxy (because of lazy) with real bean
     configurationProperties.applyOverrides(); // make sure environment variables and other legacy config options are taken into account (duplicate, also done by  qPostConstruct, whatever)
-
     this.zeebeClientExecutorService = zeebeClientExecutorService;
   }
 
@@ -51,7 +51,8 @@ public class ZeebeClientProdAutoConfiguration {
     if (zeebeClientExecutorService!=null) {
       ManagedChannel managedChannel = ZeebeClientImpl.buildChannel(configurationProperties);
       GatewayGrpc.GatewayStub gatewayStub = ZeebeClientImpl.buildGatewayStub(managedChannel, configurationProperties);
-      return new ZeebeClientImpl(configurationProperties, managedChannel, gatewayStub, zeebeClientExecutorService.get());
+      ExecutorResource executorResource = new ExecutorResource(zeebeClientExecutorService.get(), configurationProperties.ownsJobWorkerExecutor());
+      return new ZeebeClientImpl(configurationProperties, managedChannel, gatewayStub, executorResource);
     } else {
       return new ZeebeClientImpl(configurationProperties);
     }

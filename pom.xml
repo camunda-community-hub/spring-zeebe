@@ -20,14 +20,13 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.2.8</zeebe.version>
-
-    <connector.version>0.8.1</connector.version>
-    <version.operate-client>8.2.0</version.operate-client>
+    <zeebe.version>8.3.0-alpha4</zeebe.version>
+    <operate-client.version>8.3.0-alpha5</operate-client.version>
 
     <spring-boot.version>2.7.7</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.1.0</resilience4j.version>
+    <jackson.version>2.15.2</jackson.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -74,12 +73,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>camunda-operate-client-java</artifactId>
-        <version>${version.operate-client}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda.connector</groupId>
-        <artifactId>connector-validation</artifactId>
-        <version>${connector.version}</version>
+        <version>${operate-client.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
@@ -91,7 +85,6 @@
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
         <version>${zeebe.version}</version>
       </dependency>
-
       <dependency>
         <groupId>io.camunda.spring</groupId>
         <artifactId>spring-client-annotations</artifactId>
@@ -127,16 +120,25 @@
         <artifactId>spring-boot-starter-camunda-test-testcontainer</artifactId>
         <version>${project.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>4.2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-kotlin</artifactId>
-        <version>${kotlin-jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
