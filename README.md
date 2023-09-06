@@ -432,7 +432,7 @@ zeebe.client.worker.max-jobs-active=32
 zeebe.client.worker.threads=1
 ```
 
-For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java)
+For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](spring-boot-starter-camunda/src/main/java/io/camunda/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
 
 Note that we generally do not advise to use a thread pool for workers, but rather implement asynchronous code, see [Writing Good Workers](https://docs.camunda.io/docs/components/best-practices/development/writing-good-workers/).
 
