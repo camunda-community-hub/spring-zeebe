@@ -1,8 +1,12 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
+import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
+import io.camunda.zeebe.model.bpmn.impl.instance.zeebe.ZeebePropertiesImpl;
+import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeProperties;
 import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
 import io.camunda.zeebe.spring.client.annotation.processor.AnnotationProcessorConfiguration;
 import io.camunda.zeebe.spring.client.jobhandling.CommandExceptionHandlingStrategy;
@@ -25,6 +29,10 @@ public class ZeebeClientAllAutoConfiguration {
 
   private final ZeebeClientConfigurationProperties configurationProperties;
   public ZeebeClientAllAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties) {
+    // TODO Remove workaround as soon as https://github.com/camunda/zeebe/issues/14176 is fixed
+    if(configurationProperties.getWorker().getDefaultName() == null) {
+      configurationProperties.getWorker().setDefaultName(ClientProperties.DEFAULT_JOB_WORKER_NAME);
+    }
     this.configurationProperties = configurationProperties;
   }
 
