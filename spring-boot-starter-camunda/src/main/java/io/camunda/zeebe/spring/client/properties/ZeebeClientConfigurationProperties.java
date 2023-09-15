@@ -532,7 +532,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   public static class Message {
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
-    private int maxMessageSize;
+    private int maxMessageSize = DEFAULT.getMaxMessageSize();
 
     public Duration getTimeToLive() {
       return timeToLive;
