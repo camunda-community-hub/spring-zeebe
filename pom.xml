@@ -25,7 +25,7 @@
     <connector.version>0.8.1</connector.version>
     <version.operate-client>8.2.0</version.operate-client>
 
-    <spring-boot.version>2.7.7</spring-boot.version>
+    <spring-boot.version>3.1.4</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.1.0</resilience4j.version>
 
