@@ -39,12 +39,12 @@
   </properties>
 
   <modules>
-    <!-- Spring dependant modules -->
+    <!-- Spring dependent modules -->
     <module>spring-client-annotations</module>
     <module>spring-client-common</module>
     <module>spring-client-zeebe</module>
 
-    <!-- Spring Boot dependant modules -->
+    <!-- Spring Boot dependent modules -->
     <module>spring-boot-starter-camunda</module>
 
     <module>test/common</module>
