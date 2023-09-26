@@ -30,7 +30,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda</artifactId>
-  <version>8.2.3</version>
+  <version>8.2.4</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ Use the `@Deployment` annotation:
 public class MySpringBootApplication {
 ```
 
-This annotation uses (which internally uses [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader] (the Spring resource loader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
+This annotation uses (which internally uses [the Spring resource loader](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#resources-resourceloader) mechanism which is pretty powerful and can for example also deploy multiple files at once:
 
 ```java
 @Deployment(resources = {"classpath:demoProcess.bpmn" , "classpath:demoProcess2.bpmn"})
@@ -168,7 +168,7 @@ To run Connectors, you can now use the following dependency in your project:
 
 If you have previously used the pure Spring Zeebe project to run Connectors, you should migrate to the new dependency.
 
-You can find the latest version of Connectors on [this page](https://github.com/camunda/connectors-bundle/releases/tag/0.18.2).
+You can find the latest version of Connectors on [this page](https://github.com/camunda/connectors/releases).
 Consult the [Connector SDK](https://github.com/camunda/connector-sdk) for details on Connectors in general.
 
 # Documentation
