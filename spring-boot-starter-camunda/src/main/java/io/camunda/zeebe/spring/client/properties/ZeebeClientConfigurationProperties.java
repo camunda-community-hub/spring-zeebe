@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import static org.springframework.util.StringUtils.hasText;
+
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties implements ZeebeClientConfiguration {
 
@@ -678,7 +680,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
-    if (cloud.clientId != null && cloud.clientSecret != null) {
+    if (hasText(cloud.clientId) && hasText(cloud.clientSecret)) {
 //        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider with: {}", this);
       return CredentialsProvider.newCredentialsProviderBuilder()
         .clientId(cloud.clientId)
