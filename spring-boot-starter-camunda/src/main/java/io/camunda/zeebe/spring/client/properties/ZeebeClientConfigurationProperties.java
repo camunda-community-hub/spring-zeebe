@@ -47,6 +47,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
    */
   private String connectionMode;
 
+  private String defaultTenantId = DEFAULT.getDefaultTenantId();
+
+  private List<String> defaultJobWorkerTenantIds = DEFAULT.getDefaultJobWorkerTenantIds();
+
   private boolean applyEnvironmentVariableOverrides = false; // the default is NOT to overwrite anything by environment variables in a Spring Boot world - it is unintuitive
 
   private boolean enabled = true;
@@ -82,6 +86,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   private ScheduledExecutorService scheduledExecutorService;
 
   private boolean ownsJobWorkerExecutor;
+
+  private boolean defaultJobWorkerStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
 
   @Autowired
   public ZeebeClientConfigurationProperties(org.springframework.core.env.Environment environment) {
@@ -121,6 +127,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       }
       if (worker.defaultName == null && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
         worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
+      }
+      // Support environment based default tenant id override if value is client default fallback
+      if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId())) && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
+        defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
   }
@@ -641,6 +651,21 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     } else {
       return broker.getGatewayAddress();
     }
+  }
+
+  @Override
+  public String getDefaultTenantId() {
+    return defaultTenantId;
+  }
+
+  @Override
+  public List<String> getDefaultJobWorkerTenantIds() {
+    return defaultJobWorkerTenantIds;
+  }
+
+  @Override
+  public boolean getDefaultJobWorkerStreamEnabled() {
+    return defaultJobWorkerStreamEnabled;
   }
 
   public String getConnectionMode() {
