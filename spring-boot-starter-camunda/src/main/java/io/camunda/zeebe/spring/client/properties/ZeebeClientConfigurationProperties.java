@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -45,6 +46,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
    * If not set, "CLOUD" is used if a `zeebe.client.cloud.cluster-id` property is set, "ADDRESS" otherwise.
    */
   private String connectionMode;
+
+  private String defaultTenantId = DEFAULT.getDefaultTenantId();
+
+  private List<String> defaultJobWorkerTenantIds = DEFAULT.getDefaultJobWorkerTenantIds();
 
   private boolean applyEnvironmentVariableOverrides = false; // the default is NOT to overwrite anything by environment variables in a Spring Boot world - it is unintuitive
 
@@ -75,6 +80,14 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @Lazy
   @Autowired(required = false)
   private List<ClientInterceptor> interceptors;
+
+  @Lazy
+  @Autowired(required = false)
+  private ScheduledExecutorService scheduledExecutorService;
+
+  private boolean ownsJobWorkerExecutor;
+
+  private boolean defaultJobWorkerStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
 
   @Autowired
   public ZeebeClientConfigurationProperties(org.springframework.core.env.Environment environment) {
@@ -114,6 +127,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       }
       if (worker.defaultName == null && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
         worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
+      }
+      // Support environment based default tenant id override if value is client default fallback
+      if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId())) && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
+        defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
   }
@@ -196,6 +213,24 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
+  public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+    this.scheduledExecutorService = scheduledExecutorService;
+  }
+
+  public void setOwnsJobWorkerExecutor(boolean ownsJobWorkerExecutor) {
+    this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
+  }
+
+  @Override
+  public ScheduledExecutorService jobWorkerExecutor() {
+    return scheduledExecutorService;
+  }
+
+  @Override
+  public boolean ownsJobWorkerExecutor() {
+    return ownsJobWorkerExecutor;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -227,6 +262,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       ", job=" + job +
       ", interceptors=" + interceptors +
       ", requestTimeout=" + requestTimeout +
+      ", scheduledExecutorService=" + scheduledExecutorService +
+      ", ownsJobWorkerExecutor=" + ownsJobWorkerExecutor +
       '}';
   }
 
@@ -507,7 +544,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   public static class Message {
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
-    private int maxMessageSize;
+    private int maxMessageSize = DEFAULT.getMaxMessageSize();
 
     public Duration getTimeToLive() {
       return timeToLive;
@@ -614,6 +651,21 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     } else {
       return broker.getGatewayAddress();
     }
+  }
+
+  @Override
+  public String getDefaultTenantId() {
+    return defaultTenantId;
+  }
+
+  @Override
+  public List<String> getDefaultJobWorkerTenantIds() {
+    return defaultJobWorkerTenantIds;
+  }
+
+  @Override
+  public boolean getDefaultJobWorkerStreamEnabled() {
+    return defaultJobWorkerStreamEnabled;
   }
 
   public String getConnectionMode() {

@@ -173,6 +173,11 @@ public class DeploymentPostProcessorTest {
       public String getResourceName() {
         return "TestProcess";
       }
+
+      @Override
+      public String getTenantId() {
+        return "TestTenantId";
+      }
     };
   }
 }
