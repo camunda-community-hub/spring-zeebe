@@ -7,6 +7,28 @@
 
 This project allows to leverage Zeebe (the orchestration engine that comes as part of Camunda Platform 8) within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client).
 
+## Table of Contents
+
+**Getting Started**
+
+-   [ Version Compatibility ](#version-compatibility)
+-   [ Examples ](#examples)
+-   [ Quickstart ](#quickstart)
+-   [ Add Spring Boot Starter to Your Project](#add-spring-boot-starter-to-your-project)
+-   [ Configuring Camunda Platform 8 SaaS Connection ](#configuring-camunda-platform-8-saas-connection)
+-   [ Connect to Zeebe ](#connect-to-zeebe)
+-   [ Implement Job Worker ](#implement-job-worker)
+-   [ Writing test cases ](#writing-test-cases)
+-   [ Run Connectors ](#run-connectors)
+
+**Documentation**
+
+-   [ Job worker configuration options ](#job-worker-configuration-options)
+-   [ Additional Configuration Options ](#additional-configuration-options)
+-   [ Observing metrics ](#observing-metrics)
+
+# Getting Started
+
 ## Version Compatibility
 
 | Spring Zeebe version | JDK   | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
@@ -21,8 +43,7 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 There are full examples, including test cases, are available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [example/](example/) folder.
 
-# Get Started
-
+## Quickstart
 Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), or open a pre-existing one you already have, or simply fork our [Camunda Platform 8 Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template).
 
 ## Add Spring Boot Starter to Your Project
