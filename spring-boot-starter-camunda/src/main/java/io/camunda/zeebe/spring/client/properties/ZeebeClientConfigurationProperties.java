@@ -658,13 +658,25 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     return defaultTenantId;
   }
 
+  public void setDefaultTenantId(String defaultTenantId) {
+    this.defaultTenantId = defaultTenantId;
+  }
+
   @Override
   public List<String> getDefaultJobWorkerTenantIds() {
     return defaultJobWorkerTenantIds;
   }
 
+  public void setDefaultJobWorkerTenantIds(List<String> defaultJobWorkerTenantIds) {
+    this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
+  }
+
   @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
+    return defaultJobWorkerStreamEnabled;
+  }
+
+  public boolean isDefaultJobWorkerStreamEnabled() {
     return defaultJobWorkerStreamEnabled;
   }
 
