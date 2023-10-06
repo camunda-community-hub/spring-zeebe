@@ -545,6 +545,6 @@ management.endpoints.web.exposure.include=metrics
 
 And then access them via http://localhost:8080/actuator/metrics/.
 
-# Code of Conduct
+# Community Code of Conduct
 
 This project adheres to the Contributor Covenant [Code of Conduct](/.github/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please [report unacceptable behavior](https://camunda.com/events/code-conduct/reporting-violations/) as soon as possible.
