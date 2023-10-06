@@ -676,8 +676,8 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     return defaultJobWorkerStreamEnabled;
   }
 
-  public boolean isDefaultJobWorkerStreamEnabled() {
-    return defaultJobWorkerStreamEnabled;
+  public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
+    this.defaultJobWorkerStreamEnabled = defaultJobWorkerStreamEnabled;
   }
 
   public String getConnectionMode() {
