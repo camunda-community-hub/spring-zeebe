@@ -134,10 +134,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId())) && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
-      // Support default job worker tenant ids based on the default tenant id
-      if(defaultJobWorkerTenantIds == null && defaultTenantId != null) {
-        defaultJobWorkerTenantIds = Collections.singletonList(defaultTenantId);
-      }
+    }
+
+    // Support default job worker tenant ids based on the default tenant id
+    if(defaultJobWorkerTenantIds == null && defaultTenantId != null) {
+      defaultJobWorkerTenantIds = Collections.singletonList(defaultTenantId);
     }
   }
 
