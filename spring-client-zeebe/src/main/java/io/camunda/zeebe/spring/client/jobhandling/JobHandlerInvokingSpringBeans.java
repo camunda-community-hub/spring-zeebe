@@ -137,7 +137,8 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private FinalCommandStep<Void> createThrowErrorCommand(JobClient jobClient, ActivatedJob job, ZeebeBpmnError bpmnError) {
     FinalCommandStep<Void> command = jobClient.newThrowErrorCommand(job.getKey()) // TODO: PR for taking a job only in command chain
       .errorCode(bpmnError.getErrorCode())
-      .errorMessage(bpmnError.getErrorMessage());
+      .errorMessage(bpmnError.getErrorMessage())
+      .variables(bpmnError.getVariables());
     return command;
   }
 
