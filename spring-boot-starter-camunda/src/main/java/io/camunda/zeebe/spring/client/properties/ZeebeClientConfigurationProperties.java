@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import com.google.common.collect.Lists;
 import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.CredentialsProvider;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
@@ -20,6 +21,7 @@ import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   private String defaultTenantId = DEFAULT.getDefaultTenantId();
 
-  private List<String> defaultJobWorkerTenantIds = DEFAULT.getDefaultJobWorkerTenantIds();
+  private List<String> defaultJobWorkerTenantIds;
 
   private boolean applyEnvironmentVariableOverrides = false; // the default is NOT to overwrite anything by environment variables in a Spring Boot world - it is unintuitive
 
@@ -131,6 +133,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       // Support environment based default tenant id override if value is client default fallback
       if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId())) && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
+      }
+      // Support default job worker tenant ids based on the default tenant id
+      if(defaultJobWorkerTenantIds == null && defaultTenantId != null) {
+        defaultJobWorkerTenantIds = Collections.singletonList(defaultTenantId);
       }
     }
   }
