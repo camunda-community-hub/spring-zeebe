@@ -41,7 +41,7 @@ If possible add a minimal reproducer code sample
 
 **Environment:**
 - OS: <!-- [e.g. Linux] -->
-- Deployment: <!-- [SaaS or SM (Self Managed)] --> 
-- Zeebe Version: <!-- [e.g. 0.20.0] -->
+- Deployment: <!-- [SaaS or SM (Self Managed) and version] --> 
+- Spring-Zeebe Version: <!-- [e.g. 8.2.4] -->
 - SpringBoot Version: <!-- [e.g. 2.7.x, 3.x.x] --> 
 - Configuration: <!-- [e.g. exporters etc.] -->
