@@ -5,6 +5,7 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
+import io.camunda.zeebe.client.api.worker.JobWorkerMetrics;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import org.slf4j.Logger;
@@ -67,6 +68,14 @@ public class JobWorkerManager {
     }
     if (zeebeWorkerValue.getFetchVariables() != null && zeebeWorkerValue.getFetchVariables().length > 0) {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
+    }
+
+    // TODO: Check if this is the right place for enabling JobWorker metrics
+    try {
+      JobWorkerMetrics metrics = JobWorkerMetrics.micrometer().build();
+      builder.metrics(metrics);
+    } catch (UnsupportedOperationException e) {
+      LOGGER.error("Unable to start JobWorker metrics");
     }
 
     JobWorker jobWorker = builder.open();
