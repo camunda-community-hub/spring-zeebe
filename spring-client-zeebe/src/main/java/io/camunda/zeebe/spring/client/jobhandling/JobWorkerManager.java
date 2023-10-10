@@ -70,7 +70,7 @@ public class JobWorkerManager {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
     }
 
-    // TODO: Check if this is the right place for enabling JobWorker metrics
+    // TODO: Check if this is the right place for enabling JobWorker metrics and connect to Meter Registry
     try {
       JobWorkerMetrics metrics = JobWorkerMetrics.micrometer().build();
       builder.metrics(metrics);
