@@ -38,6 +38,7 @@ public class ZeebeClientProdAutoConfiguration {
   public ZeebeClientProdAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties, ZeebeClientExecutorService zeebeClientExecutorService, JsonMapper jsonMapper) {
     this.configurationProperties = configurationProperties;
     configurationProperties.setJsonMapper(jsonMapper); // Replace JsonMapper proxy (because of lazy) with real bean
+    configurationProperties.setScheduledExecutorService(zeebeClientExecutorService.get());
     configurationProperties.applyOverrides(); // make sure environment variables and other legacy config options are taken into account (duplicate, also done by  qPostConstruct, whatever)
     this.zeebeClientExecutorService = zeebeClientExecutorService;
   }
