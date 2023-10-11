@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
+import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1.ThrowErrorCommandStep2;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.client.api.worker.JobHandler;
@@ -135,10 +136,12 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   }
 
   private FinalCommandStep<Void> createThrowErrorCommand(JobClient jobClient, ActivatedJob job, ZeebeBpmnError bpmnError) {
-    FinalCommandStep<Void> command = jobClient.newThrowErrorCommand(job.getKey()) // TODO: PR for taking a job only in command chain
+    ThrowErrorCommandStep2 command = jobClient.newThrowErrorCommand(job.getKey()) // TODO: PR for taking a job only in command chain
       .errorCode(bpmnError.getErrorCode())
-      .errorMessage(bpmnError.getErrorMessage())
-      .variables(bpmnError.getVariables());
+      .errorMessage(bpmnError.getErrorMessage());
+    if(bpmnError.getVariables() != null){
+      command.variables(bpmnError.getVariables());
+    }
     return command;
   }
 
