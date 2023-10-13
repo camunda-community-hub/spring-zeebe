@@ -94,8 +94,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(Variable.class) || param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
-        String nameFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).name();
-        String paramName = Objects.equals(nameFromAnnotation,Variable.DEFAULT_NAME) ? param.getParameterName() : nameFromAnnotation;
+        String paramName = getVariableName(param);
         Object variableValue = job.getVariablesAsMap().get(paramName);
         try {
           arg = mapZeebeVariable(variableValue, param.getParameterInfo().getType());
@@ -119,6 +118,23 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       args.add(arg);
     }
     return args;
+  }
+
+  private String getVariableName(ParameterInfo param) {
+    if (param.getParameterInfo().isAnnotationPresent(Variable.class)) {
+      String nameFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).name();
+      if (!Objects.equals(nameFromAnnotation, Variable.DEFAULT_NAME)) {
+        LOG.trace("Extracting variable name from Variable.name");
+        return nameFromAnnotation;
+      }
+      String valueFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).value();
+      if (!Objects.equals(valueFromAnnotation, Variable.DEFAULT_NAME)) {
+        LOG.trace("Extracting variable name from Variable.value");
+        return valueFromAnnotation;
+      }
+    }
+    LOG.trace("Extracting variable name from parameter name");
+    return param.getParameterName();
   }
 
   public static FinalCommandStep createCompleteCommand(JobClient jobClient, ActivatedJob job, Object result) {

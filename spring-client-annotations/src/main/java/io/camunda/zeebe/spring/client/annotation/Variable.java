@@ -8,4 +8,5 @@ import java.lang.annotation.*;
 public @interface Variable {
   String DEFAULT_NAME = "$NULL$";
   String name() default DEFAULT_NAME;
+  String value() default DEFAULT_NAME;
 }
