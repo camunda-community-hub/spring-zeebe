@@ -78,6 +78,8 @@ public class JobHandlerTest {
   private static boolean calledTest4 = false;
 
   private static boolean calledTest6 = false;
+  private static boolean calledTest7 = false;
+  private static String test7Var = null;
   private static ComplexTypeDTO test6ComplexTypeDTO = null;
   private static String test6Var2 = null;
 
@@ -218,6 +220,25 @@ public class JobHandlerTest {
     assertNotNull(test6Var2);
     assertEquals("stringValue", test6Var2);
   }
+
+  @JobWorker(type = "test7")
+  public void handleTest7(@Variable(name="class")String variableWithKeywordAsName){
+    calledTest7 = true;
+    test7Var = variableWithKeywordAsName;
+  }
+
+  @Test
+  void shouldInjectVariableWithKeywordAsName(){
+    BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test7").startEvent().serviceTask().zeebeJobType("test7").endEvent().done();
+    client.newDeployResourceCommand().addProcessModel(bpmnModel, "test7.bpmn").send().join();
+    ProcessInstanceEvent processInstance = startProcessInstance(client, "test7", Map.of("class", "alpha"));
+    waitForProcessInstanceCompleted(processInstance);
+    assertTrue(calledTest7);
+    assertNotNull(test7Var);
+    assertEquals("alpha",test7Var);
+  }
+
+
 
   private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId) {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
