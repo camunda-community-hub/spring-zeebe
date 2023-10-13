@@ -129,7 +129,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       }
       String valueFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).value();
       if (!Objects.equals(valueFromAnnotation, Variable.DEFAULT_NAME)) {
-        LOG.trace("Extracting variable name from Variable.value");
+        LOG.trace("Extracting name {} from Variable.value", valueFromAnnotation);
         return valueFromAnnotation;
       }
     }
