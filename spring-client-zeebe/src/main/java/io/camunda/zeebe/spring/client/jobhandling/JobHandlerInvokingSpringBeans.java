@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Zeebe JobHandler that invokes a Spring bean
@@ -93,7 +94,8 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       } else if (ActivatedJob.class.isAssignableFrom(clazz)) {
         arg = job;
       } else if (param.getParameterInfo().isAnnotationPresent(Variable.class) || param.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
-        String paramName = param.getParameterName();
+        String nameFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).name();
+        String paramName = Objects.equals(nameFromAnnotation,Variable.DEFAULT_NAME) ? param.getParameterName() : nameFromAnnotation;
         Object variableValue = job.getVariablesAsMap().get(paramName);
         try {
           arg = mapZeebeVariable(variableValue, param.getParameterInfo().getType());

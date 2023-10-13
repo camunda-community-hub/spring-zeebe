@@ -6,5 +6,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Variable {
-
+  String DEFAULT_NAME = "$NULL$";
+  String name() default DEFAULT_NAME;
 }
