@@ -521,6 +521,15 @@ zeebe.client.worker.override.foo.timeout=10000
 
 You could also provide a custom class that can customize the `JobWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
 
+### Enable job streaming
+
+>Please read aboutt this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
+
+To enable job streaming on the zeebe client, you can configure it:
+
+```properties
+zeebe.client.client.default-job-worker-stream-enabled=true
+```
 
 ## Observing metrics
 
