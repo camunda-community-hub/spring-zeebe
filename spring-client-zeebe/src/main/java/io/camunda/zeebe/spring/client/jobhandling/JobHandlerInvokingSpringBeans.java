@@ -124,7 +124,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     if (param.getParameterInfo().isAnnotationPresent(Variable.class)) {
       String nameFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).name();
       if (!Objects.equals(nameFromAnnotation, Variable.DEFAULT_NAME)) {
-        LOG.trace("Extracting variable name from Variable.name");
+        LOG.trace("Extracting name {} from Variable.name", nameFromAnnotation);
         return nameFromAnnotation;
       }
       String valueFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).value();
