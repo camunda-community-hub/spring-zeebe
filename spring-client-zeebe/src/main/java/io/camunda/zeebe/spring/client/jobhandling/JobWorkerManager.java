@@ -5,9 +5,9 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
-import io.camunda.zeebe.client.api.worker.JobWorkerMetrics;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
+import io.camunda.zeebe.spring.client.metrics.ZeebeClientMetricsBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,8 @@ public class JobWorkerManager {
       .newWorker()
       .jobType(zeebeWorkerValue.getType())
       .handler(handler)
-      .name(zeebeWorkerValue.getName());
+      .name(zeebeWorkerValue.getName())
+      .metrics(new ZeebeClientMetricsBridge(metricsRecorder, zeebeWorkerValue.getType()));
 
     if (zeebeWorkerValue.getMaxJobsActive() != null && zeebeWorkerValue.getMaxJobsActive() > 0) {
       builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
@@ -68,14 +69,6 @@ public class JobWorkerManager {
     }
     if (zeebeWorkerValue.getFetchVariables() != null && zeebeWorkerValue.getFetchVariables().length > 0) {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
-    }
-
-    // TODO: Check if this is the right place for enabling JobWorker metrics and connect to Meter Registry
-    try {
-      JobWorkerMetrics metrics = JobWorkerMetrics.micrometer().build();
-      builder.metrics(metrics);
-    } catch (UnsupportedOperationException e) {
-      LOGGER.error("Unable to start JobWorker metrics");
     }
 
     JobWorker jobWorker = builder.open();
