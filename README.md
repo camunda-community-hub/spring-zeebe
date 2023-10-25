@@ -185,7 +185,7 @@ To run Connectors, you can now use the following dependency in your project:
 ```xml
 <dependency>
   <groupId>io.camunda.connector</groupId>
-  <artifactId>spring-boot-starter-connectors</artifactId>
+  <artifactId>spring-boot-starter-camunda-connectors</artifactId>
   <version>${connectors.version}</version>
 </dependency>
 ```
