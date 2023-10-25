@@ -179,7 +179,7 @@ An example test case is [available here](https://github.com/camunda-community-hu
 
 ## Run Connectors
 
-Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors-bundle) project.
+Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors) project.
 To run Connectors, you can now use the following dependency in your project:
 
 ```xml
@@ -189,11 +189,13 @@ To run Connectors, you can now use the following dependency in your project:
   <version>${connectors.version}</version>
 </dependency>
 ```
+To configure the Connector Runtime use the properties explained here:
+[Camunda Connector Runtime](https://github.com/camunda/connectors/blob/main/connector-runtime/README.md)
 
 If you have previously used the pure Spring Zeebe project to run Connectors, you should migrate to the new dependency.
 
 You can find the latest version of Connectors on [this page](https://github.com/camunda/connectors/releases).
-Consult the [Connector SDK](https://github.com/camunda/connector-sdk) for details on Connectors in general.
+Consult the [Connector SDK](https://github.com/camunda/connectors/tree/main/connector-sdk/core#connector-core) for details on Connectors in general.
 
 # Documentation
 
@@ -528,7 +530,7 @@ You could also provide a custom class that can customize the `JobWorker` configu
 To enable job streaming on the zeebe client, you can configure it:
 
 ```properties
-zeebe.client.client.default-job-worker-stream-enabled=true
+zeebe.client.default-job-worker-stream-enabled=true
 ```
 
 ## Observing metrics
