@@ -54,7 +54,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda</artifactId>
-  <version>8.2.4</version>
+  <version>8.3.1</version>
 </dependency>
 ```
 
