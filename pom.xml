@@ -49,7 +49,7 @@
     <module>test/embedded</module>
     <module>test/testcontainer</module>
 
-    <module>example</module>
+    <module>examples/basic-example</module>
     <module>legacy</module>
   </modules>
 
