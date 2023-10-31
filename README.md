@@ -33,6 +33,8 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 | Spring Zeebe version | JDK   | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|--------------------------|-----------------------------|-----------------------------|
+| >= 8.3.0             | >= 17 | 8.3.1                    | 2.7.7  | >= 2.7.x, 3.x.x             |
+| >= 8.3.0             | >= 8  | 8.3.1                    | 2.7.7  | >= 2.7.x                    |
 | >= 8.2.4             | >= 17 | 8.2.4                    | 2.7.7  | >= 2.7.x, 3.x.x             |
 | >= 8.2.4             | >= 8  | 8.2.4                    | 2.7.7  | >= 2.7.x                    |
 | >= 8.1.15            | >= 17 | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.x.x             |
@@ -64,7 +66,7 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>8.1.9</version>
+  <version>8.3.1</version>
 </dependency>
 ```
 
