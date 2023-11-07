@@ -9,6 +9,7 @@ import io.camunda.zeebe.spring.client.configuration.OperateClientProdAutoConfigu
 import io.camunda.zeebe.spring.client.configuration.ZeebeActuatorConfiguration;
 import io.camunda.zeebe.spring.client.configuration.ZeebeClientAllAutoConfiguration;
 import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
+import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 @ImportAutoConfiguration({
   ZeebeClientProdAutoConfiguration.class,
   ZeebeClientAllAutoConfiguration.class,
-
+  CommonClientConfiguration.class,
   OperateClientProdAutoConfiguration.class,
 
   ZeebeActuatorConfiguration.class,
