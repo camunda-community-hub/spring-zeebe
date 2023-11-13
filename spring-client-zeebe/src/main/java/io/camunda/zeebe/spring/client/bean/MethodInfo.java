@@ -1,23 +1,20 @@
 package io.camunda.zeebe.spring.client.bean;
 
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 public class MethodInfo implements BeanInfo {
 
-  private static LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+  private static final StandardReflectionParameterNameDiscoverer parameterNameDiscoverer = new StandardReflectionParameterNameDiscoverer();
 
   protected ClassInfo classInfo;
   protected Method method;
