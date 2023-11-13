@@ -1,5 +1,6 @@
 package io.camunda.commons.http;
 
+import com.google.common.reflect.TypeToken;
 import io.camunda.commons.auth.Product;
 
 import java.util.Map;
@@ -17,7 +18,8 @@ public interface HttpClient {
 
   <T> T get(Class<T> clazz, String id);
 
-  void get(String resource);
+  <T> String getXml(Class<T> clazz, Long key);
 
-  <T> T post(Class<T> clazz);
+  <T, V, W, U> T post(Class<T> clazz, Class<V> vj, TypeToken<W> typeToken, U body);
+
 }
