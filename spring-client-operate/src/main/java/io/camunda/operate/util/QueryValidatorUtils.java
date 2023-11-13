@@ -18,7 +18,7 @@ public class QueryValidatorUtils {
     if (TYPE_FILTERS.isEmpty()) {
       TYPE_FILTERS.put(ProcessDefinition.class, ProcessDefinitionFilter.class);
       TYPE_FILTERS.put(ProcessInstance.class, ProcessInstanceFilter.class);
-      TYPE_FILTERS.put(FlowNodeInstance.class, FlownodeInstanceFilter.class);
+      TYPE_FILTERS.put(FlowNodeInstance.class, FlowNodeInstanceFilter.class);
       TYPE_FILTERS.put(Incident.class, IncidentFilter.class);
       TYPE_FILTERS.put(Variable.class, VariableFilter.class);
     }
