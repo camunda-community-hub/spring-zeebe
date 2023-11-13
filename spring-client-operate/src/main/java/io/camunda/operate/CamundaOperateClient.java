@@ -18,14 +18,18 @@ public class CamundaOperateClient {
     return httpClient.get(ProcessDefinition.class, key);
   }
 
+  public String getProcessDefinitionXml(Long key) throws OperateException {
+    return httpClient.getXml(ProcessDefinition.class, key);
+  }
+
   // TODO: implement the search APIs
 
   public List<ProcessDefinition> searchProcessDefinitions(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
+    return searchProcessDefinitionResults(query).getItems();
   }
 
   public SearchResult<ProcessDefinition> searchProcessDefinitionResults(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
+    return httpClient.post(SearchResult.class, ProcessDefinition.class, SearchResultTypeToken.searchResultProcessDefinition, query);
   }
 
   public List<ProcessInstance> searchProcessInstances(SearchQuery query) throws OperateException {
@@ -146,6 +150,14 @@ public class CamundaOperateClient {
       map.put(DecisionDefinition.class, "/decision-definitions");
       map.put(DecisionRequirements.class, "/drd");
       map.put(DecisionInstance.class, "/decision-instances");
+      map.put(SearchResultTypeToken.searchResultProcessDefinition.getClass(), "/process-definitions/search");
+      map.put(SearchResultTypeToken.searchResultDecisionDefinition.getClass(), "/decision-definitions/search");
+      map.put(SearchResultTypeToken.searchResultDecisionInstance.getClass(), "/decision-instances/search");
+      map.put(SearchResultTypeToken.searchResultFlowNodeInstance.getClass(), "/flownode-instances/search");
+      map.put(SearchResultTypeToken.searchResultVariable.getClass(), "/variables/search");
+      map.put(SearchResultTypeToken.searchResultProcessInstance.getClass(), "/process-instances/search");
+      map.put(SearchResultTypeToken.searchResultDecisionRequirements.getClass(), "/drd/search");
+      map.put(SearchResultTypeToken.searchResultIncident.getClass(), "/incidents/search");
       httpClient.loadMap(Product.OPERATE, map);
       return this;
     }
