@@ -45,6 +45,11 @@ public class JsonUtils {
         return getObjectMapper().readValue(json, resultType);
     }
 
+  public static <T, U> T toParameterizedTypeResult(String json, Class<T> resultType, Class<U> parameterType) throws IOException {
+      JavaType javaType = getObjectMapper().getTypeFactory().constructParametricType(resultType, parameterType);
+      return getObjectMapper().readValue(json, javaType);
+  }
+
 //    public static <T> SearchResult<T> toSearchResult(String json, Class<T> resultType) throws IOException {
 //        return getObjectMapper().readValue(json, getSearchResultType(resultType));
 //    }
