@@ -6,7 +6,7 @@ import io.camunda.operate.model.FlowNodeInstanceState;
 import io.camunda.operate.exception.OperateException;
 
 @JsonInclude(Include.NON_NULL)
-public class FlownodeInstanceFilter implements Filter {
+public class FlowNodeInstanceFilter implements Filter {
   private Long processInstanceKey;
   private Long processDefinitionKey;
   private Long incidentKey;
@@ -164,8 +164,8 @@ public class FlownodeInstanceFilter implements Filter {
       return this;
     }
 
-    public FlownodeInstanceFilter build() throws OperateException {
-      FlownodeInstanceFilter processInstanceFilter = new FlownodeInstanceFilter();
+    public FlowNodeInstanceFilter build() throws OperateException {
+      FlowNodeInstanceFilter processInstanceFilter = new FlowNodeInstanceFilter();
       processInstanceFilter.processInstanceKey = processInstanceKey;
       processInstanceFilter.processDefinitionKey = processDefinitionKey;
       processInstanceFilter.incidentKey = incidentKey;
