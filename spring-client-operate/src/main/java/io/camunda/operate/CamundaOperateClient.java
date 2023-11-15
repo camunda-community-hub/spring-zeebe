@@ -22,8 +22,6 @@ public class CamundaOperateClient {
     return httpClient.getXml(ProcessDefinition.class, key);
   }
 
-  // TODO: implement the search APIs
-
   public List<ProcessDefinition> searchProcessDefinitions(SearchQuery query) throws OperateException {
     return searchProcessDefinitionResults(query).getItems();
   }
@@ -32,15 +30,61 @@ public class CamundaOperateClient {
     return httpClient.post(SearchResult.class, ProcessDefinition.class, SearchResultTypeToken.searchResultProcessDefinition, query);
   }
 
+  public List<DecisionDefinition> searchDecisionDefinitions(SearchQuery query) throws OperateException {
+    return searchDecisionDefinitionResults(query).getItems();
+  }
+
+  public SearchResult<DecisionDefinition> searchDecisionDefinitionResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, DecisionDefinition.class, SearchResultTypeToken.searchResultDecisionDefinition, query);
+  }
+
+  public List<DecisionInstance> searchDecisionInstances(SearchQuery query) throws OperateException {
+    return searchDecisionInstanceResults(query).getItems();
+  }
+
+  public SearchResult<DecisionInstance> searchDecisionInstanceResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, DecisionInstance.class, SearchResultTypeToken.searchResultDecisionInstance, query);
+  }
+
+  public List<FlowNodeInstance> searchFlowNodeInstances(SearchQuery query) throws OperateException {
+    return searchFlowNodeInstanceResults(query).getItems();
+  }
+
+  public SearchResult<FlowNodeInstance> searchFlowNodeInstanceResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, FlowNodeInstance.class, SearchResultTypeToken.searchResultFlowNodeInstance, query);
+  }
+
+  public List<Variable> searchVariables(SearchQuery query) throws OperateException {
+    return searchVariableResults(query).getItems();
+  }
+
+  public SearchResult<Variable> searchVariableResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, Variable.class, SearchResultTypeToken.searchResultVariable, query);
+  }
+
   public List<ProcessInstance> searchProcessInstances(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
+    return searchProcessInstanceResults(query).getItems();
   }
 
   public SearchResult<ProcessInstance> searchProcessInstanceResults(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
+    return httpClient.post(SearchResult.class, ProcessInstance.class, SearchResultTypeToken.searchResultProcessInstance, query);
   }
 
-  // TODO: implement XML APIs
+  public List<DecisionRequirements> searchDecisionRequirements(SearchQuery query) throws OperateException {
+    return searchDecisionRequirementsResults(query).getItems();
+  }
+
+  public SearchResult<DecisionRequirements> searchDecisionRequirementsResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, DecisionRequirements.class, SearchResultTypeToken.searchResultDecisionRequirements, query);
+  }
+
+  public List<Incident> searchIncidents(SearchQuery query) throws OperateException {
+    return searchIncidentResults(query).getItems();
+  }
+
+  public SearchResult<Incident> searchIncidentResults(SearchQuery query) throws OperateException {
+    return httpClient.post(SearchResult.class, Incident.class, SearchResultTypeToken.searchResultIncident, query);
+  }
 
   public ProcessInstance getProcessInstance(Long key) throws OperateException {
     return httpClient.get(ProcessInstance.class, key);
@@ -48,14 +92,6 @@ public class CamundaOperateClient {
 
   public FlowNodeInstance getFlowNodeInstance(Long key) throws OperateException {
     return httpClient.get(FlowNodeInstance.class, key);
-  }
-
-  public List<FlowNodeInstance> searchFlowNodeInstances(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
-  public SearchResult<FlowNodeInstance> searchFlowNodeInstanceResults(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
   }
 
   public Incident getIncident(Long key) throws OperateException {
@@ -74,26 +110,9 @@ public class CamundaOperateClient {
     return httpClient.get(DecisionInstance.class, id);
   }
 
-  public List<Incident> searchIncidents(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
-  public SearchResult<Incident> searchIncidentResults(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
   public Variable getVariable(Long key) throws OperateException {
     return httpClient.get(Variable.class, key);
   }
-
-  public List<Variable> searchVariables(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
-  public SearchResult<Variable> searchVariableResults(SearchQuery query) throws OperateException {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
   public static class Builder {
 
     private Authentication authentication;
