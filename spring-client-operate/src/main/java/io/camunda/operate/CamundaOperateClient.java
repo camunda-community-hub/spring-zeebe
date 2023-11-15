@@ -106,6 +106,10 @@ public class CamundaOperateClient {
     return httpClient.get(DecisionRequirements.class, key);
   }
 
+  public String getDecisionRequirementsXml(Long key) throws OperateException {
+    return httpClient.getXml(DecisionRequirements.class, key);
+  }
+
   public DecisionInstance getDecisionInstance(String id) throws OperateException {
     return httpClient.get(DecisionInstance.class, id);
   }
