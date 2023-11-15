@@ -72,7 +72,7 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 
 The following compiler flag `-parameters` is required for Spring-Zeebe versions higher than 8.3.1:
 
-If using Maven in your `pom.xml`
+If using Maven:
 ```xml
 <build>
     <plugins>
@@ -89,7 +89,7 @@ If using Maven in your `pom.xml`
   </build>
 ```
 
-If using Gradle 
+If using Gradle:
 
 ```xml
 tasks.withType(JavaCompile) {
@@ -102,7 +102,6 @@ If using Intellij:
 ```agsl
 Settings > Build, Execution, Deployment > Compiler > Java Compiler
 ```
-
 
 ## Configuring Camunda Platform 8 SaaS Connection
 
