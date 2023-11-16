@@ -3,6 +3,7 @@ package io.camunda.commons.http;
 import com.google.common.reflect.TypeToken;
 import io.camunda.commons.auth.Authentication;
 import io.camunda.commons.auth.Product;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -65,6 +66,34 @@ public class DefaultHttpClient implements HttpClient {
   }
 
   @Override
+  public <T, V, W> T get(Class<T> clazz, Class<V> vj, TypeToken<W> typeToken, Long key) {
+    return get(clazz, vj, typeToken, String.valueOf(key));
+  }
+
+  private  <T, V, W> T get(Class<T> clazz, Class<V> vj, TypeToken<W> typeToken, String id) {
+    String resourcePath = retrievePath(typeToken.getClass());
+    if (resourcePath.contains("{key}")) {
+      resourcePath = resourcePath.replace("{key}", String.valueOf(id));
+    } else {
+      resourcePath = resourcePath + "/" + id;
+    }
+    String url = host + basePath + resourcePath;
+    HttpGet httpGet = new HttpGet(url);
+    httpGet.addHeader(retrieveToken(typeToken.getClass()));
+    T resp = null;
+    try {
+      CloseableHttpResponse response = httpClient.execute(httpGet);
+      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      resp = JsonUtils.toParameterizedTypeResult(tmp, clazz, vj);
+      boolean f = false;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return resp;
+  }
+
+
+    @Override
   public <T> String getXml(Class<T> clazz, Long key) {
     String url = host + basePath + retrievePath(clazz) + "/" + key + "/xml";
     HttpGet httpGet = new HttpGet(url);
@@ -84,7 +113,7 @@ public class DefaultHttpClient implements HttpClient {
     String url = host + basePath + retrievePath(typeToken.getClass());
     HttpPost httpPost = new HttpPost(url);
     httpPost.addHeader("Content-Type", "application/json");
-    httpPost.addHeader(retrieveToken(vj));
+    httpPost.addHeader(retrieveToken(typeToken.getClass()));
     T resp = null;
     try {
       String data = JsonUtils.toJson(body);
@@ -92,6 +121,24 @@ public class DefaultHttpClient implements HttpClient {
       CloseableHttpResponse response = httpClient.execute(httpPost);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = JsonUtils.toParameterizedTypeResult(tmp, clazz, vj);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return resp;
+  }
+
+  @Override
+  public <T, V> V delete(Class<T> clazz, Class<V> responseClass, Long key) {
+    String resourcePath = retrievePath(clazz) + "/" + key;
+    String url = host + basePath + resourcePath;
+    HttpDelete httpDelete = new HttpDelete(url);
+    httpDelete.addHeader(retrieveToken(clazz));
+    V resp = null;
+    try {
+      CloseableHttpResponse response = httpClient.execute(httpDelete);
+      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      resp = JsonUtils.toResult(tmp, responseClass);
+      boolean f = false;
     } catch (Exception e) {
       e.printStackTrace();
     }

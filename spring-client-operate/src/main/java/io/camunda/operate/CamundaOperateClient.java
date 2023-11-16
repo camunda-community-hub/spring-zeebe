@@ -90,6 +90,18 @@ public class CamundaOperateClient {
     return httpClient.get(ProcessInstance.class, key);
   }
 
+  public ChangeStatus deleteProcessInstance(Long key) throws OperateException {
+    return httpClient.delete(ProcessInstance.class, ChangeStatus.class, key);
+  }
+
+  public List<FlowNodeStatistics> getFlowNodeStatistics(Long key) throws OperateException {
+    return httpClient.get(List.class, FlowNodeStatistics.class, ListTypeToken.listFlowNodeStatistics, key);
+  }
+
+  public List<String> getSequenceFlows(Long key) throws OperateException {
+    return httpClient.get(List.class, String.class, ListTypeToken.listSequenceFlows, key);
+  }
+
   public FlowNodeInstance getFlowNodeInstance(Long key) throws OperateException {
     return httpClient.get(FlowNodeInstance.class, key);
   }
@@ -166,6 +178,8 @@ public class CamundaOperateClient {
       // load the config map
       Map<Class<?>, String> map = new HashMap<>();
       map.put(ProcessInstance.class, "/process-instances");
+      map.put(ListTypeToken.listFlowNodeStatistics.getClass(), "/process-instances/{key}/statistics");
+      map.put(ListTypeToken.listSequenceFlows.getClass(), "/process-instances/{key}/sequence-flows");
       map.put(ProcessDefinition.class, "/process-definitions");
       map.put(FlowNodeInstance.class, "/flownode-instances");
       map.put(Incident.class, "/incidents");
