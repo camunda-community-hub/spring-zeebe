@@ -70,6 +70,38 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 </dependency>
 ```
 
+Note that if you are using [@Variables](https://github.com/camunda-community-hub/spring-zeebe#using-variable), compiler flag `-parameters` is required for Spring-Zeebe versions higher than 8.3.1.
+
+If using Maven:
+```xml
+<build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+```
+
+If using Gradle:
+
+```xml
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
+}
+```
+
+If using Intellij:
+
+```agsl
+Settings > Build, Execution, Deployment > Compiler > Java Compiler
+```
 
 ## Configuring Camunda Platform 8 SaaS Connection
 
