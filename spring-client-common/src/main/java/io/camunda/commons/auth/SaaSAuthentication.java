@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class SaaSAuthentication extends JwtAuthentication {
   private String authUrl;
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
-  private Map<Product, Integer> expirations;
+  private Map<Product, LocalDateTime> expirations;
 
   // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
   private JsonMapper jsonMapper = new SdkObjectMapper();
@@ -56,7 +57,7 @@ public class SaaSAuthentication extends JwtAuthentication {
       CloseableHttpResponse response = client.execute(httpPost);
       TokenResponse tokenResponse = jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       tokens.put(product, tokenResponse.getAccessToken());
-      expirations.put(product, (int) (System.currentTimeMillis()/1000 + tokenResponse.getExpiresIn()));
+      expirations.put(product, LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
     } catch (Exception e) {
       LOG.warn("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate");
@@ -98,7 +99,7 @@ public class SaaSAuthentication extends JwtAuthentication {
 
   private void refreshToken() {
     expirations.forEach((product, expiration) -> {
-      if (expiration < System.currentTimeMillis()/1000) {
+      if (expiration.isAfter(LocalDateTime.now())) {
         retrieveToken(product);
       }
     });

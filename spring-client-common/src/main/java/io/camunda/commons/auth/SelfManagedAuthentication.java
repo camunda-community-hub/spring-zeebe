@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   private String keycloakUrl;
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
-  private Map<Product, Integer> expirations;
+  private Map<Product, LocalDateTime> expirations;
 
   // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
   private JsonMapper jsonMapper = new SdkObjectMapper();
@@ -90,7 +91,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       TokenResponse tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       // TODO: verify JWT has the desired permission vs what the user requested
       tokens.put(product, tokenResponse.getAccessToken());
-      expirations.put(product, (int) (System.currentTimeMillis()/1000 + tokenResponse.getExpiresIn()));
+      expirations.put(product, LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
     } catch (Exception e) {
       LOG.warn("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate");
@@ -110,7 +111,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
 
   private void refreshToken() {
     expirations.forEach((product, expiration) -> {
-      if (expiration < System.currentTimeMillis()/1000) {
+      if (expiration.isAfter(LocalDateTime.now())) {
         retrieveToken(product);
       }
     });
