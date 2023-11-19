@@ -33,6 +33,8 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 | Spring Zeebe version | JDK   | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|--------------------------|-----------------------------|-----------------------------|
+| >= 8.3.0             | >= 17 | 8.3.1                    | 2.7.7  | >= 2.7.x, 3.x.x             |
+| >= 8.3.0             | >= 8  | 8.3.1                    | 2.7.7  | >= 2.7.x                    |
 | >= 8.2.4             | >= 17 | 8.2.4                    | 2.7.7  | >= 2.7.x, 3.x.x             |
 | >= 8.2.4             | >= 8  | 8.2.4                    | 2.7.7  | >= 2.7.x                    |
 | >= 8.1.15            | >= 17 | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.x.x             |
@@ -54,7 +56,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda</artifactId>
-  <version>8.2.4</version>
+  <version>8.3.1</version>
 </dependency>
 ```
 
@@ -64,10 +66,42 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](htt
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>8.1.9</version>
+  <version>8.3.1</version>
 </dependency>
 ```
 
+Note that if you are using [@Variables](https://github.com/camunda-community-hub/spring-zeebe#using-variable), compiler flag `-parameters` is required for Spring-Zeebe versions higher than 8.3.1.
+
+If using Maven:
+```xml
+<build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+```
+
+If using Gradle:
+
+```xml
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
+}
+```
+
+If using Intellij:
+
+```agsl
+Settings > Build, Execution, Deployment > Compiler > Java Compiler
+```
 
 ## Configuring Camunda Platform 8 SaaS Connection
 

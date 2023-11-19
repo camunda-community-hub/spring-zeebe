@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.camunda.community</groupId>
     <artifactId>community-hub-release-parent</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
   </parent>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-client-root</artifactId>
@@ -20,12 +20,12 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.3.0</zeebe.version>
-    <operate-client.version>8.3.0</operate-client.version>
+    <operate-client.version>8.3.0.1</operate-client.version>
 
-    <spring-boot.version>3.1.4</spring-boot.version>
+    <spring-boot.version>3.1.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.1.0</resilience4j.version>
-    <jackson.version>2.15.3</jackson.version>
+    <jackson.version>2.16.0</jackson.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -198,7 +198,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.2.1</version>
+          <version>3.2.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
