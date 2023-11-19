@@ -1,5 +1,7 @@
 package io.camunda.commons.auth;
 
+import io.camunda.commons.json.JsonMapper;
+import io.camunda.commons.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -14,9 +16,6 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.camunda.commons.http.JsonUtils.toJson;
-import static io.camunda.commons.http.JsonUtils.toResult;
-
 public class SaaSAuthentication extends JwtAuthentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -25,6 +24,9 @@ public class SaaSAuthentication extends JwtAuthentication {
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
   private Map<Product, Integer> expirations;
+
+  // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
+  private JsonMapper jsonMapper = new SdkObjectMapper();
 
   public SaaSAuthentication() {
     tokens = new HashMap<>();
@@ -49,10 +51,10 @@ public class SaaSAuthentication extends JwtAuthentication {
       httpPost.addHeader("Content-Type", "application/json");
       TokenRequest tokenRequest = new TokenRequest(getAudience(product), credential.clientId, credential.clientSecret);
 
-      httpPost.setEntity(new StringEntity(toJson(tokenRequest)));
+      httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
       CloseableHttpClient client = HttpClients.createDefault();
       CloseableHttpResponse response = client.execute(httpPost);
-      TokenResponse tokenResponse = toResult(EntityUtils.toString(response.getEntity()), TokenResponse.class);
+      TokenResponse tokenResponse = jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       tokens.put(product, tokenResponse.getAccessToken());
       expirations.put(product, (int) (System.currentTimeMillis()/1000 + tokenResponse.getExpiresIn()));
     } catch (Exception e) {

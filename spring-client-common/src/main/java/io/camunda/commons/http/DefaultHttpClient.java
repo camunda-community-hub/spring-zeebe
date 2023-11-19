@@ -3,6 +3,8 @@ package io.camunda.commons.http;
 import com.google.common.reflect.TypeToken;
 import io.camunda.commons.auth.Authentication;
 import io.camunda.commons.auth.Product;
+import io.camunda.commons.json.JsonMapper;
+import io.camunda.commons.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -28,6 +30,8 @@ public class DefaultHttpClient implements HttpClient {
   private Map<Product, Map<Class<?>, String>> productMap = new HashMap<>();
   private CloseableHttpClient httpClient = HttpClients.createDefault();
   private Authentication authentication;
+
+  private JsonMapper jsonMapper = new SdkObjectMapper();
 
   public DefaultHttpClient(Authentication authentication) {
     this.authentication = authentication;
@@ -58,7 +62,7 @@ public class DefaultHttpClient implements HttpClient {
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = JsonUtils.toResult(tmp, responseType);
+      resp = jsonMapper.fromJson(tmp, responseType);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -70,7 +74,7 @@ public class DefaultHttpClient implements HttpClient {
     return get(responseType, parameterType, selector, String.valueOf(key));
   }
 
-  private  <T, V, W> T get(Class<T> clazz, Class<V> vj, TypeToken<W> selector, String id) {
+  private  <T, V, W> T get(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, String id) {
     String resourcePath = retrievePath(selector.getClass());
     if (resourcePath.contains("{key}")) {
       resourcePath = resourcePath.replace("{key}", String.valueOf(id));
@@ -84,8 +88,7 @@ public class DefaultHttpClient implements HttpClient {
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = JsonUtils.toParameterizedTypeResult(tmp, clazz, vj);
-      boolean f = false;
+      resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -116,11 +119,11 @@ public class DefaultHttpClient implements HttpClient {
     httpPost.addHeader(retrieveToken(selector.getClass()));
     T resp = null;
     try {
-      String data = JsonUtils.toJson(body);
+      String data = jsonMapper.toJson(body);
       httpPost.setEntity(new StringEntity(data));
       CloseableHttpResponse response = httpClient.execute(httpPost);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = JsonUtils.toParameterizedTypeResult(tmp, responseType, parameterType);
+      resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -137,7 +140,7 @@ public class DefaultHttpClient implements HttpClient {
     try {
       CloseableHttpResponse response = httpClient.execute(httpDelete);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = JsonUtils.toResult(tmp, responseType);
+      resp = jsonMapper.fromJson(tmp, responseType);
       boolean f = false;
     } catch (Exception e) {
       e.printStackTrace();

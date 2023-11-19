@@ -1,5 +1,7 @@
 package io.camunda.commons.auth;
 
+import io.camunda.commons.json.JsonMapper;
+import io.camunda.commons.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -18,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.camunda.commons.http.JsonUtils.toResult;
-
 public class SelfManagedAuthentication extends JwtAuthentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -30,6 +30,9 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
   private Map<Product, Integer> expirations;
+
+  // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
+  private JsonMapper jsonMapper = new SdkObjectMapper();
 
   public SelfManagedAuthentication() {
     tokens = new HashMap<>();
@@ -84,7 +87,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       httpPost.setEntity(new StringEntity(form));
       CloseableHttpClient client = HttpClients.createDefault();
       CloseableHttpResponse response = client.execute(httpPost);
-      TokenResponse tokenResponse = toResult(EntityUtils.toString(response.getEntity()), TokenResponse.class);
+      TokenResponse tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       // TODO: verify JWT has the desired permission vs what the user requested
       tokens.put(product, tokenResponse.getAccessToken());
       expirations.put(product, (int) (System.currentTimeMillis()/1000 + tokenResponse.getExpiresIn()));
