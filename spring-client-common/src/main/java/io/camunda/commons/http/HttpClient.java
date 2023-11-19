@@ -15,16 +15,16 @@ public interface HttpClient {
 
   void loadMap(Product product, Map<Class<?>, String> map);
 
-  <T> T get(Class<T> clazz, Long key);
+  <T> T get(Class<T> responseType, Long key);
 
-  <T> T get(Class<T> clazz, String id);
+  <T> T get(Class<T> responseType, String id);
 
-  <T, V, W> T get(Class<T> clazz, Class<V> vj, TypeToken<W> typeToken, Long key);
+  <T, V, W> T get(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, Long key);
 
-  <T> String getXml(Class<T> clazz, Long key);
+  <T> String getXml(Class<T> selector, Long key);
 
-  <T, V, W, U> T post(Class<T> clazz, Class<V> vj, TypeToken<W> typeToken, U body);
+  <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body);
 
-  <T, V> V delete(Class<T> clazz, Class<V> responseClass, Long key);
+  <T, V> V delete(Class<T> selector, Class<V> responseType, Long key);
 
 }
