@@ -1,5 +1,6 @@
 package io.camunda.commons.auth;
 
+import io.camunda.commons.exception.SdkException;
 import io.camunda.commons.json.JsonMapper;
 import io.camunda.commons.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -73,25 +74,20 @@ public class SaaSAuthentication extends JwtAuthentication {
   }
 
   private String getAudience(Product product) {
-    String audience = null;
     switch (product) {
       case OPERATE:
-        audience = "operate.camunda.io";
-        break;
+        return "operate.camunda.io";
       case TASKLIST:
-        audience = "tasklist.camunda.io";
-        break;
+        return "tasklist.camunda.io";
       case OPTIMIZE:
-        audience = "optimize.camunda.io";
-        break;
+        return "optimize.camunda.io";
       case CONSOLE:
-        audience = "console.camunda.io";
-        break;
+        return "console.camunda.io";
       case ZEEBE:
-        audience = "zeebe.camunda.io";
-        break;
+        return "zeebe.camunda.io";
+      default:
+        throw new SdkException("Unable to get audience because product is invalid");
     }
-    return audience;
   }
 
   @Override
