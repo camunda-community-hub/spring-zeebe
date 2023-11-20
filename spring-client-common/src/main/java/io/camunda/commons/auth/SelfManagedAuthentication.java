@@ -27,6 +27,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
 
   private String authUrl;
 
+  // TODO: Check with Identity about upcoming IDPs to abstract this
   private String keycloakRealm = "camunda-platform";
   private String keycloakUrl;
   private JwtConfig jwtConfig;
