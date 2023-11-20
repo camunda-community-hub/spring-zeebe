@@ -128,13 +128,13 @@ public class CommonClientConfigurationProperties {
       }
 
       if (keycloakUrl != null) {
-        return new SelfManagedAuthentication()
+        return SelfManagedAuthentication.builder()
           .jwtConfig(jwtConfig)
           .keycloakUrl(keycloakUrl)
           .keycloakRealm(keycloakRealm)
           .build();
       } else {
-        return new SaaSAuthentication()
+        return SaaSAuthentication.builder()
           .jwtConfig(jwtConfig)
           .build();
       }

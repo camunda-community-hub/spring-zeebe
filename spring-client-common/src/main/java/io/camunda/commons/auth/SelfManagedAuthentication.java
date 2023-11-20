@@ -26,6 +26,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String authUrl;
+
   private String keycloakRealm = "camunda-platform";
   private String keycloakUrl;
   private JwtConfig jwtConfig;
@@ -40,21 +41,20 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     expirations = new HashMap<>();
   }
 
-  public SelfManagedAuthentication jwtConfig(JwtConfig jwtConfig) {
-    this.jwtConfig = jwtConfig;
-    return this;
+  public static SelfManagedAuthenticationBuilder builder() {
+    return new SelfManagedAuthenticationBuilder();
   }
 
-  public SelfManagedAuthentication keycloakUrl(String keycloakUrl) {
+  public void setKeycloakRealm(String keycloakRealm) {
+    this.keycloakRealm = keycloakRealm;
+  }
+
+  public void setKeycloakUrl(String keycloakUrl) {
     this.keycloakUrl = keycloakUrl;
-    return this;
   }
 
-  public SelfManagedAuthentication keycloakRealm(String keycloakRealm) {
-    if (keycloakRealm != null) {
-      this.keycloakRealm = keycloakRealm;
-    }
-    return this;
+  public void setJwtConfig(JwtConfig jwtConfig) {
+    this.jwtConfig = jwtConfig;
   }
 
   @Override

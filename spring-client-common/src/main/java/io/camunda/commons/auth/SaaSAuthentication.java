@@ -34,9 +34,12 @@ public class SaaSAuthentication extends JwtAuthentication {
     expirations = new HashMap<>();
   }
 
-  public SaaSAuthentication jwtConfig(JwtConfig jwtConfig) {
+  public static SaaSAuthenticationBuilder builder() {
+    return new SaaSAuthenticationBuilder();
+  }
+
+  public void jwtConfig(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
-    return this;
   }
 
   @Override
