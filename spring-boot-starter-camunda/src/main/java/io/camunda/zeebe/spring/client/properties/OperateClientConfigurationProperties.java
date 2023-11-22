@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import io.camunda.zeebe.spring.client.properties.common.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.invoke.MethodHandles;
 
-@ConfigurationProperties
-public class OperateClientConfigurationProperties {
+@ConfigurationProperties(prefix = "operate.client")
+public class OperateClientConfigurationProperties extends Client {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

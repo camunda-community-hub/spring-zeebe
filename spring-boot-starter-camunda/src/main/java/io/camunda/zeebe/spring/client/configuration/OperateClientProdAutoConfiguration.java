@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.lang.invoke.MethodHandles;
 
-@ConditionalOnProperty(prefix = "camunda.operate.client", name = "enabled", havingValue = "true",  matchIfMissing = false)
+@ConditionalOnProperty(prefix = "operate.client", name = "enabled", havingValue = "true",  matchIfMissing = false)
 @ConditionalOnMissingBean(SpringZeebeTestContext.class)
 @EnableConfigurationProperties(OperateClientConfigurationProperties.class)
 public class OperateClientProdAutoConfiguration {
@@ -36,7 +36,6 @@ public class OperateClientProdAutoConfiguration {
   // TODO: Handle resiliency when connecting to Operate
   @Bean
   public CamundaOperateClient camundaOperateClient2(OperateClientConfigurationProperties props) {
-
     CamundaOperateClient client;
     try {
        client = new CamundaOperateClient.Builder()
