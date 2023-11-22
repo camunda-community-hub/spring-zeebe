@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.configuration;
 
-import io.camunda.commons.auth.Authentication;
+import io.camunda.common.auth.Authentication;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;

@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.configuration;
 
-import io.camunda.commons.auth.*;
+import io.camunda.common.auth.*;
 import io.camunda.zeebe.spring.client.properties.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
