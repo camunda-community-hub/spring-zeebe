@@ -14,11 +14,11 @@ on:
     types: [ published ]
 jobs:
   publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java environment
         uses: actions/setup-java@v3
