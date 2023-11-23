@@ -45,7 +45,7 @@
     <module>spring-boot-starter-camunda</module>
 
     <!--Plain Java dependent modules -->
-    <module>c8-sdk-java</module>
+    <module>camunda-sdk-java</module>
 
     <module>test/common</module>
     <module>test/embedded</module>

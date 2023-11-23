@@ -7,7 +7,7 @@
     <version>8.3.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>c8-sdk-java</artifactId>
+  <artifactId>camunda-sdk-java</artifactId>
   <packaging>pom</packaging>
 
   <dependencyManagement>
