@@ -35,7 +35,7 @@ public class OperateClientProdAutoConfiguration {
 
   // TODO: Handle resiliency when connecting to Operate
   @Bean
-  public CamundaOperateClient camundaOperateClient2(OperateClientConfigurationProperties props) {
+  public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
     CamundaOperateClient client;
     try {
        client = new CamundaOperateClient.Builder()

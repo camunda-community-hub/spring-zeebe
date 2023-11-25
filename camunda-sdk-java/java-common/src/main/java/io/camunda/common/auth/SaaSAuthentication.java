@@ -49,11 +49,11 @@ public class SaaSAuthentication extends JwtAuthentication {
     return this;
   }
 
-  private void retrieveToken(Product product, Credential credential) {
+  private void retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
       HttpPost httpPost = new HttpPost(authUrl);
       httpPost.addHeader("Content-Type", "application/json");
-      TokenRequest tokenRequest = new TokenRequest(getAudience(product), credential.clientId, credential.clientSecret);
+      TokenRequest tokenRequest = new TokenRequest(getAudience(product), jwtCredential.clientId, jwtCredential.clientSecret);
 
       httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
       CloseableHttpClient client = HttpClient.getInstance();
@@ -68,8 +68,8 @@ public class SaaSAuthentication extends JwtAuthentication {
   }
 
   private void retrieveToken(Product product) {
-    Credential credential = jwtConfig.getMap().get(product);
-    retrieveToken(product, credential);
+    JwtCredential jwtCredential = jwtConfig.getMap().get(product);
+    retrieveToken(product, jwtCredential);
   }
 
   private String getAudience(Product product) {

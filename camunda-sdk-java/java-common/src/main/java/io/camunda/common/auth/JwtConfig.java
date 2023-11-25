@@ -4,21 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Contains mapping between products and their credentials
+ * Contains mapping between products and their JWT credentials
  */
 public class JwtConfig {
 
-  private Map<Product, Credential> map;
+  private Map<Product, JwtCredential> map;
 
   public JwtConfig() {
     map = new HashMap<>();
   }
 
-  public void addProduct(Product product, Credential credential) {
-    map.put(product, credential);
+  public void addProduct(Product product, JwtCredential jwtCredential) {
+    map.put(product, jwtCredential);
   }
 
-  public Map<Product, Credential> getMap() {
+  public Map<Product, JwtCredential> getMap() {
     return map;
   }
 

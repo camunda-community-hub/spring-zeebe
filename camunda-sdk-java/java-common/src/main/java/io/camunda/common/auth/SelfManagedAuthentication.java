@@ -64,15 +64,15 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     return this;
   }
 
-  private void retrieveToken(Product product, Credential credential) {
+  private void retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
       HttpPost httpPost = new HttpPost(authUrl);
       httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
       Map<String, String> parameters = new HashMap<>();
       parameters.put("grant_type", "client_credentials");
-      parameters.put("client_id", credential.clientId);
-      parameters.put("client_secret", credential.clientSecret);
+      parameters.put("client_id", jwtCredential.clientId);
+      parameters.put("client_secret", jwtCredential.clientSecret);
 
       String form = parameters.entrySet()
         .stream()
@@ -99,8 +99,8 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   }
 
   private void retrieveToken(Product product) {
-    Credential credential = jwtConfig.getMap().get(product);
-    retrieveToken(product, credential);
+    JwtCredential jwtCredential = jwtConfig.getMap().get(product);
+    retrieveToken(product, jwtCredential);
   }
 
   @Override

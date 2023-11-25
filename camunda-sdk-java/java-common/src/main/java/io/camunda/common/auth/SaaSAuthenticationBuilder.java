@@ -4,8 +4,6 @@ public class SaaSAuthenticationBuilder {
 
   SaaSAuthentication saaSAuthentication;
 
-  public
-
   SaaSAuthenticationBuilder() {
     saaSAuthentication = new SaaSAuthentication();
   }
