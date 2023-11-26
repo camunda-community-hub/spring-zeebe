@@ -31,8 +31,7 @@ public class CommonClientConfiguration {
   @Bean
   public Authentication authentication() {
 
-    // check for at-least one existence, then its JWT based authentication
-    if ((zeebeClientConfigurationProperties.getCloud().getClientId() != null )) {
+    if (zeebeClientConfigurationProperties != null) {
       JwtConfig jwtConfig = new JwtConfig();
 
       if (zeebeClientConfigurationProperties.isEnabled()) {
@@ -97,7 +96,7 @@ public class CommonClientConfiguration {
         .simpleConfig(simpleConfig)
         .build();
     } else {
-      throw new UnsupportedOperationException("Can't determine authentication");
+      return new DefaultNoopAuthentication();
     }
   }
 }
