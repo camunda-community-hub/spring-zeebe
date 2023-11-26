@@ -27,14 +27,24 @@ public class DefaultHttpClient implements HttpClient {
 
   private String host = "";
   private String basePath = "";
-  private Map<Product, Map<Class<?>, String>> productMap = new HashMap<>();
-  private CloseableHttpClient httpClient = HttpClients.createDefault();
-  private Authentication authentication;
+  private final Map<Product, Map<Class<?>, String>> productMap;
+  private final CloseableHttpClient httpClient;
+  private final Authentication authentication;
 
-  private JsonMapper jsonMapper = new SdkObjectMapper();
+  private final JsonMapper jsonMapper;
 
   public DefaultHttpClient(Authentication authentication) {
     this.authentication = authentication;
+    this.httpClient = HttpClients.createDefault();
+    this.jsonMapper = new SdkObjectMapper();
+    this.productMap = new HashMap<>();
+  }
+
+  public DefaultHttpClient(Authentication authentication, CloseableHttpClient httpClient, JsonMapper jsonMapper, Map<Product, Map<Class<?>, String>> productMap) {
+    this.authentication = authentication;
+    this.httpClient = httpClient;
+    this.jsonMapper = jsonMapper;
+    this.productMap = productMap;
   }
 
   @Override
@@ -141,7 +151,6 @@ public class DefaultHttpClient implements HttpClient {
       CloseableHttpResponse response = httpClient.execute(httpDelete);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
-      boolean f = false;
     } catch (Exception e) {
       e.printStackTrace();
     }

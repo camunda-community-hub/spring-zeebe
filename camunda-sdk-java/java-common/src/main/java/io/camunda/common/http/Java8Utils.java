@@ -39,13 +39,4 @@ public class Java8Utils {
       }
     }
   }
-
-  public static Map<Class<?>, String> toMap(Object... array) {
-    AbstractMap.SimpleEntry<Class<?>, String>[] entryArray = new AbstractMap.SimpleEntry[array.length/2];
-    for(int i=0;i<entryArray.length;i++) {
-      entryArray[i]= new  AbstractMap.SimpleEntry<Class<?>, String>((Class<?>)array[i*2], (String) array[i*2+1]);
-    }
-    return Stream.of(entryArray)
-      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-  }
 }
