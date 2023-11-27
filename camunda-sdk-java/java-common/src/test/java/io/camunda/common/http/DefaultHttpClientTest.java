@@ -89,7 +89,7 @@ public class DefaultHttpClientTest {
     when(chClient.execute(any(HttpDelete.class))).thenReturn(response);
     when(authentication.getTokenHeader(any())).thenReturn(new AbstractMap.SimpleEntry<>("key", "value"));
     when(response.getEntity().getContent()).thenReturn(new ByteArrayInputStream("{\"name\" : \"test-name\"}".getBytes()));
-    MyResponseClass parsedResponse = defaultHttpClient.delete(MySelectorClass.class, MyResponseClass.class, 123L);
+    MyResponseClass parsedResponse = defaultHttpClient.delete(MyResponseClass.class, MySelectorClass.class, 123L);
 
     // then
     assertTrue(new ReflectionEquals(expectedOutput).matches(parsedResponse));

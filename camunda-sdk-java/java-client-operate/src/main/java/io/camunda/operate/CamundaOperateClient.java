@@ -93,7 +93,7 @@ public class CamundaOperateClient {
   }
 
   public ChangeStatus deleteProcessInstance(Long key) throws OperateException {
-    return httpClient.delete(ProcessInstance.class, ChangeStatus.class, key);
+    return httpClient.delete(ChangeStatus.class, ProcessInstance.class, key);
   }
 
   public List<FlowNodeStatistics> getFlowNodeStatistics(Long key) throws OperateException {

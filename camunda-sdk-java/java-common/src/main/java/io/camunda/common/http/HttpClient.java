@@ -24,6 +24,6 @@ public interface HttpClient {
 
   <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body);
 
-  <T, V> V delete(Class<T> selector, Class<V> responseType, Long key);
+  <T, V> T delete(Class<T> responseType, Class<V> selector, Long key);
 
 }

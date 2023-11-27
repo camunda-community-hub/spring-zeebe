@@ -14,7 +14,10 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +27,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Default Http Client powered by Apache HttpClient
  */
 public class DefaultHttpClient implements HttpClient {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String host = "";
   private String basePath = "";
@@ -74,7 +79,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Failed getting responseType {}, id {} due to {}", responseType, id, e.getMessage());
     }
     return resp;
   }
@@ -100,7 +105,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Failed getting responseType {}, parameterType {}, selector {}, id {} due to {}", responseType, parameterType, selector, id, e.getMessage());
     }
     return resp;
   }
@@ -116,7 +121,7 @@ public class DefaultHttpClient implements HttpClient {
       CloseableHttpResponse response = httpClient.execute(httpGet);
       xml = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Failed getting selector {}, key {} due to {}", selector, key, e.getMessage());
     }
     return xml;
   }
@@ -135,24 +140,24 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Failed getting responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
     }
     return resp;
   }
 
   @Override
-  public <T, V> V delete(Class<T> selector, Class<V> responseType, Long key) {
+  public <T, V> T delete(Class<T> responseType, Class<V> selector, Long key) {
     String resourcePath = retrievePath(selector) + "/" + key;
     String url = host + basePath + resourcePath;
     HttpDelete httpDelete = new HttpDelete(url);
     httpDelete.addHeader(retrieveToken(selector));
-    V resp = null;
+    T resp = null;
     try {
       CloseableHttpResponse response = httpClient.execute(httpDelete);
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Failed getting responseType {}, selector {}, key {}, due to {}", responseType, selector, key, e.getMessage());
     }
     return resp;
   }
