@@ -55,6 +55,15 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- breaking change, remove once Netty is fixed https://github.com/grpc/grpc-java/issues/10707 -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>4.1.100.Final</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
