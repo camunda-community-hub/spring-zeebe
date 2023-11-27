@@ -21,7 +21,7 @@
 
     <zeebe.version>8.3.3</zeebe.version>
 
-    <spring-boot.version>3.1.5</spring-boot.version>
+    <spring-boot.version>3.2.0</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.1.0</resilience4j.version>
     <jackson.version>2.16.0</jackson.version>
@@ -59,6 +59,15 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Breaking changes, overwrite BOM until upstream is fixed-->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>4.1.100.Final</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
