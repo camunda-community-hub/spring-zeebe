@@ -20,7 +20,6 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.3.3</zeebe.version>
-    <operate-client.version>8.3.0.1</operate-client.version>
 
     <spring-boot.version>3.1.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -45,12 +44,17 @@
     <!-- Spring Boot dependent modules -->
     <module>spring-boot-starter-camunda</module>
 
+    <!--Plain Java dependent modules -->
+    <module>camunda-sdk-java</module>
+
     <module>test/common</module>
     <module>test/embedded</module>
     <module>test/testcontainer</module>
 
     <module>example</module>
     <module>legacy</module>
+
+
   </modules>
 
   <dependencyManagement>
@@ -68,11 +72,6 @@
         <version>${zeebe.version}</version>
         <scope>import</scope>
         <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda</groupId>
-        <artifactId>camunda-operate-client-java</artifactId>
-        <version>${operate-client.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
@@ -97,6 +96,16 @@
       <dependency>
         <groupId>io.camunda.spring</groupId>
         <artifactId>spring-client-zeebe</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.spring</groupId>
+        <artifactId>java-client-operate</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda.spring</groupId>
+        <artifactId>spring-client-console</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

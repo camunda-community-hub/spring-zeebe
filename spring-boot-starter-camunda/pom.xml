@@ -34,18 +34,16 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>camunda-operate-client-java</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>java-client-operate</artifactId>
     </dependency>
     <dependency>
       <groupId>io.github.resilience4j</groupId>
       <artifactId>resilience4j-retry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>spring-client-common</artifactId>
     </dependency>
     <!-- Make sure slf4j (transitive dependency of resilience4j is on the classpath in the version compatible with Spring boot
     (not specifying a version here means it is taken from the Spring BOM pulled in on root level
