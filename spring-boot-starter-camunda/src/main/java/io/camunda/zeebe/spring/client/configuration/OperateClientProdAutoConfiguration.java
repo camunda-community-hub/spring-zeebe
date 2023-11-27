@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.configuration;
 
 import io.camunda.common.auth.Authentication;
 import io.camunda.operate.CamundaOperateClient;
+import io.camunda.operate.CamundaOperateClientBuilder;
 import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class OperateClientProdAutoConfiguration {
   public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
     CamundaOperateClient client;
     try {
-       client = new CamundaOperateClient.Builder()
+       client = new CamundaOperateClientBuilder()
          .authentication(authentication)
          .operateUrl(props.getOperateUrl())
          .setup()

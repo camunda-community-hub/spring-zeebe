@@ -79,7 +79,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
     } catch (Exception e) {
-      LOG.error("Failed getting responseType {}, id {} due to {}", responseType, id, e.getMessage());
+      LOG.error("Failed GET with responseType {}, id {} due to {}", responseType, id, e.getMessage());
     }
     return resp;
   }
@@ -105,7 +105,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
-      LOG.error("Failed getting responseType {}, parameterType {}, selector {}, id {} due to {}", responseType, parameterType, selector, id, e.getMessage());
+      LOG.error("Failed GET with responseType {}, parameterType {}, selector {}, id {} due to {}", responseType, parameterType, selector, id, e.getMessage());
     }
     return resp;
   }
@@ -121,7 +121,7 @@ public class DefaultHttpClient implements HttpClient {
       CloseableHttpResponse response = httpClient.execute(httpGet);
       xml = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
     } catch (Exception e) {
-      LOG.error("Failed getting selector {}, key {} due to {}", selector, key, e.getMessage());
+      LOG.error("Failed GET with selector {}, key {} due to {}", selector, key, e.getMessage());
     }
     return xml;
   }
@@ -140,7 +140,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType, parameterType);
     } catch (Exception e) {
-      LOG.error("Failed getting responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
+      LOG.error("Failed POST with responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
     }
     return resp;
   }
@@ -157,7 +157,7 @@ public class DefaultHttpClient implements HttpClient {
       String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
     } catch (Exception e) {
-      LOG.error("Failed getting responseType {}, selector {}, key {}, due to {}", responseType, selector, key, e.getMessage());
+      LOG.error("Failed DELETE with responseType {}, selector {}, key {}, due to {}", responseType, selector, key, e.getMessage());
     }
     return resp;
   }
