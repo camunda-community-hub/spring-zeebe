@@ -4,7 +4,7 @@ import io.camunda.operate.model.ProcessDefinition;
 
 public class ProcessDefinitionFilter extends ProcessDefinition implements Filter {
 
-  public ProcessDefinitionFilterBuilder builder() {
+  public static ProcessDefinitionFilterBuilder builder() {
     return new ProcessDefinitionFilterBuilder();
   }
 

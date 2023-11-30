@@ -4,6 +4,6 @@ import io.camunda.operate.model.DecisionRequirements;
 
 public class DecisionRequirementsFilter extends DecisionRequirements implements Filter {
 
-  public DecisionRequirementsFilterBuilder builder() { return new DecisionRequirementsFilterBuilder(); }
+  public static DecisionRequirementsFilterBuilder builder() { return new DecisionRequirementsFilterBuilder(); }
 
 }
