@@ -4,7 +4,7 @@ import io.camunda.operate.model.DecisionDefinition;
 
 public class DecisionDefinitionFilter extends DecisionDefinition implements Filter {
 
-  public DecisionDefinitionFilterBuilder builder() {
+  public static DecisionDefinitionFilterBuilder builder() {
     return new DecisionDefinitionFilterBuilder();
   }
 

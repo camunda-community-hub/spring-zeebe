@@ -16,6 +16,10 @@ public class CamundaOperateClient {
 
   private HttpClient httpClient;
 
+  public static CamundaOperateClientBuilder builder() {
+    return new CamundaOperateClientBuilder();
+  }
+
   public ProcessDefinition getProcessDefinition(Long key) throws OperateException {
     return httpClient.get(ProcessDefinition.class, key);
   }
