@@ -13,7 +13,7 @@ This project allows to leverage Zeebe, Operate, Optimize, Tasklist, Console and 
 
 **Getting Started**
 
--   [ Exciting News ](#Exciting-News:-Evolution-of-Spring-Zeebe-into-a-Camunda-Spring-SDK)
+-   [ Exciting News ](#exciting-news-evolution-of-spring-zeebe-into-a-camunda-spring-sdk)
 -   [ Version Compatibility ](#version-compatibility)
 -   [ Examples ](#examples)
 -   [ Quickstart ](#quickstart)
