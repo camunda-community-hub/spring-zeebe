@@ -347,6 +347,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     private String clientId;
     private String clientSecret;
     private String region = "bru-2";
+    private String scope;
 
     private String baseUrl = "zeebe.camunda.io";
     private String authUrl = "https://login.cloud.camunda.io/oauth/token";
@@ -383,6 +384,13 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
     public void setRegion(final String region) {
       this.region = region;
+    }
+    public String getScope() {
+      return scope;
+    }
+
+    public void setScope(String scope) {
+      this.scope = scope;
     }
 
     public String getBaseUrl() {
@@ -757,6 +765,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
         .clientId(cloud.clientId)
         .clientSecret(cloud.clientSecret)
         .audience(cloud.getAudience())
+        .scope(cloud.getScope())
         .authorizationServerUrl(cloud.authUrl)
         .credentialsCachePath(cloud.credentialsCachePath)
         .build();
