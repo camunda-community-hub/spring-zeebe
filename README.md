@@ -1,16 +1,19 @@
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community) ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce) [![](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#stable-)
 
-# Spring Zeebe
+# Spring Zeebe -> Camunda Spring SDK
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-This project allows to leverage Zeebe (the orchestration engine that comes as part of Camunda Platform 8) within your Spring or Spring Boot environment easily. It is basically a wrapper around the [Zeebe Java Client](https://docs.camunda.io/docs/product-manuals/clients/java-client).
+Spring Zeebe will slowly evolve towards Camunda Spring SDK. 
+
+This project allows to leverage Zeebe, Operate, Optimize, Tasklist, Console and Modeler within your Spring or Spring Boot environment easily.
 
 ## Table of Contents
 
 **Getting Started**
 
+-   [ Exciting News ](#version-compatibility)
 -   [ Version Compatibility ](#version-compatibility)
 -   [ Examples ](#examples)
 -   [ Quickstart ](#quickstart)
@@ -20,6 +23,7 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 -   [ Implement Job Worker ](#implement-job-worker)
 -   [ Writing test cases ](#writing-test-cases)
 -   [ Run Connectors ](#run-connectors)
+-   [ Connect to Operate ](#connect-to-operate)
 
 **Documentation**
 
@@ -29,17 +33,26 @@ This project allows to leverage Zeebe (the orchestration engine that comes as pa
 
 # Getting Started
 
+## Exciting News: Evolution of  Spring-Zeebe into a Camunda Spring SDK
+
+This SDK will support all Camunda Products (Zeebe, Operate, Tasklist, etc) in a unified way. 
+
+What to expect in the coming months:
+- Each product will be slowly added
+- Documentation resources, and examples
+
 ## Version Compatibility
 
 | Spring Zeebe version | JDK   | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|--------------------------|-----------------------------|-----------------------------|
-| >= 8.3.0             | >= 17 | 8.3.1                    | 2.7.7  | >= 2.7.x, 3.x.x             |
-| >= 8.3.0             | >= 8  | 8.3.1                    | 2.7.7  | >= 2.7.x                    |
-| >= 8.2.4             | >= 17 | 8.2.4                    | 2.7.7  | >= 2.7.x, 3.x.x             |
-| >= 8.2.4             | >= 8  | 8.2.4                    | 2.7.7  | >= 2.7.x                    |
-| >= 8.1.15            | >= 17 | 8.1.x                    | 2.7.7  | >= 2.7.6, 3.x.x             |
-| >= 8.1.15            | >= 8  | 8.1.x                    | 2.7.7  | >= 2.7.6                    |
-| <= 8.1.14            | >= 8  | 8.1.x                    | 2.7.5  | = 2.7.x                     |
+| >= 8.3.3             | >= 17 | 8.3.3                    | 3.2.0                       | >= 2.7.x, 3.x.x             |
+| >= 8.3.0             | >= 17 | 8.3.1                    | 2.7.7                       | >= 2.7.x, 3.x.x             |
+| >= 8.3.0             | >= 8  | 8.3.1                    | 2.7.7                       | >= 2.7.x                    |
+| >= 8.2.4             | >= 17 | 8.2.4                    | 2.7.7                       | >= 2.7.x, 3.x.x             |
+| >= 8.2.4             | >= 8  | 8.2.4                    | 2.7.7                       | >= 2.7.x                    |
+| >= 8.1.15            | >= 17 | 8.1.x                    | 2.7.7                       | >= 2.7.6, 3.x.x             |
+| >= 8.1.15            | >= 8  | 8.1.x                    | 2.7.7                       | >= 2.7.6                    |
+| <= 8.1.14            | >= 8  | 8.1.x                    | 2.7.5                       | = 2.7.x                     |
 
 ## Examples
 
@@ -126,6 +139,20 @@ You can enforce the right connection mode, for example if multiple contradicting
 ```properties
 zeebe.client.connection-mode=CLOUD
 zeebe.client.connection-mode=ADDRESS
+```
+
+You can also configure other components like Operate. If you use different credentials for different components:
+
+```properties
+operate.client.clientId=xxx
+operate.client.clientSecret=xxx
+```
+
+Otherwise if you use same credentials across all components:
+
+```properties
+common.clientId=xxx
+common.clientSecret=xxx
 ```
 
 ## Connect to Zeebe
@@ -230,6 +257,15 @@ If you have previously used the pure Spring Zeebe project to run Connectors, you
 
 You can find the latest version of Connectors on [this page](https://github.com/camunda/connectors/releases).
 Consult the [Connector SDK](https://github.com/camunda/connectors/tree/main/connector-sdk/core#connector-core) for details on Connectors in general.
+
+## Connect to Operate
+
+You can inject the CamundaOperateClient and work with it, e.g. to getting and searching process instances:
+
+```java
+@Autowired
+private CamundaOperateClient client;
+```
 
 # Documentation
 
