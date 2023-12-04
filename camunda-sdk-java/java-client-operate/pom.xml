@@ -14,6 +14,10 @@
         <groupId>io.camunda.spring</groupId>
         <artifactId>java-common</artifactId>
       </dependency>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bpmn-model</artifactId>
+      </dependency>
     </dependencies>
 
     <properties>
