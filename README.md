@@ -7,20 +7,20 @@
 
 Spring Zeebe will slowly evolve towards Camunda Spring SDK. 
 
-This project allows to leverage Zeebe, Operate, Optimize, Tasklist, Console and Modeler within your Spring or Spring Boot environment easily.
+This project allows you to leverage Zeebe, Operate, Optimize, Tasklist, Console, and Modeler within your Spring or Spring Boot environment.
 
 ## Table of Contents
 
 **Getting Started**
 
--   [ Exciting News ](#exciting-news-evolution-of-spring-zeebe-into-a-camunda-spring-sdk)
--   [ Version Compatibility ](#version-compatibility)
+-   [ Exciting news ](#exciting-news-evolution-of-spring-zeebe-into-a-camunda-spring-sdk)
+-   [ Version compatibility ](#version-compatibility)
 -   [ Examples ](#examples)
 -   [ Quickstart ](#quickstart)
--   [ Add Spring Boot Starter to Your Project](#add-spring-boot-starter-to-your-project)
--   [ Configuring Camunda Platform 8 SaaS Connection ](#configuring-camunda-platform-8-saas-connection)
+-   [ Add Spring Boot Starter to your project](#add-spring-boot-starter-to-your-project)
+-   [ Configuring Camunda 8 SaaS connection ](#configuring-camunda-8-saas-connection)
 -   [ Connect to Zeebe ](#connect-to-zeebe)
--   [ Implement Job Worker ](#implement-job-worker)
+-   [ Implement job worker ](#implement-job-worker)
 -   [ Writing test cases ](#writing-test-cases)
 -   [ Run Connectors ](#run-connectors)
 -   [ Connect to Operate ](#connect-to-operate)
@@ -28,22 +28,23 @@ This project allows to leverage Zeebe, Operate, Optimize, Tasklist, Console and 
 **Documentation**
 
 -   [ Job worker configuration options ](#job-worker-configuration-options)
--   [ Additional Configuration Options ](#additional-configuration-options)
+-   [ Additional configuration options ](#additional-configuration-options)
 -   [ Observing metrics ](#observing-metrics)
 
-# Getting Started
+# Getting started
 
-## Exciting News: Evolution of Spring-Zeebe into a Camunda Spring SDK
+## Exciting news: Evolution of Spring-Zeebe into a Camunda Spring SDK
 
 This SDK will support all Camunda Products (Zeebe, Operate, Tasklist, etc) in a unified way. 
 
 What to expect in the coming months:
+
 - Each product will be slowly added
-- Documentation resources, and examples
+- Documentation resources and examples
 
-## Version Compatibility
+## Version compatibility
 
-| Spring Zeebe version | JDK   | Camunda Platform version | Bundled Spring Boot version | Compatible Spring Boot versions |
+| Spring Zeebe version | JDK   | Camunda version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|--------------------------|-----------------------------|-----------------------------|
 | >= 8.3.3             | >= 17 | 8.3.3                    | 3.2.0                       | >= 2.7.x, 3.x.x             |
 | >= 8.3.0             | >= 17 | 8.3.1                    | 2.7.7                       | >= 2.7.x, 3.x.x             |
@@ -56,12 +57,13 @@ What to expect in the coming months:
 
 ## Examples
 
-There are full examples, including test cases, are available here: [Twitter Review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [example/](example/) folder.
+Full examples, including test cases, are available here: [Twitter review example](https://github.com/camunda-community-hub/camunda-cloud-examples/tree/main/twitter-review-java-springboot), [process solution template](https://github.com/camunda-community-hub/camunda-8-process-solution-template). Further, you might want to have a look into the [example/](example/) folder.
 
 ## Quickstart
-Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), or open a pre-existing one you already have, or simply fork our [Camunda Platform 8 Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template).
 
-## Add Spring Boot Starter to Your Project
+Create a new Spring Boot project (e.g. using [Spring initializr](https://start.spring.io/)), open a pre-existing one you already have, or fork our [Camunda 8 Process Solution Template](https://github.com/camunda-community-hub/camunda-8-process-solution-template).
+
+## Add Spring Boot Starter to your project
 
 Add the following Maven dependency to your Spring Boot Starter project:
 
@@ -73,7 +75,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 </dependency>
 ```
 
-Although Spring Zeebe has a transitive dependency to the [Zeebe Java Client](https://docs.camunda.io/docs/apis-clients/java-client/), you could also add a direct dependency if you need to specify the concrete version in your `pom.xml` (even this is rarely necessary):
+Although Spring Zeebe has a transitive dependency to the [Zeebe Java client](https://docs.camunda.io/docs/apis-clients/java-client/), you could also add a direct dependency if you need to specify the concrete version in your `pom.xml` (even this is rarely necessary):
 
 ```xml
 <dependency>
@@ -116,9 +118,9 @@ If using Intellij:
 Settings > Build, Execution, Deployment > Compiler > Java Compiler
 ```
 
-## Configuring Camunda Platform 8 SaaS Connection
+## Configuring Camunda 8 SaaS connection
 
-Connections to the Camunda SaaS can be easily configured, create the following entries in your `src/main/resources/application.properties`:
+Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.properties`:
 
 ```properties
 zeebe.client.cloud.clusterId=xxx
@@ -127,7 +129,7 @@ zeebe.client.cloud.clientSecret=xxx
 zeebe.client.cloud.region=bru-2
 ```
 
-You can also configure the connection to a self-managed Zeebe broker:
+You can also configure the connection to a Self-Managed Zeebe broker:
 
 ```properties
 zeebe.client.broker.gateway-address=127.0.0.1:26500
@@ -148,7 +150,7 @@ operate.client.clientId=xxx
 operate.client.clientSecret=xxx
 ```
 
-Otherwise if you use same credentials across all components:
+Otherwise, if you use same credentials across all components:
 
 ```properties
 common.clientId=xxx
@@ -164,7 +166,7 @@ You can inject the ZeebeClient and work with it, e.g. to create new workflow ins
 private ZeebeClient client;
 ```
 
-## Deploy Process Models
+## Deploy process models
 
 Use the `@Deployment` annotation:
 
@@ -185,7 +187,7 @@ or define wildcard patterns:
 @Deployment(resources = "classpath*:/bpmn/**/*.bpmn")
 ```
 
-## Implement Job Worker
+## Implement job worker
 
 ```java
 @JobWorker(type = "foo")
@@ -194,11 +196,11 @@ public void handleJobFoo(final ActivatedJob job) {
 }
 ```
 
-See documentation below for a more in-depth discussion on parameters and configuration options of JobWorkers.
+See documentation below for a more in-depth discussion on parameters and configuration options of job workers.
 
 ## Writing test cases
 
-You can startup an in-memory test engine and do assertions by adding this Maven dependency:
+You can start up an in-memory test engine and do assertions by adding this Maven dependency:
 
 ```xml
 <dependency>
@@ -209,7 +211,7 @@ You can startup an in-memory test engine and do assertions by adding this Maven 
 </dependency>
 ```
 
-Note that **the test engines requires Java version >= 17**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a docker installation locally available on the developer machine. Use this dependency:
+Note that **the test engines requires Java version >= 17**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a Docker installation locally available on the developer machine. Use this dependency:
 
 ```xml
 <!--
@@ -225,7 +227,7 @@ Note that **the test engines requires Java version >= 17**. If you cannot run on
 ```
 Using Maven profiles you can also [switch the test dependencies based on the available Java version](https://github.com/camunda-community-hub/camunda-8-process-solution-template/commit/128be0ead988404c5c746ae96b47fe1138bf2a83).
 
-Then you need to startup the test engine in your test case by adding `@ZeebeSpringTest`
+Then, start up the test engine in your test case by adding `@ZeebeSpringTest`
 
 ```java
 @SpringBootTest
@@ -235,8 +237,6 @@ public class TestMyProcess {
 ```
 
 An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
-
-
 
 ## Run Connectors
 
@@ -269,10 +269,9 @@ private CamundaOperateClient client;
 
 # Documentation
 
-
 ## Job worker configuration options
 
-### Job Type
+### Job type
 
 You can configure the job type via the `JobWorker` annotation:
 
@@ -362,9 +361,6 @@ public void handleJobFoo(final ActivatedJob job) {
   // ...
 }
 ```
-
-
-
 
 ### Auto-completing jobs
 
