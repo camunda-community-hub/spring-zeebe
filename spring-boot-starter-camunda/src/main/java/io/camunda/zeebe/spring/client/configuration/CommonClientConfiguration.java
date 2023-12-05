@@ -85,9 +85,9 @@ public class CommonClientConfiguration {
           .jwtConfig(jwtConfig)
           .build();
       }
-    } else if (commonConfigurationProperties != null && commonConfigurationProperties.getUser() != null) {
+    } else if (commonConfigurationProperties != null && commonConfigurationProperties.getUsername() != null) {
       SimpleConfig simpleConfig = new SimpleConfig();
-      SimpleCredential common = new SimpleCredential(commonConfigurationProperties.getUser(), commonConfigurationProperties.getPassword());
+      SimpleCredential common = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
       simpleConfig.addProduct(Product.OPERATE, common);
       simpleConfig.addProduct(Product.CONSOLE, common);
       simpleConfig.addProduct(Product.OPTIMIZE, common);
