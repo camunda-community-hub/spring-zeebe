@@ -1,6 +1,5 @@
 package io.camunda.zeebe.spring.client.properties;
 
-import com.google.common.collect.Lists;
 import io.camunda.zeebe.client.ClientProperties;
 import io.camunda.zeebe.client.CredentialsProvider;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
@@ -681,6 +680,11 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
   @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
     return defaultJobWorkerStreamEnabled;
+  }
+
+  @Override
+  public boolean useDefaultRetryPolicy() {
+    return false;
   }
 
   public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
