@@ -46,7 +46,8 @@ What to expect in the coming months:
 
 | Spring Zeebe version | JDK   | Camunda version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|-----------------|-----------------------------|-----------------------------|
-| >= 8.3.3             | >= 17 | 8.3.3           | 3.2.0                       | >= 2.7.x, 3.x.x             |
+| >= 8.4.0             | >= 21 | 8.4.0           | 3.2.0                       | >= 2.7.x, 3.x.x             |
+| >= 8.3.4             | >= 17 | 8.3.4           | 3.2.0                       | >= 2.7.x, 3.x.x             |
 | >= 8.3.0             | >= 17 | 8.3.1           | 2.7.7                       | >= 2.7.x, 3.x.x             |
 | >= 8.3.0             | >= 8  | 8.3.1           | 2.7.7                       | >= 2.7.x                    |
 | >= 8.2.4             | >= 17 | 8.2.4           | 2.7.7                       | >= 2.7.x, 3.x.x             |
@@ -71,7 +72,7 @@ Add the following Maven dependency to your Spring Boot Starter project:
 <dependency>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda</artifactId>
-  <version>8.3.1</version>
+  <version>8.4.0</version>
 </dependency>
 ```
 
@@ -81,7 +82,7 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java client](htt
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-client-java</artifactId>
-  <version>8.3.1</version>
+  <version>8.4.0</version>
 </dependency>
 ```
 
