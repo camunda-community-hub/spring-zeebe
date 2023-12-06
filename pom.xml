@@ -13,13 +13,13 @@
 
   <properties>
     <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
-    <version.java>8</version.java>
+    <version.java>21</version.java>
     <java.version>${version.java}</java.version>
 
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.3.4</zeebe.version>
+    <zeebe.version>8.4.0-alpha2</zeebe.version>
 
     <spring-boot.version>3.2.0</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
