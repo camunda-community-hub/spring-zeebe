@@ -42,32 +42,32 @@ public class CommonClientConfiguration {
         }
       }
 
-      if (operateClientConfigurationProperties != null && operateClientConfigurationProperties.getEnabled()) {
-        if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null) {
+      if (operateClientConfigurationProperties != null) {
+        if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null && operateClientConfigurationProperties.getEnabled()) {
           jwtConfig.addProduct(Product.OPERATE, new JwtCredential(operateClientConfigurationProperties.getClientId(), operateClientConfigurationProperties.getClientSecret()));
         } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.OPERATE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
         }
       }
 
-      if (consoleClientConfigurationProperties != null && consoleClientConfigurationProperties.getEnabled()) {
-        if (consoleClientConfigurationProperties.getClientId() != null && consoleClientConfigurationProperties.getClientSecret() != null) {
+      if (consoleClientConfigurationProperties != null) {
+        if (consoleClientConfigurationProperties.getClientId() != null && consoleClientConfigurationProperties.getClientSecret() != null && consoleClientConfigurationProperties.getEnabled()) {
           jwtConfig.addProduct(Product.CONSOLE, new JwtCredential(consoleClientConfigurationProperties.getClientId(), consoleClientConfigurationProperties.getClientSecret()));
         } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.CONSOLE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
         }
       }
 
-      if (optimizeClientConfigurationProperties != null && optimizeClientConfigurationProperties.getEnabled()) {
-        if (optimizeClientConfigurationProperties.getClientId() != null && optimizeClientConfigurationProperties.getClientSecret() != null) {
+      if (optimizeClientConfigurationProperties != null) {
+        if (optimizeClientConfigurationProperties.getClientId() != null && optimizeClientConfigurationProperties.getClientSecret() != null && optimizeClientConfigurationProperties.getEnabled()) {
           jwtConfig.addProduct(Product.OPTIMIZE, new JwtCredential(optimizeClientConfigurationProperties.getClientId(), optimizeClientConfigurationProperties.getClientSecret()));
         } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.OPTIMIZE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
         }
       }
 
-      if (tasklistClientConfigurationProperties != null && tasklistClientConfigurationProperties.getEnabled()) {
-        if (tasklistClientConfigurationProperties.getClientId() != null && tasklistClientConfigurationProperties.getClientSecret() != null) {
+      if (tasklistClientConfigurationProperties != null) {
+        if (tasklistClientConfigurationProperties.getClientId() != null && tasklistClientConfigurationProperties.getClientSecret() != null && tasklistClientConfigurationProperties.getEnabled()) {
           jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(tasklistClientConfigurationProperties.getClientId(), tasklistClientConfigurationProperties.getClientSecret()));
         } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
@@ -85,9 +85,9 @@ public class CommonClientConfiguration {
           .jwtConfig(jwtConfig)
           .build();
       }
-    } else if (commonConfigurationProperties != null && commonConfigurationProperties.getUser() != null) {
+    } else if (commonConfigurationProperties != null && commonConfigurationProperties.getUsername() != null) {
       SimpleConfig simpleConfig = new SimpleConfig();
-      SimpleCredential common = new SimpleCredential(commonConfigurationProperties.getUser(), commonConfigurationProperties.getPassword());
+      SimpleCredential common = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
       simpleConfig.addProduct(Product.OPERATE, common);
       simpleConfig.addProduct(Product.CONSOLE, common);
       simpleConfig.addProduct(Product.OPTIMIZE, common);

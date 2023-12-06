@@ -4,6 +4,6 @@ import io.camunda.operate.model.ProcessInstance;
 
 public class ProcessInstanceFilter extends ProcessInstance implements Filter {
 
-  public ProcessInstanceFilterBuilder builder() { return new ProcessInstanceFilterBuilder(); }
+  public static ProcessInstanceFilterBuilder builder() { return new ProcessInstanceFilterBuilder(); }
 
 }

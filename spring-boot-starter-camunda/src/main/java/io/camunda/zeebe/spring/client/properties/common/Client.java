@@ -4,7 +4,7 @@ public class Client {
 
   private String clientId;
   private String clientSecret;
-  private String user;
+  private String username;
   private String password;
   private Boolean enabled;
 
@@ -24,12 +24,12 @@ public class Client {
     this.clientSecret = clientSecret;
   }
 
-  public String getUser() {
-    return user;
+  public String getUsername() {
+    return username;
   }
 
-  public void setUser(String user) {
-    this.user = user;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public String getPassword() {

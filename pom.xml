@@ -8,7 +8,7 @@
   </parent>
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-client-root</artifactId>
-  <version>8.3.2-SNAPSHOT</version>
+  <version>8.3.2-rc5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -19,7 +19,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.3.3</zeebe.version>
+    <zeebe.version>8.3.4</zeebe.version>
 
     <spring-boot.version>3.2.0</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -59,11 +59,11 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Breaking changes, overwrite BOM until upstream is fixed-->
+      <!-- Overwrite BOM until upstream is fixed-->
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>4.1.100.Final</version>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>1.60.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -81,6 +81,11 @@
         <version>${zeebe.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bpmn-model</artifactId>
+        <version>${zeebe.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>

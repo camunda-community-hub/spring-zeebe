@@ -1,23 +1,37 @@
 package io.camunda.operate;
 
-import io.camunda.common.auth.Authentication;
-import io.camunda.common.auth.Product;
-import io.camunda.common.http.DefaultHttpClient;
 import io.camunda.common.http.HttpClient;
 import io.camunda.operate.exception.OperateException;
 import io.camunda.operate.model.*;
 import io.camunda.operate.search.SearchQuery;
+import io.camunda.zeebe.model.bpmn.Bpmn;
+import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 
-import java.util.HashMap;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 public class CamundaOperateClient {
 
   private HttpClient httpClient;
 
+  public static CamundaOperateClientBuilder builder() {
+    return new CamundaOperateClientBuilder();
+  }
+
   public ProcessDefinition getProcessDefinition(Long key) throws OperateException {
     return httpClient.get(ProcessDefinition.class, key);
+  }
+
+  public BpmnModelInstance getProcessDefinitionModel(Long key) throws OperateException {
+    String xml = getProcessDefinitionXml(key);
+    try {
+        InputStream processInputStream = new ByteArrayInputStream(
+          xml.getBytes());
+        return Bpmn.readModelFromStream(processInputStream);
+    } catch (Exception e) {
+      throw new OperateException(e);
+    }
   }
 
   public String getProcessDefinitionXml(Long key) throws OperateException {
