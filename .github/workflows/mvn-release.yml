@@ -1,15 +1,16 @@
-# If this workflow is triggered by a push to $default_branch, it
+# If this workflow is triggered by a push to either main or release branches then it
 #        deploys a SNAPSHOT
 # If this workflow is triggered by publishing a Release, it
 #        deploys a RELEASE with the selected version
 #        updates the project version by incrementing the patch version
-#        commits the version update change to the repository's default branch.
+#        commits the version update change to the repository's branch that triggered the workflow.
 name: Deploy artifacts with Maven
 
 on:
   push:
     branches:
       - main
+      - release/**
   release:
     types: [ published ]
 jobs:
@@ -42,6 +43,7 @@ jobs:
           maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
           maven-auto-release-after-close: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
         id: release
 
       - if: github.event.release
