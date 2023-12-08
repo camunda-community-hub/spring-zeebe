@@ -1,4 +1,4 @@
-# If this workflow is triggered by a push to either main, release branches then it
+# If this workflow is triggered by a push to either main or release branches then it
 #        deploys a SNAPSHOT
 # If this workflow is triggered by publishing a Release, it
 #        deploys a RELEASE with the selected version
