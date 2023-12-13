@@ -13,6 +13,11 @@ public class SimpleAuthenticationBuilder {
     return this;
   }
 
+  public SimpleAuthenticationBuilder simpleUrl(String simpleUrl) {
+    simpleAuthentication.setSimpleUrl(simpleUrl);
+    return this;
+  }
+
   public Authentication build() {
     return simpleAuthentication.build();
   }
