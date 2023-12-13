@@ -4,12 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
-import io.camunda.zeebe.spring.client.configuration.OperateClientProdAutoConfiguration;
-import io.camunda.zeebe.spring.client.configuration.ZeebeActuatorConfiguration;
-import io.camunda.zeebe.spring.client.configuration.ZeebeClientAllAutoConfiguration;
-import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
-import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
+import io.camunda.zeebe.spring.client.configuration.*;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import org.slf4j.Logger;
@@ -36,10 +31,10 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
   ZeebeClientProdAutoConfiguration.class,
   ZeebeClientAllAutoConfiguration.class,
   CommonClientConfiguration.class,
+  CamundaOperateClientConfiguration.class, // deprecated
   OperateClientProdAutoConfiguration.class,
-
   ZeebeActuatorConfiguration.class,
-  MetricsDefaultConfiguration.class,
+  MetricsDefaultConfiguration.class
 })
 @AutoConfigureAfter(JacksonAutoConfiguration.class) // make sure Spring created ObjectMapper is preferred if available
 public class CamundaAutoConfiguration {

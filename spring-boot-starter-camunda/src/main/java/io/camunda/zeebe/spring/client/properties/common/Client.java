@@ -6,7 +6,8 @@ public class Client {
   private String clientSecret;
   private String username;
   private String password;
-  private Boolean enabled;
+  private Boolean enabled = false;
+  private String url;
 
   public String getClientId() {
     return clientId;
@@ -46,5 +47,13 @@ public class Client {
 
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 }
