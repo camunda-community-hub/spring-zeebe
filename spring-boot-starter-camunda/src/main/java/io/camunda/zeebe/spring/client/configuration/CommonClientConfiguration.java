@@ -36,50 +36,55 @@ public class CommonClientConfiguration {
   public Authentication authentication() {
 
     // TODO: Refactor
-    // check if Zeebe has clusterId provided, then must be SaaS
-    if (zeebeClientConfigurationProperties.getCloud().getClientId() != null) {
-      return SaaSAuthentication.builder()
-        .jwtConfig(configureJwtConfig())
-        .build();
-    } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null) {
-      // figure out if Self-Managed JWT or Self-Managed Basic
-      // TODO: Remove when we deprecate camunda.[product].client.*
-      if (camundaOperateClientConfigurationProperties != null) {
-        if (camundaOperateClientConfigurationProperties.getKeycloakUrl() != null) {
-          return SelfManagedAuthentication.builder()
+    if (zeebeClientConfigurationProperties != null) {
+      // check if Zeebe has clusterId provided, then must be SaaS
+      if (zeebeClientConfigurationProperties.getCloud() != null) {
+        if (zeebeClientConfigurationProperties.getCloud().getClientId() != null) {
+          return SaaSAuthentication.builder()
             .jwtConfig(configureJwtConfig())
-            .keycloakUrl(camundaOperateClientConfigurationProperties.getKeycloakUrl())
-            .keycloakRealm(camundaOperateClientConfigurationProperties.getKeycloakRealm())
-            .build();
-        } else if (camundaOperateClientConfigurationProperties.getUsername() != null && camundaOperateClientConfigurationProperties.getPassword() != null) {
-          SimpleConfig simpleConfig = new SimpleConfig();
-          SimpleCredential simpleCredential = new SimpleCredential(camundaOperateClientConfigurationProperties.getUsername(), camundaOperateClientConfigurationProperties.getPassword());
-          simpleConfig.addProduct(Product.OPERATE, simpleCredential);
-          return SimpleAuthentication.builder()
-            .simpleConfig(simpleConfig)
-            .simpleUrl(camundaOperateClientConfigurationProperties.getUrl())
             .build();
         }
-      }
+      } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null) {
+        // figure out if Self-Managed JWT or Self-Managed Basic
+        // TODO: Remove when we deprecate camunda.[product].client.*
+        if (camundaOperateClientConfigurationProperties != null) {
+          if (camundaOperateClientConfigurationProperties.getKeycloakUrl() != null) {
+            return SelfManagedAuthentication.builder()
+              .jwtConfig(configureJwtConfig())
+              .keycloakUrl(camundaOperateClientConfigurationProperties.getKeycloakUrl())
+              .keycloakRealm(camundaOperateClientConfigurationProperties.getKeycloakRealm())
+              .build();
+          } else if (camundaOperateClientConfigurationProperties.getUsername() != null && camundaOperateClientConfigurationProperties.getPassword() != null) {
+            SimpleConfig simpleConfig = new SimpleConfig();
+            SimpleCredential simpleCredential = new SimpleCredential(camundaOperateClientConfigurationProperties.getUsername(), camundaOperateClientConfigurationProperties.getPassword());
+            simpleConfig.addProduct(Product.OPERATE, simpleCredential);
+            return SimpleAuthentication.builder()
+              .simpleConfig(simpleConfig)
+              .simpleUrl(camundaOperateClientConfigurationProperties.getUrl())
+              .build();
+          }
+        }
 
-      if (commonConfigurationProperties != null) {
-        if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
-          return SelfManagedAuthentication.builder()
-            .jwtConfig(configureJwtConfig())
-            .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
-            .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
-            .build();
-        } else if (commonConfigurationProperties.getUsername() != null && commonConfigurationProperties.getPassword() != null) {
-          SimpleConfig simpleConfig = new SimpleConfig();
-          SimpleCredential simpleCredential = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
-          simpleConfig.addProduct(Product.OPERATE, simpleCredential);
-          return SimpleAuthentication.builder()
-            .simpleConfig(simpleConfig)
-            .simpleUrl(commonConfigurationProperties.getUrl())
-            .build();
+        if (commonConfigurationProperties != null) {
+          if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
+            return SelfManagedAuthentication.builder()
+              .jwtConfig(configureJwtConfig())
+              .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
+              .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
+              .build();
+          } else if (commonConfigurationProperties.getUsername() != null && commonConfigurationProperties.getPassword() != null) {
+            SimpleConfig simpleConfig = new SimpleConfig();
+            SimpleCredential simpleCredential = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
+            simpleConfig.addProduct(Product.OPERATE, simpleCredential);
+            return SimpleAuthentication.builder()
+              .simpleConfig(simpleConfig)
+              .simpleUrl(commonConfigurationProperties.getUrl())
+              .build();
+          }
         }
       }
     }
+
     return new DefaultNoopAuthentication().build();
   }
 
