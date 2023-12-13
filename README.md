@@ -146,6 +146,13 @@ zeebe.client.connection-mode=ADDRESS
 You can also configure other components like Operate. If you use different credentials for different components:
 
 ```properties
+# Old scheme (will be deprecated soon)
+camunda.operate.client.clientId=xxx
+camunda.operate.client.clientSecret=xxx
+```
+
+```properties
+# New scheme
 operate.client.clientId=xxx
 operate.client.clientSecret=xxx
 ```
