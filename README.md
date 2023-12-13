@@ -143,10 +143,16 @@ zeebe.client.connection-mode=CLOUD
 zeebe.client.connection-mode=ADDRESS
 ```
 
-You can also configure other components like Operate. Note that you must set `operate.client.enabled` to `true`. If you use different credentials for different components:
+You can also configure other components like Operate. If you use different credentials for different components:
 
 ```properties
-operate.client.enabled=true
+# Old scheme (will be deprecated soon)
+camunda.operate.client.clientId=xxx
+camunda.operate.client.clientSecret=xxx
+```
+
+```properties
+# New scheme
 operate.client.clientId=xxx
 operate.client.clientSecret=xxx
 ```
@@ -154,7 +160,6 @@ operate.client.clientSecret=xxx
 Otherwise, if you use same credentials across all components:
 
 ```properties
-operate.client.enabled=true
 common.clientId=xxx
 common.clientSecret=xxx
 ```

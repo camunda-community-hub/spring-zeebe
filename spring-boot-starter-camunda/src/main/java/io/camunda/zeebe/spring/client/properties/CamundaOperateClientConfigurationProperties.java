@@ -1,0 +1,116 @@
+package io.camunda.zeebe.spring.client.properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.lang.invoke.MethodHandles;
+
+/**
+ * This will be deprecated once we move to the new schema (i.e. not prefixing with camunda.*)
+ */
+@Deprecated
+@ConfigurationProperties(prefix = "camunda.operate.client")
+public class CamundaOperateClientConfigurationProperties {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Value("${zeebe.client.cloud.cluster-id:#{null}}")
+  private String clusterId;
+
+  @Value("${zeebe.client.cloud.region:bru-2}")
+  private String region;
+
+  private String clientId;
+  private String clientSecret;
+  private String username;
+  private String password;
+  private Boolean enabled;
+  private String url;
+
+  private String keycloakUrl;
+  private String keycloakRealm = "camunda-platform";
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
+  public String getClientSecret() {
+    return clientSecret;
+  }
+
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public String getKeycloakUrl() {
+    return keycloakUrl;
+  }
+
+  public void setKeycloakUrl(String keycloakUrl) {
+    this.keycloakUrl = keycloakUrl;
+  }
+
+  public String getKeycloakRealm() {
+    return keycloakRealm;
+  }
+
+  public void setKeycloakRealm(String keycloakRealm) {
+    this.keycloakRealm = keycloakRealm;
+  }
+
+
+
+  private String operateCloudBaseUrl = "operate.camunda.io";
+
+
+  public String getOperateUrl() {
+    if (url != null) {
+      LOG.debug("Connecting to Camunda Operate on URL: " +url);
+      return url;
+    } else if (clusterId != null) {
+      String url = "https://" + region + "." + operateCloudBaseUrl + "/" + clusterId + "/";
+      LOG.debug("Connecting to Camunda Operate SaaS via URL: " + url);
+      return url;
+    }
+    throw new IllegalArgumentException(
+      "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
+  }
+}
