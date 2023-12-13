@@ -28,75 +28,83 @@ public class CommonClientConfiguration {
   @Autowired(required = false)
   TasklistClientConfigurationProperties tasklistClientConfigurationProperties;
 
+  // TODO: Remove below properties when we deprecate camunda.[product].client.*
+  @Autowired(required = false)
+  CamundaOperateClientConfigurationProperties camundaOperateClientConfigurationProperties;
+
   @Bean
   public Authentication authentication() {
 
-    if (zeebeClientConfigurationProperties != null) {
-      JwtConfig jwtConfig = new JwtConfig();
-
-      if (zeebeClientConfigurationProperties.isEnabled()) {
-        if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
-          jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(zeebeClientConfigurationProperties.getCloud().getClientId(), zeebeClientConfigurationProperties.getCloud().getClientSecret()));
-        } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
-          jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
+    // TODO: Refactor
+    // check if Zeebe has clusterId provided, then must be SaaS
+    if (zeebeClientConfigurationProperties.getCloud().getClientId() != null) {
+      return SaaSAuthentication.builder()
+        .jwtConfig(configureJwtConfig())
+        .build();
+    } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null) {
+      // figure out if Self-Managed JWT or Self-Managed Basic
+      // TODO: Remove when we deprecate camunda.[product].client.*
+      if (camundaOperateClientConfigurationProperties != null) {
+        if (camundaOperateClientConfigurationProperties.getKeycloakUrl() != null) {
+          return SelfManagedAuthentication.builder()
+            .jwtConfig(configureJwtConfig())
+            .keycloakUrl(camundaOperateClientConfigurationProperties.getKeycloakUrl())
+            .keycloakRealm(camundaOperateClientConfigurationProperties.getKeycloakRealm())
+            .build();
+        } else if (camundaOperateClientConfigurationProperties.getUsername() != null && camundaOperateClientConfigurationProperties.getPassword() != null) {
+          SimpleConfig simpleConfig = new SimpleConfig();
+          SimpleCredential simpleCredential = new SimpleCredential(camundaOperateClientConfigurationProperties.getUsername(), camundaOperateClientConfigurationProperties.getPassword());
+          simpleConfig.addProduct(Product.OPERATE, simpleCredential);
+          return SimpleAuthentication.builder()
+            .simpleConfig(simpleConfig)
+            .simpleUrl(camundaOperateClientConfigurationProperties.getUrl())
+            .build();
         }
       }
 
-      if (operateClientConfigurationProperties != null) {
-        if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null && operateClientConfigurationProperties.getEnabled()) {
+      if (commonConfigurationProperties != null) {
+        if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
+          return SelfManagedAuthentication.builder()
+            .jwtConfig(configureJwtConfig())
+            .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
+            .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
+            .build();
+        } else if (commonConfigurationProperties.getUsername() != null && commonConfigurationProperties.getPassword() != null) {
+          SimpleConfig simpleConfig = new SimpleConfig();
+          SimpleCredential simpleCredential = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
+          simpleConfig.addProduct(Product.OPERATE, simpleCredential);
+          return SimpleAuthentication.builder()
+            .simpleConfig(simpleConfig)
+            .simpleUrl(commonConfigurationProperties.getUrl())
+            .build();
+        }
+      }
+    }
+    return new DefaultNoopAuthentication().build();
+  }
+
+  private JwtConfig configureJwtConfig() {
+    JwtConfig jwtConfig = new JwtConfig();
+    if (zeebeClientConfigurationProperties.isEnabled()) {
+      if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
+        jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(zeebeClientConfigurationProperties.getCloud().getClientId(), zeebeClientConfigurationProperties.getCloud().getClientSecret()));
+      } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
+        jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
+      }
+    }
+
+    if (operateClientConfigurationProperties != null) {
+      if (operateClientConfigurationProperties.getEnabled()) {
+        if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.OPERATE, new JwtCredential(operateClientConfigurationProperties.getClientId(), operateClientConfigurationProperties.getClientSecret()));
         } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
           jwtConfig.addProduct(Product.OPERATE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
         }
       }
-
-      if (consoleClientConfigurationProperties != null) {
-        if (consoleClientConfigurationProperties.getClientId() != null && consoleClientConfigurationProperties.getClientSecret() != null && consoleClientConfigurationProperties.getEnabled()) {
-          jwtConfig.addProduct(Product.CONSOLE, new JwtCredential(consoleClientConfigurationProperties.getClientId(), consoleClientConfigurationProperties.getClientSecret()));
-        } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
-          jwtConfig.addProduct(Product.CONSOLE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
-        }
-      }
-
-      if (optimizeClientConfigurationProperties != null) {
-        if (optimizeClientConfigurationProperties.getClientId() != null && optimizeClientConfigurationProperties.getClientSecret() != null && optimizeClientConfigurationProperties.getEnabled()) {
-          jwtConfig.addProduct(Product.OPTIMIZE, new JwtCredential(optimizeClientConfigurationProperties.getClientId(), optimizeClientConfigurationProperties.getClientSecret()));
-        } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
-          jwtConfig.addProduct(Product.OPTIMIZE, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
-        }
-      }
-
-      if (tasklistClientConfigurationProperties != null) {
-        if (tasklistClientConfigurationProperties.getClientId() != null && tasklistClientConfigurationProperties.getClientSecret() != null && tasklistClientConfigurationProperties.getEnabled()) {
-          jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(tasklistClientConfigurationProperties.getClientId(), tasklistClientConfigurationProperties.getClientSecret()));
-        } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
-          jwtConfig.addProduct(Product.TASKLIST, new JwtCredential(commonConfigurationProperties.getClientId(), commonConfigurationProperties.getClientSecret()));
-        }
-      }
-
-      if (commonConfigurationProperties != null && commonConfigurationProperties.getKeycloak().getUrl() != null) {
-        return SelfManagedAuthentication.builder()
-          .jwtConfig(jwtConfig)
-          .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
-          .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
-          .build();
-      } else {
-        return SaaSAuthentication.builder()
-          .jwtConfig(jwtConfig)
-          .build();
-      }
-    } else if (commonConfigurationProperties != null && commonConfigurationProperties.getUsername() != null) {
-      SimpleConfig simpleConfig = new SimpleConfig();
-      SimpleCredential common = new SimpleCredential(commonConfigurationProperties.getUsername(), commonConfigurationProperties.getPassword());
-      simpleConfig.addProduct(Product.OPERATE, common);
-      simpleConfig.addProduct(Product.CONSOLE, common);
-      simpleConfig.addProduct(Product.OPTIMIZE, common);
-      simpleConfig.addProduct(Product.TASKLIST, common);
-      return SimpleAuthentication.builder()
-        .simpleConfig(simpleConfig)
-        .build();
-    } else {
-      return new DefaultNoopAuthentication();
+    } else if (camundaOperateClientConfigurationProperties != null) {
+      // TODO: Remove this else if block when we deprecate camunda.[product].client.*
+      jwtConfig.addProduct(Product.OPERATE, new JwtCredential(camundaOperateClientConfigurationProperties.getClientId(), camundaOperateClientConfigurationProperties.getClientSecret()));
     }
+    return jwtConfig;
   }
 }
