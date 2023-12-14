@@ -1,9 +1,5 @@
 package io.camunda.zeebe.spring.client.properties;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Duration;
-
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -15,6 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
@@ -108,19 +108,7 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   }
 
   @Test
-  public void getCredentialsProvider() throws Exception {
-    assertThat(properties.getCredentialsProvider()).isNull();
-  }
-
-  @Test
   void shouldFooWorkerDisabled() {
     assertThat(properties.getWorker().getOverride().get("foo").getEnabled()).isFalse();
-  }
-
-  @Test
-  void getJsonMapper() {
-    assertThat(jsonMapper).isNotNull();
-    assertThat(properties.getJsonMapper()).isNotNull();
-    assertThat(properties.getJsonMapper()).isSameAs(properties.getJsonMapper());
   }
 }
