@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
@@ -99,9 +100,10 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
     //ZeebeClientBuilder builder = autoConfiguration.builder(jsonMapper, Collections.emptyList());
     //assertThat(builder).isNotNull();
 
-    ZeebeClient client = applicationContext.getBean(ZeebeClient.class) ;
-    assertThat(client.getConfiguration().getJsonMapper()).isSameAs(jsonMapper);
-    assertThat(client.getConfiguration().getJsonMapper()).isSameAs(applicationContext.getBean("overridingJsonMapper"));
+    ZeebeClient client = applicationContext.getBean(ZeebeClient.class);
+    final var clientJsonMapper = AopTestUtils.getUltimateTargetObject(client.getConfiguration().getJsonMapper());
+    assertThat(clientJsonMapper).isSameAs(jsonMapper);
+    assertThat(clientJsonMapper).isSameAs(applicationContext.getBean("overridingJsonMapper"));
     assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost12345");
     assertThat(client.getConfiguration().getDefaultRequestTimeout()).isEqualTo(Duration.ofSeconds(99));
     assertThat(client.getConfiguration().getCaCertificatePath()).isEqualTo("aPath");
