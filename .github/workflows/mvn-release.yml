@@ -24,7 +24,7 @@ jobs:
       - name: Set up Java environment
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: zulu
           cache: maven
           gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
