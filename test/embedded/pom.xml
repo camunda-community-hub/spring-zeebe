@@ -12,7 +12,7 @@
   <artifactId>spring-boot-starter-camunda-test</artifactId>
 
   <properties>
-    <version.java>17</version.java>
+    <version.java>21</version.java>
     <java.version>${version.java}</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
