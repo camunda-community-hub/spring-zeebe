@@ -13,12 +13,14 @@ public class CamundaOperateClientCondition extends AnyNestedCondition {
   }
 
   @ConditionalOnProperty(name = "camunda.operate.client.client-id")
-  static class ClientIdCondition {
-
-  }
+  static class ClientIdCondition { }
 
   @ConditionalOnProperty(name = "camunda.operate.client.username")
-  static class UsernameCondition {
+  static class UsernameCondition { }
 
-  }
+  @ConditionalOnProperty(name = "camunda.operate.client.auth-url")
+  static class AuthUrlCondition { }
+
+  @ConditionalOnProperty(name = "camunda.operate.client.base-url")
+  static class BaseUrlCondition { }
 }

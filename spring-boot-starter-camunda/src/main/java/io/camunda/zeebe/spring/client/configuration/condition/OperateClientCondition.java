@@ -9,12 +9,14 @@ public class OperateClientCondition extends AnyNestedCondition {
   }
 
   @ConditionalOnProperty(name = "operate.client.client-id")
-  static class ClientIdCondition {
-
-  }
+  static class ClientIdCondition { }
 
   @ConditionalOnProperty(name = "operate.client.username")
-  static class UsernameCondition {
+  static class UsernameCondition { }
 
-  }
+  @ConditionalOnProperty(name = "operate.client.auth-url")
+  static class AuthUrlCondition { }
+
+  @ConditionalOnProperty(name = "operate.client.base-url")
+  static class BaseUrlCondition { }
 }
