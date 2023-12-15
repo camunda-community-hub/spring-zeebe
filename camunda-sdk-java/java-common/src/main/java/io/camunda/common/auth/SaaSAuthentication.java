@@ -20,8 +20,6 @@ import java.util.Map;
 public class SaaSAuthentication extends JwtAuthentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private String authUrl;
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
   private Map<Product, LocalDateTime> expirations;
@@ -38,22 +36,21 @@ public class SaaSAuthentication extends JwtAuthentication {
     return new SaaSAuthenticationBuilder();
   }
 
-  public void jwtConfig(JwtConfig jwtConfig) {
+  public void setJwtConfig(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
   }
 
   @Override
   public Authentication build() {
-    authUrl = "https://login.cloud.camunda.io/oauth/token";
     jwtConfig.getMap().forEach(this::retrieveToken);
     return this;
   }
 
   private void retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
-      HttpPost httpPost = new HttpPost(authUrl);
+      HttpPost httpPost = new HttpPost(jwtCredential.authUrl);
       httpPost.addHeader("Content-Type", "application/json");
-      TokenRequest tokenRequest = new TokenRequest(getAudience(product), jwtCredential.clientId, jwtCredential.clientSecret);
+      TokenRequest tokenRequest = new TokenRequest(jwtCredential.audience, jwtCredential.clientId, jwtCredential.clientSecret);
 
       httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
       CloseableHttpClient client = HttpClient.getInstance();
@@ -63,30 +60,13 @@ public class SaaSAuthentication extends JwtAuthentication {
       expirations.put(product, LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
     } catch (Exception e) {
       LOG.warn("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate");
+      throw new RuntimeException("Unable to authenticate", e);
     }
   }
 
   private void retrieveToken(Product product) {
     JwtCredential jwtCredential = jwtConfig.getMap().get(product);
     retrieveToken(product, jwtCredential);
-  }
-
-  private String getAudience(Product product) {
-    switch (product) {
-      case OPERATE:
-        return "operate.camunda.io";
-      case TASKLIST:
-        return "tasklist.camunda.io";
-      case OPTIMIZE:
-        return "optimize.camunda.io";
-      case CONSOLE:
-        return "console.camunda.io";
-      case ZEEBE:
-        return "zeebe.camunda.io";
-      default:
-        throw new SdkException("Unable to get audience because product is invalid");
-    }
   }
 
   @Override
