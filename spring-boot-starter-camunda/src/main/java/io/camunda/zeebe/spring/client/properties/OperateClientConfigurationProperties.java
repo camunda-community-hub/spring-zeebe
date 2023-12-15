@@ -44,6 +44,8 @@ public class OperateClientConfigurationProperties extends Client {
         this.setEnabled(true);
       } else if (this.getUsername() != null && this.getPassword() != null) {
         this.setEnabled(true);
+      } else if (this.getAuthUrl() != null || this.getBaseUrl() != null) {
+        this.setEnabled(true);
       }
   }
 }
