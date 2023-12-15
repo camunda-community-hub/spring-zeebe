@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class CamundaOperateClientConfigurationProperties {
   private String clientSecret;
   private String username;
   private String password;
-  private Boolean enabled;
+  private Boolean enabled = false;
   private String url;
 
   private String keycloakUrl;
@@ -130,5 +131,16 @@ public class CamundaOperateClientConfigurationProperties {
     }
     throw new IllegalArgumentException(
       "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
+  }
+
+  @PostConstruct
+  private void applyFinalValues() {
+    if (this.getClientId() != null && this.getClientSecret() != null) {
+      this.setEnabled(true);
+    } else if (this.getUsername() != null && this.getPassword() != null) {
+      this.setEnabled(true);
+    } else if (this.getAuthUrl() != null || this.getBaseUrl() != null) {
+      this.setEnabled(true);
+    }
   }
 }
