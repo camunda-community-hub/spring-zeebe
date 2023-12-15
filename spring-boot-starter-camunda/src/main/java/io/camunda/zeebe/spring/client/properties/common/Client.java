@@ -8,6 +8,8 @@ public class Client {
   private String password;
   private Boolean enabled = false;
   private String url;
+  private String authUrl;
+  private String baseUrl;
 
   public String getClientId() {
     return clientId;
@@ -55,5 +57,21 @@ public class Client {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public String getAuthUrl() {
+    return authUrl;
+  }
+
+  public void setAuthUrl(String authUrl) {
+    this.authUrl = authUrl;
+  }
+
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+
+  public void setBaseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
   }
 }

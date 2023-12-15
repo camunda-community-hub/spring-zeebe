@@ -94,7 +94,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       expirations.put(product, LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
     } catch (Exception e) {
       LOG.warn("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate");
+      throw new RuntimeException("Unable to authenticate", e);
     }
   }
 

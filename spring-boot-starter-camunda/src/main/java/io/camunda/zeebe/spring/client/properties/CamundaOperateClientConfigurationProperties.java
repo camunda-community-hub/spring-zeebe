@@ -32,6 +32,10 @@ public class CamundaOperateClientConfigurationProperties {
   private String keycloakUrl;
   private String keycloakRealm = "camunda-platform";
 
+  private String baseUrl;
+
+  private String authUrl;
+
   public String getClientId() {
     return clientId;
   }
@@ -96,7 +100,21 @@ public class CamundaOperateClientConfigurationProperties {
     this.keycloakRealm = keycloakRealm;
   }
 
+  public String getBaseUrl() {
+    return baseUrl;
+  }
 
+  public void setBaseUrl(String baseUrl) {
+    this.baseUrl = baseUrl;
+  }
+
+  public String getAuthUrl() {
+    return authUrl;
+  }
+
+  public void setAuthUrl(String authUrl) {
+    this.authUrl = authUrl;
+  }
 
   private String operateCloudBaseUrl = "operate.camunda.io";
 

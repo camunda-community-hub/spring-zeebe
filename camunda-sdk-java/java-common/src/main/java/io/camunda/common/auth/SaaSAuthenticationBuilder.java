@@ -9,7 +9,7 @@ public class SaaSAuthenticationBuilder {
   }
 
   public SaaSAuthenticationBuilder jwtConfig(JwtConfig jwtConfig) {
-    saaSAuthentication.jwtConfig(jwtConfig);
+    saaSAuthentication.setJwtConfig(jwtConfig);
     return this;
   }
 
