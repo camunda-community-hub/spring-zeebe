@@ -5,11 +5,16 @@ package io.camunda.common.auth;
  */
 public class JwtCredential {
 
-  public JwtCredential(String clientId, String clientSecret) {
+  public JwtCredential(String clientId, String clientSecret, String audience, String authUrl) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.audience = audience;
+    this.authUrl = authUrl;
   }
+
   String clientId;
   String clientSecret;
+  String audience;
+  String authUrl;
 
 }
