@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Objects;
 
 @ConfigurationProperties(prefix = "operate.client")
 public class OperateClientConfigurationProperties extends Client {
@@ -30,12 +31,16 @@ public class OperateClientConfigurationProperties extends Client {
       LOG.debug("Connecting to Camunda Operate on URL: " + getUrl());
       return getUrl();
     } else if (clusterId != null) {
-      String url = "https://" + region + "." + operateCloudBaseUrl + "/" + clusterId + "/";
+      String url = "https://" + region + "." + getFinalBaseUrl() + "/" + clusterId + "/";
       LOG.debug("Connecting to Camunda Operate SaaS via URL: " + url);
       return url;
     }
     throw new IllegalArgumentException(
       "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
+  }
+
+  private String getFinalBaseUrl() {
+    return Objects.requireNonNullElse(getBaseUrl(), "operate.camunda.io");
   }
 
   @PostConstruct
