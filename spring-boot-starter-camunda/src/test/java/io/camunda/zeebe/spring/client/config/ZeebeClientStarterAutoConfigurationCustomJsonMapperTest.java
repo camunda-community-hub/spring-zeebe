@@ -101,7 +101,7 @@ public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
     //assertThat(builder).isNotNull();
 
     ZeebeClient client = applicationContext.getBean(ZeebeClient.class);
-    final var clientJsonMapper = AopTestUtils.getUltimateTargetObject(client.getConfiguration().getJsonMapper());
+    final io.camunda.zeebe.client.api.JsonMapper clientJsonMapper = AopTestUtils.getUltimateTargetObject(client.getConfiguration().getJsonMapper());
     assertThat(clientJsonMapper).isSameAs(jsonMapper);
     assertThat(clientJsonMapper).isSameAs(applicationContext.getBean("overridingJsonMapper"));
     assertThat(client.getConfiguration().getGatewayAddress()).isEqualTo("localhost12345");

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Objects;
 
 /**
  * This will be deprecated once we move to the new schema (i.e. not prefixing with camunda.*)
@@ -132,8 +131,11 @@ public class CamundaOperateClientConfigurationProperties {
   }
 
   private String getFinalBaseUrl() {
-      return Objects.requireNonNullElse(baseUrl, "operate.camunda.io");
-  }
+    if (getBaseUrl() != null) {
+      return getBaseUrl();
+    } else {
+      return "operate.camunda.io";
+    }  }
 
   @PostConstruct
   private void applyFinalValues() {

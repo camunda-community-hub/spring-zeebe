@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Objects;
 
 @ConfigurationProperties(prefix = "operate.client")
 public class OperateClientConfigurationProperties extends Client {
@@ -40,7 +39,11 @@ public class OperateClientConfigurationProperties extends Client {
   }
 
   private String getFinalBaseUrl() {
-    return Objects.requireNonNullElse(getBaseUrl(), "operate.camunda.io");
+    if (getBaseUrl() != null) {
+      return getBaseUrl();
+    } else {
+      return "operate.camunda.io";
+    }
   }
 
   @PostConstruct
