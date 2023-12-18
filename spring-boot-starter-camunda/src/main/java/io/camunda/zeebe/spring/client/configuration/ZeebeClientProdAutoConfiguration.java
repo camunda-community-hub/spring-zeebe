@@ -1,12 +1,9 @@
 package io.camunda.zeebe.spring.client.configuration;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.camunda.zeebe.client.impl.util.ExecutorResource;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
-import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
-import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import io.grpc.ManagedChannel;
 import org.slf4j.Logger;
@@ -18,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.ScheduledExecutorService;
 
 /*
  * All configurations that will only be used in production code - meaning NO TEST cases
@@ -32,30 +30,26 @@ public class ZeebeClientProdAutoConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final ZeebeClientConfigurationProperties configurationProperties;
-  private final ZeebeClientExecutorService zeebeClientExecutorService;
-
-  public ZeebeClientProdAutoConfiguration(ZeebeClientConfigurationProperties configurationProperties, ZeebeClientExecutorService zeebeClientExecutorService, JsonMapper jsonMapper) {
-    this.configurationProperties = configurationProperties;
-    configurationProperties.setJsonMapper(jsonMapper); // Replace JsonMapper proxy (because of lazy) with real bean
-    configurationProperties.setScheduledExecutorService(zeebeClientExecutorService.get());
-    configurationProperties.applyOverrides(); // make sure environment variables and other legacy config options are taken into account (duplicate, also done by  qPostConstruct, whatever)
-    this.zeebeClientExecutorService = zeebeClientExecutorService;
+  @Bean
+  public ZeebeClientConfiguration zeebeClientConfiguration() {
+    return new ZeebeClientConfiguration();
   }
 
   @Bean(destroyMethod = "close")
-  public ZeebeClient zeebeClient() { // (ZeebeClientBuilder builder) {
+  public ZeebeClient zeebeClient(
+      final ZeebeClientConfiguration configuration) { // (ZeebeClientBuilder builder) {
     //LOG.info("Creating ZeebeClient using ZeebeClientBuilder [" + builder + "]");
     //return builder.build();
 
-    LOG.info("Creating ZeebeClient using ZeebeClientConfiguration [" + configurationProperties + "]");
-    if (zeebeClientExecutorService!=null) {
-      ManagedChannel managedChannel = ZeebeClientImpl.buildChannel(configurationProperties);
-      GatewayGrpc.GatewayStub gatewayStub = ZeebeClientImpl.buildGatewayStub(managedChannel, configurationProperties);
-      ExecutorResource executorResource = new ExecutorResource(zeebeClientExecutorService.get(), configurationProperties.ownsJobWorkerExecutor());
-      return new ZeebeClientImpl(configurationProperties, managedChannel, gatewayStub, executorResource);
+    LOG.info("Creating ZeebeClient using ZeebeClientConfiguration [" + configuration + "]");
+    final ScheduledExecutorService jobWorkerExecutor = configuration.jobWorkerExecutor();
+    if (jobWorkerExecutor!=null) {
+      ManagedChannel managedChannel = ZeebeClientImpl.buildChannel(configuration);
+      GatewayGrpc.GatewayStub gatewayStub = ZeebeClientImpl.buildGatewayStub(managedChannel, configuration);
+      ExecutorResource executorResource = new ExecutorResource(jobWorkerExecutor, configuration.ownsJobWorkerExecutor());
+      return new ZeebeClientImpl(configuration, managedChannel, gatewayStub, executorResource);
     } else {
-      return new ZeebeClientImpl(configurationProperties);
+      return new ZeebeClientImpl(configuration);
     }
   }
   // TODO: Interceptors

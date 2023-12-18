@@ -6,11 +6,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -33,7 +31,6 @@ public class ExecutorServiceConfiguration {
         threadPool, "zeebe_client_thread_pool", Collections.emptyList());
       threadPoolMetrics.bindTo(meterRegistry);
     }
-    configurationProperties.setScheduledExecutorService(threadPool);
     configurationProperties.setOwnsJobWorkerExecutor(true);
     return new ZeebeClientExecutorService(threadPool);
   }

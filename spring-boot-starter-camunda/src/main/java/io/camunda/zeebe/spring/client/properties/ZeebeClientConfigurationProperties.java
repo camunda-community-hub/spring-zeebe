@@ -1,37 +1,27 @@
 package io.camunda.zeebe.spring.client.properties;
 
 import io.camunda.zeebe.client.ClientProperties;
-import io.camunda.zeebe.client.CredentialsProvider;
-import io.camunda.zeebe.client.ZeebeClientConfiguration;
-import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
 import io.camunda.zeebe.client.impl.util.Environment;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
-import io.grpc.ClientInterceptor;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.context.annotation.Lazy;
 
-import jakarta.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ScheduledExecutorService;
-
-import static org.springframework.util.StringUtils.hasText;
 
 @ConfigurationProperties(prefix = "zeebe.client")
-public class ZeebeClientConfigurationProperties implements ZeebeClientConfiguration {
+public class ZeebeClientConfigurationProperties {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -73,18 +63,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
 
   @NestedConfigurationProperty
   private Job job = new Job();
-
-  @Lazy // Must be lazy, otherwise we get circular dependencies on beans
-  @Autowired
-  private JsonMapper jsonMapper;
-
-  @Lazy
-  @Autowired(required = false)
-  private List<ClientInterceptor> interceptors;
-
-  @Lazy
-  @Autowired(required = false)
-  private ScheduledExecutorService scheduledExecutorService;
 
   private boolean ownsJobWorkerExecutor;
 
@@ -191,10 +169,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.job = job;
   }
 
-  public void setInterceptors(List<ClientInterceptor> interceptors) {
-    this.interceptors = interceptors;
-  }
-
   public Duration getRequestTimeout() {
     return requestTimeout;
   }
@@ -219,20 +193,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
-  public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
-    this.scheduledExecutorService = scheduledExecutorService;
-  }
-
   public void setOwnsJobWorkerExecutor(boolean ownsJobWorkerExecutor) {
     this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
   }
 
-  @Override
-  public ScheduledExecutorService jobWorkerExecutor() {
-    return scheduledExecutorService;
-  }
-
-  @Override
   public boolean ownsJobWorkerExecutor() {
     return ownsJobWorkerExecutor;
   }
@@ -248,13 +212,12 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       Objects.equals(message, that.message) &&
       Objects.equals(security, that.security) &&
       Objects.equals(job, that.job) &&
-      Objects.equals(interceptors, that.interceptors) &&
       Objects.equals(requestTimeout, that.requestTimeout);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(broker, cloud, worker, message, security, job, interceptors, requestTimeout);
+    return Objects.hash(broker, cloud, worker, message, security, job, requestTimeout);
   }
 
   @Override
@@ -266,9 +229,7 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
       ", message=" + message +
       ", security=" + security +
       ", job=" + job +
-      ", interceptors=" + interceptors +
       ", requestTimeout=" + requestTimeout +
-      ", scheduledExecutorService=" + scheduledExecutorService +
       ", ownsJobWorkerExecutor=" + ownsJobWorkerExecutor +
       '}';
   }
@@ -649,7 +610,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     }
   }
 
-  @Override
   public String getGatewayAddress() {
     if (connectionMode!=null && connectionMode.length()>0) {
       LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
@@ -667,7 +627,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     }
   }
 
-  @Override
   public String getDefaultTenantId() {
     return defaultTenantId;
   }
@@ -676,7 +635,6 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.defaultTenantId = defaultTenantId;
   }
 
-  @Override
   public List<String> getDefaultJobWorkerTenantIds() {
     return defaultJobWorkerTenantIds;
   }
@@ -685,12 +643,10 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
   }
 
-  @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
     return defaultJobWorkerStreamEnabled;
   }
 
-  @Override
   public boolean useDefaultRetryPolicy() {
     return false;
   }
@@ -707,22 +663,18 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     this.connectionMode = connectionMode;
   }
 
-  @Override
   public Duration getDefaultRequestTimeout() {
     return getRequestTimeout();
   }
 
-  @Override
   public int getNumJobWorkerExecutionThreads() {
     return worker.getThreads();
   }
 
-  @Override
   public int getDefaultJobWorkerMaxJobsActive() {
     return worker.getMaxJobsActive();
   }
 
-  @Override
   public String getDefaultJobWorkerName() {
     return worker.getDefaultName();
   }
@@ -731,77 +683,32 @@ public class ZeebeClientConfigurationProperties implements ZeebeClientConfigurat
     return worker.getDefaultType();
   }
 
-  @Override
   public Duration getDefaultJobTimeout() {
     return job.getTimeout();
   }
 
-  @Override
   public Duration getDefaultJobPollInterval() {
     return job.getPollInterval();
   }
 
-  @Override
   public Duration getDefaultMessageTimeToLive() {
     return message.getTimeToLive();
   }
 
-  @Override
   public boolean isPlaintextConnectionEnabled() {
     return security.isPlaintext();
   }
 
-  @Override
   public String getCaCertificatePath() {
     return security.getCertPath();
   }
 
-  @Override
   public String getOverrideAuthority() {
     return security.getOverrideAuthority();
   }
 
-  @Override
-  public CredentialsProvider getCredentialsProvider() {
-    if (hasText(cloud.clientId) && hasText(cloud.clientSecret)) {
-//        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider with: {}", this);
-      return CredentialsProvider.newCredentialsProviderBuilder()
-        .clientId(cloud.clientId)
-        .clientSecret(cloud.clientSecret)
-        .audience(cloud.getAudience())
-        .scope(cloud.getScope())
-        .authorizationServerUrl(cloud.authUrl)
-        .credentialsCachePath(cloud.credentialsCachePath)
-        .build();
-    } else if (Environment.system().get("ZEEBE_CLIENT_ID") != null && Environment.system().get("ZEEBE_CLIENT_SECRET") != null) {
-      // Copied from ZeebeClientBuilderImpl
-      OAuthCredentialsProviderBuilder builder = CredentialsProvider.newCredentialsProviderBuilder();
-      int separatorIndex = broker.gatewayAddress.lastIndexOf(58); //":"
-      if (separatorIndex > 0) {
-        builder.audience(broker.gatewayAddress.substring(0, separatorIndex));
-      }
-      return builder.build();
-    }
-    return null;
-  }
-
-  @Override
   public Duration getKeepAlive() {
     return broker.getKeepAlive();
-  }
-
-  @Override
-  public List<ClientInterceptor> getInterceptors() {
-    return interceptors;
-  }
-
-  @Override
-  public JsonMapper getJsonMapper() {
-    return jsonMapper;
-  }
-
-  public void setJsonMapper(JsonMapper jsonMapper) {
-    this.jsonMapper = jsonMapper;
   }
 
   // No @Override to be compatible with 8.2 and 8.3 (was introduced with 8.3)
