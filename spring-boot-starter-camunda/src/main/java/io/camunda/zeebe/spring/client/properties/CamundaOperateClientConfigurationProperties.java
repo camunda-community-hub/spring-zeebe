@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Objects;
 
 /**
  * This will be deprecated once we move to the new schema (i.e. not prefixing with camunda.*)
@@ -117,20 +118,21 @@ public class CamundaOperateClientConfigurationProperties {
     this.authUrl = authUrl;
   }
 
-  private String operateCloudBaseUrl = "operate.camunda.io";
-
-
   public String getOperateUrl() {
     if (url != null) {
       LOG.debug("Connecting to Camunda Operate on URL: " +url);
       return url;
     } else if (clusterId != null) {
-      String url = "https://" + region + "." + operateCloudBaseUrl + "/" + clusterId + "/";
+      String url = "https://" + region + "." + getFinalBaseUrl() + "/" + clusterId + "/";
       LOG.debug("Connecting to Camunda Operate SaaS via URL: " + url);
       return url;
     }
     throw new IllegalArgumentException(
       "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
+  }
+
+  private String getFinalBaseUrl() {
+      return Objects.requireNonNullElse(baseUrl, "operate.camunda.io");
   }
 
   @PostConstruct
