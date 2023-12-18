@@ -8,6 +8,7 @@ import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
 import io.camunda.zeebe.client.impl.util.Environment;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
+import io.camunda.zeebe.spring.client.properties.CommonConfigurationProperties;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import io.grpc.Metadata;
@@ -28,6 +29,9 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Autowired
   private ZeebeClientConfigurationProperties properties;
+
+  @Autowired
+  private CommonConfigurationProperties commonConfigurationProperties;
 
   @Autowired
   private Authentication authentication;
@@ -112,7 +116,8 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
-    if (!(authentication instanceof DefaultNoopAuthentication)) {
+    // TODO: Refactor when integrating Identity SDK
+    if (commonConfigurationProperties.getEnabled() && !(authentication instanceof DefaultNoopAuthentication)) {
       return new CredentialsProvider() {
         @Override
         public void applyCredentials(Metadata headers) throws IOException {
