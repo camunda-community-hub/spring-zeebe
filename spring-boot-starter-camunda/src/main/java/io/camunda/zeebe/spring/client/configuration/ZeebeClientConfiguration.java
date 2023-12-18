@@ -18,9 +18,9 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static org.springframework.util.StringUtils.hasText;
@@ -120,9 +120,9 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     if (commonConfigurationProperties.getEnabled() && !(authentication instanceof DefaultNoopAuthentication)) {
       return new CredentialsProvider() {
         @Override
-        public void applyCredentials(Metadata headers) throws IOException {
-          final var authHeader = authentication.getTokenHeader(Product.ZEEBE);
-          final var authHeaderKey = Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
+        public void applyCredentials(Metadata headers) {
+          final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
+          final Metadata.Key<String> authHeaderKey = Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
           headers.put(authHeaderKey, authHeader.getValue());
         }
 
