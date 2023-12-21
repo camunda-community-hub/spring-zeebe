@@ -8,6 +8,7 @@ import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationPrope
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,10 +25,12 @@ public class OperateClientConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @Autowired
+  Authentication authentication;
 
   @Bean
   @ConditionalOnMissingBean
-  public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props, Authentication authentication) {
+  public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
     LOG.warn("Using a deprecated operate properties");
     CamundaOperateClient client;
     try {
