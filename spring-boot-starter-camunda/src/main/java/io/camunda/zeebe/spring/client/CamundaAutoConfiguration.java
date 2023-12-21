@@ -31,8 +31,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
   ZeebeClientProdAutoConfiguration.class,
   ZeebeClientAllAutoConfiguration.class,
   CommonClientConfiguration.class,
-  CamundaOperateClientConfiguration.class, // deprecated
-  OperateClientProdAutoConfiguration.class,
+  OperateClientConfiguration.class,
   ZeebeActuatorConfiguration.class,
   MetricsDefaultConfiguration.class
 })

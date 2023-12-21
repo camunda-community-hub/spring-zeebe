@@ -18,6 +18,10 @@ public class JwtConfig {
     map.put(product, jwtCredential);
   }
 
+  public JwtCredential getProduct(Product product) {
+    return map.get(product);
+  }
+
   public Map<Product, JwtCredential> getMap() {
     return map;
   }
