@@ -8,15 +8,24 @@ public class OperateClientCondition extends AnyNestedCondition {
     super(ConfigurationPhase.PARSE_CONFIGURATION);
   }
 
-  @ConditionalOnProperty(name = "operate.client.client-id")
+  @ConditionalOnProperty(name = "camunda.operate.client.client-id")
   static class ClientIdCondition { }
 
-  @ConditionalOnProperty(name = "operate.client.username")
+  @ConditionalOnProperty(name = "camunda.operate.client.username")
   static class UsernameCondition { }
 
-  @ConditionalOnProperty(name = "operate.client.auth-url")
+  @ConditionalOnProperty(name = "camunda.operate.client.auth-url")
   static class AuthUrlCondition { }
 
-  @ConditionalOnProperty(name = "operate.client.base-url")
+  @ConditionalOnProperty(name = "camunda.operate.client.base-url")
   static class BaseUrlCondition { }
+
+  @ConditionalOnProperty(name = "camunda.operate.client.keycloak-url")
+  static class KeycloakUrlCondition { }
+
+  @ConditionalOnProperty(name = "camunda.operate.client.url")
+  static class UrlCondition { }
+
+  @ConditionalOnProperty(name = "camunda.operate.client.enabled")
+  static class EnableCondition { }
 }
