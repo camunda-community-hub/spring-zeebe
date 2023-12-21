@@ -85,24 +85,31 @@ public class CommonClientConfiguration {
 
   private JwtConfig configureJwtConfig() {
     JwtConfig jwtConfig = new JwtConfig();
-    if (zeebeClientConfigurationProperties.isEnabled()) {
-      if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
-        jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
-          zeebeClientConfigurationProperties.getCloud().getClientId(),
-          zeebeClientConfigurationProperties.getCloud().getClientSecret(),
-          zeebeClientConfigurationProperties.getCloud().getAudience(),
-          zeebeClientConfigurationProperties.getCloud().getAuthUrl())
-        );
-      } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
-        jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
-          commonConfigurationProperties.getClientId(),
-          commonConfigurationProperties.getClientSecret(),
-          zeebeClientConfigurationProperties.getCloud().getAudience(),
-          zeebeClientConfigurationProperties.getCloud().getAuthUrl())
-        );
-      }
+    // ZEEBE
+    if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
+      jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
+        zeebeClientConfigurationProperties.getCloud().getClientId(),
+        zeebeClientConfigurationProperties.getCloud().getClientSecret(),
+        zeebeClientConfigurationProperties.getCloud().getAudience(),
+        zeebeClientConfigurationProperties.getCloud().getAuthUrl())
+      );
+    } else if (zeebeSelfManagedProperties.getClientId() != null && zeebeSelfManagedProperties.getClientSecret() != null) {
+      jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
+        zeebeSelfManagedProperties.getClientId(),
+        zeebeSelfManagedProperties.getClientSecret(),
+        zeebeSelfManagedProperties.getAudience(),
+        zeebeSelfManagedProperties.getAuthServer())
+      );
+    } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
+      jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
+        commonConfigurationProperties.getClientId(),
+        commonConfigurationProperties.getClientSecret(),
+        zeebeClientConfigurationProperties.getCloud().getAudience(),
+        zeebeClientConfigurationProperties.getCloud().getAuthUrl())
+      );
     }
 
+    // OPERATE
     String operateAuthUrl = zeebeClientConfigurationProperties.getCloud().getAuthUrl();
     String operateAudience = "operate.camunda.io";
     if (operateClientConfigurationProperties != null) {
