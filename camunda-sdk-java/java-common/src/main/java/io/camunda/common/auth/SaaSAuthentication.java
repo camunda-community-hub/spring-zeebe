@@ -22,14 +22,12 @@ public class SaaSAuthentication extends JwtAuthentication {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
-  private Map<Product, LocalDateTime> expirations;
 
   // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
   private JsonMapper jsonMapper = new SdkObjectMapper();
 
   public SaaSAuthentication() {
     tokens = new HashMap<>();
-    expirations = new HashMap<>();
   }
 
   public static SaaSAuthenticationBuilder builder() {
@@ -42,11 +40,10 @@ public class SaaSAuthentication extends JwtAuthentication {
 
   @Override
   public Authentication build() {
-    jwtConfig.getMap().forEach(this::retrieveToken);
     return this;
   }
 
-  private void retrieveToken(Product product, JwtCredential jwtCredential) {
+  private String retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
       HttpPost httpPost = new HttpPost(jwtCredential.authUrl);
       httpPost.addHeader("Content-Type", "application/json");
@@ -57,29 +54,22 @@ public class SaaSAuthentication extends JwtAuthentication {
       CloseableHttpResponse response = client.execute(httpPost);
       TokenResponse tokenResponse = jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       tokens.put(product, tokenResponse.getAccessToken());
-      expirations.put(product, LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
     } catch (Exception e) {
       LOG.warn("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
-  }
-
-  private void retrieveToken(Product product) {
-    JwtCredential jwtCredential = jwtConfig.getMap().get(product);
-    retrieveToken(product, jwtCredential);
+    return tokens.get(product);
   }
 
   @Override
   public Map.Entry<String, String> getTokenHeader(Product product) {
-    refreshToken();
-    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + tokens.get(product));
-  }
-
-  private void refreshToken() {
-    expirations.forEach((product, expiration) -> {
-      if (expiration.isAfter(LocalDateTime.now())) {
-        retrieveToken(product);
-      }
-    });
+    String token;
+    if (tokens.containsKey(product)) {
+      token = tokens.get(product);
+    } else {
+      JwtCredential jwtCredential = jwtConfig.getProduct(product);
+      token = retrieveToken(product, jwtCredential);
+    }
+    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
   }
 }
