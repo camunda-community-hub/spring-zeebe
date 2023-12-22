@@ -88,7 +88,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       TokenResponse tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
       tokens.put(product, tokenResponse.getAccessToken());
     } catch (Exception e) {
-      LOG.warn("Authenticating for " + product + " failed due to " + e);
+      LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
     return tokens.get(product);

@@ -31,7 +31,6 @@ public class OperateClientConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
-    LOG.warn("Using a deprecated operate properties");
     CamundaOperateClient client;
     try {
       client = new CamundaOperateClientBuilder()
