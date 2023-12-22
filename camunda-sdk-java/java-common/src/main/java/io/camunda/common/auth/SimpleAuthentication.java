@@ -47,8 +47,7 @@ public class SimpleAuthentication implements Authentication {
   private void retrieveToken(Product product, SimpleCredential simpleCredential) {
     try {
       HttpPost httpPost = new HttpPost(authUrl);
-      httpPost.addHeader("Content-Type", "application/json");
-      List<NameValuePair> params = new ArrayList<NameValuePair>();
+      List<NameValuePair> params = new ArrayList<>();
       params.add(new BasicNameValuePair("username", simpleCredential.user));
       params.add(new BasicNameValuePair("password", simpleCredential.password));
       httpPost.setEntity(new UrlEncodedFormEntity(params));
@@ -58,14 +57,14 @@ public class SimpleAuthentication implements Authentication {
       String cookie = response.getHeader("Set-Cookie").getValue();
       tokens.put(product, cookie);
     } catch (Exception e) {
-      LOG.warn("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate");
+      LOG.error("Authenticating for " + product + " failed due to " + e);
+      throw new RuntimeException("Unable to authenticate", e);
     }
   }
 
 
     @Override
   public Map.Entry<String, String> getTokenHeader(Product product) {
-    return new AbstractMap.SimpleEntry<>("Authorization", "Cookie " + tokens.get(product));
+    return new AbstractMap.SimpleEntry<>("Cookie", tokens.get(product));
   }
 }
