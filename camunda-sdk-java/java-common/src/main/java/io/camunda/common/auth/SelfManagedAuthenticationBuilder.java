@@ -25,6 +25,13 @@ public class SelfManagedAuthenticationBuilder {
     return this;
   }
 
+  public SelfManagedAuthenticationBuilder keycloakTokenUrl(String keycloakTokenUrl) {
+    if (keycloakTokenUrl != null) {
+      selfManagedAuthentication.setKeycloakTokenUrl(keycloakTokenUrl);
+    }
+    return this;
+  }
+
   public Authentication build() {
     return selfManagedAuthentication.build();
   }

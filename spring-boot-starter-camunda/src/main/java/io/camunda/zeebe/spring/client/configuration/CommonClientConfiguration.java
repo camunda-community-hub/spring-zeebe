@@ -50,7 +50,12 @@ public class CommonClientConfiguration {
               .keycloakUrl(operateClientConfigurationProperties.getKeycloakUrl())
               .keycloakRealm(operateClientConfigurationProperties.getKeycloakRealm())
               .build();
-          } else if (operateClientConfigurationProperties.getUsername() != null && operateClientConfigurationProperties.getPassword() != null) {
+          } else if (operateClientConfigurationProperties.getKeycloakTokenUrl() != null)  {
+            return SelfManagedAuthentication.builder()
+              .jwtConfig(configureJwtConfig())
+              .keycloakTokenUrl(operateClientConfigurationProperties.getKeycloakTokenUrl())
+              .build();
+          }  else if (operateClientConfigurationProperties.getUsername() != null && operateClientConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential = new SimpleCredential(operateClientConfigurationProperties.getUsername(), operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
@@ -67,6 +72,11 @@ public class CommonClientConfiguration {
               .jwtConfig(configureJwtConfig())
               .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
               .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
+              .build();
+          } else if (commonConfigurationProperties.getKeycloak().getTokenUrl() != null) {
+            return SelfManagedAuthentication.builder()
+              .jwtConfig(configureJwtConfig())
+              .keycloakTokenUrl(commonConfigurationProperties.getKeycloak().getTokenUrl())
               .build();
           } else if (commonConfigurationProperties.getUsername() != null && commonConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();
@@ -125,8 +135,8 @@ public class CommonClientConfiguration {
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(
           commonConfigurationProperties.getClientId(),
           commonConfigurationProperties.getClientSecret(),
-          operateAuthUrl,
-          operateAudience)
+          operateAudience,
+          operateAuthUrl)
         );
       } else if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(zeebeClientConfigurationProperties.getCloud().getClientId(), zeebeClientConfigurationProperties.getCloud().getClientSecret(), operateAudience, operateAuthUrl));
