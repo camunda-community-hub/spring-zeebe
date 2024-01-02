@@ -4,6 +4,7 @@ public class Keycloak {
 
   private String url;
   private String realm;
+  private String tokenUrl;
 
   public String getUrl() {
     return url;
@@ -19,5 +20,13 @@ public class Keycloak {
 
   public void setRealm(String realm) {
     this.realm = realm;
+  }
+
+  public String getTokenUrl() {
+    return tokenUrl;
+  }
+
+  public void setTokenUrl(String tokenUrl) {
+    this.tokenUrl = tokenUrl;
   }
 }

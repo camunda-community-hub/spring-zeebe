@@ -29,6 +29,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   // TODO: Check with Identity about upcoming IDPs to abstract this
   private String keycloakRealm = "camunda-platform";
   private String keycloakUrl;
+  private String keycloakTokenUrl;
   private JwtConfig jwtConfig;
   private Map<Product, String> tokens;
 
@@ -51,13 +52,21 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     this.keycloakUrl = keycloakUrl;
   }
 
+  public void setKeycloakTokenUrl(String keycloakTokenUrl) {
+    this.keycloakTokenUrl = keycloakTokenUrl;
+  }
+
   public void setJwtConfig(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
   }
 
   @Override
   public Authentication build() {
-    authUrl = keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token";
+    if (keycloakTokenUrl != null) {
+      authUrl = keycloakTokenUrl;
+    } else {
+      authUrl = keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token";
+    }
     return this;
   }
 

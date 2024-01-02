@@ -28,6 +28,8 @@ public class OperateClientConfigurationProperties {
   private String keycloakUrl;
   private String keycloakRealm = "camunda-platform";
 
+  private String keycloakTokenUrl;
+
   private String baseUrl;
 
   private String authUrl;
@@ -94,6 +96,14 @@ public class OperateClientConfigurationProperties {
 
   public void setKeycloakRealm(String keycloakRealm) {
     this.keycloakRealm = keycloakRealm;
+  }
+
+  public String getKeycloakTokenUrl() {
+    return keycloakTokenUrl;
+  }
+
+  public void setKeycloakTokenUrl(String keycloakTokenUrl) {
+    this.keycloakTokenUrl = keycloakTokenUrl;
   }
 
   public String getBaseUrl() {
