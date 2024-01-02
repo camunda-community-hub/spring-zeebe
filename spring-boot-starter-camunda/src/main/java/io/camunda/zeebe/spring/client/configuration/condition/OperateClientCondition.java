@@ -23,6 +23,9 @@ public class OperateClientCondition extends AnyNestedCondition {
   @ConditionalOnProperty(name = "camunda.operate.client.keycloak-url")
   static class KeycloakUrlCondition { }
 
+  @ConditionalOnProperty(name = "camunda.operate.client.keycloak-token-url")
+  static class KeycloakTokenUrlCondition { }
+
   @ConditionalOnProperty(name = "camunda.operate.client.url")
   static class UrlCondition { }
 
