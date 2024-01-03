@@ -17,7 +17,6 @@ public class SimpleAuthentication implements Authentication {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String simpleUrl;
-
   private SimpleConfig simpleConfig;
   private Map<Product, String> tokens;
 
@@ -25,6 +24,10 @@ public class SimpleAuthentication implements Authentication {
 
   public void setSimpleUrl(String simpleUrl) {
     this.simpleUrl = simpleUrl;
+  }
+
+  public SimpleConfig getSimpleConfig() {
+    return simpleConfig;
   }
 
   public void setSimpleConfig(SimpleConfig simpleConfig) {
@@ -40,16 +43,16 @@ public class SimpleAuthentication implements Authentication {
   @Override
   public Authentication build() {
     authUrl = simpleUrl+"/api/login";
-    simpleConfig.getMap().forEach(this::retrieveToken);
+    //simpleConfig.getMap().forEach(this::retrieveToken);
     return this;
   }
 
-  private void retrieveToken(Product product, SimpleCredential simpleCredential) {
+  private String retrieveToken(Product product, SimpleCredential simpleCredential) {
     try {
       HttpPost httpPost = new HttpPost(authUrl);
       List<NameValuePair> params = new ArrayList<>();
-      params.add(new BasicNameValuePair("username", simpleCredential.user));
-      params.add(new BasicNameValuePair("password", simpleCredential.password));
+      params.add(new BasicNameValuePair("username", simpleCredential.getUser()));
+      params.add(new BasicNameValuePair("password", simpleCredential.getPassword()));
       httpPost.setEntity(new UrlEncodedFormEntity(params));
 
       CloseableHttpClient client = HttpClient.getInstance();
@@ -60,11 +63,20 @@ public class SimpleAuthentication implements Authentication {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
+    return tokens.get(product);
   }
 
 
     @Override
   public Map.Entry<String, String> getTokenHeader(Product product) {
-    return new AbstractMap.SimpleEntry<>("Cookie", tokens.get(product));
+    String token;
+    if (tokens.containsKey(product)) {
+      token = tokens.get(product);
+    } else {
+      SimpleCredential simpleCredential = simpleConfig.getProduct(product);
+      token = retrieveToken(product, simpleCredential);
+    }
+
+    return new AbstractMap.SimpleEntry<>("Cookie", token);
   }
 }

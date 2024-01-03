@@ -12,9 +12,25 @@ public class JwtCredential {
     this.authUrl = authUrl;
   }
 
-  String clientId;
-  String clientSecret;
-  String audience;
-  String authUrl;
+  private String clientId;
+  private String clientSecret;
+  private String audience;
+  private String authUrl;
+
+  public String getClientId() {
+    return clientId;
+  }
+
+  public String getClientSecret() {
+    return clientSecret;
+  }
+
+  public String getAudience() {
+    return audience;
+  }
+
+  public String getAuthUrl() {
+    return authUrl;
+  }
 
 }
