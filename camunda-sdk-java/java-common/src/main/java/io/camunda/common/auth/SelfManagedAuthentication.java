@@ -56,6 +56,10 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     this.keycloakTokenUrl = keycloakTokenUrl;
   }
 
+  public JwtConfig getJwtConfig() {
+    return jwtConfig;
+  }
+
   public void setJwtConfig(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
   }
@@ -77,8 +81,8 @@ public class SelfManagedAuthentication extends JwtAuthentication {
 
       Map<String, String> parameters = new HashMap<>();
       parameters.put("grant_type", "client_credentials");
-      parameters.put("client_id", jwtCredential.clientId);
-      parameters.put("client_secret", jwtCredential.clientSecret);
+      parameters.put("client_id", jwtCredential.getClientId());
+      parameters.put("client_secret", jwtCredential.getClientSecret());
 
       String form = parameters.entrySet()
         .stream()
