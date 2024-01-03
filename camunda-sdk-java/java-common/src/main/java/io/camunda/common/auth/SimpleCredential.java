@@ -9,7 +9,16 @@ public class SimpleCredential {
     this.user = user;
     this.password = password;
   }
-  String user;
-  String password;
+
+  private String user;
+  private String password;
+
+  public String getUser() {
+    return user;
+  }
+
+  public String getPassword() {
+    return password;
+  }
 
 }

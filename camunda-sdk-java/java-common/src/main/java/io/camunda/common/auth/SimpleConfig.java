@@ -22,4 +22,8 @@ public class SimpleConfig {
     return map;
   }
 
+  public SimpleCredential getProduct(Product product) {
+    return map.get(product);
+  }
+
 }

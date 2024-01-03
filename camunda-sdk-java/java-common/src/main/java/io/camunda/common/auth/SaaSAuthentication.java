@@ -34,6 +34,10 @@ public class SaaSAuthentication extends JwtAuthentication {
     return new SaaSAuthenticationBuilder();
   }
 
+  public JwtConfig getJwtConfig() {
+    return jwtConfig;
+  }
+
   public void setJwtConfig(JwtConfig jwtConfig) {
     this.jwtConfig = jwtConfig;
   }
@@ -45,9 +49,9 @@ public class SaaSAuthentication extends JwtAuthentication {
 
   private String retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
-      HttpPost httpPost = new HttpPost(jwtCredential.authUrl);
+      HttpPost httpPost = new HttpPost(jwtCredential.getAuthUrl());
       httpPost.addHeader("Content-Type", "application/json");
-      TokenRequest tokenRequest = new TokenRequest(jwtCredential.audience, jwtCredential.clientId, jwtCredential.clientSecret);
+      TokenRequest tokenRequest = new TokenRequest(jwtCredential.getAudience(), jwtCredential.getClientId(), jwtCredential.getClientSecret());
 
       httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
       CloseableHttpClient client = HttpClient.getInstance();
