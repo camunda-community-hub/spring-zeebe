@@ -4,6 +4,7 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -57,7 +58,16 @@ public class SimpleAuthentication implements Authentication {
 
       CloseableHttpClient client = HttpClient.getInstance();
       CloseableHttpResponse response = client.execute(httpPost);
-      String cookie = response.getHeader("Set-Cookie").getValue();
+      Header[] cookieHeaders = response.getHeaders("Set-Cookie");
+      String cookie = null;
+      for (Header cookieHeader : cookieHeaders) {
+        if (cookieHeader.getValue().startsWith("OPERATE-SESSION")) {
+          cookie = response.getHeader("Set-Cookie").getValue();
+        }
+      }
+      if (cookie == null) {
+        throw new RuntimeException("Unable to authenticate due to missing Set-Cookie");
+      }
       tokens.put(product, cookie);
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
