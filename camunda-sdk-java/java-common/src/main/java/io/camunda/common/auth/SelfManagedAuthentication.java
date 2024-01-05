@@ -1,10 +1,12 @@
 package io.camunda.common.auth;
 
+import io.camunda.common.exception.SdkException;
 import io.camunda.common.json.JsonMapper;
 import io.camunda.common.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
@@ -14,7 +16,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +75,12 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     return this;
   }
 
+  @Override
+  public void resetToken(Product product) {
+    JwtCredential jwtCredential = jwtConfig.getProduct(product);
+    retrieveToken(product, jwtCredential);
+  }
+
   private String retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
       HttpPost httpPost = new HttpPost(authUrl);
@@ -98,11 +105,16 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       httpPost.setEntity(new StringEntity(form));
       CloseableHttpClient client = HttpClient.getInstance();
       CloseableHttpResponse response = client.execute(httpPost);
-      TokenResponse tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
+      TokenResponse tokenResponse;
+      if (response.getCode() == HttpStatus.SC_OK) {
+        tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
+      } else {
+        throw new SdkException("Error "+response.getCode()+" obtaining access token: "+EntityUtils.toString(response.getEntity()));
+      }
       tokens.put(product, tokenResponse.getAccessToken());
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate", e);
+      throw new SdkException("Unable to authenticate", e);
     }
     return tokens.get(product);
   }

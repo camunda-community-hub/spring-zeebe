@@ -44,7 +44,6 @@ public class SimpleAuthentication implements Authentication {
   @Override
   public Authentication build() {
     authUrl = simpleUrl+"/api/login";
-    //simpleConfig.getMap().forEach(this::retrieveToken);
     return this;
   }
 
@@ -88,5 +87,11 @@ public class SimpleAuthentication implements Authentication {
     }
 
     return new AbstractMap.SimpleEntry<>("Cookie", token);
+  }
+
+  @Override
+  public void resetToken(Product product) {
+    SimpleCredential simpleCredential = simpleConfig.getProduct(product);
+    retrieveToken(product, simpleCredential);
   }
 }

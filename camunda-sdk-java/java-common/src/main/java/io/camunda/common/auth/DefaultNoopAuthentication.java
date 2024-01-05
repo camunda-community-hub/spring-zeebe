@@ -1,5 +1,6 @@
 package io.camunda.common.auth;
 
+import io.camunda.common.exception.SdkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +15,17 @@ public class DefaultNoopAuthentication implements Authentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private final String errorMessage = "Unable to determine authentication. Please check your configuration";
+
   @Override
   public Authentication build() {
-    LOG.error("Unable to determine authentication. Please check your configuration");
+    LOG.error(errorMessage);
     return this;
+  }
+
+  @Override
+  public void resetToken(Product product) {
+    throw new SdkException(errorMessage);
   }
 
   @Override
