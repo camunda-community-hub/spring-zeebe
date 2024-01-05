@@ -91,7 +91,6 @@ public class SimpleAuthentication implements Authentication {
 
   @Override
   public void resetToken(Product product) {
-    SimpleCredential simpleCredential = simpleConfig.getProduct(product);
-    retrieveToken(product, simpleCredential);
+    tokens.remove(product);
   }
 }
