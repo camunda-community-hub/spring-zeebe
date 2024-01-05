@@ -122,7 +122,7 @@ public class DefaultHttpClient implements HttpClient {
     String xml;
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
-      xml = (String) parseAndRetry(response, selector);
+      xml = parseXMLAndRetry(response, selector);
     } catch (Exception e) {
       LOG.error("Failed GET with selector {}, key {} due to {}", selector, key, e.getMessage());
       throw new SdkException(e);
@@ -198,6 +198,19 @@ public class DefaultHttpClient implements HttpClient {
   }
 
   // TODO: Refactor duplicate code parseAndRetry()
+
+  private <T> String parseXMLAndRetry(CloseableHttpResponse response, Class<T> selector) throws IOException {
+    String resp;
+    if (200 <= response.getCode() && response.getCode() <= 299) {
+      resp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+    } else {
+      if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
+        authentication.resetToken(getProduct(selector.getClass()));
+      }
+      throw new SdkException("Response not successful: " + response.getCode());
+    }
+    return resp;
+  }
 
   private <T> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType) throws IOException {
     T resp;
