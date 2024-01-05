@@ -47,6 +47,11 @@ public class SaaSAuthentication extends JwtAuthentication {
     return this;
   }
 
+  @Override
+  public void resetToken(Product product) {
+    tokens.remove(product);
+  }
+
   private String retrieveToken(Product product, JwtCredential jwtCredential) {
     try {
       HttpPost httpPost = new HttpPost(jwtCredential.getAuthUrl());
