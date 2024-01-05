@@ -3,6 +3,7 @@ package io.camunda.common.http;
 import com.google.common.reflect.TypeToken;
 import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
+import io.camunda.common.exception.SdkException;
 import io.camunda.common.json.JsonMapper;
 import io.camunda.common.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -12,11 +13,13 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -73,13 +76,13 @@ public class DefaultHttpClient implements HttpClient {
     String url = host + basePath + retrievePath(responseType) + "/" + id;
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(responseType));
-    T resp = null;
+    T resp;
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = jsonMapper.fromJson(tmp, responseType);
+      resp = parseAndRetry(response, responseType);
     } catch (Exception e) {
       LOG.error("Failed GET with responseType {}, id {} due to {}", responseType, id, e.getMessage());
+      throw new SdkException(e);
     }
     return resp;
   }
@@ -99,13 +102,13 @@ public class DefaultHttpClient implements HttpClient {
     String url = host + basePath + resourcePath;
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(selector.getClass()));
-    T resp = null;
+    T resp;
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = jsonMapper.fromJson(tmp, responseType, parameterType);
+      resp = parseAndRetry(response, responseType, parameterType, selector);
     } catch (Exception e) {
       LOG.error("Failed GET with responseType {}, parameterType {}, selector {}, id {} due to {}", responseType, parameterType, selector, id, e.getMessage());
+      throw new SdkException(e);
     }
     return resp;
   }
@@ -116,12 +119,13 @@ public class DefaultHttpClient implements HttpClient {
     String url = host + basePath + retrievePath(selector) + "/" + key + "/xml";
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(selector));
-    String xml = null;
+    String xml;
     try {
       CloseableHttpResponse response = httpClient.execute(httpGet);
-      xml = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      xml = (String) parseAndRetry(response, selector);
     } catch (Exception e) {
       LOG.error("Failed GET with selector {}, key {} due to {}", selector, key, e.getMessage());
+      throw new SdkException(e);
     }
     return xml;
   }
@@ -132,15 +136,15 @@ public class DefaultHttpClient implements HttpClient {
     HttpPost httpPost = new HttpPost(url);
     httpPost.addHeader("Content-Type", "application/json");
     httpPost.addHeader(retrieveToken(selector.getClass()));
-    T resp = null;
+    T resp;
     try {
       String data = jsonMapper.toJson(body);
       httpPost.setEntity(new StringEntity(data));
       CloseableHttpResponse response = httpClient.execute(httpPost);
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = jsonMapper.fromJson(tmp, responseType, parameterType);
+      resp = parseAndRetry(response, responseType, parameterType, selector);
     } catch (Exception e) {
       LOG.error("Failed POST with responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
+      throw new SdkException(e);
     }
     return resp;
   }
@@ -154,10 +158,10 @@ public class DefaultHttpClient implements HttpClient {
     T resp = null;
     try {
       CloseableHttpResponse response = httpClient.execute(httpDelete);
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
-      resp = jsonMapper.fromJson(tmp, responseType);
+      resp = parseAndRetry(response, responseType, selector);
     } catch (Exception e) {
       LOG.error("Failed DELETE with responseType {}, selector {}, key {}, due to {}", responseType, selector, key, e.getMessage());
+      throw new SdkException(e);
     }
     return resp;
   }
@@ -181,5 +185,60 @@ public class DefaultHttpClient implements HttpClient {
     });
     Map.Entry<String, String> header = authentication.getTokenHeader(currentProduct.get());
     return new BasicHeader(header.getKey(), header.getValue());
+  }
+
+  private <T> Product getProduct(Class<T> clazz) {
+    AtomicReference<Product> currentProduct = new AtomicReference<>();
+    productMap.forEach((product, map) -> {
+      if (map.containsKey(clazz)) {
+        currentProduct.set(product);
+      }
+    });
+    return currentProduct.get();
+  }
+
+  // TODO: Refactor duplicate code parseAndRetry()
+
+  private <T> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType) throws IOException {
+    T resp;
+    if (200 <= response.getCode() && response.getCode() <= 299) {
+      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      resp = jsonMapper.fromJson(tmp, responseType);
+    } else {
+      if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
+        authentication.resetToken(getProduct(responseType.getClass()));
+        // TODO: Add capability to auto retry the existing request
+      }
+      throw new SdkException("Response not successful: " + response.getCode());
+    }
+    return resp;
+  }
+
+  private <T, V> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType, Class<V> selector) throws IOException {
+    T resp;
+    if (200 <= response.getCode() && response.getCode() <= 299) {
+      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      resp = jsonMapper.fromJson(tmp, responseType);
+    } else {
+      if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
+        authentication.resetToken(getProduct(selector.getClass()));
+      }
+      throw new SdkException("Response not successful: " + response.getCode());
+    }
+    return resp;
+  }
+
+  private <T, V, W> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType, Class<V> parameterType, TypeToken<W> selector) throws IOException {
+    T resp;
+    if (200 <= response.getCode() && response.getCode() <= 299) {
+      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      resp = jsonMapper.fromJson(tmp, responseType, parameterType);
+    } else {
+      if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
+        authentication.resetToken(getProduct(selector.getClass()));
+      }
+      throw new SdkException("Response not successful: " + response.getCode());
+    }
+    return resp;
   }
 }
