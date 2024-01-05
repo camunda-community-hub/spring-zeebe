@@ -78,6 +78,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   @Override
   public void resetToken(Product product) {
     JwtCredential jwtCredential = jwtConfig.getProduct(product);
+    tokens.remove(product);
     retrieveToken(product, jwtCredential);
   }
 
