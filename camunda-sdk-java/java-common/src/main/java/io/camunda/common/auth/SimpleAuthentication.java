@@ -53,8 +53,9 @@ public class SimpleAuthentication implements Authentication {
       String cookie = client.execute(request, response -> {
         Header[] cookieHeaders = response.getHeaders("Set-Cookie");
         String cookieCandidate = null;
+        String cookiePrefix = product.toString().toUpperCase() + "-SESSION";
         for (Header cookieHeader : cookieHeaders) {
-        if (cookieHeader.getValue().startsWith("OPERATE-SESSION")) {
+          if (cookieHeader.getValue().startsWith(cookiePrefix)) {
             cookieCandidate = response.getHeader("Set-Cookie").getValue();
             break;
           }
