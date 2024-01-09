@@ -13,7 +13,9 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.slf4j.Logger;
@@ -77,13 +79,13 @@ public class DefaultHttpClient implements HttpClient {
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(responseType));
     T resp;
-    try {
-      CloseableHttpResponse response = httpClient.execute(httpGet);
+    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       resp = parseAndRetry(response, responseType);
     } catch (Exception e) {
       LOG.error("Failed GET with responseType {}, id {} due to {}", responseType, id, e.getMessage());
       throw new SdkException(e);
     }
+
     return resp;
   }
 
@@ -103,8 +105,7 @@ public class DefaultHttpClient implements HttpClient {
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(selector.getClass()));
     T resp;
-    try {
-      CloseableHttpResponse response = httpClient.execute(httpGet);
+    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       resp = parseAndRetry(response, responseType, parameterType, selector);
     } catch (Exception e) {
       LOG.error("Failed GET with responseType {}, parameterType {}, selector {}, id {} due to {}", responseType, parameterType, selector, id, e.getMessage());
@@ -120,8 +121,7 @@ public class DefaultHttpClient implements HttpClient {
     HttpGet httpGet = new HttpGet(url);
     httpGet.addHeader(retrieveToken(selector));
     String xml;
-    try {
-      CloseableHttpResponse response = httpClient.execute(httpGet);
+    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       xml = parseXMLAndRetry(response, selector);
     } catch (Exception e) {
       LOG.error("Failed GET with selector {}, key {} due to {}", selector, key, e.getMessage());
@@ -137,10 +137,9 @@ public class DefaultHttpClient implements HttpClient {
     httpPost.addHeader("Content-Type", "application/json");
     httpPost.addHeader(retrieveToken(selector.getClass()));
     T resp;
-    try {
-      String data = jsonMapper.toJson(body);
-      httpPost.setEntity(new StringEntity(data));
-      CloseableHttpResponse response = httpClient.execute(httpPost);
+    String data = jsonMapper.toJson(body);
+    httpPost.setEntity(new StringEntity(data));
+    try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
       resp = parseAndRetry(response, responseType, parameterType, selector);
     } catch (Exception e) {
       LOG.error("Failed POST with responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
@@ -156,8 +155,7 @@ public class DefaultHttpClient implements HttpClient {
     HttpDelete httpDelete = new HttpDelete(url);
     httpDelete.addHeader(retrieveToken(selector));
     T resp = null;
-    try {
-      CloseableHttpResponse response = httpClient.execute(httpDelete);
+    try (CloseableHttpResponse response = httpClient.execute(httpDelete)) {
       resp = parseAndRetry(response, responseType, selector);
     } catch (Exception e) {
       LOG.error("Failed DELETE with responseType {}, selector {}, key {}, due to {}", responseType, selector, key, e.getMessage());
@@ -215,8 +213,10 @@ public class DefaultHttpClient implements HttpClient {
   private <T> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType) throws IOException {
     T resp;
     if (200 <= response.getCode() && response.getCode() <= 299) {
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      HttpEntity entity = response.getEntity();
+      String tmp = new String(Java8Utils.readAllBytes(entity.getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
+      EntityUtils.consume(entity);
     } else {
       if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
         authentication.resetToken(getProduct(responseType.getClass()));
@@ -230,8 +230,10 @@ public class DefaultHttpClient implements HttpClient {
   private <T, V> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType, Class<V> selector) throws IOException {
     T resp;
     if (200 <= response.getCode() && response.getCode() <= 299) {
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      HttpEntity entity = response.getEntity();
+      String tmp = new String(Java8Utils.readAllBytes(entity.getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType);
+      EntityUtils.consume(entity);
     } else {
       if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
         authentication.resetToken(getProduct(selector.getClass()));
@@ -244,8 +246,10 @@ public class DefaultHttpClient implements HttpClient {
   private <T, V, W> T parseAndRetry(CloseableHttpResponse response, Class<T> responseType, Class<V> parameterType, TypeToken<W> selector) throws IOException {
     T resp;
     if (200 <= response.getCode() && response.getCode() <= 299) {
-      String tmp = new String(Java8Utils.readAllBytes(response.getEntity().getContent()), StandardCharsets.UTF_8);
+      HttpEntity entity = response.getEntity();
+      String tmp = new String(Java8Utils.readAllBytes(entity.getContent()), StandardCharsets.UTF_8);
       resp = jsonMapper.fromJson(tmp, responseType, parameterType);
+      EntityUtils.consume(entity);
     } else {
       if(response.getCode() == HttpStatus.SC_UNAUTHORIZED || response.getCode() == HttpStatus.SC_FORBIDDEN) {
         authentication.resetToken(getProduct(selector.getClass()));
