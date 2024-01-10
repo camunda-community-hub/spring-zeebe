@@ -20,11 +20,13 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.4.0</zeebe.version>
+    <identity.version>8.4.0</identity.version>
 
     <spring-boot.version>3.2.0</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
     <jackson.version>2.16.1</jackson.version>
+    <commons-lang.version>3.14.0</commons-lang.version>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
@@ -134,6 +136,16 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>identity-sdk</artifactId>
+        <version>${identity.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>identity-spring-boot-starter</artifactId>
+        <version>${identity.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${jackson.version}</version>
@@ -162,6 +174,11 @@
         <groupId>io.github.resilience4j</groupId>
         <artifactId>resilience4j-retry</artifactId>
         <version>${resilience4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
