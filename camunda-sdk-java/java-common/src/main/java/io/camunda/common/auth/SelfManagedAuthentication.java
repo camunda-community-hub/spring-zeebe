@@ -81,41 +81,54 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   }
 
   private String retrieveToken(Product product, JwtCredential jwtCredential) {
-    try {
-      HttpPost httpPost = new HttpPost(authUrl);
-      httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-      Map<String, String> parameters = new HashMap<>();
-      parameters.put("grant_type", "client_credentials");
-      parameters.put("client_id", jwtCredential.getClientId());
-      parameters.put("client_secret", jwtCredential.getClientSecret());
-
-      String form = parameters.entrySet()
-        .stream()
-        .map(e -> {
-          try {
-            return e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8.toString());
-          } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
-          }
-        })
-        .collect(Collectors.joining("&"));
-
-      httpPost.setEntity(new StringEntity(form));
-      CloseableHttpClient client = HttpClient.getInstance();
-      CloseableHttpResponse response = client.execute(httpPost);
-      TokenResponse tokenResponse;
-      if (response.getCode() == HttpStatus.SC_OK) {
-        tokenResponse =  jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
-      } else {
-        throw new SdkException("Error "+response.getCode()+" obtaining access token: "+EntityUtils.toString(response.getEntity()));
-      }
+    try(CloseableHttpClient client = HttpClient.getInstance()) {
+      HttpPost request = buildRequest(jwtCredential);
+      TokenResponse tokenResponse =
+          client.execute(
+              request,
+              response -> {
+                if (response.getCode() == HttpStatus.SC_OK) {
+                  return jsonMapper.fromJson(
+                      EntityUtils.toString(response.getEntity()), TokenResponse.class);
+                } else {
+                  throw new SdkException(
+                      "Error "
+                          + response.getCode()
+                          + " obtaining access token: "
+                          + EntityUtils.toString(response.getEntity()));
+                }
+              });
       tokens.put(product, tokenResponse.getAccessToken());
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new SdkException("Unable to authenticate", e);
     }
     return tokens.get(product);
+  }
+
+  private HttpPost buildRequest(JwtCredential jwtCredential) {
+    HttpPost httpPost = new HttpPost(authUrl);
+    httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("grant_type", "client_credentials");
+    parameters.put("client_id", jwtCredential.getClientId());
+    parameters.put("client_secret", jwtCredential.getClientSecret());
+
+    String form = parameters.entrySet()
+      .stream()
+      .map(e -> {
+        try {
+          return e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+          throw new RuntimeException(ex);
+        }
+      })
+      .collect(Collectors.joining("&"));
+
+    httpPost.setEntity(new StringEntity(form));
+
+    return  httpPost;
   }
 
   @Override
