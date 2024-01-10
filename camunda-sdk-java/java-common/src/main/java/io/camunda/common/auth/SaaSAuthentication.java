@@ -53,21 +53,25 @@ public class SaaSAuthentication extends JwtAuthentication {
   }
 
   private String retrieveToken(Product product, JwtCredential jwtCredential) {
-    try {
-      HttpPost httpPost = new HttpPost(jwtCredential.getAuthUrl());
-      httpPost.addHeader("Content-Type", "application/json");
-      TokenRequest tokenRequest = new TokenRequest(jwtCredential.getAudience(), jwtCredential.getClientId(), jwtCredential.getClientSecret());
-
-      httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
-      CloseableHttpClient client = HttpClient.getInstance();
-      CloseableHttpResponse response = client.execute(httpPost);
-      TokenResponse tokenResponse = jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class);
-      tokens.put(product, tokenResponse.getAccessToken());
-    } catch (Exception e) {
+      try(CloseableHttpClient client = HttpClient.getInstance()){
+        HttpPost request = buildRequest(jwtCredential);
+        TokenResponse tokenResponse = client.execute(request, response ->
+           jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class)
+        );
+        tokens.put(product, tokenResponse.getAccessToken());
+      } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
     return tokens.get(product);
+  }
+
+  private HttpPost buildRequest(JwtCredential jwtCredential) {
+    HttpPost httpPost = new HttpPost(jwtCredential.getAuthUrl());
+    httpPost.addHeader("Content-Type", "application/json");
+    TokenRequest tokenRequest = new TokenRequest(jwtCredential.getAudience(), jwtCredential.getClientId(), jwtCredential.getClientSecret());
+    httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
+    return httpPost;
   }
 
   @Override
