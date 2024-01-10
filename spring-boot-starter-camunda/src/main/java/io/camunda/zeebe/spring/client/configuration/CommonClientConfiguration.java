@@ -53,12 +53,11 @@ public class CommonClientConfiguration {
           .build();
       } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null || zeebeSelfManagedProperties.getGatewayAddress() != null) {
         // figure out if Self-Managed JWT or Self-Managed Basic
-        JwtConfig jwtConfig = configureJwtConfig();
-        IdentityConfig identityConfig = configureIdentities(jwtConfig);
-
         // Operate Client props take first priority
         if (operateClientConfigurationProperties != null) {
           if (hasText(operateClientConfigurationProperties.getKeycloakUrl()) || hasText(operateClientConfigurationProperties.getKeycloakTokenUrl())) {
+            JwtConfig jwtConfig = configureJwtConfig();
+            IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
               .jwtConfig(jwtConfig)
               .identityConfig(identityConfig)
@@ -77,6 +76,8 @@ public class CommonClientConfiguration {
         // Identity props take second priority
         if (identityConfigurationFromProperties != null) {
           if (hasText(identityConfigurationFromProperties.getClientId())) {
+            JwtConfig jwtConfig = configureJwtConfig();
+            IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
               .jwtConfig(jwtConfig)
               .identityConfig(identityConfig)
@@ -87,11 +88,15 @@ public class CommonClientConfiguration {
         // Fallback to common props
         if (commonConfigurationProperties != null) {
           if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
+            JwtConfig jwtConfig = configureJwtConfig();
+            IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
               .jwtConfig(jwtConfig)
               .identityConfig(identityConfig)
               .build();
           } else if (commonConfigurationProperties.getKeycloak().getTokenUrl() != null) {
+            JwtConfig jwtConfig = configureJwtConfig();
+            IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
               .jwtConfig(jwtConfig)
               .identityConfig(identityConfig)
