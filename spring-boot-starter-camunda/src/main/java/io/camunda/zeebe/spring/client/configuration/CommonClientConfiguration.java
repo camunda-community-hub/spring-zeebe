@@ -1,10 +1,16 @@
 package io.camunda.zeebe.spring.client.configuration;
 
 import io.camunda.common.auth.*;
+import io.camunda.common.auth.identity.IdentityContainer;
+import io.camunda.common.auth.identity.IdentityConfig;
+import io.camunda.identity.sdk.IdentityConfiguration;
+import io.camunda.identity.sdk.Identity;
 import io.camunda.zeebe.spring.client.properties.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import static org.springframework.util.StringUtils.hasText;
 
 @EnableConfigurationProperties({CommonConfigurationProperties.class, ZeebeSelfManagedProperties.class})
 public class CommonClientConfiguration {
@@ -31,10 +37,15 @@ public class CommonClientConfiguration {
   @Autowired(required = false)
   ZeebeSelfManagedProperties zeebeSelfManagedProperties;
 
+  @Autowired(required = false)
+  private IdentityConfiguration identityConfigurationFromProperties;
+
   @Bean
   public Authentication authentication() {
 
     // TODO: Refactor
+
+
     if (zeebeClientConfigurationProperties != null) {
       // check if Zeebe has clusterId provided, then must be SaaS
       if (zeebeClientConfigurationProperties.getCloud().getClusterId() != null) {
@@ -43,19 +54,18 @@ public class CommonClientConfiguration {
           .build();
       } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null || zeebeSelfManagedProperties.getGatewayAddress() != null) {
         // figure out if Self-Managed JWT or Self-Managed Basic
+        JwtConfig jwtConfig = configureJwtConfig();
+        IdentityConfig identityConfig = configureIdentities(jwtConfig);
+
+
+        // Operate Client props take first priority
         if (operateClientConfigurationProperties != null) {
-          if (operateClientConfigurationProperties.getKeycloakUrl() != null) {
+          if (hasText(operateClientConfigurationProperties.getKeycloakUrl()) || hasText(operateClientConfigurationProperties.getKeycloakTokenUrl())) {
             return SelfManagedAuthentication.builder()
-              .jwtConfig(configureJwtConfig())
-              .keycloakUrl(operateClientConfigurationProperties.getKeycloakUrl())
-              .keycloakRealm(operateClientConfigurationProperties.getKeycloakRealm())
+              .jwtConfig(jwtConfig)
+              .identityConfig(identityConfig)
               .build();
-          } else if (operateClientConfigurationProperties.getKeycloakTokenUrl() != null)  {
-            return SelfManagedAuthentication.builder()
-              .jwtConfig(configureJwtConfig())
-              .keycloakTokenUrl(operateClientConfigurationProperties.getKeycloakTokenUrl())
-              .build();
-          }  else if (operateClientConfigurationProperties.getUsername() != null && operateClientConfigurationProperties.getPassword() != null) {
+          } else if (operateClientConfigurationProperties.getUsername() != null && operateClientConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential = new SimpleCredential(operateClientConfigurationProperties.getUsername(), operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
@@ -66,17 +76,27 @@ public class CommonClientConfiguration {
           }
         }
 
+        // Identity props take second priority
+        if (identityConfigurationFromProperties != null) {
+          if (hasText(identityConfigurationFromProperties.getClientId())) {
+            return SelfManagedAuthentication.builder()
+              .jwtConfig(jwtConfig)
+              .identityConfig(identityConfig)
+              .build();
+          }
+        }
+
+        // Fallback to common props
         if (commonConfigurationProperties != null) {
           if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
             return SelfManagedAuthentication.builder()
-              .jwtConfig(configureJwtConfig())
-              .keycloakUrl(commonConfigurationProperties.getKeycloak().getUrl())
-              .keycloakRealm(commonConfigurationProperties.getKeycloak().getRealm())
+              .jwtConfig(jwtConfig)
+              .identityConfig(identityConfig)
               .build();
           } else if (commonConfigurationProperties.getKeycloak().getTokenUrl() != null) {
             return SelfManagedAuthentication.builder()
-              .jwtConfig(configureJwtConfig())
-              .keycloakTokenUrl(commonConfigurationProperties.getKeycloak().getTokenUrl())
+              .jwtConfig(jwtConfig)
+              .identityConfig(identityConfig)
               .build();
           } else if (commonConfigurationProperties.getUsername() != null && commonConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();
@@ -123,15 +143,25 @@ public class CommonClientConfiguration {
     String operateAuthUrl = zeebeClientConfigurationProperties.getCloud().getAuthUrl();
     String operateAudience = "operate.camunda.io";
     if (operateClientConfigurationProperties != null) {
+      // override authUrl
       if (operateClientConfigurationProperties.getAuthUrl() != null) {
         operateAuthUrl = operateClientConfigurationProperties.getAuthUrl();
+      } else if (hasText(operateClientConfigurationProperties.getKeycloakTokenUrl())) {
+        operateAuthUrl = operateClientConfigurationProperties.getKeycloakTokenUrl();
+      } else if (hasText(operateClientConfigurationProperties.getKeycloakUrl()) && hasText(operateClientConfigurationProperties.getKeycloakRealm())) {
+        operateAuthUrl = operateClientConfigurationProperties.getKeycloakUrl()+"/auth/realms/"+operateClientConfigurationProperties.getKeycloakRealm();
       }
+
       if (operateClientConfigurationProperties.getBaseUrl() != null) {
         operateAudience = operateClientConfigurationProperties.getBaseUrl();
       }
+
       if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null) {
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(operateClientConfigurationProperties.getClientId(), operateClientConfigurationProperties.getClientSecret(), operateAudience, operateAuthUrl));
-      } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
+      } else if (identityConfigurationFromProperties != null && hasText(identityConfigurationFromProperties.getClientId()) && hasText(identityConfigurationFromProperties.getClientSecret())) {
+        jwtConfig.addProduct(Product.OPERATE, new JwtCredential(identityConfigurationFromProperties.getClientId(), identityConfigurationFromProperties.getClientSecret(), identityConfigurationFromProperties.getAudience(), identityConfigurationFromProperties.getIssuerBackendUrl()));
+      }
+      else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(
           commonConfigurationProperties.getClientId(),
           commonConfigurationProperties.getClientSecret(),
@@ -147,5 +177,46 @@ public class CommonClientConfiguration {
       }
     }
     return jwtConfig;
+  }
+
+  private IdentityConfig configureIdentities(JwtConfig jwtConfig) {
+    IdentityConfig identityConfig = new IdentityConfig();
+
+    // TODO: Should we handle Zeebe with Identity SDK?
+    // OPERATE
+    if (operateClientConfigurationProperties != null) {
+      IdentityContainer operateIdentityContainer = configureOperateIdentityContainer(jwtConfig);
+      identityConfig.addProduct(Product.OPERATE, operateIdentityContainer);
+    }
+    return identityConfig;
+  }
+
+  /**
+   * Identity properties supplied by the user are optional, so if they don't exist, we have to backfill them from somewhere
+   * like the OperateClientConfigurationProperties.
+   * @param jwtConfig
+   * @return
+   */
+  private IdentityContainer configureOperateIdentityContainer(JwtConfig jwtConfig) {
+    String issuer;
+    if (hasText(identityConfigurationFromProperties.getIssuer())) {
+      issuer = identityConfigurationFromProperties.getIssuer();
+    } else {
+      issuer = jwtConfig.getProduct(Product.OPERATE).getAuthUrl();
+    }
+
+    IdentityConfiguration operateIdentityConfiguration = new IdentityConfiguration.Builder()
+      .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
+      .withIssuer(issuer)
+      // is this the only field that matters for getting access tokens?
+      //.withIssuerBackendUrl(identityConfigurationFromProperties.getIssuerBackendUrl())
+      .withIssuerBackendUrl(jwtConfig.getProduct(Product.OPERATE).getAuthUrl())
+      .withClientId(jwtConfig.getProduct(Product.OPERATE).getClientId())
+      .withClientSecret(jwtConfig.getProduct(Product.OPERATE).getClientSecret())
+      .withAudience(jwtConfig.getProduct(Product.OPERATE).getAudience())
+      .withType(identityConfigurationFromProperties.getType().name())
+      .build();
+    Identity operateIdentity = new Identity(operateIdentityConfiguration);
+    return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
   }
 }
