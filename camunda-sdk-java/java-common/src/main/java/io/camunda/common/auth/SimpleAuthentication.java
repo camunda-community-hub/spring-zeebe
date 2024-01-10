@@ -48,22 +48,19 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private String retrieveToken(Product product, SimpleCredential simpleCredential) {
-    try {
-      HttpPost httpPost = new HttpPost(authUrl);
-      List<NameValuePair> params = new ArrayList<>();
-      params.add(new BasicNameValuePair("username", simpleCredential.getUser()));
-      params.add(new BasicNameValuePair("password", simpleCredential.getPassword()));
-      httpPost.setEntity(new UrlEncodedFormEntity(params));
-
-      CloseableHttpClient client = HttpClient.getInstance();
-      CloseableHttpResponse response = client.execute(httpPost);
-      Header[] cookieHeaders = response.getHeaders("Set-Cookie");
-      String cookie = null;
-      for (Header cookieHeader : cookieHeaders) {
+    try(CloseableHttpClient client = HttpClient.getInstance()) {
+      HttpPost request = buildRequest(simpleCredential);
+      String cookie = client.execute(request, response -> {
+        Header[] cookieHeaders = response.getHeaders("Set-Cookie");
+        String cookieCandidate = null;
+        for (Header cookieHeader : cookieHeaders) {
         if (cookieHeader.getValue().startsWith("OPERATE-SESSION")) {
-          cookie = response.getHeader("Set-Cookie").getValue();
+            cookieCandidate = response.getHeader("Set-Cookie").getValue();
+            break;
+          }
         }
-      }
+        return cookieCandidate;
+      });
       if (cookie == null) {
         throw new RuntimeException("Unable to authenticate due to missing Set-Cookie");
       }
@@ -75,6 +72,14 @@ public class SimpleAuthentication implements Authentication {
     return tokens.get(product);
   }
 
+  private HttpPost buildRequest(SimpleCredential simpleCredential) {
+    HttpPost httpPost = new HttpPost(authUrl);
+    List<NameValuePair> params = new ArrayList<>();
+    params.add(new BasicNameValuePair("username", simpleCredential.getUser()));
+    params.add(new BasicNameValuePair("password", simpleCredential.getPassword()));
+    httpPost.setEntity(new UrlEncodedFormEntity(params));
+    return httpPost;
+  }
 
     @Override
   public Map.Entry<String, String> getTokenHeader(Product product) {

@@ -8,6 +8,8 @@ public interface MetricsRecorder {
   String ACTION_FAILED = "failed";
   String ACTION_BPMN_ERROR = "bpmn-error";
 
+  String METRIC_NAME_MAX_JOBS_ACTIVE = "camunda.job.max-jobs-active";
+
   /**
    * Increase the counter for the given metric name, action and type
    *
