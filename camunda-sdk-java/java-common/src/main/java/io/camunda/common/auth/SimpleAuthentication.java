@@ -3,7 +3,7 @@ package io.camunda.common.auth;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -48,7 +48,7 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private String retrieveToken(Product product, SimpleCredential simpleCredential) {
-    try(CloseableHttpClient client = HttpClient.getInstance()) {
+    try(CloseableHttpClient client = HttpClients.createDefault()) {
       HttpPost request = buildRequest(simpleCredential);
       String cookie = client.execute(request, response -> {
         Header[] cookieHeaders = response.getHeaders("Set-Cookie");
