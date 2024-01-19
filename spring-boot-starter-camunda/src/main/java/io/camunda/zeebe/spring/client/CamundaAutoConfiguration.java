@@ -32,6 +32,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
   ZeebeClientAllAutoConfiguration.class,
   CommonClientConfiguration.class,
   OperateClientConfiguration.class,
+  TaskListClientConfiguration.class,
   ZeebeActuatorConfiguration.class,
   MetricsDefaultConfiguration.class
 })

@@ -18,11 +18,16 @@ public interface HttpClient {
 
   <T> T get(Class<T> responseType, String id);
 
+  <T> T get(Class<T> responseType, String id, Map<String, String> queryParams);
+
   <T, V, W> T get(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, Long key);
 
   <T> String getXml(Class<T> selector, Long key);
 
   <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body);
+
+  <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body, String id);
+
 
   <T, V> T delete(Class<T> responseType, Class<V> selector, Long key);
 

@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Default Http Client powered by Apache HttpClient
@@ -90,6 +91,29 @@ public class DefaultHttpClient implements HttpClient {
   }
 
   @Override
+  public <T> T get(Class<T> responseType, String id, Map<String, String> queryParams) {
+    String url = host + basePath + retrievePath(responseType) + "/" + id + "?" + buildQueryParams(queryParams);
+    HttpGet httpGet = new HttpGet(url);
+    httpGet.addHeader(retrieveToken(responseType));
+    T resp;
+    try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+      resp = parseAndRetry(response, responseType);
+    } catch (Exception e) {
+      LOG.error("Failed GET with responseType {}, id {}, queryParams  {} due to {}", responseType, id, queryParams, e.getMessage());
+      throw new SdkException(e);
+    }
+
+    return resp;
+  }
+
+  private String buildQueryParams(Map<String, String> params) {
+    return params.entrySet()
+      .stream()
+      .map(entry -> entry.getKey() + "=" + entry.getValue())
+      .collect(Collectors.joining("&"));
+  }
+
+  @Override
   public <T, V, W> T get(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, Long key) {
     return get(responseType, parameterType, selector, String.valueOf(key));
   }
@@ -133,6 +157,30 @@ public class DefaultHttpClient implements HttpClient {
   @Override
   public <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body) {
     String url = host + basePath + retrievePath(selector.getClass());
+    HttpPost httpPost = new HttpPost(url);
+    httpPost.addHeader("Content-Type", "application/json");
+    httpPost.addHeader(retrieveToken(selector.getClass()));
+    T resp;
+    String data = jsonMapper.toJson(body);
+    httpPost.setEntity(new StringEntity(data));
+    try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+      resp = parseAndRetry(response, responseType, parameterType, selector);
+    } catch (Exception e) {
+      LOG.error("Failed POST with responseType {}, parameterType {}, selector {}, body {} due to {}", responseType, parameterType, selector, body, e.getMessage());
+      throw new SdkException(e);
+    }
+    return resp;
+  }
+
+  @Override
+  public <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body, String id) {
+    String resourcePath = retrievePath(selector.getClass());
+    if (resourcePath.contains("{key}")) {
+      resourcePath = resourcePath.replace("{key}", String.valueOf(id));
+    } else {
+      resourcePath = resourcePath + "/" + id;
+    }
+    String url = host + basePath + resourcePath;
     HttpPost httpPost = new HttpPost(url);
     httpPost.addHeader("Content-Type", "application/json");
     httpPost.addHeader(retrieveToken(selector.getClass()));

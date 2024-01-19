@@ -1,5 +1,6 @@
 package io.camunda.common.auth;
 
+import io.camunda.common.exception.SdkException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -17,15 +18,8 @@ public class SimpleAuthentication implements Authentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private String simpleUrl;
   private SimpleConfig simpleConfig;
   private Map<Product, String> tokens;
-
-  private String authUrl;
-
-  public void setSimpleUrl(String simpleUrl) {
-    this.simpleUrl = simpleUrl;
-  }
 
   public SimpleConfig getSimpleConfig() {
     return simpleConfig;
@@ -43,7 +37,6 @@ public class SimpleAuthentication implements Authentication {
 
   @Override
   public Authentication build() {
-    authUrl = simpleUrl+"/api/login";
     return this;
   }
 
@@ -68,13 +61,13 @@ public class SimpleAuthentication implements Authentication {
       tokens.put(product, cookie);
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate", e);
+      throw new SdkException("Unable to authenticate", e);
     }
     return tokens.get(product);
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
-    HttpPost httpPost = new HttpPost(authUrl);
+    HttpPost httpPost = new HttpPost(simpleCredential.getAuthUrl() + "/api/login");
     List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("username", simpleCredential.getUser()));
     params.add(new BasicNameValuePair("password", simpleCredential.getPassword()));

@@ -1,5 +1,6 @@
 package io.camunda.common.auth;
 
+import io.camunda.common.exception.SdkException;
 import io.camunda.common.json.JsonMapper;
 import io.camunda.common.json.SdkObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -60,7 +61,7 @@ public class SaaSAuthentication extends JwtAuthentication {
         tokens.put(product, tokenResponse.getAccessToken());
       } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate", e);
+      throw new SdkException("Unable to authenticate", e);
     }
     return tokens.get(product);
   }

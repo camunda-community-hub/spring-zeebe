@@ -23,7 +23,8 @@
   </dependencies>
 
   <modules>
-    <module>java-client-operate</module>
     <module>java-common</module>
+    <module>java-client-operate</module>
+    <module>java-client-tasklist</module>
   </modules>
 </project>
