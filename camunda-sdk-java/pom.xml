@@ -25,5 +25,6 @@
   <modules>
     <module>java-client-operate</module>
     <module>java-common</module>
+    <module>java-client-console</module>
   </modules>
 </project>

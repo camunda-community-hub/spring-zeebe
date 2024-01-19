@@ -30,7 +30,8 @@ import org.springframework.context.annotation.Configuration;
   CommonClientConfiguration.class,
   OperateClientConfiguration.class,
   ZeebeActuatorConfiguration.class,
-  MetricsDefaultConfiguration.class
+  MetricsDefaultConfiguration.class,
+  ConsoleClientConfiguration.class
 })
 @AutoConfigureAfter(
     JacksonAutoConfiguration
