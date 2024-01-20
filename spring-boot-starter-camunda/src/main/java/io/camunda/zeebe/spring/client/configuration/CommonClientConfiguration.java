@@ -44,8 +44,6 @@ public class CommonClientConfiguration {
   public Authentication authentication() {
 
     // TODO: Refactor
-
-
     if (zeebeClientConfigurationProperties != null) {
       // check if Zeebe has clusterId provided, then must be SaaS
       if (zeebeClientConfigurationProperties.getCloud().getClusterId() != null) {
@@ -56,7 +54,6 @@ public class CommonClientConfiguration {
         // figure out if Self-Managed JWT or Self-Managed Basic
         JwtConfig jwtConfig = configureJwtConfig();
         IdentityConfig identityConfig = configureIdentities(jwtConfig);
-
 
         // Operate Client props take first priority
         if (operateClientConfigurationProperties != null) {
@@ -209,7 +206,6 @@ public class CommonClientConfiguration {
       .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
       .withIssuer(issuer)
       // is this the only field that matters for getting access tokens?
-      //.withIssuerBackendUrl(identityConfigurationFromProperties.getIssuerBackendUrl())
       .withIssuerBackendUrl(jwtConfig.getProduct(Product.OPERATE).getAuthUrl())
       .withClientId(jwtConfig.getProduct(Product.OPERATE).getClientId())
       .withClientSecret(jwtConfig.getProduct(Product.OPERATE).getClientSecret())

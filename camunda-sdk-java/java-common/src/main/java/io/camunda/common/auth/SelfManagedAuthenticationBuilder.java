@@ -15,25 +15,6 @@ public class SelfManagedAuthenticationBuilder {
     return this;
   }
 
-//  public SelfManagedAuthenticationBuilder keycloakUrl(String keycloakUrl) {
-//    selfManagedAuthentication.setKeycloakUrl(keycloakUrl);
-//    return this;
-//  }
-
-//  public SelfManagedAuthenticationBuilder keycloakRealm(String keycloakRealm) {
-//    if (keycloakRealm != null) {
-//      selfManagedAuthentication.setKeycloakRealm(keycloakRealm);
-//    }
-//    return this;
-//  }
-
-//  public SelfManagedAuthenticationBuilder keycloakTokenUrl(String keycloakTokenUrl) {
-//    if (keycloakTokenUrl != null) {
-//      selfManagedAuthentication.setKeycloakTokenUrl(keycloakTokenUrl);
-//    }
-//    return this;
-//  }
-
   public SelfManagedAuthenticationBuilder identityConfig(IdentityConfig identityConfig) {
     selfManagedAuthentication.setIdentityConfig(identityConfig);
     return this;
