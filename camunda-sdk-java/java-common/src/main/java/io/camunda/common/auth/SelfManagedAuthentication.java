@@ -68,17 +68,21 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     if (tokens.containsKey(product)) {
       token = tokens.get(product);
     } else {
-      Identity identity = identityConfig.get(product).getIdentity();
-      String audience = jwtConfig.getProduct(product).getAudience();
-      Tokens identityTokens = identity.authentication().requestToken(audience);
-      try {
-        identity.authentication().verifyToken(identityTokens.getAccessToken());
-      } catch (TokenExpiredException exception) {
-        identityTokens = identity.authentication().renewToken(identityTokens.getRefreshToken());
-      }
-      tokens.put(product, identityTokens.getAccessToken());
-      token = tokens.get(product);
+      token = getIdentityToken(product);
     }
     return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
+  }
+
+  private String getIdentityToken(Product product) {
+    Identity identity = identityConfig.get(product).getIdentity();
+    String audience = jwtConfig.getProduct(product).getAudience();
+    Tokens identityTokens = identity.authentication().requestToken(audience);
+    try {
+      identity.authentication().verifyToken(identityTokens.getAccessToken());
+    } catch (TokenExpiredException exception) {
+      identityTokens = identity.authentication().renewToken(identityTokens.getRefreshToken());
+    }
+    tokens.put(product, identityTokens.getAccessToken());
+    return tokens.get(product);
   }
 }
