@@ -302,6 +302,17 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>identity-snapshots</id>
+      <name>Identity Snapshot Repository</name>
+      <url>https://artifacts.camunda.com/artifactory/camunda-identity-snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
   <developers>
