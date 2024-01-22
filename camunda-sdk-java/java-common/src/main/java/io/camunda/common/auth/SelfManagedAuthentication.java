@@ -6,6 +6,7 @@ import io.camunda.common.json.JsonMapper;
 import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.authentication.Tokens;
+import io.camunda.identity.sdk.authentication.exception.TokenExpiredException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -70,7 +71,13 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       Identity identity = identityConfig.get(product).getIdentity();
       String audience = jwtConfig.getProduct(product).getAudience();
       Tokens identityTokens = identity.authentication().requestToken(audience);
-      token = identityTokens.getAccessToken();
+      try {
+        identity.authentication().verifyToken(identityTokens.getAccessToken());
+      } catch (TokenExpiredException exception) {
+        identityTokens = identity.authentication().renewToken(identityTokens.getRefreshToken());
+      }
+      tokens.put(product, identityTokens.getAccessToken());
+      token = tokens.get(product);
     }
     return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
   }
