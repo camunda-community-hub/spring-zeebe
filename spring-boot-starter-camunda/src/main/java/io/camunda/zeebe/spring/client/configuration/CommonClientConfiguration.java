@@ -3,6 +3,7 @@ package io.camunda.zeebe.spring.client.configuration;
 import io.camunda.common.auth.*;
 import io.camunda.common.auth.identity.IdentityContainer;
 import io.camunda.common.auth.identity.IdentityConfig;
+import io.camunda.common.exception.SdkException;
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.zeebe.spring.client.properties.*;
@@ -170,7 +171,7 @@ public class CommonClientConfiguration {
       } else if (zeebeSelfManagedProperties.getClientId() != null && zeebeSelfManagedProperties.getClientSecret() != null) {
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(zeebeSelfManagedProperties.getClientId(), zeebeSelfManagedProperties.getClientSecret(), operateAudience, operateAuthUrl));
       } else {
-        throw new RuntimeException("Unable to determine OPERATE credentials");
+        throw new SdkException("Unable to determine OPERATE credentials");
       }
     }
     return jwtConfig;
