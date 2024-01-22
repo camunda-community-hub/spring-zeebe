@@ -197,17 +197,23 @@ public class CommonClientConfiguration {
    */
   private IdentityContainer configureOperateIdentityContainer(JwtConfig jwtConfig) {
     String issuer;
+    String issuerBackendUrl;
     if (hasText(identityConfigurationFromProperties.getIssuer())) {
       issuer = identityConfigurationFromProperties.getIssuer();
     } else {
       issuer = jwtConfig.getProduct(Product.OPERATE).getAuthUrl();
     }
 
+    if (hasText(identityConfigurationFromProperties.getIssuerBackendUrl())) {
+      issuerBackendUrl = identityConfigurationFromProperties.getIssuerBackendUrl();
+    } else {
+      issuerBackendUrl = jwtConfig.getProduct(Product.OPERATE).getAuthUrl();
+    }
+
     IdentityConfiguration operateIdentityConfiguration = new IdentityConfiguration.Builder()
       .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
       .withIssuer(issuer)
-      // is this the only field that matters for getting access tokens?
-      .withIssuerBackendUrl(jwtConfig.getProduct(Product.OPERATE).getAuthUrl())
+      .withIssuerBackendUrl(issuerBackendUrl)
       .withClientId(jwtConfig.getProduct(Product.OPERATE).getClientId())
       .withClientSecret(jwtConfig.getProduct(Product.OPERATE).getClientSecret())
       .withAudience(jwtConfig.getProduct(Product.OPERATE).getAudience())
