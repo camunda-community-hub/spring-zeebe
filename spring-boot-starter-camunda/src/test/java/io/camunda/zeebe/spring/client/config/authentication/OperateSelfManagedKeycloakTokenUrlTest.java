@@ -1,6 +1,7 @@
 package io.camunda.zeebe.spring.client.config.authentication;
 
 import io.camunda.common.auth.*;
+import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
 import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = OperateSelfManagedKeycloakTokenUrlTest.TestConfig.class)
 public class OperateSelfManagedKeycloakTokenUrlTest {
 
-  @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class})
+  @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class, IdentityAutoConfiguration.class})
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
 
