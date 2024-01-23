@@ -1,30 +1,16 @@
 package io.camunda.common.auth;
 
 import io.camunda.common.auth.identity.IdentityConfig;
-import io.camunda.common.exception.SdkException;
-import io.camunda.common.json.JsonMapper;
-import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.authentication.Tokens;
 import io.camunda.identity.sdk.authentication.exception.TokenExpiredException;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SelfManagedAuthentication extends JwtAuthentication {
 
@@ -70,6 +56,7 @@ public class SelfManagedAuthentication extends JwtAuthentication {
       token = tokens.get(product);
     } else {
       token = getIdentityToken(product);
+      saveToken(product, token);
     }
     return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
   }
@@ -83,7 +70,10 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     } catch (TokenExpiredException exception) {
       identityTokens = identity.authentication().renewToken(identityTokens.getRefreshToken());
     }
-    tokens.put(product, identityTokens.getAccessToken());
-    return tokens.get(product);
+    return identityTokens.getAccessToken();
+  }
+
+  private void saveToken(Product product, String token) {
+    tokens.put(product, token);
   }
 }
