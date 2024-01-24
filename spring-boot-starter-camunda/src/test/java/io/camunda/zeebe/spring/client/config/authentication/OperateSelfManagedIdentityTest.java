@@ -26,12 +26,16 @@ import static org.assertj.core.api.Assertions.assertThat;
     "zeebe.client.secret=client-secret",
     "zeebe.token.audience=sample-audience",
     "camunda.operate.client.url=http://localhost:8081",
-    "camunda.operate.client.username=username",
-    "camunda.operate.client.password=password"
+    "camunda.identity.issuer=http://some-oidc-issuer",
+    "camunda.identity.issuer-backend-url=http://some-oidc-issuer-backend-url",
+    "camunda.identity.type=MICROSOFT",
+    "camunda.identity.client-id=client-id2",
+    "camunda.identity.client-secret=client-secret2",
+    "camunda.identity.audience=sample-audience2"
   }
 )
-@ContextConfiguration(classes = OperateSelfManagedBasicTest.TestConfig.class)
-public class OperateSelfManagedBasicTest {
+@ContextConfiguration(classes = OperateSelfManagedIdentityTest.TestConfig.class)
+public class OperateSelfManagedIdentityTest {
 
   @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class, IdentityAutoConfiguration.class})
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
@@ -47,16 +51,16 @@ public class OperateSelfManagedBasicTest {
 
   @Test
   public void testAuthentication() {
-    assertThat(authentication).isInstanceOf(SimpleAuthentication.class);
+    assertThat(authentication).isInstanceOf(SelfManagedAuthentication.class);
     assertThat(operateClient).isNotNull();
   }
 
   @Test
   public void testCredential() {
-    SimpleAuthentication simpleAuthentication = (SimpleAuthentication) authentication;
-    SimpleCredential simpleCredential = simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
+    SelfManagedAuthentication selfManagedAuthentication = (SelfManagedAuthentication) authentication;
+    JwtCredential jwtCredential = selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
 
-    assertThat(simpleCredential.getUser()).isEqualTo("username");
-    assertThat(simpleCredential.getPassword()).isEqualTo("password");
+    assertThat(jwtCredential.getClientId()).isEqualTo("client-id2");
+    assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret2");
   }
 }
