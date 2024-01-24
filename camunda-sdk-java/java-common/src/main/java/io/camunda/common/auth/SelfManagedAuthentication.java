@@ -65,11 +65,6 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     Identity identity = identityConfig.get(product).getIdentity();
     String audience = jwtConfig.getProduct(product).getAudience();
     Tokens identityTokens = identity.authentication().requestToken(audience);
-    try {
-      identity.authentication().verifyToken(identityTokens.getAccessToken());
-    } catch (TokenExpiredException exception) {
-      identityTokens = identity.authentication().renewToken(identityTokens.getRefreshToken());
-    }
     return identityTokens.getAccessToken();
   }
 
