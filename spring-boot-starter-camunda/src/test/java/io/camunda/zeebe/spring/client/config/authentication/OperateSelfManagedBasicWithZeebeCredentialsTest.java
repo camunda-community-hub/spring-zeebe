@@ -24,13 +24,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(
   properties = {
     "zeebe.client.broker.gatewayAddress=localhost12345",
+    "zeebe.authorization.server.url=http://zeebe-authorization-server",
+    "zeebe.client.id=client-id",
+    "zeebe.client.secret=client-secret",
+    "zeebe.token.audience=sample-audience",
     "camunda.operate.client.url=http://localhost:8081",
     "camunda.operate.client.username=username",
     "camunda.operate.client.password=password"
   }
 )
-@ContextConfiguration(classes = OperateSelfManagedBasicTest.TestConfig.class)
-public class OperateSelfManagedBasicTest {
+@ContextConfiguration(classes = OperateSelfManagedBasicWithZeebeCredentialsTest.TestConfig.class)
+public class OperateSelfManagedBasicWithZeebeCredentialsTest {
 
   @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class, IdentityAutoConfiguration.class})
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
