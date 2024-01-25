@@ -199,4 +199,9 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public boolean useDefaultRetryPolicy() {
     return properties.useDefaultRetryPolicy();
   }
+
+  @Override
+  public String toString() {
+    return "ZeebeClientConfiguration{" + "properties=" + properties + ", commonConfigurationProperties=" + commonConfigurationProperties + ", authentication=" + authentication + ", jsonMapper=" + jsonMapper + ", interceptors=" + interceptors + ", zeebeClientExecutorService=" + zeebeClientExecutorService + '}';
+  }
 }
