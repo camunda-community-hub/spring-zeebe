@@ -21,5 +21,4 @@ public class SimpleAuthenticationBuilder {
   public Authentication build() {
     return simpleAuthentication.build();
   }
-
 }

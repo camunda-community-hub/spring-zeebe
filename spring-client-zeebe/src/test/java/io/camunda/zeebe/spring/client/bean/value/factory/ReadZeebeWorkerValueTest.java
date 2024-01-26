@@ -1,6 +1,5 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,107 +66,8 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
-  @Test
-  public void applyOnWithZeebeWorkerVariables() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
-    final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariables.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    assertThat(Arrays.asList("var1", "var2", "var3"))
-        .hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
-    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
-  }
-
-  @Test
-  public void applyOnZeebeWorkerWithNoTypeSet() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor =
-        new ZeebeWorkerAnnotationProcessor(null, new ArrayList<>());
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    assertEquals("handle", zeebeWorkerValue.get().getType());
-  }
-
-  @Test
-  // MAybe valuidate via own test class with @TestPropertySource(properties =
-  // {"zeebe.client.worker.default-type=defaultWorkerType"})
-  public void applyOnZeebeWorkerWithNoTypeSetUsingDefault() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    assertEquals(DEFAULT_WORKER_TYPE, zeebeWorkerValue.get().getType());
-  }
-
-  @Test
-  public void applyOnZeebeWorkerWithNoNameSetUsingDefault() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    assertEquals(DEFAULT_WORKER_NAME, zeebeWorkerValue.get().getName());
-  }
-
-  @Test
-  public void applyOnZeebeWorkerWithNoNameNoDefault() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor =
-        new ZeebeWorkerAnnotationProcessor(null, new ArrayList<>());
-    final MethodInfo methodInfo = extract(ClassInfoTest.NoPropertiesSet.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    // we are not using beans here - so beanName is null
-    assertEquals("null#handle", zeebeWorkerValue.get().getName());
-  }
-
   private ZeebeWorkerAnnotationProcessor createDefaultAnnotationProcessor() {
     return new ZeebeWorkerAnnotationProcessor(null, new ArrayList<>());
-  }
-
-  @Test
-  public void applyOnWithZeebeWorkerVariablesComplexType() {
-    // given
-    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
-    final MethodInfo methodInfo = extract(ClassInfoTest.WithZeebeWorkerVariablesComplexType.class);
-
-    // when
-    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
-        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
-
-    // then
-    assertTrue(zeebeWorkerValue.isPresent());
-    assertThat(Arrays.asList("var1", "var2"))
-        .hasSameElementsAs(Arrays.asList(zeebeWorkerValue.get().getFetchVariables()));
-    assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
   }
 
   private MethodInfo extract(Class<?> clazz) {

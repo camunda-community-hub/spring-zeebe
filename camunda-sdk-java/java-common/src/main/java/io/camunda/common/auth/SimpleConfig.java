@@ -3,9 +3,7 @@ package io.camunda.common.auth;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Contains mapping between products and their Simple credentials
- */
+/** Contains mapping between products and their Simple credentials */
 public class SimpleConfig {
 
   private Map<Product, SimpleCredential> map;
@@ -25,5 +23,4 @@ public class SimpleConfig {
   public SimpleCredential getProduct(Product product) {
     return map.get(product);
   }
-
 }

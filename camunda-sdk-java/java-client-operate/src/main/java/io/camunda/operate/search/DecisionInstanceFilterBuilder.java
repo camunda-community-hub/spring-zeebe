@@ -4,14 +4,15 @@ import io.camunda.operate.model.DecisionInstanceInput;
 import io.camunda.operate.model.DecisionInstanceOutput;
 import io.camunda.operate.model.DecisionState;
 import io.camunda.operate.model.DecisionType;
-
 import java.util.List;
 
 public class DecisionInstanceFilterBuilder {
 
   DecisionInstanceFilter filter;
 
-  DecisionInstanceFilterBuilder() { filter = new DecisionInstanceFilter(); }
+  DecisionInstanceFilterBuilder() {
+    filter = new DecisionInstanceFilter();
+  }
 
   public DecisionInstanceFilterBuilder id(String id) {
     filter.setId(id);
@@ -78,12 +79,14 @@ public class DecisionInstanceFilterBuilder {
     return this;
   }
 
-  public DecisionInstanceFilterBuilder evaluatedInputs(List<DecisionInstanceInput> evaluatedInputs) {
+  public DecisionInstanceFilterBuilder evaluatedInputs(
+      List<DecisionInstanceInput> evaluatedInputs) {
     filter.setEvaluatedInputs(evaluatedInputs);
     return this;
   }
 
-  public DecisionInstanceFilterBuilder evaluatedOutputs(List<DecisionInstanceOutput> evaluatedOutputs) {
+  public DecisionInstanceFilterBuilder evaluatedOutputs(
+      List<DecisionInstanceOutput> evaluatedOutputs) {
     filter.setEvaluatedOutputs(evaluatedOutputs);
     return this;
   }
@@ -93,6 +96,7 @@ public class DecisionInstanceFilterBuilder {
     return this;
   }
 
-  public DecisionInstanceFilter build() { return filter; }
-
+  public DecisionInstanceFilter build() {
+    return filter;
+  }
 }

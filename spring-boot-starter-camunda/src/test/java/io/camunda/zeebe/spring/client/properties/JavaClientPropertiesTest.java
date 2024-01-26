@@ -1,7 +1,10 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +15,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Duration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-  properties = {
-    "zeebe.client.gateway.address=localhost12345",
-    "zeebe.client.job.pollinterval=99s",
-    "zeebe.client.worker.name=testName",
-    "zeebe.client.cloud.secret=processOrchestration"
-  }
-)
+    properties = {
+      "zeebe.client.gateway.address=localhost12345",
+      "zeebe.client.job.pollinterval=99s",
+      "zeebe.client.worker.name=testName",
+      "zeebe.client.cloud.secret=processOrchestration"
+    })
 @ContextConfiguration(classes = JavaClientPropertiesTest.TestConfig.class)
 public class JavaClientPropertiesTest {
 
@@ -37,8 +35,7 @@ public class JavaClientPropertiesTest {
     }
   }
 
-  @Autowired
-  private ZeebeClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
@@ -59,5 +56,4 @@ public class JavaClientPropertiesTest {
   public void hasCloudSecret() throws Exception {
     assertThat(properties.getCloud().getClientSecret()).isEqualTo("processOrchestration");
   }
-
 }
