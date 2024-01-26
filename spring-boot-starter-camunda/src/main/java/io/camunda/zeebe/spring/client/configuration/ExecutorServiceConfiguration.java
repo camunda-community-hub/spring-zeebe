@@ -27,14 +27,14 @@ public class ExecutorServiceConfiguration {
   public ZeebeClientExecutorService zeebeClientThreadPool(
       @Autowired(required = false) MeterRegistry meterRegistry) {
     ScheduledExecutorService threadPool =
-        Executors.newScheduledThreadPool(configurationProperties.getNumJobWorkerExecutionThreads());
+        Executors.newScheduledThreadPool(configurationProperties.getWorker().getThreads());
     if (meterRegistry != null) {
       MeterBinder threadPoolMetrics =
           new ExecutorServiceMetrics(
               threadPool, "zeebe_client_thread_pool", Collections.emptyList());
       threadPoolMetrics.bindTo(meterRegistry);
     }
-    configurationProperties.setOwnsJobWorkerExecutor(true);
+    configurationProperties.getWorker().setOwnsExecutor(true);
     return new ZeebeClientExecutorService(threadPool);
   }
 }

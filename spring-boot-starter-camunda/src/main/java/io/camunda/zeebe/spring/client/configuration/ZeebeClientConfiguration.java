@@ -11,6 +11,7 @@ import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
 import io.camunda.zeebe.client.impl.util.Environment;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.properties.CommonConfigurationProperties;
+import io.camunda.zeebe.spring.client.properties.PropertiesUtil;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import io.grpc.Metadata;
@@ -52,7 +53,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public String getGatewayAddress() {
-    return properties.getGatewayAddress();
+    return PropertiesUtil.getZeebeGatewayAddress(properties);
   }
 
   @Override
@@ -62,52 +63,52 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public List<String> getDefaultJobWorkerTenantIds() {
-    return properties.getDefaultJobWorkerTenantIds();
+    return properties.getWorker().getDefaultTenantIds();
   }
 
   @Override
   public int getNumJobWorkerExecutionThreads() {
-    return properties.getNumJobWorkerExecutionThreads();
+    return properties.getWorker().getThreads();
   }
 
   @Override
   public int getDefaultJobWorkerMaxJobsActive() {
-    return properties.getDefaultJobWorkerMaxJobsActive();
+    return properties.getWorker().getMaxJobsActive();
   }
 
   @Override
   public String getDefaultJobWorkerName() {
-    return properties.getDefaultJobWorkerName();
+    return properties.getWorker().getDefaultName();
   }
 
   @Override
   public Duration getDefaultJobTimeout() {
-    return properties.getDefaultJobTimeout();
+    return properties.getJob().getTimeout();
   }
 
   @Override
   public Duration getDefaultJobPollInterval() {
-    return properties.getDefaultJobPollInterval();
+    return properties.getJob().getPollInterval();
   }
 
   @Override
   public Duration getDefaultMessageTimeToLive() {
-    return properties.getDefaultMessageTimeToLive();
+    return properties.getMessage().getTimeToLive();
   }
 
   @Override
   public Duration getDefaultRequestTimeout() {
-    return properties.getDefaultRequestTimeout();
+    return properties.getRequestTimeout();
   }
 
   @Override
   public boolean isPlaintextConnectionEnabled() {
-    return properties.isPlaintextConnectionEnabled();
+    return properties.getSecurity().isPlaintext();
   }
 
   @Override
   public String getCaCertificatePath() {
-    return properties.getCaCertificatePath();
+    return properties.getSecurity().getCertPath();
   }
 
   @Override
@@ -165,7 +166,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public Duration getKeepAlive() {
-    return properties.getKeepAlive();
+    return properties.getBroker().getKeepAlive();
   }
 
   @Override
@@ -180,12 +181,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public String getOverrideAuthority() {
-    return properties.getOverrideAuthority();
+    return properties.getSecurity().getOverrideAuthority();
   }
 
   @Override
   public int getMaxMessageSize() {
-    return properties.getMaxMessageSize();
+    return properties.getMessage().getMaxMessageSize();
   }
 
   @Override
@@ -195,12 +196,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public boolean ownsJobWorkerExecutor() {
-    return properties.ownsJobWorkerExecutor();
+    return properties.getWorker().isOwnsExecutor();
   }
 
   @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
-    return properties.getDefaultJobWorkerStreamEnabled();
+    return properties.getWorker().isDefaultStreamEnabled();
   }
 
   @Override

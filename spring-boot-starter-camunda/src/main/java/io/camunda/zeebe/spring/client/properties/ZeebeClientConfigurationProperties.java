@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +108,9 @@ public class ZeebeClientConfigurationProperties {
       // Environment==null can happen in test cases where the environment is not set
       // Java Client has some name differences in properties - support those as well in case people
       // use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
-      if (broker.gatewayAddress == null || DEFAULT.getGatewayAddress().equals(broker.gatewayAddress)
-          && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+      if (broker.gatewayAddress == null
+          || DEFAULT.getGatewayAddress().equals(broker.gatewayAddress)
+              && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
         broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
       }
       if (cloud.clientSecret == null
@@ -130,7 +130,7 @@ public class ZeebeClientConfigurationProperties {
     // Populate deprecated parameters to their new configuration positions and warn user about it
     handleDeprecatedProperty(
         defaultJobWorkerTenantIds,
-      () ->!defaultJobWorkerTenantIds.isEmpty(),
+        () -> !defaultJobWorkerTenantIds.isEmpty(),
         "zeebe.client.default-job-worker-tenant-ids",
         "zeebe.client.worker.default-tenant-ids",
         worker::setDefaultTenantIds);
@@ -146,6 +146,12 @@ public class ZeebeClientConfigurationProperties {
         "zeebe.client.default-job-worker-stream-enabled",
         "zeebe.client.worker.default-stream-enabled",
         worker::setDefaultStreamEnabled);
+    handleDeprecatedProperty(
+        broker.contactPoint,
+        () -> true,
+        "zeebe.client.broker.contact-point",
+        "zeebe.client.broker.gateway-address",
+        broker::setGatewayAddress);
 
     // Support default job worker tenant ids based on the default tenant id
     if (worker.getDefaultTenantIds() == null && defaultTenantId != null) {
@@ -154,7 +160,11 @@ public class ZeebeClientConfigurationProperties {
   }
 
   private <T> void handleDeprecatedProperty(
-      T property, Supplier<Boolean> additionalTest, String oldName, String newName, Consumer<T> newSetter) {
+      T property,
+      Supplier<Boolean> additionalTest,
+      String oldName,
+      String newName,
+      Consumer<T> newSetter) {
     if (property != null && additionalTest.get()) {
       LOGGER.warn("'{}' is deprecated, please use '{}' instead", oldName, newName);
       newSetter.accept(property);
@@ -233,11 +243,17 @@ public class ZeebeClientConfigurationProperties {
     this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
+  /**
+   * @deprecated use getWorker().setOwnsExecutor() instead
+   */
   @Deprecated
   public void setOwnsJobWorkerExecutor(boolean ownsJobWorkerExecutor) {
     this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
   }
 
+  /**
+   * @deprecated use getWorker().isOwnsExecutor() instead
+   */
   @Deprecated
   public boolean ownsJobWorkerExecutor() {
     return ownsJobWorkerExecutor;
@@ -300,27 +316,12 @@ public class ZeebeClientConfigurationProperties {
         + '}';
   }
 
+  /**
+   * @deprecated use PropertiesUtil.getZeebeGatewayAddress() instead
+   */
+  @Deprecated
   public String getGatewayAddress() {
-    if (connectionMode != null && !connectionMode.isEmpty()) {
-      LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
-      if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
-        return cloud.getGatewayAddress();
-      } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
-        return broker.getGatewayAddress();
-      } else {
-        throw new RuntimeException(
-            "Value '"
-                + connectionMode
-                + "' for ConnectionMode is invalid, valid values are "
-                + CONNECTION_MODE_CLOUD
-                + " or "
-                + CONNECTION_MODE_ADDRESS);
-      }
-    } else if (cloud.isConfigured()) {
-      return cloud.getGatewayAddress();
-    } else {
-      return broker.getGatewayAddress();
-    }
+    return PropertiesUtil.getZeebeGatewayAddress(this);
   }
 
   public String getDefaultTenantId() {
@@ -331,19 +332,33 @@ public class ZeebeClientConfigurationProperties {
     this.defaultTenantId = defaultTenantId;
   }
 
+  /**
+   * @deprecated use getWorker().getDefaultTenantIds() instead
+   */
   @Deprecated
   public List<String> getDefaultJobWorkerTenantIds() {
     return defaultJobWorkerTenantIds;
   }
 
+  /**
+   * @deprecated use getWorker().setDefaultTenantIds() instead
+   */
   @Deprecated
   public void setDefaultJobWorkerTenantIds(List<String> defaultJobWorkerTenantIds) {
     this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
   }
+
+  /**
+   * @deprecated use getWorker().isDefaultStreamEnabled() instead
+   */
   @Deprecated
   public boolean getDefaultJobWorkerStreamEnabled() {
     return defaultJobWorkerStreamEnabled;
   }
+
+  /**
+   * @deprecated use getWorker().setDefaultStreamEnabled() instead
+   */
   @Deprecated
   public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
     this.defaultJobWorkerStreamEnabled = defaultJobWorkerStreamEnabled;
@@ -360,60 +375,112 @@ public class ZeebeClientConfigurationProperties {
   public void setConnectionMode(String connectionMode) {
     this.connectionMode = connectionMode;
   }
+  /**
+   * @deprecated use getRequestTimeout() instead
+   */
   @Deprecated
   public Duration getDefaultRequestTimeout() {
     return getRequestTimeout();
   }
+
+  /**
+   * @deprecated use getWorker().getThreads() instead
+   */
   @Deprecated
   public int getNumJobWorkerExecutionThreads() {
     return worker.getThreads();
   }
+
+  /**
+   * @deprecated use getWorker().getMaxJobsActive() instead
+   */
   @Deprecated
   public int getDefaultJobWorkerMaxJobsActive() {
     return worker.getMaxJobsActive();
   }
+
+  /**
+   * @deprecated use getWorker().getDefaultName() instead
+   */
   @Deprecated
   public String getDefaultJobWorkerName() {
     return worker.getDefaultName();
   }
+
+  /**
+   * @deprecated use getWorker().getDefaultType() instead
+   */
   @Deprecated
   public String getDefaultJobWorkerType() {
     return worker.getDefaultType();
   }
+
+  /**
+   * @deprecated use getDuration().getTimeout() instead
+   */
   @Deprecated
   public Duration getDefaultJobTimeout() {
     return job.getTimeout();
   }
+
+  /**
+   * @deprecated use getJob().getPollInterval() instead
+   */
   @Deprecated
   public Duration getDefaultJobPollInterval() {
     return job.getPollInterval();
   }
+
+  /**
+   * @deprecated use getMessage().getTimeToLive() instead
+   */
   @Deprecated
   public Duration getDefaultMessageTimeToLive() {
     return message.getTimeToLive();
   }
+
+  /**
+   * @deprecated use getSecurity().isPlainText() instead
+   */
   @Deprecated
   public boolean isPlaintextConnectionEnabled() {
     return security.isPlaintext();
   }
+
+  /**
+   * @deprecated use getSecurity().getCertPath() instead
+   */
   @Deprecated
   public String getCaCertificatePath() {
     return security.getCertPath();
   }
+
+  /**
+   * @deprecated use getSecurity().getOverrideAuthority() instead
+   */
   @Deprecated
   public String getOverrideAuthority() {
     return security.getOverrideAuthority();
   }
+
+  /**
+   * @deprecated use getBroker().getKeepAlive() instead
+   */
   @Deprecated
   public Duration getKeepAlive() {
     return broker.getKeepAlive();
   }
+
+  /**
+   * @deprecated use getMessage().getMessageSize() instead
+   */
   @Deprecated
   public int getMaxMessageSize() {
     return message.getMaxMessageSize();
   }
 
   public static class Broker {
+    @Deprecated private String contactPoint;
 
     @Override
     public String toString() {
@@ -430,27 +497,23 @@ public class ZeebeClientConfigurationProperties {
     private Duration keepAlive = DEFAULT.getKeepAlive();
 
     /**
-     * Use gatewayAddress. It's deprecated since 0.25.0, and will be removed in 0.26.0
-     *
-     * @return gatewayAddress
+     * @deprecated use getGatewayAddress() instead
      */
     @Deprecated
     public String getContactPoint() {
-      return getGatewayAddress();
+      return contactPoint;
     }
 
     /**
-     * Use gatewayAddress. It's deprecated since 0.25.0, and will be removed in 0.26.0
-     *
-     * @param contactPoint
+     * @deprecated use setGatewayAddress() instead
      */
     @Deprecated
     public void setContactPoint(String contactPoint) {
-      setGatewayAddress(contactPoint);
+      this.contactPoint = contactPoint;
     }
 
     public String getGatewayAddress() {
-        return gatewayAddress;
+      return gatewayAddress;
     }
 
     public void setGatewayAddress(String gatewayAddress) {
