@@ -5,12 +5,6 @@ import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
 import io.camunda.zeebe.client.impl.util.Environment;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
-
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.Collections;
@@ -19,22 +13,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
-  public static final ZeebeClientBuilderImpl DEFAULT = (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+  public static final ZeebeClientBuilderImpl DEFAULT =
+      (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
 
   private final org.springframework.core.env.Environment environment;
 
   public static final String CONNECTION_MODE_CLOUD = "CLOUD";
   public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
+
   /**
-   * Connection mode can be set to "CLOUD" (connect to SaaS with properties), or "ADDRESS" (to use a manually set address to the broker)
-   * If not set, "CLOUD" is used if a `zeebe.client.cloud.cluster-id` property is set, "ADDRESS" otherwise.
+   * Connection mode can be set to "CLOUD" (connect to SaaS with properties), or "ADDRESS" (to use a
+   * manually set address to the broker) If not set, "CLOUD" is used if a
+   * `zeebe.client.cloud.cluster-id` property is set, "ADDRESS" otherwise.
    */
   private String connectionMode;
 
@@ -42,27 +45,23 @@ public class ZeebeClientConfigurationProperties {
 
   private List<String> defaultJobWorkerTenantIds;
 
-  private boolean applyEnvironmentVariableOverrides = false; // the default is NOT to overwrite anything by environment variables in a Spring Boot world - it is unintuitive
+  private boolean applyEnvironmentVariableOverrides =
+      false; // the default is NOT to overwrite anything by environment variables in a Spring Boot
+  // world - it is unintuitive
 
   private boolean enabled = true;
 
-  @NestedConfigurationProperty
-  private Broker broker = new Broker();
+  @NestedConfigurationProperty private Broker broker = new Broker();
 
-  @NestedConfigurationProperty
-  private Cloud cloud = new Cloud();
+  @NestedConfigurationProperty private Cloud cloud = new Cloud();
 
-  @NestedConfigurationProperty
-  private Worker worker = new Worker();
+  @NestedConfigurationProperty private Worker worker = new Worker();
 
-  @NestedConfigurationProperty
-  private Message message = new Message();
+  @NestedConfigurationProperty private Message message = new Message();
 
-  @NestedConfigurationProperty
-  private Security security = new Security();
+  @NestedConfigurationProperty private Security security = new Security();
 
-  @NestedConfigurationProperty
-  private Job job = new Job();
+  @NestedConfigurationProperty private Job job = new Job();
 
   private boolean ownsJobWorkerExecutor;
 
@@ -75,8 +74,8 @@ public class ZeebeClientConfigurationProperties {
 
   /**
    * Make sure environment variables and other legacy config options are taken into account.
-   * Environment variables are taking precedence over Spring properties.
-   * Legacy config options are read only if no real property is set
+   * Environment variables are taking precedence over Spring properties. Legacy config options are
+   * read only if no real property is set
    */
   @PostConstruct
   public void applyOverrides() {
@@ -88,33 +87,39 @@ public class ZeebeClientConfigurationProperties {
         security.certPath = Environment.system().get("ZEEBE_CA_CERTIFICATE_PATH");
       }
       if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
-        broker.keepAlive = Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
+        broker.keepAlive =
+            Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
       }
       if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
         security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
       }
     }
 
-    if (environment!=null) {
+    if (environment != null) {
       // Environment==null can happen in test cases where the environment is not set
-      // Java Client has some name differences in properties - support those as well in case people use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
-      if (broker.gatewayAddress == null && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+      // Java Client has some name differences in properties - support those as well in case people
+      // use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
+      if (broker.gatewayAddress == null
+          && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
         broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
       }
-      if (cloud.clientSecret == null && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
+      if (cloud.clientSecret == null
+          && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
         cloud.clientSecret = environment.getProperty(ClientProperties.CLOUD_CLIENT_SECRET);
       }
-      if (worker.defaultName == null && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
+      if (worker.defaultName == null
+          && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
         worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
       }
       // Support environment based default tenant id override if value is client default fallback
-      if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId())) && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
+      if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId()))
+          && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
 
     // Support default job worker tenant ids based on the default tenant id
-    if(defaultJobWorkerTenantIds == null && defaultTenantId != null) {
+    if (defaultJobWorkerTenantIds == null && defaultTenantId != null) {
       defaultJobWorkerTenantIds = Collections.singletonList(defaultTenantId);
     }
   }
@@ -206,13 +211,13 @@ public class ZeebeClientConfigurationProperties {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeClientConfigurationProperties that = (ZeebeClientConfigurationProperties) o;
-    return Objects.equals(broker, that.broker) &&
-      Objects.equals(cloud, that.cloud) &&
-      Objects.equals(worker, that.worker) &&
-      Objects.equals(message, that.message) &&
-      Objects.equals(security, that.security) &&
-      Objects.equals(job, that.job) &&
-      Objects.equals(requestTimeout, that.requestTimeout);
+    return Objects.equals(broker, that.broker)
+        && Objects.equals(cloud, that.cloud)
+        && Objects.equals(worker, that.worker)
+        && Objects.equals(message, that.message)
+        && Objects.equals(security, that.security)
+        && Objects.equals(job, that.job)
+        && Objects.equals(requestTimeout, that.requestTimeout);
   }
 
   @Override
@@ -222,16 +227,24 @@ public class ZeebeClientConfigurationProperties {
 
   @Override
   public String toString() {
-    return "ZeebeClientConfigurationProperties{" +
-      "broker=" + broker +
-      ", cloud=" + cloud +
-      ", worker=" + worker +
-      ", message=" + message +
-      ", security=" + security +
-      ", job=" + job +
-      ", requestTimeout=" + requestTimeout +
-      ", ownsJobWorkerExecutor=" + ownsJobWorkerExecutor +
-      '}';
+    return "ZeebeClientConfigurationProperties{"
+        + "broker="
+        + broker
+        + ", cloud="
+        + cloud
+        + ", worker="
+        + worker
+        + ", message="
+        + message
+        + ", security="
+        + security
+        + ", job="
+        + job
+        + ", requestTimeout="
+        + requestTimeout
+        + ", ownsJobWorkerExecutor="
+        + ownsJobWorkerExecutor
+        + '}';
   }
 
   public static class Broker {
@@ -284,8 +297,8 @@ public class ZeebeClientConfigurationProperties {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Broker broker = (Broker) o;
-      return Objects.equals(gatewayAddress, broker.gatewayAddress) &&
-        Objects.equals(keepAlive, broker.keepAlive);
+      return Objects.equals(gatewayAddress, broker.gatewayAddress)
+          && Objects.equals(keepAlive, broker.keepAlive);
     }
 
     @Override
@@ -295,10 +308,13 @@ public class ZeebeClientConfigurationProperties {
 
     @Override
     public String toString() {
-      return "Broker{" +
-        "gatewayAddress='" + gatewayAddress + '\'' +
-        ", keepAlive=" + keepAlive +
-        '}';
+      return "Broker{"
+          + "gatewayAddress='"
+          + gatewayAddress
+          + '\''
+          + ", keepAlive="
+          + keepAlive
+          + '}';
     }
   }
 
@@ -345,6 +361,7 @@ public class ZeebeClientConfigurationProperties {
     public void setRegion(final String region) {
       this.region = region;
     }
+
     public String getScope() {
       return scope;
     }
@@ -401,7 +418,8 @@ public class ZeebeClientConfigurationProperties {
   public static class Worker {
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
-    private String defaultName = null; // setting NO default in Spring, as bean/method name is used as default
+    private String defaultName =
+        null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
     private Map<String, ZeebeWorkerValue> override = new HashMap<>();
 
@@ -450,11 +468,11 @@ public class ZeebeClientConfigurationProperties {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Worker worker = (Worker) o;
-      return Objects.equals(maxJobsActive, worker.maxJobsActive) &&
-        Objects.equals(threads, worker.threads) &&
-        Objects.equals(defaultName, worker.defaultName) &&
-        Objects.equals(defaultType, worker.defaultType) &&
-        Objects.equals(override, worker.override);
+      return Objects.equals(maxJobsActive, worker.maxJobsActive)
+          && Objects.equals(threads, worker.threads)
+          && Objects.equals(defaultName, worker.defaultName)
+          && Objects.equals(defaultType, worker.defaultType)
+          && Objects.equals(override, worker.override);
     }
 
     @Override
@@ -464,13 +482,20 @@ public class ZeebeClientConfigurationProperties {
 
     @Override
     public String toString() {
-      return "Worker{" +
-        "maxJobsActive=" + maxJobsActive +
-        ", threads=" + threads +
-        ", defaultName='" + defaultName + '\'' +
-        ", defaultType='" + defaultType + '\'' +
-        ", override=" + override +
-        '}';
+      return "Worker{"
+          + "maxJobsActive="
+          + maxJobsActive
+          + ", threads="
+          + threads
+          + ", defaultName='"
+          + defaultName
+          + '\''
+          + ", defaultType='"
+          + defaultType
+          + '\''
+          + ", override="
+          + override
+          + '}';
     }
   }
 
@@ -499,8 +524,7 @@ public class ZeebeClientConfigurationProperties {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Job job = (Job) o;
-      return Objects.equals(timeout, job.timeout) &&
-        Objects.equals(pollInterval, job.pollInterval);
+      return Objects.equals(timeout, job.timeout) && Objects.equals(pollInterval, job.pollInterval);
     }
 
     @Override
@@ -510,10 +534,7 @@ public class ZeebeClientConfigurationProperties {
 
     @Override
     public String toString() {
-      return "Job{" +
-        "timeout=" + timeout +
-        ", pollInterval=" + pollInterval +
-        '}';
+      return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
     }
   }
 
@@ -552,9 +573,7 @@ public class ZeebeClientConfigurationProperties {
 
     @Override
     public String toString() {
-      return "Message{" +
-        "timeToLive=" + timeToLive +
-        '}';
+      return "Message{" + "timeToLive=" + timeToLive + '}';
     }
   }
 
@@ -592,7 +611,9 @@ public class ZeebeClientConfigurationProperties {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Security security = (Security) o;
-      return plaintext == security.plaintext && Objects.equals(overrideAuthority, security.overrideAuthority) && Objects.equals(certPath, security.certPath);
+      return plaintext == security.plaintext
+          && Objects.equals(overrideAuthority, security.overrideAuthority)
+          && Objects.equals(certPath, security.certPath);
     }
 
     @Override
@@ -602,23 +623,34 @@ public class ZeebeClientConfigurationProperties {
 
     @Override
     public String toString() {
-      return "Security{" +
-        "plaintext=" + plaintext +
-        ", overrideAuthority='" + overrideAuthority + '\'' +
-        ", certPath='" + certPath + '\'' +
-        '}';
+      return "Security{"
+          + "plaintext="
+          + plaintext
+          + ", overrideAuthority='"
+          + overrideAuthority
+          + '\''
+          + ", certPath='"
+          + certPath
+          + '\''
+          + '}';
     }
   }
 
   public String getGatewayAddress() {
-    if (connectionMode!=null && connectionMode.length()>0) {
+    if (connectionMode != null && connectionMode.length() > 0) {
       LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
       if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
         return cloud.getGatewayAddress();
       } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
         return broker.getGatewayAddress();
       } else {
-        throw new RuntimeException("Value '"+connectionMode+"' for ConnectionMode is invalid, valid values are " + CONNECTION_MODE_CLOUD + " or " + CONNECTION_MODE_ADDRESS);
+        throw new RuntimeException(
+            "Value '"
+                + connectionMode
+                + "' for ConnectionMode is invalid, valid values are "
+                + CONNECTION_MODE_CLOUD
+                + " or "
+                + CONNECTION_MODE_ADDRESS);
       }
     } else if (cloud.isConfigured()) {
       return cloud.getGatewayAddress();
@@ -711,9 +743,7 @@ public class ZeebeClientConfigurationProperties {
     return broker.getKeepAlive();
   }
 
-  // No @Override to be compatible with 8.2 and 8.3 (was introduced with 8.3)
   public int getMaxMessageSize() {
     return message.getMaxMessageSize();
   }
-
 }
