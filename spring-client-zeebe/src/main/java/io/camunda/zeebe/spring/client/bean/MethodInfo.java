@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.bean;
 
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -9,12 +9,12 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 
 public class MethodInfo implements BeanInfo {
 
-  private static final StandardReflectionParameterNameDiscoverer parameterNameDiscoverer = new StandardReflectionParameterNameDiscoverer();
+  private static final StandardReflectionParameterNameDiscoverer parameterNameDiscoverer =
+      new StandardReflectionParameterNameDiscoverer();
 
   protected ClassInfo classInfo;
   protected Method method;
@@ -50,8 +50,7 @@ public class MethodInfo implements BeanInfo {
       final Throwable targetException = e.getTargetException();
       if (targetException instanceof Exception) {
         throw (Exception) targetException;
-      }
-      else {
+      } else {
         throw new RuntimeException("Failed to invoke method: " + method.getName(), targetException);
       }
     } catch (IllegalAccessException e) {
@@ -96,8 +95,7 @@ public class MethodInfo implements BeanInfo {
     private ClassInfo classInfo;
     private Method method;
 
-    private MethodInfoBuilder() {
-    }
+    private MethodInfoBuilder() {}
 
     public MethodInfoBuilder classInfo(ClassInfo classInfo) {
       this.classInfo = classInfo;

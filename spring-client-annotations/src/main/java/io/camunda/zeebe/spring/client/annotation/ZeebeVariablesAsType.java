@@ -6,8 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 /**
- * @deprecated
- * Use {@link VariablesAsType} instead.
+ * @deprecated Use {@link VariablesAsType} instead.
  */
 @Deprecated
 public @interface ZeebeVariablesAsType {}

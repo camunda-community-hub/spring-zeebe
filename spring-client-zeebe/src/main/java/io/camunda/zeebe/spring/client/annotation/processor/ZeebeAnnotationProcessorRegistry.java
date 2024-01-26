@@ -2,16 +2,15 @@ package io.camunda.zeebe.spring.client.annotation.processor;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
+import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 
-import java.util.List;
-
 /**
  * Always created by {@link AnnotationProcessorConfiguration}
  *
- * Keeps a list of all annotations and reads them after all Spring beans are initialized
+ * <p>Keeps a list of all annotations and reads them after all Spring beans are initialized
  */
 public class ZeebeAnnotationProcessorRegistry implements BeanPostProcessor, Ordered {
 
@@ -22,7 +21,8 @@ public class ZeebeAnnotationProcessorRegistry implements BeanPostProcessor, Orde
   }
 
   @Override
-  public Object postProcessAfterInitialization(final Object bean, final String beanName) throws BeansException {
+  public Object postProcessAfterInitialization(final Object bean, final String beanName)
+      throws BeansException {
     final ClassInfo beanInfo = ClassInfo.builder().bean(bean).beanName(beanName).build();
 
     for (final AbstractZeebeAnnotationProcessor zeebePostProcessor : processors) {

@@ -18,7 +18,10 @@ public abstract class AbstractZeebeAnnotationProcessor implements BeanNameAware 
   }
 
   public abstract boolean isApplicableFor(ClassInfo beanInfo);
+
   public abstract void configureFor(final ClassInfo beanInfo);
+
   public abstract void start(ZeebeClient zeebeClient);
+
   public abstract void stop(ZeebeClient zeebeClient);
 }
