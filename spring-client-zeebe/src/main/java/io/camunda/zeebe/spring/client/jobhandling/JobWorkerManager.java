@@ -74,6 +74,9 @@ public class JobWorkerManager {
         && zeebeWorkerValue.getFetchVariables().length > 0) {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
     }
+    if (zeebeWorkerValue.getTenantIds() != null && !zeebeWorkerValue.getTenantIds().isEmpty()) {
+      builder.tenantIds(zeebeWorkerValue.getTenantIds());
+    }
 
     JobWorker jobWorker = builder.open();
     openedWorkers.add(jobWorker);

@@ -39,7 +39,6 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   public void customize(ZeebeWorkerValue zeebeWorker) {
     applyDefaultWorkerName(zeebeWorker);
     applyDefaultJobWorkerType(zeebeWorker);
-    applyTenantIds(zeebeWorker);
     applyFetchVariables(zeebeWorker);
     applyOverrides(zeebeWorker);
   }
@@ -97,20 +96,6 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
         throw new RuntimeException(
             "Error while copying properties from " + zeebeWorkerValue + " to " + zeebeWorker, e);
       }
-    }
-  }
-
-  private void applyTenantIds(ZeebeWorkerValue zeebeWorker) {
-    List<String> defaultJobWorkerTenantIds =
-        zeebeClientConfigurationProperties.getDefaultJobWorkerTenantIds();
-    if (defaultJobWorkerTenantIds != null
-        && !defaultJobWorkerTenantIds.isEmpty()
-        && (zeebeWorker.getTenantIds() == null || zeebeWorker.getTenantIds().isEmpty())) {
-      LOG.debug(
-          "Worker '{}': Setting default tenant ids to {}",
-          zeebeWorker.getName(),
-          defaultJobWorkerTenantIds);
-      zeebeWorker.setTenantIds(defaultJobWorkerTenantIds);
     }
   }
 

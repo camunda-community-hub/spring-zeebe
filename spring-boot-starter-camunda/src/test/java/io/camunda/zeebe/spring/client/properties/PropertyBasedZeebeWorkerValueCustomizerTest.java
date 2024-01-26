@@ -139,21 +139,6 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
   }
 
   @Test
-  void shouldSetDefaultTenantIds() {
-    // given
-    ZeebeClientConfigurationProperties properties = properties();
-    PropertyBasedZeebeWorkerValueCustomizer customizer =
-        new PropertyBasedZeebeWorkerValueCustomizer(properties);
-    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue();
-    zeebeWorkerValue.setMethodInfo(methodInfo(this, "testBean", "sampleWorker"));
-    // when
-    customizer.customize(zeebeWorkerValue);
-    // then
-    assertThat(zeebeWorkerValue.getTenantIds())
-        .containsOnly(ZeebeClientConfigurationProperties.DEFAULT.getDefaultTenantId());
-  }
-
-  @Test
   void shouldApplyOverrides() {
     // given
     ZeebeClientConfigurationProperties properties = properties();
