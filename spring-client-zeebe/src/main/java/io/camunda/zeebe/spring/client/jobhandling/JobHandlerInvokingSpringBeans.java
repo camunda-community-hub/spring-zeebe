@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.slf4j.Logger;
 
 /** Zeebe JobHandler that invokes a Spring bean */
 public class JobHandlerInvokingSpringBeans implements JobHandler {
@@ -28,20 +27,41 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final JsonMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
+  private final AutoExtendTimeoutManager autoExtendTimeoutManager;
 
   public JobHandlerInvokingSpringBeans(
       ZeebeWorkerValue workerValue,
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       JsonMapper jsonMapper,
-      MetricsRecorder metricsRecorder) {
+      MetricsRecorder metricsRecorder,
+      AutoExtendTimeoutManager autoExtendTimeoutManager) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
+    this.autoExtendTimeoutManager = autoExtendTimeoutManager;
+  }
+
+  public static FinalCommandStep createCompleteCommand(
+      JobClient jobClient, ActivatedJob job, Object result) {
+    CompleteJobCommandStep1 completeCommand = jobClient.newCompleteCommand(job.getKey());
+    if (result != null) {
+      if (result.getClass().isAssignableFrom(Map.class)) {
+        completeCommand = completeCommand.variables((Map) result);
+      } else if (result.getClass().isAssignableFrom(String.class)) {
+        completeCommand = completeCommand.variables((String) result);
+      } else if (result.getClass().isAssignableFrom(InputStream.class)) {
+        completeCommand = completeCommand.variables((InputStream) result);
+      } else {
+        completeCommand = completeCommand.variables(result);
+      }
+    }
+    return completeCommand;
   }
 
   @Override
   public void handle(JobClient jobClient, ActivatedJob job) throws Exception {
+    Optional<ScheduledFuture<?>> autoExtendSchedule = startAutoExtendTimeout(job);
     // TODO: Figuring out parameters and assignments could probably also done only once in the
     // beginning to save some computing time on each invocation
     List<Object> args =
@@ -54,6 +74,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       try {
         result = workerValue.getMethodInfo().invoke(args.toArray());
       } catch (Throwable t) {
+        autoExtendSchedule.ifPresent(this::stopAutoExtendTimeout);
         metricsRecorder.increase(
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, job.getType());
         // normal exceptions are handled by JobRunnableFactory
@@ -63,6 +84,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       }
 
       if (workerValue.getAutoComplete()) {
+        autoExtendSchedule.ifPresent(this::stopAutoExtendTimeout);
         LOG.trace("Auto completing {}", job);
         // TODO: We should probably move the metrics recording to the callback of a successful
         // command execution to avoid wrong counts
@@ -76,6 +98,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
         command.executeAsync();
       }
     } catch (ZeebeBpmnError bpmnError) {
+      autoExtendSchedule.ifPresent(this::stopAutoExtendTimeout);
       LOG.trace("Catched BPMN error on {}", job);
       // TODO: We should probably move the metrics recording to the callback of a successful command
       // execution to avoid wrong counts
@@ -88,6 +111,19 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
               commandExceptionHandlingStrategy);
       command.executeAsync();
     }
+  }
+
+  private Optional<ScheduledFuture<?>> startAutoExtendTimeout(ActivatedJob job) {
+    if (workerValue.isAutoExtendTimeout()) {
+      return Optional.of(
+          autoExtendTimeoutManager.startAutoExtendTimeout(
+              job.getDeadline(), job.getKey(), workerValue.getExtendTimeoutPeriod()));
+    }
+    return Optional.empty();
+  }
+
+  private void stopAutoExtendTimeout(ScheduledFuture<?> future) {
+    future.cancel(true);
   }
 
   private List<Object> createParameters(
@@ -165,23 +201,6 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     }
     LOG.trace("Extracting variable name from parameter name");
     return param.getParameterName();
-  }
-
-  public static FinalCommandStep createCompleteCommand(
-      JobClient jobClient, ActivatedJob job, Object result) {
-    CompleteJobCommandStep1 completeCommand = jobClient.newCompleteCommand(job.getKey());
-    if (result != null) {
-      if (result.getClass().isAssignableFrom(Map.class)) {
-        completeCommand = completeCommand.variables((Map) result);
-      } else if (result.getClass().isAssignableFrom(String.class)) {
-        completeCommand = completeCommand.variables((String) result);
-      } else if (result.getClass().isAssignableFrom(InputStream.class)) {
-        completeCommand = completeCommand.variables((InputStream) result);
-      } else {
-        completeCommand = completeCommand.variables(result);
-      }
-    }
-    return completeCommand;
   }
 
   private FinalCommandStep<Void> createThrowErrorCommand(

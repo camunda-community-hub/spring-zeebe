@@ -24,6 +24,7 @@ public class JobWorkerManager {
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final JsonMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
+  private final ZeebeClientExecutorService zeebeClientExecutorService;
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
@@ -31,10 +32,11 @@ public class JobWorkerManager {
   public JobWorkerManager(
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       JsonMapper jsonMapper,
-      MetricsRecorder metricsRecorder) {
+      MetricsRecorder metricsRecorder,ZeebeClientExecutorService zeebeClientExecutorService) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
+    this.zeebeClientExecutorService = zeebeClientExecutorService;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
@@ -42,7 +44,11 @@ public class JobWorkerManager {
         client,
         zeebeWorkerValue,
         new JobHandlerInvokingSpringBeans(
-            zeebeWorkerValue, commandExceptionHandlingStrategy, jsonMapper, metricsRecorder));
+            zeebeWorkerValue,
+            commandExceptionHandlingStrategy,
+            jsonMapper,
+            metricsRecorder,
+            new AutoExtendTimeoutManager(zeebeClientExecutorService,client)));
   }
 
   public JobWorker openWorker(

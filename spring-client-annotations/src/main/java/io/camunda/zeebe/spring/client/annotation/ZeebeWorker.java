@@ -55,4 +55,8 @@ public @interface ZeebeWorker {
   boolean enabled() default true;
 
   String[] tenantIds() default {};
+  boolean autoExtendTimeout() default false;
+
+  long extendTimeoutPeriodMillis() default -1;
+
 }

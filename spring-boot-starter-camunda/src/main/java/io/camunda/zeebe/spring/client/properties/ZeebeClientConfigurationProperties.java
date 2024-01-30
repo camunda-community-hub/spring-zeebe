@@ -557,6 +557,24 @@ public class ZeebeClientConfigurationProperties {
 
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
     private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
+    private boolean autoExtendTimeout;
+    private Duration extendTimeoutPeriod = Duration.ofSeconds(30);
+
+    public Duration getExtendTimeoutPeriod() {
+      return extendTimeoutPeriod;
+    }
+
+    public void setExtendTimeoutPeriod(Duration extendTimeoutPeriod) {
+      this.extendTimeoutPeriod = extendTimeoutPeriod;
+    }
+
+    public boolean isAutoExtendTimeout() {
+      return autoExtendTimeout;
+    }
+
+    public void setAutoExtendTimeout(boolean autoExtendTimeout) {
+      this.autoExtendTimeout = autoExtendTimeout;
+    }
 
     public Duration getTimeout() {
       return timeout;

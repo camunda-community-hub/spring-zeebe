@@ -1,6 +1,9 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
+import io.camunda.zeebe.spring.client.bean.ParameterInfo;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +31,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   private MethodInfo methodInfo;
   private List<String> tenantIds;
   private boolean forceFetchAllVariables;
+  private boolean autoExtendTimeout;
+  private Duration extendTimeoutPeriod;
 
   public ZeebeWorkerValue() {}
 
@@ -56,6 +61,22 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.methodInfo = methodInfo;
     this.tenantIds = tenantIds;
     this.forceFetchAllVariables = forceFetchAllVariables;
+  }
+
+  public Duration getExtendTimeoutPeriod() {
+    return extendTimeoutPeriod;
+  }
+
+  public void setExtendTimeoutPeriod(Duration extendTimeoutPeriod) {
+    this.extendTimeoutPeriod = extendTimeoutPeriod;
+  }
+
+  public boolean isAutoExtendTimeout() {
+    return autoExtendTimeout;
+  }
+
+  public void setAutoExtendTimeout(boolean autoExtendTimeout) {
+    this.autoExtendTimeout = autoExtendTimeout;
   }
 
   public String getType() {

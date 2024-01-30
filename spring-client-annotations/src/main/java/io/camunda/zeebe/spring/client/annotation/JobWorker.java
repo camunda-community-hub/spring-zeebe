@@ -7,15 +7,14 @@ import java.lang.annotation.*;
 @Documented
 public @interface JobWorker {
 
-  String type() default ""; // set to empty string which leads to method name being used (if not
-
-  // ${zeebe.client.worker.default-type}" is configured) Implemented in
-  // ZeebeWorkerAnnotationProcessor
+  String type() default
+      ""; // set to empty string which leads to method name being used (if not
+          // ${zeebe.client.worker.default-type}" is configured) Implemented in
+          // ZeebeWorkerAnnotationProcessor
 
   String name() default
       ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in
-
-  // ZeebeWorkerAnnotationProcessor
+          // ZeebeWorkerAnnotationProcessor
 
   /**
    * Set the time (in milliseconds) for how long a job is exclusively assigned for this worker. In
@@ -80,6 +79,10 @@ public @interface JobWorker {
   boolean autoComplete() default true;
 
   boolean enabled() default true;
+
+  boolean autoExtendTimeout() default false;
+
+  long extendTimeoutPeriodMillis() default -1;
 
   String[] tenantIds() default {};
 }
