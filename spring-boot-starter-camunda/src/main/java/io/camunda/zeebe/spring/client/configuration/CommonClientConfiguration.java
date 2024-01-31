@@ -7,6 +7,7 @@ import io.camunda.common.exception.SdkException;
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.zeebe.spring.client.properties.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,8 @@ import static org.springframework.util.StringUtils.hasText;
 
 @EnableConfigurationProperties({CommonConfigurationProperties.class, ZeebeSelfManagedProperties.class})
 public class CommonClientConfiguration {
+
+  private final static Logger LOG = org.slf4j.LoggerFactory.getLogger(CommonClientConfiguration.class);
 
 
   @Autowired(required = false)
@@ -120,6 +123,7 @@ public class CommonClientConfiguration {
     JwtConfig jwtConfig = new JwtConfig();
     // ZEEBE
     if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
+      LOG.info("Using Cloud properties to determine credentials for Zeebe");
       jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
         zeebeClientConfigurationProperties.getCloud().getClientId(),
         zeebeClientConfigurationProperties.getCloud().getClientSecret(),
@@ -127,6 +131,7 @@ public class CommonClientConfiguration {
         zeebeClientConfigurationProperties.getCloud().getAuthUrl())
       );
     } else if (zeebeSelfManagedProperties.getClientId() != null && zeebeSelfManagedProperties.getClientSecret() != null) {
+      LOG.info("Using Self Managed properties to determine credentials for Zeebe");
       jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
         zeebeSelfManagedProperties.getClientId(),
         zeebeSelfManagedProperties.getClientSecret(),
@@ -134,11 +139,22 @@ public class CommonClientConfiguration {
         zeebeSelfManagedProperties.getAuthServer())
       );
     } else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
+      LOG.info("Using Common properties to determine credentials for Zeebe");
       jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
         commonConfigurationProperties.getClientId(),
         commonConfigurationProperties.getClientSecret(),
         zeebeClientConfigurationProperties.getCloud().getAudience(),
         zeebeClientConfigurationProperties.getCloud().getAuthUrl())
+      );
+    } else if (identityConfigurationFromProperties != null
+      && hasText(identityConfigurationFromProperties.getClientId())
+      && hasText(identityConfigurationFromProperties.getClientSecret())) {
+      LOG.info("Using Identity SDK credentials for Zeebe");
+      jwtConfig.addProduct(Product.ZEEBE, new JwtCredential(
+        identityConfigurationFromProperties.getClientId(),
+        identityConfigurationFromProperties.getClientSecret(),
+        identityConfigurationFromProperties.getAudience(),
+        identityConfigurationFromProperties.getIssuerBackendUrl())
       );
     }
 
@@ -160,11 +176,14 @@ public class CommonClientConfiguration {
       }
 
       if (operateClientConfigurationProperties.getClientId() != null && operateClientConfigurationProperties.getClientSecret() != null) {
+        LOG.info("Using Operate Client properties to determine credentials for Operate");
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(operateClientConfigurationProperties.getClientId(), operateClientConfigurationProperties.getClientSecret(), operateAudience, operateAuthUrl));
       } else if (identityConfigurationFromProperties != null && hasText(identityConfigurationFromProperties.getClientId()) && hasText(identityConfigurationFromProperties.getClientSecret())) {
+        LOG.info("Using Identity SDK credentials for Operate");
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(identityConfigurationFromProperties.getClientId(), identityConfigurationFromProperties.getClientSecret(), identityConfigurationFromProperties.getAudience(), identityConfigurationFromProperties.getIssuerBackendUrl()));
       }
       else if (commonConfigurationProperties.getClientId() != null && commonConfigurationProperties.getClientSecret() != null) {
+        LOG.info("Using Common properties to determine credentials for Operate");
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(
           commonConfigurationProperties.getClientId(),
           commonConfigurationProperties.getClientSecret(),
@@ -172,8 +191,10 @@ public class CommonClientConfiguration {
           operateAuthUrl)
         );
       } else if (zeebeClientConfigurationProperties.getCloud().getClientId() != null && zeebeClientConfigurationProperties.getCloud().getClientSecret() != null) {
+        LOG.info("Using Zeebe Cloud properties to determine credentials for Operate");
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(zeebeClientConfigurationProperties.getCloud().getClientId(), zeebeClientConfigurationProperties.getCloud().getClientSecret(), operateAudience, operateAuthUrl));
       } else if (zeebeSelfManagedProperties.getClientId() != null && zeebeSelfManagedProperties.getClientSecret() != null) {
+        LOG.info("Using Zeebe Self Managed properties to determine credentials for Operate");
         jwtConfig.addProduct(Product.OPERATE, new JwtCredential(zeebeSelfManagedProperties.getClientId(), zeebeSelfManagedProperties.getClientSecret(), operateAudience, operateAuthUrl));
       } else {
         throw new SdkException("Unable to determine OPERATE credentials");
@@ -190,6 +211,11 @@ public class CommonClientConfiguration {
     if (operateClientConfigurationProperties != null) {
       IdentityContainer operateIdentityContainer = configureOperateIdentityContainer(jwtConfig);
       identityConfig.addProduct(Product.OPERATE, operateIdentityContainer);
+    }
+    // ZEEBE
+    if (zeebeClientConfigurationProperties != null) {
+      IdentityContainer zeebeIdentityContainer = configureZeebeIdentityContainer(jwtConfig);
+      identityConfig.addProduct(Product.ZEEBE, zeebeIdentityContainer);
     }
     return identityConfig;
   }
@@ -226,5 +252,33 @@ public class CommonClientConfiguration {
       .build();
     Identity operateIdentity = new Identity(operateIdentityConfiguration);
     return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
+  }
+
+  private IdentityContainer configureZeebeIdentityContainer(JwtConfig jwtConfig) {
+    String issuer;
+    String issuerBackendUrl;
+    if (hasText(identityConfigurationFromProperties.getIssuer())) {
+      issuer = identityConfigurationFromProperties.getIssuer();
+    } else {
+      issuer = jwtConfig.getProduct(Product.ZEEBE).getAuthUrl();
+    }
+
+    if (hasText(identityConfigurationFromProperties.getIssuerBackendUrl())) {
+      issuerBackendUrl = identityConfigurationFromProperties.getIssuerBackendUrl();
+    } else {
+      issuerBackendUrl = jwtConfig.getProduct(Product.ZEEBE).getAuthUrl();
+    }
+
+    IdentityConfiguration zeebeIdentityConfiguration = new IdentityConfiguration.Builder()
+      .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
+      .withIssuer(issuer)
+      .withIssuerBackendUrl(issuerBackendUrl)
+      .withClientId(jwtConfig.getProduct(Product.ZEEBE).getClientId())
+      .withClientSecret(jwtConfig.getProduct(Product.ZEEBE).getClientSecret())
+      .withAudience(jwtConfig.getProduct(Product.ZEEBE).getAudience())
+      .withType(identityConfigurationFromProperties.getType().name())
+      .build();
+    Identity zeebeIdentity = new Identity(zeebeIdentityConfiguration);
+    return new IdentityContainer(zeebeIdentity, zeebeIdentityConfiguration);
   }
 }
