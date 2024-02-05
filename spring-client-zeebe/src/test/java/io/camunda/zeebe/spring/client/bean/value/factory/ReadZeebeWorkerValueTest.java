@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.bean.value.factory;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,6 +42,21 @@ public class ReadZeebeWorkerValueTest {
     assertEquals(false, zeebeWorkerValue.get().getAutoComplete());
     assertArrayEquals(new String[] {}, zeebeWorkerValue.get().getFetchVariables());
     assertEquals(methodInfo, zeebeWorkerValue.get().getMethodInfo());
+  }
+
+  @Test
+  void shouldReadTenantIds() {
+    // given
+    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
+    final MethodInfo methodInfo = extract(ClassInfoTest.TenantBound.class);
+
+    // when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
+        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
+
+    // then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertThat(zeebeWorkerValue.get().getTenantIds()).containsOnly("tenant-1");
   }
 
   @Test
