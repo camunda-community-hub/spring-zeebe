@@ -340,7 +340,7 @@ public class ZeebeClientConfigurationProperties {
     public String toString() {
       return "Cloud{"
           + "clusterId='"
-          + "***"
+          + clusterId
           + '\''
           + ", clientId='"
           + "***"
