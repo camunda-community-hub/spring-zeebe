@@ -228,14 +228,52 @@ public class ZeebeClientConfigurationProperties {
   @Override
   public String toString() {
     return "ZeebeClientConfigurationProperties{"
-        + "environment=" + environment + ", connectionMode='" + connectionMode + '\'' + ", defaultTenantId='" + defaultTenantId + '\'' + ", defaultJobWorkerTenantIds=" + defaultJobWorkerTenantIds + ", applyEnvironmentVariableOverrides=" + applyEnvironmentVariableOverrides + ", enabled=" + enabled + ", broker=" + broker + ", cloud=" + cloud + ", worker=" + worker + ", message=" + message + ", security=" + security + ", job=" + job + ", ownsJobWorkerExecutor=" + ownsJobWorkerExecutor + ", defaultJobWorkerStreamEnabled=" + defaultJobWorkerStreamEnabled + ", requestTimeout=" + requestTimeout + '}';
+        + "environment="
+        + environment
+        + ", connectionMode='"
+        + connectionMode
+        + '\''
+        + ", defaultTenantId='"
+        + defaultTenantId
+        + '\''
+        + ", defaultJobWorkerTenantIds="
+        + defaultJobWorkerTenantIds
+        + ", applyEnvironmentVariableOverrides="
+        + applyEnvironmentVariableOverrides
+        + ", enabled="
+        + enabled
+        + ", broker="
+        + broker
+        + ", cloud="
+        + cloud
+        + ", worker="
+        + worker
+        + ", message="
+        + message
+        + ", security="
+        + security
+        + ", job="
+        + job
+        + ", ownsJobWorkerExecutor="
+        + ownsJobWorkerExecutor
+        + ", defaultJobWorkerStreamEnabled="
+        + defaultJobWorkerStreamEnabled
+        + ", requestTimeout="
+        + requestTimeout
+        + '}';
   }
 
   public static class Broker {
 
     @Override
     public String toString() {
-      return "Broker{" + "gatewayAddress='" + gatewayAddress + '\'' + ", keepAlive=" + keepAlive + '}';
+      return "Broker{"
+          + "gatewayAddress='"
+          + gatewayAddress
+          + '\''
+          + ", keepAlive="
+          + keepAlive
+          + '}';
     }
 
     private String gatewayAddress;
@@ -294,14 +332,40 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(gatewayAddress, keepAlive);
     }
-
   }
 
   public static class Cloud {
 
     @Override
     public String toString() {
-      return "Cloud{" + "clusterId='" + clusterId + '\'' + ", clientId='" + clientId + '\'' + ", clientSecret='" + clientSecret + '\'' + ", region='" + region + '\'' + ", scope='" + scope + '\'' + ", baseUrl='" + baseUrl + '\'' + ", authUrl='" + authUrl + '\'' + ", port=" + port + ", credentialsCachePath='" + credentialsCachePath + '\'' + '}';
+      return "Cloud{"
+          + "clusterId='"
+          + "***"
+          + '\''
+          + ", clientId='"
+          + "***"
+          + '\''
+          + ", clientSecret='"
+          + "***"
+          + '\''
+          + ", region='"
+          + region
+          + '\''
+          + ", scope='"
+          + scope
+          + '\''
+          + ", baseUrl='"
+          + baseUrl
+          + '\''
+          + ", authUrl='"
+          + authUrl
+          + '\''
+          + ", port="
+          + port
+          + ", credentialsCachePath='"
+          + credentialsCachePath
+          + '\''
+          + '}';
     }
 
     private String clusterId;
@@ -403,7 +467,20 @@ public class ZeebeClientConfigurationProperties {
   public static class Worker {
     @Override
     public String toString() {
-      return "Worker{" + "maxJobsActive=" + maxJobsActive + ", threads=" + threads + ", defaultName='" + defaultName + '\'' + ", defaultType='" + defaultType + '\'' + ", override=" + override + '}';
+      return "Worker{"
+          + "maxJobsActive="
+          + maxJobsActive
+          + ", threads="
+          + threads
+          + ", defaultName='"
+          + defaultName
+          + '\''
+          + ", defaultType='"
+          + defaultType
+          + '\''
+          + ", override="
+          + override
+          + '}';
     }
 
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
@@ -469,7 +546,6 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(maxJobsActive, threads, defaultName, defaultType, override);
     }
-
   }
 
   public static class Job {
@@ -510,7 +586,6 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(timeout, pollInterval);
     }
-
   }
 
   public static class Message {
@@ -551,14 +626,22 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(timeToLive);
     }
-
   }
 
   public static class Security {
 
     @Override
     public String toString() {
-      return "Security{" + "plaintext=" + plaintext + ", overrideAuthority='" + overrideAuthority + '\'' + ", certPath='" + certPath + '\'' + '}';
+      return "Security{"
+          + "plaintext="
+          + plaintext
+          + ", overrideAuthority='"
+          + overrideAuthority
+          + '\''
+          + ", certPath='"
+          + certPath
+          + '\''
+          + '}';
     }
 
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
@@ -602,20 +685,6 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public int hashCode() {
       return Objects.hash(plaintext, overrideAuthority, certPath);
-    }
-
-    @Override
-    public String toString() {
-      return "Security{"
-          + "plaintext="
-          + plaintext
-          + ", overrideAuthority='"
-          + overrideAuthority
-          + '\''
-          + ", certPath='"
-          + certPath
-          + '\''
-          + '}';
     }
   }
 

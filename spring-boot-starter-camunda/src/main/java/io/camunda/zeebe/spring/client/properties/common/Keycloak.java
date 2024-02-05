@@ -4,7 +4,17 @@ public class Keycloak {
 
   @Override
   public String toString() {
-    return "Keycloak{" + "url='" + url + '\'' + ", realm='" + realm + '\'' + ", tokenUrl='" + tokenUrl + '\'' + '}';
+    return "Keycloak{"
+        + "url='"
+        + url
+        + '\''
+        + ", realm='"
+        + realm
+        + '\''
+        + ", tokenUrl='"
+        + tokenUrl
+        + '\''
+        + '}';
   }
 
   private String url;

@@ -4,7 +4,31 @@ public class Client {
 
   @Override
   public String toString() {
-    return "Client{" + "clientId='" + clientId + '\'' + ", clientSecret='" + clientSecret + '\'' + ", username='" + username + '\'' + ", password='" + password + '\'' + ", enabled=" + enabled + ", url='" + url + '\'' + ", authUrl='" + authUrl + '\'' + ", baseUrl='" + baseUrl + '\'' + '}';
+    return "Client{"
+        + "clientId='"
+        + "***"
+        + '\''
+        + ", clientSecret='"
+        + "***"
+        + '\''
+        + ", username='"
+        + "***"
+        + '\''
+        + ", password='"
+        + "***"
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", url='"
+        + url
+        + '\''
+        + ", authUrl='"
+        + authUrl
+        + '\''
+        + ", baseUrl='"
+        + baseUrl
+        + '\''
+        + '}';
   }
 
   private String clientId;
