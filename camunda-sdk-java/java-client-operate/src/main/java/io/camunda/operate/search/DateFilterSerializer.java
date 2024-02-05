@@ -4,27 +4,24 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 public class DateFilterSerializer extends StdSerializer<DateFilter> {
 
-    public static SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+  public static SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
-    /**
-     * serial version uid
-     */
-    private static final long serialVersionUID = -8106244922585465120L;
+  /** serial version uid */
+  private static final long serialVersionUID = -8106244922585465120L;
 
-    public DateFilterSerializer() {
-        super(DateFilter.class);
-    }
+  public DateFilterSerializer() {
+    super(DateFilter.class);
+  }
 
-    @Override
-    public void serialize(DateFilter value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException, JsonProcessingException {
+  @Override
+  public void serialize(DateFilter value, JsonGenerator jgen, SerializerProvider provider)
+      throws IOException, JsonProcessingException {
 
-        jgen.writeString(isoFormat.format(value.getDate()) + "||/" + value.getRange().getValue());
-    }
+    jgen.writeString(isoFormat.format(value.getDate()) + "||/" + value.getRange().getValue());
+  }
 }

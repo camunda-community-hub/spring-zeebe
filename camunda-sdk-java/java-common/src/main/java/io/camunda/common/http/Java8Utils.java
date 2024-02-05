@@ -3,16 +3,10 @@ package io.camunda.common.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Java8Utils {
 
-  private Java8Utils() {
-
-  }
+  private Java8Utils() {}
 
   public static byte[] readAllBytes(InputStream inputStream) throws IOException {
     final int bufLen = 4 * 0x400; // 4KB
@@ -32,11 +26,12 @@ public class Java8Utils {
       throw e;
     } finally {
       if (exception == null) inputStream.close();
-      else try {
-        inputStream.close();
-      } catch (IOException e) {
-        exception.addSuppressed(e);
-      }
+      else
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          exception.addSuppressed(e);
+        }
     }
   }
 }

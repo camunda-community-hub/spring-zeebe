@@ -3,7 +3,6 @@ package io.camunda.zeebe.spring.client.properties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +11,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ZeebeClientSpringConfigurationDefaultPropertiesTest.TestConfig.class)
+@ContextConfiguration(
+    classes = ZeebeClientSpringConfigurationDefaultPropertiesTest.TestConfig.class)
 public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
 
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {
+  public static class TestConfig {}
 
-  }
-
-  @Autowired
-  private ZeebeClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
   @Test
   public void hasGatewayAddress() throws Exception {
@@ -36,7 +33,6 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   @Test
   public void hasNoWorkerName() throws Exception {
     assertThat(properties.getDefaultJobWorkerName()).isNull();
-
   }
 
   @Test
@@ -47,7 +43,6 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   @Test
   public void hasWorkerMaxJobsActive() throws Exception {
     assertThat(properties.getDefaultJobWorkerMaxJobsActive()).isEqualTo(32);
-
   }
 
   @Test
@@ -74,5 +69,4 @@ public class ZeebeClientSpringConfigurationDefaultPropertiesTest {
   public void hasSecurityCertificatePath() throws Exception {
     assertThat(properties.getCaCertificatePath()).isNull();
   }
-
 }

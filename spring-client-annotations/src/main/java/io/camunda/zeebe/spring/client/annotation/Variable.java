@@ -7,6 +7,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface Variable {
   String DEFAULT_NAME = "$NULL$";
+
   String name() default DEFAULT_NAME;
+
   String value() default DEFAULT_NAME;
 }

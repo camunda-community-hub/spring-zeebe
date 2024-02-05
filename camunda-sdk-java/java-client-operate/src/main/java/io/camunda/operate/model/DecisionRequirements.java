@@ -9,6 +9,7 @@ public class DecisionRequirements {
   private Long version;
   private String resourceName;
   private String tenantId;
+
   public String getId() {
     return id;
   }

@@ -3,62 +3,10 @@ package io.camunda.zeebe.spring.client.bean;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.spring.client.annotation.*;
+import java.beans.Introspector;
 import org.junit.jupiter.api.Test;
 
-import java.beans.Introspector;
-
 public class ClassInfoTest {
-
-  @Deployment(resources = "classpath*:/1.bpmn")
-  public static class WithDeploymentAnnotation {
-
-  }
-
-  public static class WithoutDeploymentAnnotation {
-
-  }
-
-  public static class WithZeebeWorker {
-
-    @JobWorker(type = "bar", timeout = 100L, name = "kermit", autoComplete = false)
-    public void handle() {
-    }
-  }
-
-  public static class WithZeebeWorkerAllValues {
-
-    @JobWorker(type = "bar", timeout = 100L, name = "kermit", requestTimeout = 500L, pollInterval = 1_000L, maxJobsActive = 3, fetchVariables = { "foo"}, autoComplete = true, enabled = true)
-    public void handle() {
-    }
-  }
-
-  public static class WithZeebeWorkerVariables {
-    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var3", autoComplete = false)
-    public void handle(@Variable String var1, @Variable int var2) {
-    }
-  }
-
-  public static class WithDisabledZeebeWorker {
-    @JobWorker(type = "bar", enabled = false, autoComplete = false)
-    public void handle(@Variable String var1, @Variable int var2) {
-    }
-  }
-
-  public static class WithZeebeWorkerVariablesComplexType {
-    public static class ComplexTypeDTO {
-      private String var1;
-      private String var2;
-    }
-    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var2", autoComplete = false)
-    public void handle(@Variable String var1, @Variable ComplexTypeDTO var2) {
-    }
-  }
-
-  public static class NoPropertiesSet {
-    @JobWorker
-    public void handle() {
-    }
-  }
 
   @Test
   public void getBeanInfo() throws Exception {
@@ -74,14 +22,13 @@ public class ClassInfoTest {
   @Test
   public void hasZeebeeDeploymentAnnotation() throws Exception {
     assertThat(beanInfo(new WithDeploymentAnnotation()).hasClassAnnotation(Deployment.class))
-      .isTrue();
+        .isTrue();
   }
 
   @Test
   public void hasNoZeebeeDeploymentAnnotation() throws Exception {
-    assertThat(
-      beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(Deployment.class))
-      .isFalse();
+    assertThat(beanInfo(new WithoutDeploymentAnnotation()).hasClassAnnotation(Deployment.class))
+        .isFalse();
   }
 
   @Test
@@ -95,6 +42,65 @@ public class ClassInfoTest {
   }
 
   private ClassInfo beanInfo(final Object bean) {
-    return ClassInfo.builder().bean(bean).beanName(Introspector.decapitalize(bean.getClass().getSimpleName())).build();
+    return ClassInfo.builder()
+        .bean(bean)
+        .beanName(Introspector.decapitalize(bean.getClass().getSimpleName()))
+        .build();
+  }
+
+  @Deployment(resources = "classpath*:/1.bpmn")
+  public static class WithDeploymentAnnotation {}
+
+  public static class WithoutDeploymentAnnotation {}
+
+  public static class WithZeebeWorker {
+
+    @JobWorker(type = "bar", timeout = 100L, name = "kermit", autoComplete = false)
+    public void handle() {}
+  }
+
+  public static class WithZeebeWorkerAllValues {
+
+    @JobWorker(
+        type = "bar",
+        timeout = 100L,
+        name = "kermit",
+        requestTimeout = 500L,
+        pollInterval = 1_000L,
+        maxJobsActive = 3,
+        fetchVariables = {"foo"},
+        autoComplete = true,
+        enabled = true)
+    public void handle() {}
+  }
+
+  public static class WithZeebeWorkerVariables {
+    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var3", autoComplete = false)
+    public void handle(@Variable String var1, @Variable int var2) {}
+  }
+
+  public static class WithDisabledZeebeWorker {
+    @JobWorker(type = "bar", enabled = false, autoComplete = false)
+    public void handle(@Variable String var1, @Variable int var2) {}
+  }
+
+  public static class WithZeebeWorkerVariablesComplexType {
+    @JobWorker(type = "bar", timeout = 100L, fetchVariables = "var2", autoComplete = false)
+    public void handle(@Variable String var1, @Variable ComplexTypeDTO var2) {}
+
+    public static class ComplexTypeDTO {
+      private String var1;
+      private String var2;
+    }
+  }
+
+  public static class NoPropertiesSet {
+    @JobWorker
+    public void handle() {}
+  }
+
+  public static class TenantBound {
+    @JobWorker(tenantIds = "tenant-1")
+    public void handle() {}
   }
 }

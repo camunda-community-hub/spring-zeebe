@@ -1,5 +1,7 @@
 package io.camunda.operate.model;
 
 public enum ProcessInstanceState {
-  ACTIVE, COMPLETED, CANCELED;
+  ACTIVE,
+  COMPLETED,
+  CANCELED;
 }

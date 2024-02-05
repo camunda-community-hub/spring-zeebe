@@ -10,15 +10,21 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 /**
- * @deprecated
- * Use {@link JobWorker} instead. Note, that the default for auto completion has changed there from "false" to "true"!
+ * @deprecated Use {@link JobWorker} instead. Note, that the default for auto completion has changed
+ *     there from "false" to "true"!
  */
 @Deprecated
 public @interface ZeebeWorker {
 
-  String type() default ""; // set to empty string which leads to method name being used (if not ${zeebe.client.worker.default-type}" is configured) Implemented in ZeebeWorkerAnnotationProcessor
+  String type() default ""; // set to empty string which leads to method name being used (if not
 
-  String name() default ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in ZeebeWorkerAnnotationProcessor
+  // ${zeebe.client.worker.default-type}" is configured) Implemented in
+  // ZeebeWorkerAnnotationProcessor
+
+  String name() default
+      ""; // set to empty string which leads to default from ZeebeClientBuilderImpl being used in
+
+  // ZeebeWorkerAnnotationProcessor
 
   long timeout() default -1L;
 
@@ -31,19 +37,22 @@ public @interface ZeebeWorker {
   String[] fetchVariables() default {};
 
   /**
-   * Set to true, all variables are fetched independent of any other configuration
-   * via fetchVariables or @ZeebeVariable.
+   * Set to true, all variables are fetched independent of any other configuration via
+   * fetchVariables or @ZeebeVariable.
    */
   boolean forceFetchAllVariables() default false;
 
   /**
-   * If set to true, the job is automatically completed after the worker code has finished.
-   * In this case, your worker code is not allowed to complete the job itself.
+   * If set to true, the job is automatically completed after the worker code has finished. In this
+   * case, your worker code is not allowed to complete the job itself.
    *
-   *  You can still throw exceptions if you want to raise a problem instead of job completion.
-   *  You could also raise a BPMN problem throwing a {@link io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
+   * <p>You can still throw exceptions if you want to raise a problem instead of job completion. You
+   * could also raise a BPMN problem throwing a {@link
+   * io.camunda.zeebe.spring.client.exception.ZeebeBpmnError}
    */
   boolean autoComplete() default false;
 
   boolean enabled() default true;
+
+  String[] tenantIds() default {};
 }

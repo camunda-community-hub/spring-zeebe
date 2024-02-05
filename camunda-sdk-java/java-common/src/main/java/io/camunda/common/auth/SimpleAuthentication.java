@@ -1,5 +1,7 @@
 package io.camunda.common.auth;
 
+import java.lang.invoke.MethodHandles;
+import java.util.*;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -9,9 +11,6 @@ import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
-import java.util.*;
 
 public class SimpleAuthentication implements Authentication {
 
@@ -39,29 +38,34 @@ public class SimpleAuthentication implements Authentication {
     tokens = new HashMap<>();
   }
 
-  public static SimpleAuthenticationBuilder builder() { return new SimpleAuthenticationBuilder(); }
+  public static SimpleAuthenticationBuilder builder() {
+    return new SimpleAuthenticationBuilder();
+  }
 
   @Override
   public Authentication build() {
-    authUrl = simpleUrl+"/api/login";
+    authUrl = simpleUrl + "/api/login";
     return this;
   }
 
   private String retrieveToken(Product product, SimpleCredential simpleCredential) {
-    try(CloseableHttpClient client = HttpClients.createDefault()) {
+    try (CloseableHttpClient client = HttpClients.createDefault()) {
       HttpPost request = buildRequest(simpleCredential);
-      String cookie = client.execute(request, response -> {
-        Header[] cookieHeaders = response.getHeaders("Set-Cookie");
-        String cookieCandidate = null;
-        String cookiePrefix = product.toString().toUpperCase() + "-SESSION";
-        for (Header cookieHeader : cookieHeaders) {
-          if (cookieHeader.getValue().startsWith(cookiePrefix)) {
-            cookieCandidate = response.getHeader("Set-Cookie").getValue();
-            break;
-          }
-        }
-        return cookieCandidate;
-      });
+      String cookie =
+          client.execute(
+              request,
+              response -> {
+                Header[] cookieHeaders = response.getHeaders("Set-Cookie");
+                String cookieCandidate = null;
+                String cookiePrefix = product.toString().toUpperCase() + "-SESSION";
+                for (Header cookieHeader : cookieHeaders) {
+                  if (cookieHeader.getValue().startsWith(cookiePrefix)) {
+                    cookieCandidate = response.getHeader("Set-Cookie").getValue();
+                    break;
+                  }
+                }
+                return cookieCandidate;
+              });
       if (cookie == null) {
         throw new RuntimeException("Unable to authenticate due to missing Set-Cookie");
       }
@@ -82,7 +86,7 @@ public class SimpleAuthentication implements Authentication {
     return httpPost;
   }
 
-    @Override
+  @Override
   public Map.Entry<String, String> getTokenHeader(Product product) {
     String token;
     if (tokens.containsKey(product)) {

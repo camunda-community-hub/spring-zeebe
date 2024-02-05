@@ -6,8 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 /**
- * @deprecated
- * Use {@link CustomHeaders} instead.
+ * @deprecated Use {@link CustomHeaders} instead.
  */
 @Deprecated
 public @interface ZeebeCustomHeaders {}
