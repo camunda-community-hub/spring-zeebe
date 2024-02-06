@@ -41,6 +41,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
     applyDefaultWorkerName(zeebeWorker);
     applyDefaultJobWorkerType(zeebeWorker);
     applyFetchVariables(zeebeWorker);
+    applyAutoExtendTimeout(zeebeWorker);
     applyOverrides(zeebeWorker);
   }
 
@@ -104,9 +105,6 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   private void applyOverrides(ZeebeWorkerValue zeebeWorker) {
     final Map<String, ZeebeWorkerValue> workerConfigurationMap =
         zeebeClientConfigurationProperties.getWorker().getOverride();
-    setAutoExtendTimeout(zeebeWorker);
-    final Map<String, ZeebeWorkerValue> workerConfigurationMap =
-        zeebeClientConfigurationProperties.getWorker().getOverride();
     final String workerType = zeebeWorker.getType();
     if (workerConfigurationMap.containsKey(workerType)) {
       final ZeebeWorkerValue zeebeWorkerValue = workerConfigurationMap.get(workerType);
@@ -159,7 +157,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
     }
   }
 
-  private void setAutoExtendTimeout(ZeebeWorkerValue workerValue) {
+  private void applyAutoExtendTimeout(ZeebeWorkerValue workerValue) {
     if (!workerValue.isAutoExtendTimeout()) {
       workerValue.setAutoExtendTimeout(
           zeebeClientConfigurationProperties.getJob().isAutoExtendTimeout());

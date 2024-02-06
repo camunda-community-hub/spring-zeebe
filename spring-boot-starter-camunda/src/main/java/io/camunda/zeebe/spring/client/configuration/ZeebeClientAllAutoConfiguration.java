@@ -53,8 +53,10 @@ public class ZeebeClientAllAutoConfiguration {
   public JobWorkerManager jobWorkerManager(
       final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       final JsonMapper jsonMapper,
-      final MetricsRecorder metricsRecorder, final ZeebeClientExecutorService zeebeClientExecutorService) {
-    return new JobWorkerManager(commandExceptionHandlingStrategy, jsonMapper, metricsRecorder,zeebeClientExecutorService);
+      final MetricsRecorder metricsRecorder,
+      final ZeebeClientExecutorService zeebeClientExecutorService) {
+    return new JobWorkerManager(
+        commandExceptionHandlingStrategy, jsonMapper, metricsRecorder, zeebeClientExecutorService);
   }
 
   @Bean

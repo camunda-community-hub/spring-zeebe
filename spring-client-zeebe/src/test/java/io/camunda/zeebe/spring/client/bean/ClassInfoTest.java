@@ -103,4 +103,9 @@ public class ClassInfoTest {
     @JobWorker(tenantIds = "tenant-1")
     public void handle() {}
   }
+
+  public static class AutoExtend {
+    @JobWorker(autoExtendTimeout = true, extendTimeoutPeriodSeconds = 30)
+    public void handle() {}
+  }
 }

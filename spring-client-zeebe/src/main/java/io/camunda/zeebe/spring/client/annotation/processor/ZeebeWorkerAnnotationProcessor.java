@@ -86,7 +86,9 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
               annotation.enabled(),
               methodInfo,
               Arrays.asList(annotation.tenantIds()),
-              annotation.fetchAllVariables()));
+              annotation.fetchAllVariables(),
+              annotation.autoExtendTimeout(),
+              Duration.ofSeconds(annotation.extendTimeoutPeriodSeconds())));
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
@@ -104,7 +106,9 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
                 annotation.enabled(),
                 methodInfo,
                 Arrays.asList(annotation.tenantIds()),
-                annotation.forceFetchAllVariables()));
+                annotation.forceFetchAllVariables(),
+                annotation.autoExtendTimeout(),
+                Duration.ofSeconds(annotation.extendTimeoutPeriodSeconds())));
       }
     }
     return Optional.empty();

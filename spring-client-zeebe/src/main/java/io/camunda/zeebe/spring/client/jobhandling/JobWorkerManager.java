@@ -32,7 +32,8 @@ public class JobWorkerManager {
   public JobWorkerManager(
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       JsonMapper jsonMapper,
-      MetricsRecorder metricsRecorder,ZeebeClientExecutorService zeebeClientExecutorService) {
+      MetricsRecorder metricsRecorder,
+      ZeebeClientExecutorService zeebeClientExecutorService) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
@@ -48,7 +49,7 @@ public class JobWorkerManager {
             commandExceptionHandlingStrategy,
             jsonMapper,
             metricsRecorder,
-            new AutoExtendTimeoutManager(zeebeClientExecutorService,client)));
+            new AutoExtendTimeoutManager(zeebeClientExecutorService, client)));
   }
 
   public JobWorker openWorker(

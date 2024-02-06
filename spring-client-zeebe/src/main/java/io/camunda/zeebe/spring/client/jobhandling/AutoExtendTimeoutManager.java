@@ -29,7 +29,7 @@ public class AutoExtendTimeoutManager {
   }
 
   private void extendTimeout(long jobKey, Duration timeout) {
-    LOG.trace("Updating job timeout of job {} by {}",jobKey,timeout.toString());
+    LOG.trace("Updating job timeout of job {} by {}", jobKey, timeout.toString());
     zeebeClient.newUpdateTimeoutCommand(jobKey).timeout(timeout).send().join();
   }
 }

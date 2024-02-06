@@ -9,6 +9,7 @@ import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
+import java.time.Duration;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
@@ -173,6 +174,23 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
     customizer.customize(zeebeWorkerValue);
     // then
     assertThat(zeebeWorkerValue.getEnabled()).isFalse();
+  }
+
+  @Test
+  void shouldApplyAutoExtendTimeout() {
+    // given
+    ZeebeClientConfigurationProperties properties = properties();
+    properties.getJob().setAutoExtendTimeout(true);
+    properties.getJob().setExtendTimeoutPeriod(Duration.ofSeconds(25));
+    PropertyBasedZeebeWorkerValueCustomizer customizer =
+        new PropertyBasedZeebeWorkerValueCustomizer(properties);
+    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue();
+    zeebeWorkerValue.setMethodInfo(methodInfo(this, "testBean", "sampleWorker"));
+    // when
+    customizer.customize(zeebeWorkerValue);
+    // then
+    assertThat(zeebeWorkerValue.getExtendTimeoutPeriod()).isEqualTo(Duration.ofSeconds(25));
+    assertThat(zeebeWorkerValue.isAutoExtendTimeout()).isEqualTo(true);
   }
 
   private static class ComplexProcessVariable {

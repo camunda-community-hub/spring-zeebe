@@ -1,9 +1,7 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-
-import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +46,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       Boolean enabled,
       MethodInfo methodInfo,
       List<String> tenantIds,
-      boolean forceFetchAllVariables) {
+      boolean forceFetchAllVariables,
+      boolean autoExtendTimeout,
+      Duration extendTimeoutPeriod) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
@@ -61,6 +61,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.methodInfo = methodInfo;
     this.tenantIds = tenantIds;
     this.forceFetchAllVariables = forceFetchAllVariables;
+    this.autoExtendTimeout = autoExtendTimeout;
+    this.extendTimeoutPeriod = extendTimeoutPeriod;
   }
 
   public Duration getExtendTimeoutPeriod() {
@@ -209,6 +211,10 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
         + tenantIds
         + ", forceFetchAllVariables="
         + forceFetchAllVariables
+        + ", autoExtendTimeout="
+        + autoExtendTimeout
+        + ", extendTimeoutPeriod="
+        + extendTimeoutPeriod
         + '}';
   }
 
@@ -218,6 +224,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeWorkerValue that = (ZeebeWorkerValue) o;
     return forceFetchAllVariables == that.forceFetchAllVariables
+        && autoExtendTimeout == that.autoExtendTimeout
         && Objects.equals(type, that.type)
         && Objects.equals(name, that.name)
         && Objects.equals(timeout, that.timeout)
@@ -228,7 +235,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
         && Arrays.equals(fetchVariables, that.fetchVariables)
         && Objects.equals(enabled, that.enabled)
         && Objects.equals(methodInfo, that.methodInfo)
-        && Objects.equals(tenantIds, that.tenantIds);
+        && Objects.equals(tenantIds, that.tenantIds)
+        && Objects.equals(extendTimeoutPeriod, that.extendTimeoutPeriod);
   }
 
   @Override
@@ -245,7 +253,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
             enabled,
             methodInfo,
             tenantIds,
-            forceFetchAllVariables);
+            forceFetchAllVariables,
+            autoExtendTimeout,
+            extendTimeoutPeriod);
     result = 31 * result + Arrays.hashCode(fetchVariables);
     return result;
   }

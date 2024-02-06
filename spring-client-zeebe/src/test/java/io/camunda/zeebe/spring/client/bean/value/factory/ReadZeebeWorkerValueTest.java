@@ -11,6 +11,7 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.ClassInfoTest;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -57,6 +58,22 @@ public class ReadZeebeWorkerValueTest {
     // then
     assertTrue(zeebeWorkerValue.isPresent());
     assertThat(zeebeWorkerValue.get().getTenantIds()).containsOnly("tenant-1");
+  }
+
+  @Test
+  void shouldReadAutoExtendTimeout() {
+    // given
+    final ZeebeWorkerAnnotationProcessor annotationProcessor = createDefaultAnnotationProcessor();
+    final MethodInfo methodInfo = extract(ClassInfoTest.AutoExtend.class);
+
+    // when
+    final Optional<ZeebeWorkerValue> zeebeWorkerValue =
+        annotationProcessor.readJobWorkerAnnotationForMethod(methodInfo);
+
+    // then
+    assertTrue(zeebeWorkerValue.isPresent());
+    assertThat(zeebeWorkerValue.get().getAutoComplete()).isEqualTo(true);
+    assertThat(zeebeWorkerValue.get().getExtendTimeoutPeriod()).isEqualTo(Duration.ofSeconds(30));
   }
 
   @Test

@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import org.slf4j.Logger;
 
 /** Zeebe JobHandler that invokes a Spring bean */
 public class JobHandlerInvokingSpringBeans implements JobHandler {
