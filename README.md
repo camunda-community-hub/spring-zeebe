@@ -600,6 +600,26 @@ To enable job streaming on the zeebe client, you can configure it:
 zeebe.client.default-job-worker-stream-enabled=true
 ```
 
+### Control tenant usage
+
+When using multi-tenancy, the zeebe client will connect to the `<default>` tenant. To control this, you can configure:
+
+```properties
+zeebe.client.default-job-worker-tenant-ids=myTenant
+```
+
+Additionally, you can set tenant ids on job worker level by using the annotation:
+
+```java
+@JobWorker(tenantIds="myOtherTenant")
+```
+
+You can override this property as well:
+
+```properties
+zeebe.client.worker.override.tenant-ids=myThirdTenant
+```
+
 ## Observing metrics
 
 Spring-zeebe-starter will provide some out-of-the-box metrics, that can be leveraged via [Spring Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/). Whenever actuator is on the classpath, you can access the following metrics:
