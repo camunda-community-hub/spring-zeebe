@@ -2,6 +2,35 @@ package io.camunda.zeebe.spring.client.properties.common;
 
 public class Client {
 
+  @Override
+  public String toString() {
+    return "Client{"
+        + "clientId='"
+        + "***"
+        + '\''
+        + ", clientSecret='"
+        + "***"
+        + '\''
+        + ", username='"
+        + "***"
+        + '\''
+        + ", password='"
+        + "***"
+        + '\''
+        + ", enabled="
+        + enabled
+        + ", url='"
+        + url
+        + '\''
+        + ", authUrl='"
+        + authUrl
+        + '\''
+        + ", baseUrl='"
+        + baseUrl
+        + '\''
+        + '}';
+  }
+
   private String clientId;
   private String clientSecret;
   private String username;

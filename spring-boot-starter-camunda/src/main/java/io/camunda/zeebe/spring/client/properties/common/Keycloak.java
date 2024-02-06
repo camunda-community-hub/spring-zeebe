@@ -2,6 +2,21 @@ package io.camunda.zeebe.spring.client.properties.common;
 
 public class Keycloak {
 
+  @Override
+  public String toString() {
+    return "Keycloak{"
+        + "url='"
+        + url
+        + '\''
+        + ", realm='"
+        + realm
+        + '\''
+        + ", tokenUrl='"
+        + tokenUrl
+        + '\''
+        + '}';
+  }
+
   private String url;
   private String realm;
   private String tokenUrl;

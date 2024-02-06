@@ -228,7 +228,21 @@ public class ZeebeClientConfigurationProperties {
   @Override
   public String toString() {
     return "ZeebeClientConfigurationProperties{"
-        + "broker="
+        + "environment="
+        + environment
+        + ", connectionMode='"
+        + connectionMode
+        + '\''
+        + ", defaultTenantId='"
+        + defaultTenantId
+        + '\''
+        + ", defaultJobWorkerTenantIds="
+        + defaultJobWorkerTenantIds
+        + ", applyEnvironmentVariableOverrides="
+        + applyEnvironmentVariableOverrides
+        + ", enabled="
+        + enabled
+        + ", broker="
         + broker
         + ", cloud="
         + cloud
@@ -240,14 +254,27 @@ public class ZeebeClientConfigurationProperties {
         + security
         + ", job="
         + job
-        + ", requestTimeout="
-        + requestTimeout
         + ", ownsJobWorkerExecutor="
         + ownsJobWorkerExecutor
+        + ", defaultJobWorkerStreamEnabled="
+        + defaultJobWorkerStreamEnabled
+        + ", requestTimeout="
+        + requestTimeout
         + '}';
   }
 
   public static class Broker {
+
+    @Override
+    public String toString() {
+      return "Broker{"
+          + "gatewayAddress='"
+          + gatewayAddress
+          + '\''
+          + ", keepAlive="
+          + keepAlive
+          + '}';
+    }
 
     private String gatewayAddress;
     private Duration keepAlive = DEFAULT.getKeepAlive();
@@ -305,20 +332,42 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(gatewayAddress, keepAlive);
     }
-
-    @Override
-    public String toString() {
-      return "Broker{"
-          + "gatewayAddress='"
-          + gatewayAddress
-          + '\''
-          + ", keepAlive="
-          + keepAlive
-          + '}';
-    }
   }
 
   public static class Cloud {
+
+    @Override
+    public String toString() {
+      return "Cloud{"
+          + "clusterId='"
+          + clusterId
+          + '\''
+          + ", clientId='"
+          + "***"
+          + '\''
+          + ", clientSecret='"
+          + "***"
+          + '\''
+          + ", region='"
+          + region
+          + '\''
+          + ", scope='"
+          + scope
+          + '\''
+          + ", baseUrl='"
+          + baseUrl
+          + '\''
+          + ", authUrl='"
+          + authUrl
+          + '\''
+          + ", port="
+          + port
+          + ", credentialsCachePath='"
+          + credentialsCachePath
+          + '\''
+          + '}';
+    }
+
     private String clusterId;
     private String clientId;
     private String clientSecret;
@@ -416,6 +465,24 @@ public class ZeebeClientConfigurationProperties {
   }
 
   public static class Worker {
+    @Override
+    public String toString() {
+      return "Worker{"
+          + "maxJobsActive="
+          + maxJobsActive
+          + ", threads="
+          + threads
+          + ", defaultName='"
+          + defaultName
+          + '\''
+          + ", defaultType='"
+          + defaultType
+          + '\''
+          + ", override="
+          + override
+          + '}';
+    }
+
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName =
@@ -479,27 +546,15 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(maxJobsActive, threads, defaultName, defaultType, override);
     }
-
-    @Override
-    public String toString() {
-      return "Worker{"
-          + "maxJobsActive="
-          + maxJobsActive
-          + ", threads="
-          + threads
-          + ", defaultName='"
-          + defaultName
-          + '\''
-          + ", defaultType='"
-          + defaultType
-          + '\''
-          + ", override="
-          + override
-          + '}';
-    }
   }
 
   public static class Job {
+
+    @Override
+    public String toString() {
+      return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
+    }
+
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
     private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
 
@@ -531,14 +586,15 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(timeout, pollInterval);
     }
-
-    @Override
-    public String toString() {
-      return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
-    }
   }
 
   public static class Message {
+
+    @Override
+    public String toString() {
+      return "Message{" + "timeToLive=" + timeToLive + ", maxMessageSize=" + maxMessageSize + '}';
+    }
+
     private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
     private int maxMessageSize = DEFAULT.getMaxMessageSize();
 
@@ -570,14 +626,24 @@ public class ZeebeClientConfigurationProperties {
     public int hashCode() {
       return Objects.hash(timeToLive);
     }
-
-    @Override
-    public String toString() {
-      return "Message{" + "timeToLive=" + timeToLive + '}';
-    }
   }
 
   public static class Security {
+
+    @Override
+    public String toString() {
+      return "Security{"
+          + "plaintext="
+          + plaintext
+          + ", overrideAuthority='"
+          + overrideAuthority
+          + '\''
+          + ", certPath='"
+          + certPath
+          + '\''
+          + '}';
+    }
+
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
     private String overrideAuthority = DEFAULT.getOverrideAuthority();
     private String certPath = DEFAULT.getCaCertificatePath();
@@ -619,20 +685,6 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public int hashCode() {
       return Objects.hash(plaintext, overrideAuthority, certPath);
-    }
-
-    @Override
-    public String toString() {
-      return "Security{"
-          + "plaintext="
-          + plaintext
-          + ", overrideAuthority='"
-          + overrideAuthority
-          + '\''
-          + ", certPath='"
-          + certPath
-          + '\''
-          + '}';
     }
   }
 

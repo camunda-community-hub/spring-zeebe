@@ -10,6 +10,11 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "common")
 public class CommonConfigurationProperties extends Client {
 
+  @Override
+  public String toString() {
+    return "CommonConfigurationProperties{" + "keycloak=" + keycloak + "} " + super.toString();
+  }
+
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
