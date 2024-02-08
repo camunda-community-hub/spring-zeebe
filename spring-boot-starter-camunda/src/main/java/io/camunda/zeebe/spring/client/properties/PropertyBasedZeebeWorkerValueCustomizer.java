@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
@@ -44,6 +45,12 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   }
 
   private void applyFetchVariables(ZeebeWorkerValue zeebeWorkerValue) {
+    if (hasActivatedJobInjected(zeebeWorkerValue)) {
+      LOG.debug(
+          "Worker '{}': ActivatedJob is injected, no variable filtering possible",
+          zeebeWorkerValue.getName());
+      return;
+    }
     if (zeebeWorkerValue.isForceFetchAllVariables()) {
       LOG.debug("Worker '{}': Force fetch all variables is enabled", zeebeWorkerValue.getName());
       zeebeWorkerValue.setFetchVariables(new String[0]);
@@ -54,7 +61,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
       }
       variables.addAll(
           readZeebeVariableParameters(zeebeWorkerValue.getMethodInfo()).stream()
-              .map(ParameterInfo::getParameterName)
+              .map(this::extractVariableName)
               .collect(Collectors.toList()));
       variables.addAll(readVariablesAsTypeParameters(zeebeWorkerValue.getMethodInfo()));
       zeebeWorkerValue.setFetchVariables(variables.toArray(new String[0]));
@@ -62,6 +69,24 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
           "Worker '{}': Fetching only required variables {}",
           zeebeWorkerValue.getName(),
           variables);
+    }
+  }
+
+  private boolean hasActivatedJobInjected(ZeebeWorkerValue zeebeWorkerValue) {
+    return zeebeWorkerValue.getMethodInfo().getParameters().stream()
+        .anyMatch(p -> p.getParameterInfo().getType().equals(ActivatedJob.class));
+  }
+
+  private String extractVariableName(ParameterInfo parameterInfo) {
+    Variable annotation = parameterInfo.getParameterInfo().getAnnotation(Variable.class);
+    if (annotation != null) {
+      if (Variable.DEFAULT_NAME.equals(annotation.name())) {
+        return parameterInfo.getParameterName();
+      } else {
+        return annotation.name();
+      }
+    } else {
+      return parameterInfo.getParameterName();
     }
   }
 
