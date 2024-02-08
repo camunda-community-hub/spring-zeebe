@@ -49,9 +49,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
       LOG.debug(
           "Worker '{}': ActivatedJob is injected, no variable filtering possible",
           zeebeWorkerValue.getName());
-      return;
-    }
-    if (zeebeWorkerValue.isForceFetchAllVariables()) {
+    } else if (zeebeWorkerValue.isForceFetchAllVariables()) {
       LOG.debug("Worker '{}': Force fetch all variables is enabled", zeebeWorkerValue.getName());
       zeebeWorkerValue.setFetchVariables(new String[0]);
     } else {
@@ -74,7 +72,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
 
   private boolean hasActivatedJobInjected(ZeebeWorkerValue zeebeWorkerValue) {
     return zeebeWorkerValue.getMethodInfo().getParameters().stream()
-        .anyMatch(p -> p.getParameterInfo().getType().equals(ActivatedJob.class));
+        .anyMatch(p -> p.getParameterInfo().getType().isAssignableFrom(ActivatedJob.class));
   }
 
   private String extractVariableName(ParameterInfo parameterInfo) {
