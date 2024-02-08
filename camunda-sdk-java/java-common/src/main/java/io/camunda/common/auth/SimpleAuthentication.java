@@ -29,7 +29,9 @@ public class SimpleAuthentication implements Authentication {
 
   public static SimpleAuthenticationBuilder builder() { return new SimpleAuthenticationBuilder(); }
 
-
+  public SimpleConfig getSimpleConfig() {
+    return simpleConfig;
+  }
 
   private String retrieveToken(Product product, SimpleCredential simpleCredential) {
     try(CloseableHttpClient client = HttpClients.createDefault()) {

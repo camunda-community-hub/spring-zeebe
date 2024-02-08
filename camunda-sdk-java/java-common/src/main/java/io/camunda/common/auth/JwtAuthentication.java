@@ -20,6 +20,10 @@ public abstract class JwtAuthentication implements Authentication {
 
   protected JwtAuthentication(JwtConfig jwtConfig) {this.jwtConfig = jwtConfig;}
 
+  public JwtConfig getJwtConfig() {
+    return jwtConfig;
+  }
+
   @Override
   public final void resetToken(Product product) {
     tokens.remove(product);
