@@ -6,6 +6,8 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SimpleAuthentication;
 import io.camunda.common.auth.SimpleCredential;
+import io.camunda.common.json.JsonMapper;
+import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -37,7 +40,12 @@ public class OperateSelfManagedBasicTest {
     IdentityAutoConfiguration.class
   })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {}
+  public static class TestConfig {
+    @Bean
+    public JsonMapper jsonMapper() {
+      return new SdkObjectMapper();
+    }
+  }
 
   @Autowired private Authentication authentication;
 

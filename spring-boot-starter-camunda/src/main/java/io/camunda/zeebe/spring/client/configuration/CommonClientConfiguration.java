@@ -6,6 +6,7 @@ import io.camunda.common.auth.*;
 import io.camunda.common.auth.identity.IdentityConfig;
 import io.camunda.common.auth.identity.IdentityContainer;
 import io.camunda.common.exception.SdkException;
+import io.camunda.common.json.JsonMapper;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.zeebe.spring.client.properties.*;
@@ -44,13 +45,16 @@ public class CommonClientConfiguration {
   private IdentityConfiguration identityConfigurationFromProperties;
 
   @Bean
-  public Authentication authentication() {
+  public Authentication authentication(JsonMapper jsonMapper) {
 
     // TODO: Refactor
     if (zeebeClientConfigurationProperties != null) {
       // check if Zeebe has clusterId provided, then must be SaaS
       if (zeebeClientConfigurationProperties.getCloud().getClusterId() != null) {
-        return SaaSAuthentication.builder().jwtConfig(configureJwtConfig()).build();
+        return SaaSAuthentication.builder()
+            .withJwtConfig(configureJwtConfig())
+            .withJsonMapper(jsonMapper)
+            .build();
       } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null
           || zeebeSelfManagedProperties.getGatewayAddress() != null) {
         // figure out if Self-Managed JWT or Self-Managed Basic
@@ -61,8 +65,8 @@ public class CommonClientConfiguration {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
-                .jwtConfig(jwtConfig)
-                .identityConfig(identityConfig)
+                .withJwtConfig(jwtConfig)
+                .withIdentityConfig(identityConfig)
                 .build();
           } else if (operateClientConfigurationProperties.getUsername() != null
               && operateClientConfigurationProperties.getPassword() != null) {
@@ -73,8 +77,8 @@ public class CommonClientConfiguration {
                     operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
             return SimpleAuthentication.builder()
-                .simpleConfig(simpleConfig)
-                .simpleUrl(operateClientConfigurationProperties.getUrl())
+                .withSimpleConfig(simpleConfig)
+                .withSimpleUrl(operateClientConfigurationProperties.getUrl())
                 .build();
           }
         }
@@ -85,8 +89,8 @@ public class CommonClientConfiguration {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
-                .jwtConfig(jwtConfig)
-                .identityConfig(identityConfig)
+                .withJwtConfig(jwtConfig)
+                .withIdentityConfig(identityConfig)
                 .build();
           }
         }
@@ -97,15 +101,15 @@ public class CommonClientConfiguration {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
-                .jwtConfig(jwtConfig)
-                .identityConfig(identityConfig)
+                .withJwtConfig(jwtConfig)
+                .withIdentityConfig(identityConfig)
                 .build();
           } else if (commonConfigurationProperties.getKeycloak().getTokenUrl() != null) {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
             return SelfManagedAuthentication.builder()
-                .jwtConfig(jwtConfig)
-                .identityConfig(identityConfig)
+                .withJwtConfig(jwtConfig)
+                .withIdentityConfig(identityConfig)
                 .build();
           } else if (commonConfigurationProperties.getUsername() != null
               && commonConfigurationProperties.getPassword() != null) {
@@ -116,14 +120,14 @@ public class CommonClientConfiguration {
                     commonConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
             return SimpleAuthentication.builder()
-                .simpleConfig(simpleConfig)
-                .simpleUrl(commonConfigurationProperties.getUrl())
+                .withSimpleConfig(simpleConfig)
+                .withSimpleUrl(commonConfigurationProperties.getUrl())
                 .build();
           }
         }
       }
     }
-    return new DefaultNoopAuthentication().build();
+    return new DefaultNoopAuthentication();
   }
 
   private JwtConfig configureJwtConfig() {

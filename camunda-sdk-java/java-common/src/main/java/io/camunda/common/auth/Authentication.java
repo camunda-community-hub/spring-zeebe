@@ -4,9 +4,11 @@ import java.util.Map;
 
 public interface Authentication {
 
-  Authentication build();
-
   Map.Entry<String, String> getTokenHeader(Product product);
 
   void resetToken(Product product);
+
+  interface AuthenticationBuilder {
+    Authentication build();
+  }
 }

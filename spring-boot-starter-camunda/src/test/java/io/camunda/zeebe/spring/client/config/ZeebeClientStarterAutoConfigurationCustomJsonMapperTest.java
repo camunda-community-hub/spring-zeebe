@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.CamundaAutoConfiguration;
@@ -46,6 +47,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
   public static class TestConfig {
+    @Bean
+    public io.camunda.common.json.JsonMapper commonJsonMapper() {
+      return new SdkObjectMapper();
+    }
 
     @Primary
     @Bean(name = "overridingJsonMapper")
