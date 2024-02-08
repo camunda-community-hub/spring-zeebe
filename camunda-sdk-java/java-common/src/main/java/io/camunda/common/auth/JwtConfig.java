@@ -6,7 +6,7 @@ import java.util.Map;
 /** Contains mapping between products and their JWT credentials */
 public class JwtConfig {
 
-  private Map<Product, JwtCredential> map;
+  private final Map<Product, JwtCredential> map;
 
   public JwtConfig() {
     map = new HashMap<>();
