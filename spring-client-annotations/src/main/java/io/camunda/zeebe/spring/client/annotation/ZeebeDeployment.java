@@ -12,8 +12,7 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited // has to be inherited to work on spring aop beans
 /**
- * @deprecated
- * Use {@link Deployment} instead.
+ * @deprecated Use {@link Deployment} instead.
  */
 @Deprecated
 public @interface ZeebeDeployment {

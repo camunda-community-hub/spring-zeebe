@@ -1,11 +1,10 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.lang.invoke.MethodHandles;
 
 @ConfigurationProperties(prefix = "camunda.operate.client")
 public class OperateClientConfigurationProperties {
@@ -124,7 +123,7 @@ public class OperateClientConfigurationProperties {
 
   public String getOperateUrl() {
     if (url != null) {
-      LOG.debug("Connecting to Camunda Operate on URL: " +url);
+      LOG.debug("Connecting to Camunda Operate on URL: " + url);
       return url;
     } else if (clusterId != null) {
       String url = "https://" + region + "." + getFinalBaseUrl() + "/" + clusterId + "/";
@@ -132,7 +131,7 @@ public class OperateClientConfigurationProperties {
       return url;
     }
     throw new IllegalArgumentException(
-      "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
+        "In order to connect to Camunda Operate you need to specify either a SaaS clusterId or an Operate URL.");
   }
 
   private String getFinalBaseUrl() {

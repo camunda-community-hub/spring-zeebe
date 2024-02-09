@@ -5,7 +5,6 @@ import io.camunda.common.auth.Product;
 import io.camunda.common.http.DefaultHttpClient;
 import io.camunda.common.http.HttpClient;
 import io.camunda.operate.model.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ public class CamundaOperateClientBuilder {
   private Authentication authentication;
   private String operateUrl;
   private HttpClient httpClient;
-
 
   public CamundaOperateClientBuilder authentication(Authentication authentication) {
     this.authentication = authentication;
@@ -42,12 +40,21 @@ public class CamundaOperateClientBuilder {
     map.put(DecisionDefinition.class, "/decision-definitions");
     map.put(DecisionRequirements.class, "/drd");
     map.put(DecisionInstance.class, "/decision-instances");
-    map.put(SearchResultTypeToken.searchResultProcessDefinition.getClass(), "/process-definitions/search");
-    map.put(SearchResultTypeToken.searchResultDecisionDefinition.getClass(), "/decision-definitions/search");
-    map.put(SearchResultTypeToken.searchResultDecisionInstance.getClass(), "/decision-instances/search");
-    map.put(SearchResultTypeToken.searchResultFlowNodeInstance.getClass(), "/flownode-instances/search");
+    map.put(
+        SearchResultTypeToken.searchResultProcessDefinition.getClass(),
+        "/process-definitions/search");
+    map.put(
+        SearchResultTypeToken.searchResultDecisionDefinition.getClass(),
+        "/decision-definitions/search");
+    map.put(
+        SearchResultTypeToken.searchResultDecisionInstance.getClass(),
+        "/decision-instances/search");
+    map.put(
+        SearchResultTypeToken.searchResultFlowNodeInstance.getClass(),
+        "/flownode-instances/search");
     map.put(SearchResultTypeToken.searchResultVariable.getClass(), "/variables/search");
-    map.put(SearchResultTypeToken.searchResultProcessInstance.getClass(), "/process-instances/search");
+    map.put(
+        SearchResultTypeToken.searchResultProcessInstance.getClass(), "/process-instances/search");
     map.put(SearchResultTypeToken.searchResultDecisionRequirements.getClass(), "/drd/search");
     map.put(SearchResultTypeToken.searchResultIncident.getClass(), "/incidents/search");
     httpClient.loadMap(Product.OPERATE, map);
@@ -56,7 +63,7 @@ public class CamundaOperateClientBuilder {
 
   private String formatUrl(String url) {
     if (url.endsWith("/")) {
-      return url.substring(0, url.length()-1);
+      return url.substring(0, url.length() - 1);
     }
     return url;
   }

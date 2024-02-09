@@ -7,5 +7,4 @@ public class DecisionDefinitionFilter extends DecisionDefinition implements Filt
   public static DecisionDefinitionFilterBuilder builder() {
     return new DecisionDefinitionFilterBuilder();
   }
-
 }

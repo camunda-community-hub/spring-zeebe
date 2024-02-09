@@ -53,5 +53,4 @@ public class TokenRequest {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
   }
-
 }

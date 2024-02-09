@@ -3,14 +3,12 @@ package io.camunda.common.auth;
 import io.camunda.common.auth.identity.IdentityConfig;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.authentication.Tokens;
-import io.camunda.identity.sdk.authentication.exception.TokenExpiredException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SelfManagedAuthentication extends JwtAuthentication {
 

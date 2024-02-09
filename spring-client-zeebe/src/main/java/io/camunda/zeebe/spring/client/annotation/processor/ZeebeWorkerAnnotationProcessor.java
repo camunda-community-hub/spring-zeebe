@@ -1,5 +1,7 @@
 package io.camunda.zeebe.spring.client.annotation.processor;
 
+import static org.springframework.util.ReflectionUtils.doWithMethods;
+
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
@@ -8,26 +10,24 @@ import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.util.ReflectionUtils.doWithMethods;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Always created by {@link AnnotationProcessorConfiguration}
  *
- * Triggered by {@link ZeebeAnnotationProcessorRegistry#postProcessAfterInitialization(Object, String)} to add Handler subscriptions for {@link ZeebeWorker}
- * method-annotations.
+ * <p>Triggered by {@link ZeebeAnnotationProcessorRegistry#postProcessAfterInitialization(Object,
+ * String)} to add Handler subscriptions for {@link ZeebeWorker} method-annotations.
  */
 public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final JobWorkerManager jobWorkerManager;
 
@@ -36,9 +36,11 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
   private String defaultWorkerType;
   private String defaultWorkerName;
 
-  public ZeebeWorkerAnnotationProcessor(final JobWorkerManager jobWorkerFactory,
-                                        final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers,
-                                        final String defaultWorkerType, final String defaultJobWorkerName) {
+  public ZeebeWorkerAnnotationProcessor(
+      final JobWorkerManager jobWorkerFactory,
+      final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers,
+      final String defaultWorkerType,
+      final String defaultJobWorkerName) {
     this.jobWorkerManager = jobWorkerFactory;
     this.zeebeWorkerValueCustomizers = zeebeWorkerValueCustomizers;
     this.defaultWorkerType = defaultWorkerType;
@@ -47,7 +49,8 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
 
   @Override
   public boolean isApplicableFor(ClassInfo beanInfo) {
-    return beanInfo.hasMethodAnnotation(JobWorker.class) || beanInfo.hasMethodAnnotation(ZeebeWorker.class);
+    return beanInfo.hasMethodAnnotation(JobWorker.class)
+        || beanInfo.hasMethodAnnotation(ZeebeWorker.class);
   }
 
   @Override
@@ -55,11 +58,17 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
     List<ZeebeWorkerValue> newZeebeWorkerValues = new ArrayList<>();
 
     doWithMethods(
-      beanInfo.getTargetClass(),
-      method -> readJobWorkerAnnotationForMethod(beanInfo.toMethodInfo(method)).ifPresent(newZeebeWorkerValues::add),
-      ReflectionUtils.USER_DECLARED_METHODS);
+        beanInfo.getTargetClass(),
+        method ->
+            readJobWorkerAnnotationForMethod(beanInfo.toMethodInfo(method))
+                .ifPresent(newZeebeWorkerValues::add),
+        ReflectionUtils.USER_DECLARED_METHODS);
 
-    LOGGER.info("Configuring {} Zeebe worker(s) of bean '{}': {}", newZeebeWorkerValues.size(), beanInfo.getBeanName(), newZeebeWorkerValues);
+    LOGGER.info(
+        "Configuring {} Zeebe worker(s) of bean '{}': {}",
+        newZeebeWorkerValues.size(),
+        beanInfo.getBeanName(),
+        newZeebeWorkerValues);
     zeebeWorkerValues.addAll(newZeebeWorkerValues);
   }
 
@@ -67,38 +76,44 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
     Optional<JobWorker> methodAnnotation = methodInfo.getAnnotation(JobWorker.class);
     if (methodAnnotation.isPresent()) {
       JobWorker annotation = methodAnnotation.get();
-      return Optional.of(new ZeebeWorkerValue()
-            .setMethodInfo(methodInfo)
-            .setType(annotation.type())
-            .setTimeout(annotation.timeout())
-            .setMaxJobsActive(annotation.maxJobsActive())
-            .setPollInterval(annotation.pollInterval())
-            .setAutoComplete(annotation.autoComplete())
-            .setRequestTimeout(annotation.requestTimeout())
-            .setEnabled(annotation.enabled())
+      return Optional.of(
+          new ZeebeWorkerValue()
+              .setMethodInfo(methodInfo)
+              .setType(annotation.type())
+              .setTimeout(annotation.timeout())
+              .setMaxJobsActive(annotation.maxJobsActive())
+              .setPollInterval(annotation.pollInterval())
+              .setAutoComplete(annotation.autoComplete())
+              .setRequestTimeout(annotation.requestTimeout())
+              .setEnabled(annotation.enabled())
 
-            // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
-            .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-            .initializeFetchVariables(annotation.fetchAllVariables(), annotation.fetchVariables(), methodInfo)
-            .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+              // TODO Get rid of those initialize methods but add the attributes as values onto the
+              // worker and then auto-initialize stuff when opening the worker
+              .initializeName(annotation.name(), methodInfo, defaultWorkerName)
+              .initializeFetchVariables(
+                  annotation.fetchAllVariables(), annotation.fetchVariables(), methodInfo)
+              .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
         ZeebeWorker annotation = legacyAnnotation.get();
-        return Optional.of(new ZeebeWorkerValue()
-          .setMethodInfo(methodInfo)
-          .setType(annotation.type())
-          .setTimeout(annotation.timeout())
-          .setMaxJobsActive(annotation.maxJobsActive())
-          .setPollInterval(annotation.pollInterval())
-          .setAutoComplete(annotation.autoComplete())
-          .setRequestTimeout(annotation.requestTimeout())
-          .setEnabled(annotation.enabled())
+        return Optional.of(
+            new ZeebeWorkerValue()
+                .setMethodInfo(methodInfo)
+                .setType(annotation.type())
+                .setTimeout(annotation.timeout())
+                .setMaxJobsActive(annotation.maxJobsActive())
+                .setPollInterval(annotation.pollInterval())
+                .setAutoComplete(annotation.autoComplete())
+                .setRequestTimeout(annotation.requestTimeout())
+                .setEnabled(annotation.enabled())
 
-          // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker
-          .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-          .initializeFetchVariables(annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo)
-          .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+                // TODO Get rid of those initialize methods but add the attributes as values onto
+                // the worker and then auto-initialize stuff when opening the worker
+                .initializeName(annotation.name(), methodInfo, defaultWorkerName)
+                .initializeFetchVariables(
+                    annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo)
+                .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
       }
     }
     return Optional.empty();
@@ -106,19 +121,20 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
 
   @Override
   public void start(ZeebeClient client) {
-    zeebeWorkerValues
-      .stream()
-      .peek(zeebeWorkerValue -> zeebeWorkerValueCustomizers.forEach(customizer -> customizer.customize(zeebeWorkerValue)))
-      .filter(ZeebeWorkerValue::getEnabled)
-      .forEach(
-        zeebeWorkerValue -> {
-          jobWorkerManager.openWorker(client, zeebeWorkerValue);
-        });
+    zeebeWorkerValues.stream()
+        .peek(
+            zeebeWorkerValue ->
+                zeebeWorkerValueCustomizers.forEach(
+                    customizer -> customizer.customize(zeebeWorkerValue)))
+        .filter(ZeebeWorkerValue::getEnabled)
+        .forEach(
+            zeebeWorkerValue -> {
+              jobWorkerManager.openWorker(client, zeebeWorkerValue);
+            });
   }
 
   @Override
   public void stop(ZeebeClient zeebeClient) {
     jobWorkerManager.closeAllOpenWorkers();
   }
-
 }

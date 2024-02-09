@@ -47,5 +47,4 @@ public class FlowNodeStatistics {
   public void setCompleted(Long completed) {
     this.completed = completed;
   }
-
 }
