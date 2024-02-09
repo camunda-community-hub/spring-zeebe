@@ -3,10 +3,7 @@ package io.camunda.common.auth;
 import io.camunda.common.auth.identity.IdentityConfig;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.authentication.Tokens;
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SelfManagedAuthentication extends JwtAuthentication {
 

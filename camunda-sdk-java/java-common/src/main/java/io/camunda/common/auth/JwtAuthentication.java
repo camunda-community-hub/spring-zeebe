@@ -1,13 +1,10 @@
 package io.camunda.common.auth;
 
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class JwtAuthentication implements Authentication {
 
