@@ -19,69 +19,51 @@ import java.util.Map;
 public class SaaSAuthentication extends JwtAuthentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private JwtConfig jwtConfig;
-  private Map<Product, String> tokens;
 
-  // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
-  private JsonMapper jsonMapper = new SdkObjectMapper();
+  private final JsonMapper jsonMapper;
 
-  public SaaSAuthentication() {
-    tokens = new HashMap<>();
+  public SaaSAuthentication(JwtConfig jwtConfig, JsonMapper jsonMapper) {
+    super(jwtConfig);
+    this.jsonMapper = jsonMapper;
   }
 
   public static SaaSAuthenticationBuilder builder() {
     return new SaaSAuthenticationBuilder();
   }
 
-  public JwtConfig getJwtConfig() {
-    return jwtConfig;
-  }
 
-  public void setJwtConfig(JwtConfig jwtConfig) {
-    this.jwtConfig = jwtConfig;
-  }
-
-  @Override
-  public Authentication build() {
-    return this;
-  }
-
-  @Override
-  public void resetToken(Product product) {
-    tokens.remove(product);
-  }
-
-  private String retrieveToken(Product product, JwtCredential jwtCredential) {
-      try(CloseableHttpClient client = HttpClients.createDefault()){
-        HttpPost request = buildRequest(jwtCredential);
-        TokenResponse tokenResponse = client.execute(request, response ->
-           jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class)
-        );
-        tokens.put(product, tokenResponse.getAccessToken());
-      } catch (Exception e) {
+  private TokenResponse retrieveToken(Product product, JwtCredential jwtCredential) {
+    try (CloseableHttpClient client = HttpClients.createDefault()) {
+      HttpPost request = buildRequest(jwtCredential);
+      return client.execute(
+          request,
+          response ->
+              jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class));
+    } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
-    return tokens.get(product);
   }
 
   private HttpPost buildRequest(JwtCredential jwtCredential) {
     HttpPost httpPost = new HttpPost(jwtCredential.getAuthUrl());
     httpPost.addHeader("Content-Type", "application/json");
-    TokenRequest tokenRequest = new TokenRequest(jwtCredential.getAudience(), jwtCredential.getClientId(), jwtCredential.getClientSecret());
+    TokenRequest tokenRequest =
+        new TokenRequest(
+            jwtCredential.getAudience(),
+            jwtCredential.getClientId(),
+            jwtCredential.getClientSecret());
     httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
     return httpPost;
   }
 
+
+
   @Override
-  public Map.Entry<String, String> getTokenHeader(Product product) {
-    String token;
-    if (tokens.containsKey(product)) {
-      token = tokens.get(product);
-    } else {
-      JwtCredential jwtCredential = jwtConfig.getProduct(product);
-      token = retrieveToken(product, jwtCredential);
-    }
-    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
+  protected JwtToken generateToken(Product product, JwtCredential credential) {
+    TokenResponse tokenResponse = retrieveToken(product, credential);
+    return new JwtToken(
+        tokenResponse.getAccessToken(),
+        LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
   }
 }

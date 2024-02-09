@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,65 +27,23 @@ public class SelfManagedAuthentication extends JwtAuthentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private String authUrl;
+  private final String authUrl;
+  private final JsonMapper jsonMapper;
 
-  // TODO: Check with Identity about upcoming IDPs to abstract this
-  private String keycloakRealm = "camunda-platform";
-  private String keycloakUrl;
-  private String keycloakTokenUrl;
-  private JwtConfig jwtConfig;
-  private Map<Product, String> tokens;
-
-  // TODO: have a single object mapper to be used all throughout the SDK, i.e.bean injection
-  private JsonMapper jsonMapper = new SdkObjectMapper();
-
-  public SelfManagedAuthentication() {
-    tokens = new HashMap<>();
+  public SelfManagedAuthentication(JwtConfig jwtConfig, String authUrl, JsonMapper jsonMapper) {
+    super(jwtConfig);
+    this.authUrl = authUrl;
+    this.jsonMapper = jsonMapper;
   }
 
   public static SelfManagedAuthenticationBuilder builder() {
     return new SelfManagedAuthenticationBuilder();
   }
 
-  public void setKeycloakRealm(String keycloakRealm) {
-    this.keycloakRealm = keycloakRealm;
-  }
-
-  public void setKeycloakUrl(String keycloakUrl) {
-    this.keycloakUrl = keycloakUrl;
-  }
-
-  public void setKeycloakTokenUrl(String keycloakTokenUrl) {
-    this.keycloakTokenUrl = keycloakTokenUrl;
-  }
-
-  public JwtConfig getJwtConfig() {
-    return jwtConfig;
-  }
-
-  public void setJwtConfig(JwtConfig jwtConfig) {
-    this.jwtConfig = jwtConfig;
-  }
-
-  @Override
-  public Authentication build() {
-    if (keycloakTokenUrl != null) {
-      authUrl = keycloakTokenUrl;
-    } else {
-      authUrl = keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token";
-    }
-    return this;
-  }
-
-  @Override
-  public void resetToken(Product product) {
-    tokens.remove(product);
-  }
-
-  private String retrieveToken(Product product, JwtCredential jwtCredential) {
+  private TokenResponse retrieveToken(Product product, JwtCredential jwtCredential) {
     try(CloseableHttpClient client = HttpClients.createDefault()) {
       HttpPost request = buildRequest(jwtCredential);
-      TokenResponse tokenResponse =
+      return
           client.execute(
               request,
               response -> {
@@ -99,12 +58,10 @@ public class SelfManagedAuthentication extends JwtAuthentication {
                           + EntityUtils.toString(response.getEntity()));
                 }
               });
-      tokens.put(product, tokenResponse.getAccessToken());
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new SdkException("Unable to authenticate", e);
     }
-    return tokens.get(product);
   }
 
   private HttpPost buildRequest(JwtCredential jwtCredential) {
@@ -132,15 +89,13 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     return  httpPost;
   }
 
+
+
   @Override
-  public Map.Entry<String, String> getTokenHeader(Product product) {
-    String token;
-    if (tokens.containsKey(product)) {
-      token = tokens.get(product);
-    } else {
-      JwtCredential jwtCredential = jwtConfig.getProduct(product);
-      token = retrieveToken(product, jwtCredential);
-    }
-    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
+  protected JwtToken generateToken(Product product, JwtCredential credential) {
+    TokenResponse tokenResponse = retrieveToken(product, credential);
+    return new JwtToken(
+        tokenResponse.getAccessToken(),
+        LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn()));
   }
 }
