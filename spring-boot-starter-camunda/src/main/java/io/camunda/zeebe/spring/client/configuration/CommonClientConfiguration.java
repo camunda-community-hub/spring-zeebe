@@ -4,6 +4,7 @@ import io.camunda.common.auth.*;
 import io.camunda.common.auth.identity.IdentityContainer;
 import io.camunda.common.auth.identity.IdentityConfig;
 import io.camunda.common.exception.SdkException;
+import io.camunda.common.json.JsonMapper;
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.identity.sdk.Identity;
 import io.camunda.zeebe.spring.client.properties.*;
@@ -42,7 +43,7 @@ public class CommonClientConfiguration {
   private IdentityConfiguration identityConfigurationFromProperties;
 
   @Bean
-  public Authentication authentication() {
+  public Authentication authentication(JsonMapper jsonMapper) {
 
     // TODO: Refactor
     if (zeebeClientConfigurationProperties != null) {
@@ -50,6 +51,7 @@ public class CommonClientConfiguration {
       if (zeebeClientConfigurationProperties.getCloud().getClusterId() != null) {
         return SaaSAuthentication.builder()
           .withJwtConfig(configureJwtConfig())
+          .withJsonMapper(jsonMapper)
           .build();
       } else if (zeebeClientConfigurationProperties.getBroker().getGatewayAddress() != null || zeebeSelfManagedProperties.getGatewayAddress() != null) {
         // figure out if Self-Managed JWT or Self-Managed Basic

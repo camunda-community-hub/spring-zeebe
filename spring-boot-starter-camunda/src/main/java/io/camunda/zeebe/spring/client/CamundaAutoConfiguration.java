@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
@@ -36,18 +37,17 @@ import org.springframework.context.annotation.Configuration;
         .class) // make sure Spring created ObjectMapper is preferred if available
 public class CamundaAutoConfiguration {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   public static final ObjectMapper DEFAULT_OBJECT_MAPPER =
       new ObjectMapper()
           .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
           .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Bean
   @ConditionalOnMissingBean(
       SpringZeebeTestContext
           .class) // only run if we are not running in a test case - as otherwise the the lifecycle
-  // is controlled by the test
+                  // is controlled by the test
   public ZeebeLifecycleEventProducer zeebeLifecycleEventProducer(
       final ZeebeClient client, final ApplicationEventPublisher publisher) {
     return new ZeebeLifecycleEventProducer(client, publisher);
@@ -69,5 +69,12 @@ public class CamundaAutoConfiguration {
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper(ObjectMapper objectMapper) {
     return new ZeebeObjectMapper(objectMapper);
+  }
+
+
+  @Bean(name = "commonJsonMapper")
+  @ConditionalOnMissingBean
+  public io.camunda.common.json.JsonMapper commonJsonMapper(ObjectMapper objectMapper) {
+    return new SdkObjectMapper(objectMapper);
   }
 }
