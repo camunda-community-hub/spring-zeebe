@@ -254,6 +254,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   public ZeebeWorkerValue initializeFetchVariables(
       boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
     if (hasActivatedJobInjected(methodInfo)) {
+      // do nothing
     } else if (forceFetchAllVariables) {
       // this overwrites any other setting
       setFetchVariables(new String[0]);
