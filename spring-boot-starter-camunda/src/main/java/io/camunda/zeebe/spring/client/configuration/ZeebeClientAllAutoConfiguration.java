@@ -39,7 +39,8 @@ public class ZeebeClientAllAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public ZeebeClientExecutorService zeebeClientExecutorService() {
-    return ZeebeClientExecutorService.createDefault();
+    return ZeebeClientExecutorService.createDefault(
+        configurationProperties.getNumJobWorkerExecutionThreads());
   }
 
   @Bean
