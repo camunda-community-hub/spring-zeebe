@@ -23,7 +23,11 @@ public class ZeebeClientExecutorService {
   }
 
   public static ZeebeClientExecutorService createDefault() {
-    ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+    return createDefault(1);
+  }
+
+  public static ZeebeClientExecutorService createDefault(int threads) {
+    ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(threads);
     return new ZeebeClientExecutorService(threadPool);
   }
 
