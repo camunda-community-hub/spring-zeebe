@@ -274,7 +274,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
       Set<String> variables = new HashSet<>();
       variables.addAll(Arrays.asList(fetchVariables));
-      variables.addAll(readZeebeVariableParameters(methodInfo).stream().map(ParameterInfo::getParameterName).collect(Collectors.toList()));
+      variables.addAll(readZeebeVariableParameters(methodInfo).stream().map(this::variableNameFromParameter).collect(Collectors.toList()));
       setFetchVariables(variables.toArray(new String[0]));
     }
     return this;
@@ -284,6 +284,16 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     List<ParameterInfo> result = methodInfo.getParametersFilteredByAnnotation(Variable.class);
     result.addAll(methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class));
     return result;
+  }
+
+  private String variableNameFromParameter(ParameterInfo parameterInfo){
+    Variable variableAnnotation = parameterInfo
+      .getParameterInfo()
+      .getAnnotation(Variable.class);
+    if(!variableAnnotation.name().equals(Variable.DEFAULT_NAME)){
+      return variableAnnotation.name();
+    }
+    return parameterInfo.getParameterName();
   }
 
   public ZeebeWorkerValue initializeJobType(String jobType, MethodInfo methodInfo, String defaultWorkerType) {
