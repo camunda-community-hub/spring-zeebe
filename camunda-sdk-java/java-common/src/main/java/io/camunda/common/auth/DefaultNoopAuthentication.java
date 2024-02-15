@@ -17,10 +17,8 @@ public class DefaultNoopAuthentication implements Authentication {
 
   private final String errorMessage = "Unable to determine authentication. Please check your configuration";
 
-  @Override
-  public Authentication build() {
+  public DefaultNoopAuthentication() {
     LOG.error(errorMessage);
-    return this;
   }
 
   @Override

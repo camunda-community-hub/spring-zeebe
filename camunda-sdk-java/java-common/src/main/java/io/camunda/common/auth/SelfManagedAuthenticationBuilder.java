@@ -1,38 +1,43 @@
 package io.camunda.common.auth;
 
-public class SelfManagedAuthenticationBuilder {
+import io.camunda.common.json.JsonMapper;
 
-  SelfManagedAuthentication selfManagedAuthentication;
+public class SelfManagedAuthenticationBuilder extends JwtAuthenticationBuilder<SelfManagedAuthenticationBuilder> {
+  private String keycloakUrl;
+  private String keycloakRealm;
+  private String keycloakTokenUrl;
+  private JsonMapper jsonMapper;
 
-  SelfManagedAuthenticationBuilder() {
-    selfManagedAuthentication = new SelfManagedAuthentication();
-  }
 
-  public SelfManagedAuthenticationBuilder jwtConfig(JwtConfig jwtConfig) {
-    selfManagedAuthentication.setJwtConfig(jwtConfig);
+  public SelfManagedAuthenticationBuilder withKeycloakUrl(String keycloakUrl) {
+    this.keycloakUrl = keycloakUrl;
     return this;
   }
 
-  public SelfManagedAuthenticationBuilder keycloakUrl(String keycloakUrl) {
-    selfManagedAuthentication.setKeycloakUrl(keycloakUrl);
+  public SelfManagedAuthenticationBuilder withKeycloakRealm(String keycloakRealm) {
+    this.keycloakRealm = keycloakRealm;
     return this;
   }
 
-  public SelfManagedAuthenticationBuilder keycloakRealm(String keycloakRealm) {
-    if (keycloakRealm != null) {
-      selfManagedAuthentication.setKeycloakRealm(keycloakRealm);
-    }
+  public SelfManagedAuthenticationBuilder withKeycloakTokenUrl(String keycloakTokenUrl) {
+    this.keycloakTokenUrl = keycloakTokenUrl;
     return this;
   }
 
-  public SelfManagedAuthenticationBuilder keycloakTokenUrl(String keycloakTokenUrl) {
-    if (keycloakTokenUrl != null) {
-      selfManagedAuthentication.setKeycloakTokenUrl(keycloakTokenUrl);
-    }
+  public SelfManagedAuthenticationBuilder withJsonMapper(JsonMapper jsonMapper){
+    this.jsonMapper = jsonMapper;
     return this;
   }
 
-  public Authentication build() {
-    return selfManagedAuthentication.build();
+
+  @Override
+  protected SelfManagedAuthenticationBuilder self() {
+    return this;
+  }
+
+  @Override
+  protected Authentication build(JwtConfig jwtConfig) {
+    String authUrl = keycloakTokenUrl != null ? keycloakTokenUrl : keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token";
+    return new SelfManagedAuthentication(jwtConfig,authUrl,jsonMapper);
   }
 }
