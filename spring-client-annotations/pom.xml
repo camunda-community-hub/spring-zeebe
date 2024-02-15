@@ -7,9 +7,6 @@
     <version>8.4.0-alpha3-rc1-SNAPSHOT</version>
   </parent>
 
-  <groupId>io.camunda.spring</groupId>
   <artifactId>spring-client-annotations</artifactId>
 
-  <dependencies>
-  </dependencies>
 </project>

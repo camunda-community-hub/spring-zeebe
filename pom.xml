@@ -13,7 +13,7 @@
 
   <properties>
     <project.build.resourceEncoding>${project.build.sourceEncoding}</project.build.resourceEncoding>
-    <version.java>8</version.java>
+    <version.java>17</version.java>
     <java.version>${version.java}</java.version>
 
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -201,11 +201,12 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.12.1</version>
-          <!-- available from Java 9, but we went back to jdk8 for building
           <configuration>
-            <release>${java.version}</release>
+            <source>${java.version}</source>
+            <target>${java.version}</target>
+            <compilerVersion>${java.version}</compilerVersion>
+            <fork>true</fork>
           </configuration>
-      	  -->
         </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
