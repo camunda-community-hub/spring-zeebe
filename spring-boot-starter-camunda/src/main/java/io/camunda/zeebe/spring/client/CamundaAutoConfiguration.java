@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
@@ -69,5 +70,11 @@ public class CamundaAutoConfiguration {
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper(ObjectMapper objectMapper) {
     return new ZeebeObjectMapper(objectMapper);
+  }
+
+  @Bean(name = "commonJsonMapper")
+  @ConditionalOnMissingBean
+  public io.camunda.common.json.JsonMapper commonJsonMapper(ObjectMapper objectMapper) {
+    return new SdkObjectMapper(objectMapper);
   }
 }
