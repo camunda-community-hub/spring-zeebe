@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
@@ -267,7 +268,9 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   }
 
   public ZeebeWorkerValue initializeFetchVariables(boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
-    if (forceFetchAllVariables) {
+    if (hasActivatedJobInjected()) {
+      // do nothing
+    } else if (forceFetchAllVariables) {
       // this overwrites any other setting
       setFetchVariables(new String[0]);
     } else {
@@ -278,6 +281,10 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
       setFetchVariables(variables.toArray(new String[0]));
     }
     return this;
+  }
+
+  private boolean hasActivatedJobInjected() {
+    return getMethodInfo().getParameters().stream().anyMatch(p -> p.getParameterInfo().getType().isAssignableFrom(ActivatedJob.class));
   }
 
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
