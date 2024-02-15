@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
@@ -44,7 +45,11 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   }
 
   private void applyFetchVariables(ZeebeWorkerValue zeebeWorkerValue) {
-    if (zeebeWorkerValue.isForceFetchAllVariables()) {
+    if (hasActivatedJobInjected(zeebeWorkerValue)) {
+      LOG.debug(
+          "Worker '{}': ActivatedJob is injected, no variable filtering possible",
+          zeebeWorkerValue.getName());
+    } else if (zeebeWorkerValue.isForceFetchAllVariables()) {
       LOG.debug("Worker '{}': Force fetch all variables is enabled", zeebeWorkerValue.getName());
       zeebeWorkerValue.setFetchVariables(new String[0]);
     } else {
@@ -63,6 +68,11 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
           zeebeWorkerValue.getName(),
           variables);
     }
+  }
+
+  private boolean hasActivatedJobInjected(ZeebeWorkerValue zeebeWorkerValue) {
+    return zeebeWorkerValue.getMethodInfo().getParameters().stream()
+        .anyMatch(p -> p.getParameterInfo().getType().isAssignableFrom(ActivatedJob.class));
   }
 
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
