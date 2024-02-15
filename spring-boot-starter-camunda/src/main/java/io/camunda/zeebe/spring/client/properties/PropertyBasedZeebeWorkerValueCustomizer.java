@@ -54,7 +54,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
       }
       variables.addAll(
           readZeebeVariableParameters(zeebeWorkerValue.getMethodInfo()).stream()
-              .map(ParameterInfo::getParameterName)
+              .map(this::extractVariableName)
               .collect(Collectors.toList()));
       variables.addAll(readVariablesAsTypeParameters(zeebeWorkerValue.getMethodInfo()));
       zeebeWorkerValue.setFetchVariables(variables.toArray(new String[0]));
@@ -69,6 +69,14 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
     List<ParameterInfo> result = methodInfo.getParametersFilteredByAnnotation(Variable.class);
     result.addAll(methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class));
     return result;
+  }
+
+  private String extractVariableName(ParameterInfo parameterInfo) {
+    Variable variableAnnotation = parameterInfo.getParameterInfo().getAnnotation(Variable.class);
+    if (variableAnnotation != null && !Variable.DEFAULT_NAME.equals(variableAnnotation.name())) {
+      return variableAnnotation.name();
+    }
+    return parameterInfo.getParameterName();
   }
 
   private List<String> readVariablesAsTypeParameters(MethodInfo methodInfo) {
