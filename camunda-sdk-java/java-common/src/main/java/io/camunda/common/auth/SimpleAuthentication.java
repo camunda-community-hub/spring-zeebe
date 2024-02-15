@@ -16,36 +16,22 @@ public class SimpleAuthentication implements Authentication {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private String simpleUrl;
-  private SimpleConfig simpleConfig;
-  private Map<Product, String> tokens;
+  private final SimpleConfig simpleConfig;
+  private final Map<Product, String> tokens = new HashMap<>();
 
-  private String authUrl;
+  private final String authUrl;
 
-  public void setSimpleUrl(String simpleUrl) {
-    this.simpleUrl = simpleUrl;
-  }
-
-  public SimpleConfig getSimpleConfig() {
-    return simpleConfig;
-  }
-
-  public void setSimpleConfig(SimpleConfig simpleConfig) {
+  public SimpleAuthentication(String simpleUrl, SimpleConfig simpleConfig) {
     this.simpleConfig = simpleConfig;
-  }
-
-  public SimpleAuthentication() {
-    tokens = new HashMap<>();
+    this.authUrl = simpleUrl + "/api/login";
   }
 
   public static SimpleAuthenticationBuilder builder() {
     return new SimpleAuthenticationBuilder();
   }
 
-  @Override
-  public Authentication build() {
-    authUrl = simpleUrl + "/api/login";
-    return this;
+  public SimpleConfig getSimpleConfig() {
+    return simpleConfig;
   }
 
   private String retrieveToken(Product product, SimpleCredential simpleCredential) {
