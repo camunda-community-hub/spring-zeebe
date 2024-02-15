@@ -5,9 +5,6 @@ import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.authentication.Tokens;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,5 +34,4 @@ public class SelfManagedAuthentication extends JwtAuthentication {
     String audience = credential.getAudience();
     return identity.authentication().requestToken(audience);
   }
-
 }

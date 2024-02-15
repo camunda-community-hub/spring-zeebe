@@ -1,7 +1,8 @@
 package io.camunda.common.auth;
 
 import io.camunda.common.json.JsonMapper;
-import io.camunda.common.json.SdkObjectMapper;
+import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -9,12 +10,6 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
-import java.time.LocalDateTime;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SaaSAuthentication extends JwtAuthentication {
 
@@ -30,7 +25,6 @@ public class SaaSAuthentication extends JwtAuthentication {
   public static SaaSAuthenticationBuilder builder() {
     return new SaaSAuthenticationBuilder();
   }
-
 
   private TokenResponse retrieveToken(Product product, JwtCredential jwtCredential) {
     try (CloseableHttpClient client = HttpClients.createDefault()) {
@@ -56,8 +50,6 @@ public class SaaSAuthentication extends JwtAuthentication {
     httpPost.setEntity(new StringEntity(jsonMapper.toJson(tokenRequest)));
     return httpPost;
   }
-
-
 
   @Override
   protected JwtToken generateToken(Product product, JwtCredential credential) {

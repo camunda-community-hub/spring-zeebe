@@ -1,5 +1,7 @@
 package io.camunda.zeebe.spring.client.config.authentication;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SimpleAuthentication;
@@ -21,34 +23,33 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-  properties = {
-    "zeebe.client.broker.gatewayAddress=localhost12345",
-    "camunda.operate.client.url=http://localhost:8081",
-    "camunda.operate.client.username=username",
-    "camunda.operate.client.password=password"
-  }
-)
+    properties = {
+      "zeebe.client.broker.gatewayAddress=localhost12345",
+      "camunda.operate.client.url=http://localhost:8081",
+      "camunda.operate.client.username=username",
+      "camunda.operate.client.password=password"
+    })
 @ContextConfiguration(classes = OperateSelfManagedBasicTest.TestConfig.class)
 public class OperateSelfManagedBasicTest {
 
-  @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class, IdentityAutoConfiguration.class})
+  @ImportAutoConfiguration({
+    CommonClientConfiguration.class,
+    OperateClientConfiguration.class,
+    IdentityAutoConfiguration.class
+  })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {
     @Bean
-    public JsonMapper commonJsonMapper(){
+    public JsonMapper commonJsonMapper() {
       return new SdkObjectMapper();
     }
   }
 
-  @Autowired
-  private Authentication authentication;
+  @Autowired private Authentication authentication;
 
-  @Autowired
-  private CamundaOperateClient operateClient;
+  @Autowired private CamundaOperateClient operateClient;
 
   @Test
   public void testAuthentication() {
@@ -59,7 +60,8 @@ public class OperateSelfManagedBasicTest {
   @Test
   public void testCredential() {
     SimpleAuthentication simpleAuthentication = (SimpleAuthentication) authentication;
-    SimpleCredential simpleCredential = simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
+    SimpleCredential simpleCredential =
+        simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
 
     assertThat(simpleCredential.getUser()).isEqualTo("username");
     assertThat(simpleCredential.getPassword()).isEqualTo("password");
