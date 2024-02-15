@@ -16,5 +16,4 @@ public class SaaSAuthenticationBuilder {
   public Authentication build() {
     return saaSAuthentication.build();
   }
-
 }

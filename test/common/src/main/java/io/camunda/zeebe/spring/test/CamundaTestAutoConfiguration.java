@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-
 @TestConfiguration
 @ImportAutoConfiguration({
   TestProxyConfiguration.class,
@@ -24,5 +23,4 @@ public class CamundaTestAutoConfiguration {
     // add marker bean to Spring context that we are running in a test case
     return new SpringZeebeTestContext();
   }
-
 }

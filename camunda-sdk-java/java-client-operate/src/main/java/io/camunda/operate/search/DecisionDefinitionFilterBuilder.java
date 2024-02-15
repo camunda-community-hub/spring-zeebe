@@ -48,7 +48,8 @@ public class DecisionDefinitionFilterBuilder {
     return this;
   }
 
-  public DecisionDefinitionFilterBuilder decisionRequirementsVersion(Long decisionRequirementsVersion) {
+  public DecisionDefinitionFilterBuilder decisionRequirementsVersion(
+      Long decisionRequirementsVersion) {
     filter.setDecisionRequirementsVersion(decisionRequirementsVersion);
     return this;
   }
@@ -58,6 +59,7 @@ public class DecisionDefinitionFilterBuilder {
     return this;
   }
 
-  public DecisionDefinitionFilter build() { return filter; }
-
+  public DecisionDefinitionFilter build() {
+    return filter;
+  }
 }

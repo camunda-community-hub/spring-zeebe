@@ -5,7 +5,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-Spring Zeebe will slowly evolve towards Camunda Spring SDK. 
+Spring Zeebe will slowly evolve towards Camunda Spring SDK.
 
 This project allows you to leverage Zeebe, Operate, Optimize, Tasklist, Console, and Modeler within your Spring or Spring Boot environment.
 
@@ -35,7 +35,7 @@ This project allows you to leverage Zeebe, Operate, Optimize, Tasklist, Console,
 
 ## Exciting news: Evolution of Spring-Zeebe into a Camunda Spring SDK
 
-This SDK will support all Camunda Products (Zeebe, Operate, Tasklist, etc) in a unified way. 
+This SDK will support all Camunda Products (Zeebe, Operate, Tasklist, etc) in a unified way.
 
 What to expect in the coming months:
 

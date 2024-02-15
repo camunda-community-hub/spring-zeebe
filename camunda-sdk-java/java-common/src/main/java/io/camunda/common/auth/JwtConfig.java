@@ -3,9 +3,7 @@ package io.camunda.common.auth;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Contains mapping between products and their JWT credentials
- */
+/** Contains mapping between products and their JWT credentials */
 public class JwtConfig {
 
   private Map<Product, JwtCredential> map;
@@ -25,8 +23,4 @@ public class JwtConfig {
   public Map<Product, JwtCredential> getMap() {
     return map;
   }
-
 }
-
-
-

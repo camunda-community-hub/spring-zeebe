@@ -1,5 +1,8 @@
 package io.camunda.operate.model;
 
 public enum FlowNodeInstanceState {
-  ACTIVE, INCIDENT, COMPLETED, TERMINATED;
+  ACTIVE,
+  INCIDENT,
+  COMPLETED,
+  TERMINATED;
 }

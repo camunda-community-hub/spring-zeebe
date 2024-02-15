@@ -36,5 +36,4 @@ public class ProcessDefinitionFilterBuilder {
   public ProcessDefinitionFilter build() {
     return filter;
   }
-
 }

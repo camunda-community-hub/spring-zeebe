@@ -7,5 +7,4 @@ public class ProcessDefinitionFilter extends ProcessDefinition implements Filter
   public static ProcessDefinitionFilterBuilder builder() {
     return new ProcessDefinitionFilterBuilder();
   }
-
 }

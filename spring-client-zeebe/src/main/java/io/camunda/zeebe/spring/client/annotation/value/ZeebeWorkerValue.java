@@ -1,11 +1,11 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
 import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,21 +37,21 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   private MethodInfo methodInfo;
 
-  public ZeebeWorkerValue() {
-  }
+  public ZeebeWorkerValue() {}
 
-  private ZeebeWorkerValue(String type,
-                           String name,
-                           long timeout,
-                           int maxJobsActive,
-                           long requestTimeout,
-                           long pollInterval,
-                           String[] fetchVariables,
-                           boolean forceFetchAllVariables,
-                           List<ParameterInfo> variableParameters,
-                           boolean autoComplete,
-                           MethodInfo methodInfo,
-                           final boolean enabled) {
+  private ZeebeWorkerValue(
+      String type,
+      String name,
+      long timeout,
+      int maxJobsActive,
+      long requestTimeout,
+      long pollInterval,
+      String[] fetchVariables,
+      boolean forceFetchAllVariables,
+      List<ParameterInfo> variableParameters,
+      boolean autoComplete,
+      MethodInfo methodInfo,
+      final boolean enabled) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
@@ -116,7 +116,7 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   public ZeebeWorkerValue setType(String type) {
     this.type = type;
     // You can only set a type of a worker - in this case the name is set equals to the type
-    if (name==null) {
+    if (name == null) {
       setName(type);
     }
     return this;
@@ -173,18 +173,30 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   @Override
   public String toString() {
-    return "ZeebeWorkerValue{" +
-      "type='" + type + '\'' +
-      ", name='" + name + '\'' +
-      ", timeout=" + timeout +
-      ", maxJobsActive=" + maxJobsActive +
-      ", requestTimeout=" + requestTimeout +
-      ", pollInterval=" + pollInterval +
-      ", autoComplete=" + autoComplete +
-      ", fetchVariables=" + Arrays.toString(fetchVariables) +
-      ", enabled=" + enabled +
-      ", methodInfo=" + methodInfo +
-      '}';
+    return "ZeebeWorkerValue{"
+        + "type='"
+        + type
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", timeout="
+        + timeout
+        + ", maxJobsActive="
+        + maxJobsActive
+        + ", requestTimeout="
+        + requestTimeout
+        + ", pollInterval="
+        + pollInterval
+        + ", autoComplete="
+        + autoComplete
+        + ", fetchVariables="
+        + Arrays.toString(fetchVariables)
+        + ", enabled="
+        + enabled
+        + ", methodInfo="
+        + methodInfo
+        + '}';
   }
 
   @Override
@@ -192,28 +204,41 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeWorkerValue that = (ZeebeWorkerValue) o;
-    return Objects.equals(type, that.type) &&
-      Objects.equals(name, that.name) &&
-      Objects.equals(timeout, that.timeout) &&
-      Objects.equals(maxJobsActive, that.maxJobsActive) &&
-      Objects.equals(requestTimeout, that.requestTimeout) &&
-      Objects.equals(pollInterval, that.pollInterval) &&
-      Objects.equals(autoComplete, that.autoComplete) &&
-      Arrays.equals(fetchVariables, that.fetchVariables) &&
-      Objects.equals(enabled, that.enabled) &&
-      Objects.equals(methodInfo, that.methodInfo);
+    return Objects.equals(type, that.type)
+        && Objects.equals(name, that.name)
+        && Objects.equals(timeout, that.timeout)
+        && Objects.equals(maxJobsActive, that.maxJobsActive)
+        && Objects.equals(requestTimeout, that.requestTimeout)
+        && Objects.equals(pollInterval, that.pollInterval)
+        && Objects.equals(autoComplete, that.autoComplete)
+        && Arrays.equals(fetchVariables, that.fetchVariables)
+        && Objects.equals(enabled, that.enabled)
+        && Objects.equals(methodInfo, that.methodInfo);
   }
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(type, name, timeout, maxJobsActive, requestTimeout, pollInterval, autoComplete, enabled, methodInfo);
+    int result =
+        Objects.hash(
+            type,
+            name,
+            timeout,
+            maxJobsActive,
+            requestTimeout,
+            pollInterval,
+            autoComplete,
+            enabled,
+            methodInfo);
     result = 31 * result + Arrays.hashCode(fetchVariables);
     return result;
   }
 
-  // TODO Get rid of those initialize methods but add the attributes as values onto the worker and then auto-initialize stuff when opening the worker maybe via one method
-  public ZeebeWorkerValue initializeName(String name, MethodInfo methodInfo, String defaultJobWorkerName) {
-    // Set name only if configured (default from Java Client library is used only if null - not if empty string)
+  // TODO Get rid of those initialize methods but add the attributes as values onto the worker and
+  // then auto-initialize stuff when opening the worker maybe via one method
+  public ZeebeWorkerValue initializeName(
+      String name, MethodInfo methodInfo, String defaultJobWorkerName) {
+    // Set name only if configured (default from Java Client library is used only if null - not if
+    // empty string)
     if (name != null && name.length() > 0) {
       this.name = name;
     } else if (null != defaultJobWorkerName) {
@@ -226,18 +251,43 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return this;
   }
 
-  public ZeebeWorkerValue initializeFetchVariables(boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
-    if (forceFetchAllVariables) {
+  public ZeebeWorkerValue initializeFetchVariables(
+      boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
+    if (hasActivatedJobInjected(methodInfo)) {
+      // do nothing
+    } else if (forceFetchAllVariables) {
       // this overwrites any other setting
       setFetchVariables(new String[0]);
     } else {
-      // make sure variables configured and annotated parameters are both fetched, use a set to avoid duplicates
+      // make sure variables configured and annotated parameters are both fetched, use a set to
+      // avoid duplicates
       Set<String> variables = new HashSet<>();
       variables.addAll(Arrays.asList(fetchVariables));
-      variables.addAll(readZeebeVariableParameters(methodInfo).stream().map(ParameterInfo::getParameterName).collect(Collectors.toList()));
+      variables.addAll(
+          readZeebeVariableParameters(methodInfo).stream()
+              .map(this::extractVariableName)
+              .collect(Collectors.toList()));
       setFetchVariables(variables.toArray(new String[0]));
     }
     return this;
+  }
+
+  private boolean hasActivatedJobInjected(MethodInfo methodInfo) {
+    return methodInfo.getParameters().stream()
+        .anyMatch(p -> p.getParameterInfo().getType().equals(ActivatedJob.class));
+  }
+
+  private String extractVariableName(ParameterInfo parameterInfo) {
+    Variable annotation = parameterInfo.getParameterInfo().getAnnotation(Variable.class);
+    if (annotation != null) {
+      if (Variable.DEFAULT_NAME.equals(annotation.name())) {
+        return parameterInfo.getParameterName();
+      } else {
+        return annotation.name();
+      }
+    } else {
+      return parameterInfo.getParameterName();
+    }
   }
 
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
@@ -246,13 +296,14 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return result;
   }
 
-  public ZeebeWorkerValue initializeJobType(String jobType, MethodInfo methodInfo, String defaultWorkerType) {
-    if (jobType!=null && jobType.length() > 0) {
+  public ZeebeWorkerValue initializeJobType(
+      String jobType, MethodInfo methodInfo, String defaultWorkerType) {
+    if (jobType != null && jobType.length() > 0) {
       setType(jobType);
-    } else if (defaultWorkerType!=null) {
+    } else if (defaultWorkerType != null) {
       setType(defaultWorkerType);
     } else {
-      setType( methodInfo.getMethodName() );
+      setType(methodInfo.getMethodName());
     }
 
     return this;

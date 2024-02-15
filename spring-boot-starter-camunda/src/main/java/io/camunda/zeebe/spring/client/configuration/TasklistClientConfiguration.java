@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@ConditionalOnProperty(prefix = "tasklist.client", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(
+    prefix = "tasklist.client",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = false)
 @EnableConfigurationProperties(TasklistClientConfigurationProperties.class)
 public class TasklistClientConfiguration {
 
-  @Autowired
-  Authentication authentication;
+  @Autowired Authentication authentication;
 
   // TODO: Declare bean for Tasklist
 }

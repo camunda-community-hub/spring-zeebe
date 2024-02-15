@@ -4,5 +4,4 @@ public class Request {
 
   String uri;
   String query;
-
 }

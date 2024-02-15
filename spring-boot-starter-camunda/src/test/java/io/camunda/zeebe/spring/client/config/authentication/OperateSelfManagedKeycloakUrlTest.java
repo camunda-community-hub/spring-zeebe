@@ -1,5 +1,7 @@
 package io.camunda.zeebe.spring.client.config.authentication;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.JwtCredential;
 import io.camunda.common.auth.Product;
@@ -18,34 +20,31 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-  properties = {
-    "zeebe.client.broker.gatewayAddress=localhost12345",
-    "zeebe.authorization.server.url=http://zeebe-authorization-server",
-    "zeebe.client.id=client-id",
-    "zeebe.client.secret=client-secret",
-    "zeebe.token.audience=sample-audience",
-    "camunda.operate.client.keycloak-url=https://local-keycloak",
-    "camunda.operate.client.url=http://localhost:8081"
-  }
-)
+    properties = {
+      "zeebe.client.broker.gatewayAddress=localhost12345",
+      "zeebe.authorization.server.url=http://zeebe-authorization-server",
+      "zeebe.client.id=client-id",
+      "zeebe.client.secret=client-secret",
+      "zeebe.token.audience=sample-audience",
+      "camunda.operate.client.keycloak-url=https://local-keycloak",
+      "camunda.operate.client.url=http://localhost:8081"
+    })
 @ContextConfiguration(classes = OperateSelfManagedKeycloakUrlTest.TestConfig.class)
 public class OperateSelfManagedKeycloakUrlTest {
 
-  @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class, IdentityAutoConfiguration.class})
+  @ImportAutoConfiguration({
+    CommonClientConfiguration.class,
+    OperateClientConfiguration.class,
+    IdentityAutoConfiguration.class
+  })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {
+  public static class TestConfig {}
 
-  }
+  @Autowired private Authentication authentication;
 
-  @Autowired
-  private Authentication authentication;
-
-  @Autowired
-  private CamundaOperateClient operateClient;
+  @Autowired private CamundaOperateClient operateClient;
 
   @Test
   public void testAuthentication() {
@@ -55,8 +54,10 @@ public class OperateSelfManagedKeycloakUrlTest {
 
   @Test
   public void testCredential() {
-    SelfManagedAuthentication selfManagedAuthentication = (SelfManagedAuthentication) authentication;
-    JwtCredential jwtCredential = selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
+    SelfManagedAuthentication selfManagedAuthentication =
+        (SelfManagedAuthentication) authentication;
+    JwtCredential jwtCredential =
+        selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
 
     assertThat(jwtCredential.getClientId()).isEqualTo("client-id");
     assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret");

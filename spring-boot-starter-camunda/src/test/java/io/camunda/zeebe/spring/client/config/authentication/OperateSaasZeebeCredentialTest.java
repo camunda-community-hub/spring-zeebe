@@ -1,5 +1,7 @@
 package io.camunda.zeebe.spring.client.config.authentication;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.common.auth.*;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
@@ -14,32 +16,25 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-  properties = {
-    "zeebe.client.cloud.region=syd-1",
-    "zeebe.client.cloud.clusterId=cluster-id",
-    "zeebe.client.cloud.clientId=client-id",
-    "zeebe.client.cloud.clientSecret=client-secret",
-    "camunda.operate.client.enabled=true"
-  }
-)
+    properties = {
+      "zeebe.client.cloud.region=syd-1",
+      "zeebe.client.cloud.clusterId=cluster-id",
+      "zeebe.client.cloud.clientId=client-id",
+      "zeebe.client.cloud.clientSecret=client-secret",
+      "camunda.operate.client.enabled=true"
+    })
 @ContextConfiguration(classes = OperateSaasZeebeCredentialTest.TestConfig.class)
 public class OperateSaasZeebeCredentialTest {
 
   @ImportAutoConfiguration({CommonClientConfiguration.class, OperateClientConfiguration.class})
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {
+  public static class TestConfig {}
 
-  }
+  @Autowired private Authentication authentication;
 
-  @Autowired
-  private Authentication authentication;
-
-  @Autowired
-  private CamundaOperateClient operateClient;
+  @Autowired private CamundaOperateClient operateClient;
 
   @Test
   public void testAuthentication() {

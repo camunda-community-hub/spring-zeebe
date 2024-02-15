@@ -29,8 +29,7 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeDeploymentValue that = (ZeebeDeploymentValue) o;
-    return Objects.equals(resources, that.resources) &&
-      Objects.equals(beanInfo, that.beanInfo);
+    return Objects.equals(resources, that.resources) && Objects.equals(beanInfo, that.beanInfo);
   }
 
   @Override
@@ -40,10 +39,7 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
 
   @Override
   public String toString() {
-    return "ZeebeDeploymentValue{" +
-      "resources=" + resources +
-      ", beanInfo=" + beanInfo +
-      '}';
+    return "ZeebeDeploymentValue{" + "resources=" + resources + ", beanInfo=" + beanInfo + '}';
   }
 
   public static ZeebeDeploymentValueBuilder builder() {
@@ -55,8 +51,7 @@ public class ZeebeDeploymentValue implements ZeebeAnnotationValue<ClassInfo> {
     private List<String> resources;
     private ClassInfo beanInfo;
 
-    private ZeebeDeploymentValueBuilder() {
-    }
+    private ZeebeDeploymentValueBuilder() {}
 
     public ZeebeDeploymentValueBuilder resources(List<String> resources) {
       this.resources = resources;

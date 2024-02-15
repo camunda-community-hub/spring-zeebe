@@ -19,10 +19,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.4.0</zeebe.version>
+    <zeebe.version>8.4.3</zeebe.version>
     <identity.version>8.4.0-SNAPSHOT</identity.version>
 
-    <spring-boot.version>3.2.0</spring-boot.version>
+    <spring-boot.version>3.2.2</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
     <jackson.version>2.16.1</jackson.version>
@@ -217,7 +217,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.2.3</version>
+          <version>3.2.5</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -276,8 +276,82 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.43.0</version>
+        <configuration>
+          <formats>
+            <format>
+              <includes>
+                <include>*.md</include>
+                <include>.gitignore</include>
+              </includes>
+              <trimTrailingWhitespace />
+              <endWithNewline />
+              <indent>
+                <spaces>true</spaces>
+                <spacesPerTab>2</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+          <java>
+            <googleJavaFormat />
+          </java>
+          <pom />
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- profile to auto format -->
+    <profile>
+      <id>autoFormat</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>spotless-format</id>
+                <goals>
+                  <goal>apply</goal>
+                </goals>
+                <phase>process-sources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- profile to perform strict validation checks -->
+    <profile>
+      <id>checkFormat</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>spotless-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>validate</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <repositories>
     <repository>

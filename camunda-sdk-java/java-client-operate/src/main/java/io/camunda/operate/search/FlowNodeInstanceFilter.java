@@ -4,6 +4,7 @@ import io.camunda.operate.model.FlowNodeInstance;
 
 public class FlowNodeInstanceFilter extends FlowNodeInstance implements Filter {
 
-  public static FlowNodeInstanceFilterBuilder builder() { return new FlowNodeInstanceFilterBuilder(); }
-
+  public static FlowNodeInstanceFilterBuilder builder() {
+    return new FlowNodeInstanceFilterBuilder();
+  }
 }
