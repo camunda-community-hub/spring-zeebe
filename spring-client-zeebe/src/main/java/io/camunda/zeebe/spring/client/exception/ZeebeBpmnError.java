@@ -3,8 +3,8 @@ package io.camunda.zeebe.spring.client.exception;
 import java.util.Map;
 
 /**
- * Indicates an error in sense of BPMN occured, that should be handled by the BPMN process,
- * see https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/
+ * Indicates an error in sense of BPMN occured, that should be handled by the BPMN process, see
+ * https://docs.camunda.io/docs/reference/bpmn-processes/error-events/error-events/
  */
 public class ZeebeBpmnError extends RuntimeException {
 

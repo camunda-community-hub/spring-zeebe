@@ -1,8 +1,6 @@
 package io.camunda.common.auth;
 
-/**
- * Contains credential for particular product. Used for JWT authentication.
- */
+/** Contains credential for particular product. Used for JWT authentication. */
 public class JwtCredential {
 
   public JwtCredential(String clientId, String clientSecret, String audience, String authUrl) {
@@ -32,5 +30,4 @@ public class JwtCredential {
   public String getAuthUrl() {
     return authUrl;
   }
-
 }

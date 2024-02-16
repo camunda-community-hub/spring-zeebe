@@ -2,25 +2,22 @@ package io.camunda.common.auth;
 
 import io.camunda.common.auth.identity.IdentityConfig;
 
-public class SelfManagedAuthenticationBuilder {
+public class SelfManagedAuthenticationBuilder
+    extends JwtAuthenticationBuilder<SelfManagedAuthenticationBuilder> {
+  private IdentityConfig identityConfig;
 
-  SelfManagedAuthentication selfManagedAuthentication;
-
-  SelfManagedAuthenticationBuilder() {
-    selfManagedAuthentication = new SelfManagedAuthentication();
-  }
-
-  public SelfManagedAuthenticationBuilder jwtConfig(JwtConfig jwtConfig) {
-    selfManagedAuthentication.setJwtConfig(jwtConfig);
+  public SelfManagedAuthenticationBuilder withIdentityConfig(IdentityConfig identityConfig) {
+    this.identityConfig = identityConfig;
     return this;
   }
 
-  public SelfManagedAuthenticationBuilder identityConfig(IdentityConfig identityConfig) {
-    selfManagedAuthentication.setIdentityConfig(identityConfig);
+  @Override
+  protected SelfManagedAuthenticationBuilder self() {
     return this;
   }
 
-  public Authentication build() {
-    return selfManagedAuthentication.build();
+  @Override
+  protected Authentication build(JwtConfig jwtConfig) {
+    return new SelfManagedAuthentication(jwtConfig, identityConfig);
   }
 }

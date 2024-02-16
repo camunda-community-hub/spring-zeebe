@@ -1,25 +1,23 @@
 package io.camunda.common.auth;
 
-public class SimpleAuthenticationBuilder {
+import io.camunda.common.auth.Authentication.AuthenticationBuilder;
 
-  SimpleAuthentication simpleAuthentication;
+public class SimpleAuthenticationBuilder implements AuthenticationBuilder {
+  private String simpleUrl;
+  private SimpleConfig simpleConfig;
 
-  SimpleAuthenticationBuilder() {
-    simpleAuthentication = new SimpleAuthentication();
-  }
-
-  public SimpleAuthenticationBuilder simpleConfig(SimpleConfig simpleConfig) {
-    simpleAuthentication.setSimpleConfig(simpleConfig);
+  public SimpleAuthenticationBuilder withSimpleUrl(String simpleUrl) {
+    this.simpleUrl = simpleUrl;
     return this;
   }
 
-  public SimpleAuthenticationBuilder simpleUrl(String simpleUrl) {
-    simpleAuthentication.setSimpleUrl(simpleUrl);
+  public SimpleAuthenticationBuilder withSimpleConfig(SimpleConfig simpleConfig) {
+    this.simpleConfig = simpleConfig;
     return this;
   }
 
+  @Override
   public Authentication build() {
-    return simpleAuthentication.build();
+    return new SimpleAuthentication(simpleUrl, simpleConfig);
   }
-
 }

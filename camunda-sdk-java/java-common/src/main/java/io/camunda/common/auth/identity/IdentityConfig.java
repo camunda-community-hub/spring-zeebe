@@ -1,13 +1,10 @@
 package io.camunda.common.auth.identity;
 
 import io.camunda.common.auth.Product;
-
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Contains mapping between products and their Identity and IdentityConfiguration
- */
+/** Contains mapping between products and their Identity and IdentityConfiguration */
 public class IdentityConfig {
 
   private final Map<Product, IdentityContainer> map;

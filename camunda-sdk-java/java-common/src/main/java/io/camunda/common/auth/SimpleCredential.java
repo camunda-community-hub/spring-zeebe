@@ -1,8 +1,6 @@
 package io.camunda.common.auth;
 
-/**
- * Contains credential for particular product. Used for Simple authentication.
- */
+/** Contains credential for particular product. Used for Simple authentication. */
 public class SimpleCredential {
 
   public SimpleCredential(String user, String password) {
@@ -20,5 +18,4 @@ public class SimpleCredential {
   public String getPassword() {
     return password;
   }
-
 }

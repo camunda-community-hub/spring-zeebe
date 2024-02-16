@@ -4,11 +4,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * Wrapper bean for {@link ScheduledExecutorService} required in Spring Zeebe for
- * Job Handling, Retry Management and so on.
+ * Wrapper bean for {@link ScheduledExecutorService} required in Spring Zeebe for Job Handling,
+ * Retry Management and so on.
  *
- * This is wrapped so you can have multiple executor services in the Spring context and
- * qualify the right one.
+ * <p>This is wrapped so you can have multiple executor services in the Spring context and qualify
+ * the right one.
  */
 public class ZeebeClientExecutorService {
 
@@ -23,7 +23,11 @@ public class ZeebeClientExecutorService {
   }
 
   public static ZeebeClientExecutorService createDefault() {
-    ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+    return createDefault(1);
+  }
+
+  public static ZeebeClientExecutorService createDefault(int threads) {
+    ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(threads);
     return new ZeebeClientExecutorService(threadPool);
   }
 

@@ -43,8 +43,7 @@ public class ClassInfo implements BeanInfo {
     private Object bean;
     private String beanName;
 
-    public ClassInfoBuilder() {
-    }
+    public ClassInfoBuilder() {}
 
     public ClassInfoBuilder bean(Object bean) {
       this.bean = bean;

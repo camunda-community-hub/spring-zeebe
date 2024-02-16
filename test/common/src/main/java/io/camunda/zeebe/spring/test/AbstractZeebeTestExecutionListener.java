@@ -10,30 +10,31 @@ import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
 import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
 import io.camunda.zeebe.spring.test.proxy.ZeebeClientProxy;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
+import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
 
-import java.lang.invoke.MethodHandles;
-
 /**
- * Base class for the two different ZeebeTestExecutionListener classes provided for in-memory vs Testcontainer tests
+ * Base class for the two different ZeebeTestExecutionListener classes provided for in-memory vs
+ * Testcontainer tests
  */
 public class AbstractZeebeTestExecutionListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private ZeebeClient zeebeClient;
 
-  /**
-   * Registers the ZeebeEngine for test case in relevant places and creates the ZeebeClient
-   */
+  /** Registers the ZeebeEngine for test case in relevant places and creates the ZeebeClient */
   public void setupWithZeebeEngine(TestContext testContext, ZeebeTestEngine zeebeEngine) {
 
-    testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).swapZeebeEngine(zeebeEngine);
+    testContext
+        .getApplicationContext()
+        .getBean(ZeebeTestEngineProxy.class)
+        .swapZeebeEngine(zeebeEngine);
 
-    BpmnAssert.initRecordStream(
-      RecordStream.of(zeebeEngine.getRecordStreamSource()));
+    BpmnAssert.initRecordStream(RecordStream.of(zeebeEngine.getRecordStreamSource()));
 
     ZeebeTestThreadSupport.setEngineForCurrentThread(zeebeEngine);
 
@@ -42,17 +43,25 @@ public class AbstractZeebeTestExecutionListener {
     // Not using zeebeEngine.createClient(); to be able to set JsonMapper
     zeebeClient = createClient(testContext, zeebeEngine);
 
-    testContext.getApplicationContext().getBean(ZeebeClientProxy.class).swapZeebeClient(zeebeClient);
-    testContext.getApplicationContext().publishEvent(new ZeebeClientCreatedEvent(this, zeebeClient));
+    testContext
+        .getApplicationContext()
+        .getBean(ZeebeClientProxy.class)
+        .swapZeebeClient(zeebeClient);
+    testContext
+        .getApplicationContext()
+        .publishEvent(new ZeebeClientCreatedEvent(this, zeebeClient));
 
     LOGGER.info("...deployments and workers started.");
   }
 
   public ZeebeClient createClient(TestContext testContext, ZeebeTestEngine zeebeEngine) {
-    // Maybe use more of the normal config properties (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
-    ZeebeClientBuilder builder = ZeebeClient.newClientBuilder()
-      .gatewayAddress(zeebeEngine.getGatewayAddress()).usePlaintext();
-    if (testContext.getApplicationContext().getBeanNamesForType(JsonMapper.class).length>0) {
+    // Maybe use more of the normal config properties
+    // (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
+    ZeebeClientBuilder builder =
+        ZeebeClient.newClientBuilder()
+            .gatewayAddress(zeebeEngine.getGatewayAddress())
+            .usePlaintext();
+    if (testContext.getApplicationContext().getBeanNamesForType(JsonMapper.class).length > 0) {
       JsonMapper jsonMapper = testContext.getApplicationContext().getBean(JsonMapper.class);
       builder.withJsonMapper(jsonMapper);
     }
@@ -62,21 +71,34 @@ public class AbstractZeebeTestExecutionListener {
 
   public void cleanup(TestContext testContext, ZeebeTestEngine zeebeEngine) {
 
-    if (testContext.getTestException()!=null) {
-      LOGGER.warn("Test failure on '"+testContext.getTestMethod()+"'. Tracing workflow engine internals on INFO for debugging purposes:");
+    if (testContext.getTestException() != null) {
+      LOGGER.warn(
+          "Test failure on '"
+              + testContext.getTestMethod()
+              + "'. Tracing workflow engine internals on INFO for debugging purposes:");
       RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
       recordStream.print(true);
 
       if (recordStream.incidentRecords().iterator().hasNext()) {
-        LOGGER.warn("There were incidents in Zeebe during '"+testContext.getTestMethod()+"', maybe they caused some unexpected behavior for you? Please check below:");
-        recordStream.incidentRecords().forEach( record -> {LOGGER.warn(". " + record.getValue());});
+        LOGGER.warn(
+            "There were incidents in Zeebe during '"
+                + testContext.getTestMethod()
+                + "', maybe they caused some unexpected behavior for you? Please check below:");
+        recordStream
+            .incidentRecords()
+            .forEach(
+                record -> {
+                  LOGGER.warn(". " + record.getValue());
+                });
       }
     }
 
     BpmnAssert.resetRecordStream();
     ZeebeTestThreadSupport.cleanupEngineForCurrentThread();
 
-    testContext.getApplicationContext().publishEvent(new ZeebeClientClosingEvent(this, zeebeClient));
+    testContext
+        .getApplicationContext()
+        .publishEvent(new ZeebeClientClosingEvent(this, zeebeClient));
     testContext.getApplicationContext().getBean(ZeebeClientProxy.class).removeZeebeClient();
     zeebeClient.close();
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();

@@ -1,20 +1,22 @@
 package io.camunda.common.auth;
 
-public class SaaSAuthenticationBuilder {
+import io.camunda.common.json.JsonMapper;
 
-  SaaSAuthentication saaSAuthentication;
+public class SaaSAuthenticationBuilder extends JwtAuthenticationBuilder<SaaSAuthenticationBuilder> {
+  private JsonMapper jsonMapper;
 
-  SaaSAuthenticationBuilder() {
-    saaSAuthentication = new SaaSAuthentication();
-  }
-
-  public SaaSAuthenticationBuilder jwtConfig(JwtConfig jwtConfig) {
-    saaSAuthentication.setJwtConfig(jwtConfig);
+  public SaaSAuthenticationBuilder withJsonMapper(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
     return this;
   }
 
-  public Authentication build() {
-    return saaSAuthentication.build();
+  @Override
+  protected SaaSAuthenticationBuilder self() {
+    return this;
   }
 
+  @Override
+  protected SaaSAuthentication build(JwtConfig jwtConfig) {
+    return new SaaSAuthentication(jwtConfig, jsonMapper);
+  }
 }
