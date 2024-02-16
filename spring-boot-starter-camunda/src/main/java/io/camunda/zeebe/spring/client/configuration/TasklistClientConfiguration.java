@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @ConditionalOnProperty(
-    prefix = "camunda.tasklist.client",
+    prefix = "tasklist.client",
     name = "enabled",
     havingValue = "true",
     matchIfMissing = false)

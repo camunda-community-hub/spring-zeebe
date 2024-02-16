@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @ConditionalOnProperty(
-    prefix = "camunda.optimize.client",
+    prefix = "optimize.client",
     name = "enabled",
     havingValue = "true",
     matchIfMissing = false)

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
-@ConfigurationProperties(prefix = "camunda.common")
+@ConfigurationProperties(prefix = "common")
 public class CommonConfigurationProperties extends Client {
 
   @Override
