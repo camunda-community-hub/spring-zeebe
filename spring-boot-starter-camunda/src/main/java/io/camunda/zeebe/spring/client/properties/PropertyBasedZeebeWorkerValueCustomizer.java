@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
 import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
@@ -44,7 +45,11 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   }
 
   private void applyFetchVariables(ZeebeWorkerValue zeebeWorkerValue) {
-    if (zeebeWorkerValue.isForceFetchAllVariables()) {
+    if (hasActivatedJobInjected(zeebeWorkerValue)) {
+      LOG.debug(
+          "Worker '{}': ActivatedJob is injected, no variable filtering possible",
+          zeebeWorkerValue.getName());
+    } else if (zeebeWorkerValue.isForceFetchAllVariables()) {
       LOG.debug("Worker '{}': Force fetch all variables is enabled", zeebeWorkerValue.getName());
       zeebeWorkerValue.setFetchVariables(new String[0]);
     } else {
@@ -54,7 +59,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
       }
       variables.addAll(
           readZeebeVariableParameters(zeebeWorkerValue.getMethodInfo()).stream()
-              .map(ParameterInfo::getParameterName)
+              .map(this::extractVariableName)
               .collect(Collectors.toList()));
       variables.addAll(readVariablesAsTypeParameters(zeebeWorkerValue.getMethodInfo()));
       zeebeWorkerValue.setFetchVariables(variables.toArray(new String[0]));
@@ -65,10 +70,23 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
     }
   }
 
+  private boolean hasActivatedJobInjected(ZeebeWorkerValue zeebeWorkerValue) {
+    return zeebeWorkerValue.getMethodInfo().getParameters().stream()
+        .anyMatch(p -> p.getParameterInfo().getType().isAssignableFrom(ActivatedJob.class));
+  }
+
   private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
     List<ParameterInfo> result = methodInfo.getParametersFilteredByAnnotation(Variable.class);
     result.addAll(methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class));
     return result;
+  }
+
+  private String extractVariableName(ParameterInfo parameterInfo) {
+    Variable variableAnnotation = parameterInfo.getParameterInfo().getAnnotation(Variable.class);
+    if (variableAnnotation != null && !Variable.DEFAULT_NAME.equals(variableAnnotation.name())) {
+      return variableAnnotation.name();
+    }
+    return parameterInfo.getParameterName();
   }
 
   private List<String> readVariablesAsTypeParameters(MethodInfo methodInfo) {
