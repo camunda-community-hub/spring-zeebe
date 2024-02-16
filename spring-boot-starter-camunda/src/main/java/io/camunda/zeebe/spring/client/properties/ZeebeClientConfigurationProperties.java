@@ -20,24 +20,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
 public class ZeebeClientConfigurationProperties {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT =
       (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
   public static final String CONNECTION_MODE_CLOUD = "CLOUD";
   public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
-
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private final org.springframework.core.env.Environment environment;
 
   /**
@@ -375,6 +368,7 @@ public class ZeebeClientConfigurationProperties {
   public void setConnectionMode(String connectionMode) {
     this.connectionMode = connectionMode;
   }
+
   /**
    * @deprecated use getRequestTimeout() instead
    */
@@ -481,6 +475,8 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Broker {
     @Deprecated private String contactPoint;
+    private String gatewayAddress = DEFAULT.getGatewayAddress();
+    private Duration keepAlive = DEFAULT.getKeepAlive();
 
     @Override
     public String toString() {
@@ -492,9 +488,6 @@ public class ZeebeClientConfigurationProperties {
           + keepAlive
           + '}';
     }
-
-    private String gatewayAddress = DEFAULT.getGatewayAddress();
-    private Duration keepAlive = DEFAULT.getKeepAlive();
 
     /**
      * @deprecated use getGatewayAddress() instead
@@ -545,6 +538,16 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Cloud {
 
+    private String clusterId;
+    private String clientId;
+    private String clientSecret;
+    private String region = "bru-2";
+    private String scope;
+    private String baseUrl = "zeebe.camunda.io";
+    private String authUrl = "https://login.cloud.camunda.io/oauth/token";
+    private int port = 443;
+    private String credentialsCachePath;
+
     @Override
     public String toString() {
       return "Cloud{"
@@ -576,17 +579,6 @@ public class ZeebeClientConfigurationProperties {
           + '\''
           + '}';
     }
-
-    private String clusterId;
-    private String clientId;
-    private String clientSecret;
-    private String region = "bru-2";
-    private String scope;
-
-    private String baseUrl = "zeebe.camunda.io";
-    private String authUrl = "https://login.cloud.camunda.io/oauth/token";
-    private int port = 443;
-    private String credentialsCachePath;
 
     public String getClusterId() {
       return clusterId;
@@ -674,6 +666,16 @@ public class ZeebeClientConfigurationProperties {
   }
 
   public static class Worker {
+    private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
+    private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
+    private String defaultName =
+        null; // setting NO default in Spring, as bean/method name is used as default
+    private String defaultType = null;
+    private Map<String, ZeebeWorkerValue> override = new HashMap<>();
+    private List<String> defaultTenantIds;
+    private boolean defaultStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
+    private boolean ownsExecutor;
+
     @Override
     public String toString() {
       return "Worker{"
@@ -691,16 +693,6 @@ public class ZeebeClientConfigurationProperties {
           + override
           + '}';
     }
-
-    private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
-    private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
-    private String defaultName =
-        null; // setting NO default in Spring, as bean/method name is used as default
-    private String defaultType = null;
-    private Map<String, ZeebeWorkerValue> override = new HashMap<>();
-    private List<String> defaultTenantIds;
-    private boolean defaultStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
-    private boolean ownsExecutor;
 
     public boolean isOwnsExecutor() {
       return ownsExecutor;
@@ -786,13 +778,13 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Job {
 
+    private Duration timeout = DEFAULT.getDefaultJobTimeout();
+    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
+
     @Override
     public String toString() {
       return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
     }
-
-    private Duration timeout = DEFAULT.getDefaultJobTimeout();
-    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
 
     public Duration getTimeout() {
       return timeout;
@@ -826,13 +818,13 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Message {
 
+    private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
+    private int maxMessageSize = DEFAULT.getMaxMessageSize();
+
     @Override
     public String toString() {
       return "Message{" + "timeToLive=" + timeToLive + ", maxMessageSize=" + maxMessageSize + '}';
     }
-
-    private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
-    private int maxMessageSize = DEFAULT.getMaxMessageSize();
 
     public Duration getTimeToLive() {
       return timeToLive;
@@ -865,19 +857,6 @@ public class ZeebeClientConfigurationProperties {
   }
 
   public static class Security {
-
-    @Override
-    public String toString() {
-      return "Security{"
-          + "plaintext="
-          + plaintext
-          + ", overrideAuthority='"
-          + overrideAuthority
-          + '\''
-          + ", certPath='"
-          + certPath +'\''
-          + '}';
-    }
 
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
     private String overrideAuthority = DEFAULT.getOverrideAuthority();
@@ -934,116 +913,6 @@ public class ZeebeClientConfigurationProperties {
           + certPath
           + '\''
           + '}';
-  }
-
-  public String getGatewayAddress() {
-    if (connectionMode != null && connectionMode.length() > 0) {
-      LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
-      if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
-        return cloud.getGatewayAddress();
-      } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
-        return broker.getGatewayAddress();
-      } else {
-        throw new RuntimeException(
-            "Value '"
-                + connectionMode
-                + "' for ConnectionMode is invalid, valid values are "
-                + CONNECTION_MODE_CLOUD
-                + " or "
-                + CONNECTION_MODE_ADDRESS);
-      }
-    } else if (cloud.isConfigured()) {
-      return cloud.getGatewayAddress();
-    } else {
-      return broker.getGatewayAddress();
     }
-  }
-
-  public String getDefaultTenantId() {
-    return defaultTenantId;
-  }
-
-  public void setDefaultTenantId(String defaultTenantId) {
-    this.defaultTenantId = defaultTenantId;
-  }
-
-  public List<String> getDefaultJobWorkerTenantIds() {
-    return defaultJobWorkerTenantIds;
-  }
-
-  public void setDefaultJobWorkerTenantIds(List<String> defaultJobWorkerTenantIds) {
-    this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
-  }
-
-  public boolean getDefaultJobWorkerStreamEnabled() {
-    return defaultJobWorkerStreamEnabled;
-  }
-
-  public boolean useDefaultRetryPolicy() {
-    return false;
-  }
-
-  public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
-    this.defaultJobWorkerStreamEnabled = defaultJobWorkerStreamEnabled;
-  }
-
-  public String getConnectionMode() {
-    return connectionMode;
-  }
-
-  public void setConnectionMode(String connectionMode) {
-    this.connectionMode = connectionMode;
-  }
-
-  public Duration getDefaultRequestTimeout() {
-    return getRequestTimeout();
-  }
-
-  public int getNumJobWorkerExecutionThreads() {
-    return worker.getThreads();
-  }
-
-  public int getDefaultJobWorkerMaxJobsActive() {
-    return worker.getMaxJobsActive();
-  }
-
-  public String getDefaultJobWorkerName() {
-    return worker.getDefaultName();
-  }
-
-  public String getDefaultJobWorkerType() {
-    return worker.getDefaultType();
-  }
-
-  public Duration getDefaultJobTimeout() {
-    return job.getTimeout();
-  }
-
-  public Duration getDefaultJobPollInterval() {
-    return job.getPollInterval();
-  }
-
-  public Duration getDefaultMessageTimeToLive() {
-    return message.getTimeToLive();
-  }
-
-  public boolean isPlaintextConnectionEnabled() {
-    return security.isPlaintext();
-  }
-
-  public String getCaCertificatePath() {
-    return security.getCertPath();
-  }
-
-  public String getOverrideAuthority() {
-    return security.getOverrideAuthority();
-  }
-
-  public Duration getKeepAlive() {
-    return broker.getKeepAlive();
-  }
-
-  public int getMaxMessageSize() {
-    return message.getMaxMessageSize();
   }
 }

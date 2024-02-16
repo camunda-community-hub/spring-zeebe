@@ -73,12 +73,12 @@ public class CommonClientConfiguration {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential =
                 new SimpleCredential(
+                    operateClientConfigurationProperties.getBaseUrl(),
                     operateClientConfigurationProperties.getUsername(),
                     operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
             return SimpleAuthentication.builder()
                 .withSimpleConfig(simpleConfig)
-                .withSimpleUrl(operateClientConfigurationProperties.getUrl())
                 .build();
           }
         }
@@ -116,12 +116,12 @@ public class CommonClientConfiguration {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential =
                 new SimpleCredential(
+                    commonConfigurationProperties.getBaseUrl(),
                     commonConfigurationProperties.getUsername(),
                     commonConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
             return SimpleAuthentication.builder()
                 .withSimpleConfig(simpleConfig)
-                .withSimpleUrl(commonConfigurationProperties.getUrl())
                 .build();
           }
         }
@@ -238,7 +238,6 @@ public class CommonClientConfiguration {
 
   private IdentityConfig configureIdentities(JwtConfig jwtConfig) {
     IdentityConfig identityConfig = new IdentityConfig();
-
     // TODO: Should we handle Zeebe with Identity SDK?
     // OPERATE
     if (operateClientConfigurationProperties != null) {
