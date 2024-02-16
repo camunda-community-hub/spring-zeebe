@@ -7,5 +7,6 @@ public enum Product {
   TASKLIST,
   CONSOLE,
   OPTIMIZE,
-  WEB_MODELER
+  WEB_MODELER,
+  IDENTITY
 }

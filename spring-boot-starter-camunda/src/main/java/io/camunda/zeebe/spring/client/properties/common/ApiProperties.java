@@ -1,11 +1,13 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
+
 import java.util.List;
 
 public class ApiProperties extends AuthProperties {
   private Boolean enabled;
   private String baseUrl;
-  private List<String> tenantIds;
+  private String audience;
+
 
   public Boolean getEnabled() {
     return enabled;
@@ -23,11 +25,25 @@ public class ApiProperties extends AuthProperties {
     this.baseUrl = baseUrl;
   }
 
-  public List<String> getTenantIds() {
-    return tenantIds;
+
+
+  public String getAudience() {
+    return audience;
   }
 
-  public void setTenantIds(List<String> tenantIds) {
-    this.tenantIds = tenantIds;
+  public void setAudience(String audience) {
+    this.audience = audience;
+  }
+
+  public static ApiProperties disabled(){
+    ApiProperties apiProperties = new ApiProperties();
+    apiProperties.setEnabled(false);
+    return apiProperties;
+  }
+
+  public static ApiProperties enabled(){
+    ApiProperties apiProperties = new ApiProperties();
+    apiProperties.setEnabled(true);
+    return apiProperties;
   }
 }

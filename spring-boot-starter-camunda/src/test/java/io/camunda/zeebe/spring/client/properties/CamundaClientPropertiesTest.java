@@ -2,13 +2,10 @@ package io.camunda.zeebe.spring.client.properties;
 
 import static java.util.Optional.*;
 
-import io.camunda.common.auth.Authentication;
 import io.camunda.zeebe.client.CredentialsProvider;
 import io.camunda.zeebe.client.ZeebeClientConfiguration;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientBuilderImpl;
-import io.camunda.zeebe.spring.client.properties.common.AuthProperties;
-import io.camunda.zeebe.spring.client.properties.common.ZeebeGatewayProperties;
 import io.grpc.ClientInterceptor;
 import java.time.Duration;
 import java.util.List;
@@ -19,16 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CamundaClientPropertiesTest {
-  private static Authentication fromProperties(AuthProperties authProperties) {
-
-  }
   private static class ZeebeClientConfig implements ZeebeClientConfiguration {
     public static final ZeebeClientBuilderImpl DEFAULT =
         (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
     private static final Logger LOG = LoggerFactory.getLogger(ZeebeClientConfig.class);
-    private final ZeebeGatewayProperties properties;
+    private final CamundaClientProperties properties;
 
-    public ZeebeClientConfig(ZeebeGatewayProperties properties) {
+    public ZeebeClientConfig(CamundaClientProperties properties) {
       this.properties = properties;
     }
 
@@ -43,7 +37,9 @@ public class CamundaClientPropertiesTest {
     @Override
     public String getGatewayAddress() {
       return getOrDefault(
-          "GatewayAddress", ofNullable(properties.getBaseUrl()), DEFAULT.getGatewayAddress());
+          "GatewayAddress",
+          ofNullable(properties.getZeebe().getBaseUrl()),
+          DEFAULT.getGatewayAddress());
     }
 
     @Override
@@ -68,7 +64,7 @@ public class CamundaClientPropertiesTest {
     public int getNumJobWorkerExecutionThreads() {
       return getOrDefault(
           "NumJobWorkerExecutionThreads",
-          ofNullable(properties.getExecutionThreads()),
+          ofNullable(properties.getZeebe().getExecutionThreads()),
           DEFAULT.getNumJobWorkerExecutionThreads());
     }
 
@@ -76,7 +72,7 @@ public class CamundaClientPropertiesTest {
     public int getDefaultJobWorkerMaxJobsActive() {
       return getOrDefault(
           "DefaultJobWorkerMaxJobsActive",
-          ofNullable(properties.getMaxJobsActive()),
+          ofNullable(properties.getZeebe().getMaxJobsActive()),
           DEFAULT.getDefaultJobWorkerMaxJobsActive());
     }
 
@@ -84,7 +80,7 @@ public class CamundaClientPropertiesTest {
     public String getDefaultJobWorkerName() {
       return getOrDefault(
           "DefaultJobWorkerName",
-          ofNullable(properties.getJobWorkerName()),
+          ofNullable(properties.getZeebe().getJobWorkerName()),
           DEFAULT.getDefaultJobWorkerName());
     }
 
@@ -92,7 +88,7 @@ public class CamundaClientPropertiesTest {
     public Duration getDefaultJobTimeout() {
       return getOrDefault(
           "DefaultJobTimeout",
-          ofNullable(properties.getJobTimeout()),
+          ofNullable(properties.getZeebe().getJobTimeout()),
           DEFAULT.getDefaultJobTimeout());
     }
 
@@ -100,7 +96,7 @@ public class CamundaClientPropertiesTest {
     public Duration getDefaultJobPollInterval() {
       return getOrDefault(
           "DefaultJobPollInterval",
-          ofNullable(properties.getJobPollInterval()),
+          ofNullable(properties.getZeebe().getJobPollInterval()),
           DEFAULT.getDefaultJobPollInterval());
     }
 
@@ -108,7 +104,7 @@ public class CamundaClientPropertiesTest {
     public Duration getDefaultMessageTimeToLive() {
       return getOrDefault(
           "DefaultMessageTimeToLive",
-          ofNullable(properties.getMessageTimeToLive()),
+          ofNullable(properties.getZeebe().getMessageTimeToLive()),
           DEFAULT.getDefaultMessageTimeToLive());
     }
 
@@ -116,7 +112,7 @@ public class CamundaClientPropertiesTest {
     public Duration getDefaultRequestTimeout() {
       return getOrDefault(
           "DefaultRequestTimeout",
-          ofNullable(properties.getRequestTimeout()),
+          ofNullable(properties.getZeebe().getRequestTimeout()),
           DEFAULT.getDefaultRequestTimeout());
     }
 
@@ -124,7 +120,7 @@ public class CamundaClientPropertiesTest {
     public boolean isPlaintextConnectionEnabled() {
       return getOrDefault(
           "PlaintextConnectionEnabled",
-          ofNullable(properties.getPlaintext()),
+          ofNullable(properties.getZeebe().getPlaintext()),
           DEFAULT.isPlaintextConnectionEnabled());
     }
 
@@ -132,57 +128,67 @@ public class CamundaClientPropertiesTest {
     public String getCaCertificatePath() {
       return getOrDefault(
           "CaCertificatePath",
-          ofNullable(properties.getCaCertificatePath()),
+          ofNullable(properties.getZeebe().getCaCertificatePath()),
           DEFAULT.getCaCertificatePath());
     }
 
     @Override
     public CredentialsProvider getCredentialsProvider() {
+      // TODO implement this
       return null;
     }
 
     @Override
     public Duration getKeepAlive() {
-      return getOrDefault("KeepAlive",ofNullable(properties.getKeepAlive()),DEFAULT.getKeepAlive());
+      return getOrDefault(
+          "KeepAlive", ofNullable(properties.getZeebe().getKeepAlive()), DEFAULT.getKeepAlive());
     }
 
     @Override
     public List<ClientInterceptor> getInterceptors() {
+      // TODO implement this
       return null;
     }
 
     @Override
     public JsonMapper getJsonMapper() {
+      // TODO implement this
       return null;
     }
 
     @Override
     public String getOverrideAuthority() {
+      // TODO implement this
       return null;
     }
 
     @Override
     public int getMaxMessageSize() {
+      // TODO implement this
       return 0;
     }
 
     @Override
     public ScheduledExecutorService jobWorkerExecutor() {
+      // TODO implement this
       return null;
     }
 
     @Override
     public boolean ownsJobWorkerExecutor() {
+      // TODO implement this
       return false;
     }
 
     @Override
     public boolean getDefaultJobWorkerStreamEnabled() {
+      // TODO implement this
       return false;
     }
 
     @Override
     public boolean useDefaultRetryPolicy() {
+      // TODO implement this
       return false;
     }
   }
