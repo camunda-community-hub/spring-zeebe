@@ -3,6 +3,7 @@ package io.camunda.console.impl;
 import io.camunda.common.exception.SdkException;
 import io.camunda.console.CamundaConsoleClient.Cluster;
 import io.camunda.console.client.invoker.ApiException;
+import io.camunda.console.client.model.UpdateClusterRequest;
 
 public class ClusterImpl extends AbstractCluster implements Cluster {
 
@@ -29,6 +30,15 @@ public class ClusterImpl extends AbstractCluster implements Cluster {
   }
 
   @Override
+  public void patch(UpdateClusterRequest request) {
+    try {
+      getApi().updateCluster(getClusterId(), request);
+    } catch (ApiException e) {
+      throw new SdkException(e);
+    }
+  }
+
+  @Override
   public Backups backups() {
     return new BackupsImpl(this);
   }
@@ -39,8 +49,13 @@ public class ClusterImpl extends AbstractCluster implements Cluster {
   }
 
   @Override
-  public IpWhiteList ipwhitelist() {
-    return new IpWhiteListImpl(this);
+  public IpAllowList ipAllowList() {
+    return new IpAllowListImpl(this);
+  }
+
+  @Override
+  public Wake wake() {
+    return new WakeImpl(this);
   }
 
   @Override

@@ -1,6 +1,5 @@
 package io.camunda.console.impl;
 
-
 import io.camunda.common.exception.SdkException;
 import io.camunda.console.CamundaConsoleClient.Cluster.Client;
 import io.camunda.console.client.invoker.ApiException;

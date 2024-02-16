@@ -11,12 +11,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-@ConditionalOnProperty(prefix = "console.client", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(
+    prefix = "console.client",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = false)
 @EnableConfigurationProperties(ConsoleClientConfigurationProperties.class)
 @ConditionalOnMissingBean(SpringZeebeTestContext.class)
 public class ConsoleClientConfiguration {
 
-  @Autowired Authentication authentication;
+  private final Authentication authentication;
+
+  @Autowired
+  public ConsoleClientConfiguration(Authentication authentication) {
+    this.authentication = authentication;
+  }
 
   @Bean
   @ConditionalOnMissingBean

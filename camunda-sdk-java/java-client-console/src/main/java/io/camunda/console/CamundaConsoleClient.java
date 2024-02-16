@@ -9,8 +9,9 @@ import io.camunda.console.client.model.CreateClusterBody;
 import io.camunda.console.client.model.CreateClusterClientBody;
 import io.camunda.console.client.model.CreateSecretBody;
 import io.camunda.console.client.model.CreatedClusterClient;
-import io.camunda.console.client.model.IpWhiteListBody;
+import io.camunda.console.client.model.IpAllowListBody;
 import io.camunda.console.client.model.PostMemberBody;
+import io.camunda.console.client.model.UpdateClusterRequest;
 import io.camunda.console.impl.CamundaConsoleClientImpl;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,15 @@ public interface CamundaConsoleClient {
 
     void delete();
 
+    void patch(UpdateClusterRequest request);
+
     Backups backups();
 
     Backup backups(String backupId);
 
-    IpWhiteList ipwhitelist();
+    IpAllowList ipAllowList();
+
+    Wake wake();
 
     Clients clients();
 
@@ -71,8 +76,12 @@ public interface CamundaConsoleClient {
       BackupDto delete();
     }
 
-    interface IpWhiteList {
-      void put(IpWhiteListBody request);
+    interface IpAllowList {
+      void put(IpAllowListBody request);
+    }
+
+    interface Wake {
+      void put();
     }
 
     interface Clients {

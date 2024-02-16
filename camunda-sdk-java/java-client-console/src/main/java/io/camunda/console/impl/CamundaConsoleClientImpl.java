@@ -1,11 +1,10 @@
 package io.camunda.console.impl;
 
-
 import io.camunda.console.CamundaConsoleClient;
 import io.camunda.console.client.api.DefaultApi;
 
 public class CamundaConsoleClientImpl extends AbstractCamundaConsoleClient
-  implements CamundaConsoleClient {
+    implements CamundaConsoleClient {
 
   public CamundaConsoleClientImpl(DefaultApi api) {
     super(api);
@@ -30,6 +29,4 @@ public class CamundaConsoleClientImpl extends AbstractCamundaConsoleClient
   public Member members(String email) {
     return new MemberImpl(this, email);
   }
-
-
 }
