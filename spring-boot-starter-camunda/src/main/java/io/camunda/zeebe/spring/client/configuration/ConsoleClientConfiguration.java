@@ -11,11 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-@ConditionalOnProperty(
-    prefix = "console.client",
-    name = "enabled",
-    havingValue = "true",
-    matchIfMissing = false)
+@ConditionalOnProperty(prefix = "camunda.console.client", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(ConsoleClientConfigurationProperties.class)
 @ConditionalOnMissingBean(SpringZeebeTestContext.class)
 public class ConsoleClientConfiguration {
