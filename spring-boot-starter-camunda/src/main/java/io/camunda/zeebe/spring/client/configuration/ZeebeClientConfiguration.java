@@ -41,6 +41,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   private List<ClientInterceptor> interceptors;
 
   @Lazy @Autowired private ZeebeClientExecutorService zeebeClientExecutorService;
+  private CredentialsProvider credentialsProvider;
 
   @PostConstruct
   public void applyLegacy() {
@@ -111,6 +112,13 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
+    if (credentialsProvider == null) {
+      credentialsProvider = initCredentialsProvider();
+    }
+    return credentialsProvider;
+  }
+
+  private CredentialsProvider initCredentialsProvider() {
     // TODO: Refactor when integrating Identity SDK
     if (commonConfigurationProperties.getEnabled()
         && !(authentication instanceof DefaultNoopAuthentication)) {
@@ -137,6 +145,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
           .clientId(properties.getCloud().getClientId())
           .clientSecret(properties.getCloud().getClientSecret())
           .audience(properties.getCloud().getAudience())
+          .scope(properties.getCloud().getScope())
           .authorizationServerUrl(properties.getCloud().getAuthUrl())
           .credentialsCachePath(properties.getCloud().getCredentialsCachePath())
           .build();
@@ -192,5 +201,28 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
     return properties.getDefaultJobWorkerStreamEnabled();
+  }
+
+  @Override
+  public boolean useDefaultRetryPolicy() {
+    return properties.useDefaultRetryPolicy();
+  }
+
+  @Override
+  public String toString() {
+    return "ZeebeClientConfiguration{"
+        + "properties="
+        + properties
+        + ", commonConfigurationProperties="
+        + commonConfigurationProperties
+        + ", authentication="
+        + authentication
+        + ", jsonMapper="
+        + jsonMapper
+        + ", interceptors="
+        + interceptors
+        + ", zeebeClientExecutorService="
+        + zeebeClientExecutorService
+        + '}';
   }
 }
