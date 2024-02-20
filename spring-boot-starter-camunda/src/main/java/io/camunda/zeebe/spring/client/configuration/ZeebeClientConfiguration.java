@@ -145,7 +145,6 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
           .clientId(properties.getCloud().getClientId())
           .clientSecret(properties.getCloud().getClientSecret())
           .audience(properties.getCloud().getAudience())
-          .scope(properties.getCloud().getScope())
           .authorizationServerUrl(properties.getCloud().getAuthUrl())
           .credentialsCachePath(properties.getCloud().getCredentialsCachePath())
           .build();
