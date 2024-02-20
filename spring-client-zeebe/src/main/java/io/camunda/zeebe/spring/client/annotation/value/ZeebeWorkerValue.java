@@ -108,12 +108,52 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return enabled;
   }
 
-  public ZeebeWorkerValue setEnabled(Boolean enabled) {
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setTimeout(Long timeout) {
+    this.timeout = timeout;
+  }
+
+  public void setMaxJobsActive(Integer maxJobsActive) {
+    this.maxJobsActive = maxJobsActive;
+  }
+
+  public void setRequestTimeout(Long requestTimeout) {
+    this.requestTimeout = requestTimeout;
+  }
+
+  public void setPollInterval(Long pollInterval) {
+    this.pollInterval = pollInterval;
+  }
+
+  public void setAutoComplete(Boolean autoComplete) {
+    this.autoComplete = autoComplete;
+  }
+
+  public void setFetchVariables(String[] fetchVariables) {
+    this.fetchVariables = fetchVariables;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public void setMethodInfo(MethodInfo methodInfo) {
+    this.methodInfo = methodInfo;
+  }
+
+  public ZeebeWorkerValue enabled(Boolean enabled) {
     this.enabled = enabled;
     return this;
   }
 
-  public ZeebeWorkerValue setType(String type) {
+  public ZeebeWorkerValue type(String type) {
     this.type = type;
     // You can only set a type of a worker - in this case the name is set equals to the type
     if (name == null) {
@@ -122,42 +162,42 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     return this;
   }
 
-  public ZeebeWorkerValue setName(String name) {
+  public ZeebeWorkerValue name(String name) {
     this.name = name;
     return this;
   }
 
-  public ZeebeWorkerValue setTimeout(Long timeout) {
+  public ZeebeWorkerValue timeout(Long timeout) {
     this.timeout = timeout;
     return this;
   }
 
-  public ZeebeWorkerValue setMaxJobsActive(Integer maxJobsActive) {
+  public ZeebeWorkerValue maxJobsActive(Integer maxJobsActive) {
     this.maxJobsActive = maxJobsActive;
     return this;
   }
 
-  public ZeebeWorkerValue setRequestTimeout(Long requestTimeout) {
+  public ZeebeWorkerValue requestTimeout(Long requestTimeout) {
     this.requestTimeout = requestTimeout;
     return this;
   }
 
-  public ZeebeWorkerValue setPollInterval(Long pollInterval) {
+  public ZeebeWorkerValue pollInterval(Long pollInterval) {
     this.pollInterval = pollInterval;
     return this;
   }
 
-  public ZeebeWorkerValue setAutoComplete(Boolean autoComplete) {
+  public ZeebeWorkerValue autoComplete(Boolean autoComplete) {
     this.autoComplete = autoComplete;
     return this;
   }
 
-  public ZeebeWorkerValue setFetchVariables(String[] fetchVariables) {
+  public ZeebeWorkerValue fetchVariables(String[] fetchVariables) {
     this.fetchVariables = fetchVariables;
     return this;
   }
 
-  public ZeebeWorkerValue setMethodInfo(MethodInfo methodInfo) {
+  public ZeebeWorkerValue methodInfo(MethodInfo methodInfo) {
     this.methodInfo = methodInfo;
     return this;
   }

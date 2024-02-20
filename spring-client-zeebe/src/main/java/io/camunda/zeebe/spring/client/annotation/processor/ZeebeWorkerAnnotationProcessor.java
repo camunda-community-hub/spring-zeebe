@@ -78,14 +78,14 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
       JobWorker annotation = methodAnnotation.get();
       return Optional.of(
           new ZeebeWorkerValue()
-              .setMethodInfo(methodInfo)
-              .setType(annotation.type())
-              .setTimeout(annotation.timeout())
-              .setMaxJobsActive(annotation.maxJobsActive())
-              .setPollInterval(annotation.pollInterval())
-              .setAutoComplete(annotation.autoComplete())
-              .setRequestTimeout(annotation.requestTimeout())
-              .setEnabled(annotation.enabled())
+              .methodInfo(methodInfo)
+              .type(annotation.type())
+              .timeout(annotation.timeout())
+              .maxJobsActive(annotation.maxJobsActive())
+              .pollInterval(annotation.pollInterval())
+              .autoComplete(annotation.autoComplete())
+              .requestTimeout(annotation.requestTimeout())
+              .enabled(annotation.enabled())
 
               // TODO Get rid of those initialize methods but add the attributes as values onto the
               // worker and then auto-initialize stuff when opening the worker
@@ -99,14 +99,14 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
         ZeebeWorker annotation = legacyAnnotation.get();
         return Optional.of(
             new ZeebeWorkerValue()
-                .setMethodInfo(methodInfo)
-                .setType(annotation.type())
-                .setTimeout(annotation.timeout())
-                .setMaxJobsActive(annotation.maxJobsActive())
-                .setPollInterval(annotation.pollInterval())
-                .setAutoComplete(annotation.autoComplete())
-                .setRequestTimeout(annotation.requestTimeout())
-                .setEnabled(annotation.enabled())
+                .methodInfo(methodInfo)
+                .type(annotation.type())
+                .timeout(annotation.timeout())
+                .maxJobsActive(annotation.maxJobsActive())
+                .pollInterval(annotation.pollInterval())
+                .autoComplete(annotation.autoComplete())
+                .requestTimeout(annotation.requestTimeout())
+                .enabled(annotation.enabled())
 
                 // TODO Get rid of those initialize methods but add the attributes as values onto
                 // the worker and then auto-initialize stuff when opening the worker
