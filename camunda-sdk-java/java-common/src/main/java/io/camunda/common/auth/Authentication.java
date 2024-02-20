@@ -4,7 +4,6 @@ import java.util.Map;
 
 public interface Authentication {
 
-
   Map.Entry<String, String> getTokenHeader(Product product);
 
   void resetToken(Product product);

@@ -5,6 +5,7 @@ public class DecisionInstanceInput {
   private String id;
   private String name;
   private String value;
+
   public String getId() {
     return id;
   }

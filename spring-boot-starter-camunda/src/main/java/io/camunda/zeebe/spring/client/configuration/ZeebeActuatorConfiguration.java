@@ -4,7 +4,6 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.actuator.MicrometerMetricsRecorder;
 import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.metrics.DefaultNoopMetricsRecorder;
-import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,17 +17,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 @AutoConfigureBefore(MetricsDefaultConfiguration.class)
-@ConditionalOnClass({EndpointAutoConfiguration.class, MeterRegistry.class}) // only if actuator is on classpath
+@ConditionalOnClass({
+  EndpointAutoConfiguration.class,
+  MeterRegistry.class
+}) // only if actuator is on classpath
 public class ZeebeActuatorConfiguration {
   @Bean
-  // ConditionalOnBean for MeterRegistry does not work (always missing, seems to be created too late)
+  // ConditionalOnBean for MeterRegistry does not work (always missing, seems to be created too
+  // late)
   // so using @Autowired(required=false) with null check
   public MetricsRecorder micrometerMetricsRecorder(
-          final @Autowired(required = false) @Lazy MeterRegistry meterRegistry) {
+      final @Autowired(required = false) @Lazy MeterRegistry meterRegistry) {
     if (meterRegistry == null) {
       // We might have Actuator on the classpath without starting a MetricsRecorder in some cases
       return new DefaultNoopMetricsRecorder();
@@ -38,13 +40,15 @@ public class ZeebeActuatorConfiguration {
   }
 
   /**
-   * Workaround to fix premature initialization of MeterRegistry that seems to happen here, see https://github.com/camunda-community-hub/spring-zeebe/issues/296
+   * Workaround to fix premature initialization of MeterRegistry that seems to happen here, see
+   * https://github.com/camunda-community-hub/spring-zeebe/issues/296
    */
   @Bean
   InitializingBean forceMeterRegistryPostProcessor(
-    final @Autowired(required = false) @Qualifier("meterRegistryPostProcessor") BeanPostProcessor meterRegistryPostProcessor,
-    final @Autowired(required = false) MeterRegistry registry) {
-    if (registry == null || meterRegistryPostProcessor==null) {
+      final @Autowired(required = false) @Qualifier("meterRegistryPostProcessor") BeanPostProcessor
+              meterRegistryPostProcessor,
+      final @Autowired(required = false) MeterRegistry registry) {
+    if (registry == null || meterRegistryPostProcessor == null) {
       return () -> {};
     } else {
       return () -> meterRegistryPostProcessor.postProcessAfterInitialization(registry, "");
@@ -52,7 +56,10 @@ public class ZeebeActuatorConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(prefix = "management.health.zeebe", name = "enabled", matchIfMissing = true)
+  @ConditionalOnProperty(
+      prefix = "management.health.zeebe",
+      name = "enabled",
+      matchIfMissing = true)
   @ConditionalOnClass(HealthIndicator.class)
   @ConditionalOnMissingBean(name = "zeebeClientHealthIndicator")
   public ZeebeClientHealthIndicator zeebeClientHealthIndicator(ZeebeClient client) {

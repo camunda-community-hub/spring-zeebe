@@ -1,11 +1,12 @@
 package io.camunda.operate.search;
 
-
 public class DecisionRequirementsFilterBuilder {
 
   DecisionRequirementsFilter filter;
 
-  DecisionRequirementsFilterBuilder() { filter = new DecisionRequirementsFilter(); }
+  DecisionRequirementsFilterBuilder() {
+    filter = new DecisionRequirementsFilter();
+  }
 
   public DecisionRequirementsFilterBuilder id(String id) {
     filter.setId(id);
@@ -42,6 +43,7 @@ public class DecisionRequirementsFilterBuilder {
     return this;
   }
 
-  public DecisionRequirementsFilter build() { return filter; }
-
+  public DecisionRequirementsFilter build() {
+    return filter;
+  }
 }

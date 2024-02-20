@@ -6,7 +6,9 @@ public class IncidentFilterBuilder {
 
   IncidentFilter filter;
 
-  IncidentFilterBuilder() { filter = new IncidentFilter(); }
+  IncidentFilterBuilder() {
+    filter = new IncidentFilter();
+  }
 
   public IncidentFilterBuilder key(Long key) {
     filter.setKey(key);
@@ -48,6 +50,7 @@ public class IncidentFilterBuilder {
     return this;
   }
 
-  public IncidentFilter build() { return filter; }
-
+  public IncidentFilter build() {
+    return filter;
+  }
 }

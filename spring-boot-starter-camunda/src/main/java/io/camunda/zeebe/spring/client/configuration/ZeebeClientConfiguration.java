@@ -1,5 +1,7 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import static org.springframework.util.StringUtils.hasText;
+
 import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.DefaultNoopAuthentication;
 import io.camunda.common.auth.Product;
@@ -15,26 +17,20 @@ import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
-
-import static org.springframework.util.StringUtils.hasText;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeClientConfiguration {
 
-  @Autowired
-  private ZeebeClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
-  @Autowired
-  private CommonConfigurationProperties commonConfigurationProperties;
+  @Autowired private CommonConfigurationProperties commonConfigurationProperties;
 
-  @Autowired
-  private Authentication authentication;
+  @Autowired private Authentication authentication;
 
   @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
@@ -44,13 +40,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   @Autowired(required = false)
   private List<ClientInterceptor> interceptors;
 
-  @Lazy
-  @Autowired
-  private ZeebeClientExecutorService zeebeClientExecutorService;
+  @Lazy @Autowired private ZeebeClientExecutorService zeebeClientExecutorService;
 
   @PostConstruct
   public void applyLegacy() {
-    // make sure environment variables and other legacy config options are taken into account (duplicate, also done by  qPostConstruct, whatever)
+    // make sure environment variables and other legacy config options are taken into account
+    // (duplicate, also done by  qPostConstruct, whatever)
     properties.applyOverrides();
   }
 
@@ -117,12 +112,14 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   @Override
   public CredentialsProvider getCredentialsProvider() {
     // TODO: Refactor when integrating Identity SDK
-    if (commonConfigurationProperties.getEnabled() && !(authentication instanceof DefaultNoopAuthentication)) {
+    if (commonConfigurationProperties.getEnabled()
+        && !(authentication instanceof DefaultNoopAuthentication)) {
       return new CredentialsProvider() {
         @Override
         public void applyCredentials(Metadata headers) {
           final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-          final Metadata.Key<String> authHeaderKey = Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
+          final Metadata.Key<String> authHeaderKey =
+              Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
           headers.put(authHeaderKey, authHeader.getValue());
         }
 
@@ -132,20 +129,23 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         }
       };
     }
-    if (hasText(properties.getCloud().getClientId()) && hasText(properties.getCloud().getClientSecret())) {
-//        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider with: {}", this);
+    if (hasText(properties.getCloud().getClientId())
+        && hasText(properties.getCloud().getClientSecret())) {
+      //        log.debug("Client ID and secret are configured. Creating OAuthCredientialsProvider
+      // with: {}", this);
       return CredentialsProvider.newCredentialsProviderBuilder()
-        .clientId(properties.getCloud().getClientId())
-        .clientSecret(properties.getCloud().getClientSecret())
-        .audience(properties.getCloud().getAudience())
-        .authorizationServerUrl(properties.getCloud().getAuthUrl())
-        .credentialsCachePath(properties.getCloud().getCredentialsCachePath())
-        .build();
+          .clientId(properties.getCloud().getClientId())
+          .clientSecret(properties.getCloud().getClientSecret())
+          .audience(properties.getCloud().getAudience())
+          .authorizationServerUrl(properties.getCloud().getAuthUrl())
+          .credentialsCachePath(properties.getCloud().getCredentialsCachePath())
+          .build();
     }
-    if (Environment.system().get("ZEEBE_CLIENT_ID") != null && Environment.system().get("ZEEBE_CLIENT_SECRET") != null) {
+    if (Environment.system().get("ZEEBE_CLIENT_ID") != null
+        && Environment.system().get("ZEEBE_CLIENT_SECRET") != null) {
       // Copied from ZeebeClientBuilderImpl
       OAuthCredentialsProviderBuilder builder = CredentialsProvider.newCredentialsProviderBuilder();
-      int separatorIndex = properties.getBroker().getGatewayAddress().lastIndexOf(58); //":"
+      int separatorIndex = properties.getBroker().getGatewayAddress().lastIndexOf(58); // ":"
       if (separatorIndex > 0) {
         builder.audience(properties.getBroker().getGatewayAddress().substring(0, separatorIndex));
       }

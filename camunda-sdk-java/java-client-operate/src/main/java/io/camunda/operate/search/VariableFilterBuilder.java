@@ -4,7 +4,9 @@ public class VariableFilterBuilder {
 
   VariableFilter filter;
 
-  VariableFilterBuilder() { filter = new VariableFilter(); }
+  VariableFilterBuilder() {
+    filter = new VariableFilter();
+  }
 
   public VariableFilterBuilder key(Long key) {
     filter.setKey(key);
@@ -41,6 +43,7 @@ public class VariableFilterBuilder {
     return this;
   }
 
-  public VariableFilter build() { return filter; }
-
+  public VariableFilter build() {
+    return filter;
+  }
 }

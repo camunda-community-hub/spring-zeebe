@@ -27,7 +27,7 @@ If you have additional information that can help us understand the behaviour of 
 
 If no issue already exists for the bug, please create a new one.
 
-When creating a bug report, please fill out the template. What really helps us are the steps for us to be able reproduce the problem in front of us. 
+When creating a bug report, please fill out the template. What really helps us are the steps for us to be able reproduce the problem in front of us.
 
 To generate these, start from nothing, and document the steps required to set up a project that shows the bug. If you create such a project as a new GitHub repo, you will have a Minimal Reproducible Example. We can then check out that project and see the bug in front of us immediately. This will increase the speed that we can address the issue. It will also help you isolate the actual issue, and sometimes to fix it.
 
@@ -45,9 +45,9 @@ If you have additional information that can help us understand the behaviour you
 
 If no issue already exists for the feature request, please create a new one.
 
-When creating a feature request, please fill out the template. What really helps us are both the motivation for the feature (what is your use-case and what you want to achieve), as well as what you would like the feature to be. Sometimes there is an existing way to accomplish what you want, and we may be able to recommend that. 
+When creating a feature request, please fill out the template. What really helps us are both the motivation for the feature (what is your use-case and what you want to achieve), as well as what you would like the feature to be. Sometimes there is an existing way to accomplish what you want, and we may be able to recommend that.
 
-If there is no existing way to do it, then understanding the use-case that motivates the feature request helps us to triage it, and also to design the feature implementation.  
+If there is no existing way to do it, then understanding the use-case that motivates the feature request helps us to triage it, and also to design the feature implementation.
 
 ## Fix to documentation
 
@@ -57,7 +57,7 @@ Please read the [Code Style Guidelines](#code-style-guidelines) and [Commit Mess
 
 ## Code contribution for an existing issue
 
-Maybe you patch an existing bug, or implement a requested feature for yourself - without waiting for us to get to it. You can contribute that to the codebase as a pull request. This way, you don't end up maintaining a separate fork. 
+Maybe you patch an existing bug, or implement a requested feature for yourself - without waiting for us to get to it. You can contribute that to the codebase as a pull request. This way, you don't end up maintaining a separate fork.
 
 See the section [Running a development version](#running-a-development-version) for instructions on how to use your fork locally to test your changes.
 

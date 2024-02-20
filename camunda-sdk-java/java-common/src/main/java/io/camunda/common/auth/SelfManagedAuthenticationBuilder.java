@@ -2,12 +2,12 @@ package io.camunda.common.auth;
 
 import io.camunda.common.json.JsonMapper;
 
-public class SelfManagedAuthenticationBuilder extends JwtAuthenticationBuilder<SelfManagedAuthenticationBuilder> {
+public class SelfManagedAuthenticationBuilder
+    extends JwtAuthenticationBuilder<SelfManagedAuthenticationBuilder> {
   private String keycloakUrl;
   private String keycloakRealm;
   private String keycloakTokenUrl;
   private JsonMapper jsonMapper;
-
 
   public SelfManagedAuthenticationBuilder withKeycloakUrl(String keycloakUrl) {
     this.keycloakUrl = keycloakUrl;
@@ -24,11 +24,10 @@ public class SelfManagedAuthenticationBuilder extends JwtAuthenticationBuilder<S
     return this;
   }
 
-  public SelfManagedAuthenticationBuilder withJsonMapper(JsonMapper jsonMapper){
+  public SelfManagedAuthenticationBuilder withJsonMapper(JsonMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
     return this;
   }
-
 
   @Override
   protected SelfManagedAuthenticationBuilder self() {
@@ -37,7 +36,10 @@ public class SelfManagedAuthenticationBuilder extends JwtAuthenticationBuilder<S
 
   @Override
   protected Authentication build(JwtConfig jwtConfig) {
-    String authUrl = keycloakTokenUrl != null ? keycloakTokenUrl : keycloakUrl+"/auth/realms/"+keycloakRealm+"/protocol/openid-connect/token";
-    return new SelfManagedAuthentication(jwtConfig,authUrl,jsonMapper);
+    String authUrl =
+        keycloakTokenUrl != null
+            ? keycloakTokenUrl
+            : keycloakUrl + "/auth/realms/" + keycloakRealm + "/protocol/openid-connect/token";
+    return new SelfManagedAuthentication(jwtConfig, authUrl, jsonMapper);
   }
 }

@@ -3,8 +3,8 @@ package io.camunda.zeebe.spring.client.metrics;
 import io.camunda.zeebe.client.api.worker.JobWorkerMetrics;
 
 /**
- * Bridge between spring-zeebe metrics and zeebe-client metrics.
- * One way flow where zeebe-client metrics get propagated to MetricRecorder format in Spring.
+ * Bridge between spring-zeebe metrics and zeebe-client metrics. One way flow where zeebe-client
+ * metrics get propagated to MetricRecorder format in Spring.
  */
 public class ZeebeClientMetricsBridge implements JobWorkerMetrics {
 

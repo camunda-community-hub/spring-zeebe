@@ -1,12 +1,9 @@
 package io.camunda.zeebe.spring.client.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.common.auth.*;
 import io.camunda.common.json.JsonMapper;
-import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.zeebe.spring.client.properties.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -36,8 +33,6 @@ public class CommonClientConfiguration {
 
   @Autowired(required = false)
   ZeebeSelfManagedProperties zeebeSelfManagedProperties;
-
-
 
   @Bean
   public Authentication authentication(JsonMapper jsonMapper) {

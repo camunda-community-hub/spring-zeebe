@@ -1,12 +1,11 @@
 package io.camunda.zeebe.spring.client.bean;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CopyNotNullBeanUtilsBeanTest {
 
@@ -55,8 +54,7 @@ class CopyNotNullBeanUtilsBeanTest {
       this.third = third;
     }
 
-    public ForTestWithBoolean() {
-    }
+    public ForTestWithBoolean() {}
 
     public Boolean getFirst() {
       return first;
@@ -87,7 +85,9 @@ class CopyNotNullBeanUtilsBeanTest {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       ForTestWithBoolean that = (ForTestWithBoolean) o;
-      return second == that.second && Objects.equals(first, that.first) && Objects.equals(third, that.third);
+      return second == that.second
+          && Objects.equals(first, that.first)
+          && Objects.equals(third, that.third);
     }
 
     @Override
@@ -97,11 +97,14 @@ class CopyNotNullBeanUtilsBeanTest {
 
     @Override
     public String toString() {
-      return "ForTestWithBoolean{" +
-        "first=" + first +
-        ", second=" + second +
-        ", third=" + third +
-        '}';
+      return "ForTestWithBoolean{"
+          + "first="
+          + first
+          + ", second="
+          + second
+          + ", third="
+          + third
+          + '}';
     }
   }
 
@@ -145,7 +148,9 @@ class CopyNotNullBeanUtilsBeanTest {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       ForTest forTest = (ForTest) o;
-      return Objects.equals(first, forTest.first) && Objects.equals(second, forTest.second) && Objects.equals(third, forTest.third);
+      return Objects.equals(first, forTest.first)
+          && Objects.equals(second, forTest.second)
+          && Objects.equals(third, forTest.third);
     }
 
     @Override
@@ -155,11 +160,17 @@ class CopyNotNullBeanUtilsBeanTest {
 
     @Override
     public String toString() {
-      return "ForTest{" +
-        "first='" + first + '\'' +
-        ", second='" + second + '\'' +
-        ", third='" + third + '\'' +
-        '}';
+      return "ForTest{"
+          + "first='"
+          + first
+          + '\''
+          + ", second='"
+          + second
+          + '\''
+          + ", third='"
+          + third
+          + '\''
+          + '}';
     }
   }
 }

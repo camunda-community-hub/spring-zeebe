@@ -5,42 +5,42 @@ import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.ZeebeDeployment;
-import io.camunda.zeebe.spring.client.bean.BeanInfo;
-import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-
+import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
  * Always created by {@link AnnotationProcessorConfiguration}
  *
- * Loop throgh @{@link Deployment} annotations to deploy resources to Zeebe
- * once the {@link io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle} was initialized.
+ * <p>Loop throgh @{@link Deployment} annotations to deploy resources to Zeebe once the {@link
+ * io.camunda.zeebe.spring.client.lifecycle.ZeebeClientLifecycle} was initialized.
  */
 public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+  private static final ResourcePatternResolver resourceResolver =
+      new PathMatchingResourcePatternResolver();
 
   private List<ZeebeDeploymentValue> deploymentValues = new ArrayList<>();
 
-  public ZeebeDeploymentAnnotationProcessor() {
-  }
+  public ZeebeDeploymentAnnotationProcessor() {}
 
   @Override
   public boolean isApplicableFor(ClassInfo beanInfo) {
-    return beanInfo.hasClassAnnotation(Deployment.class) || beanInfo.hasClassAnnotation(ZeebeDeployment.class);
+    return beanInfo.hasClassAnnotation(Deployment.class)
+        || beanInfo.hasClassAnnotation(ZeebeDeployment.class);
   }
 
   @Override
@@ -57,11 +57,10 @@ public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationP
     if (!annotation.isPresent()) {
       return readDeprecatedAnnotation(beanInfo);
     } else {
-      List<String> resources = Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
-      return Optional.of(ZeebeDeploymentValue.builder()
-        .beanInfo(beanInfo)
-        .resources(resources)
-        .build());
+      List<String> resources =
+          Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
+      return Optional.of(
+          ZeebeDeploymentValue.builder().beanInfo(beanInfo).resources(resources).build());
     }
   }
 
@@ -69,6 +68,7 @@ public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationP
 
   /**
    * Seperate handling for legacy annotation (had additional classPathResources attribute)
+   *
    * @param beanInfo
    */
   private Optional<ZeebeDeploymentValue> readDeprecatedAnnotation(ClassInfo beanInfo) {
@@ -77,60 +77,62 @@ public class ZeebeDeploymentAnnotationProcessor extends AbstractZeebeAnnotationP
       return Optional.empty();
     }
 
-    List<String> resources = Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
+    List<String> resources =
+        Arrays.stream(annotation.get().resources()).collect(Collectors.toList());
 
     String[] classPathResources = annotation.get().classPathResources();
     if (classPathResources.length > 0) {
       resources.addAll(
-        Arrays.stream(classPathResources)
-          .map(resource -> CLASSPATH_ALL_URL_PREFIX + resource)
-          .collect(Collectors.toList())
-      );
+          Arrays.stream(classPathResources)
+              .map(resource -> CLASSPATH_ALL_URL_PREFIX + resource)
+              .collect(Collectors.toList()));
     }
 
     return Optional.of(
-      ZeebeDeploymentValue.builder()
-        .beanInfo(beanInfo)
-        .resources(resources)
-        .build());
+        ZeebeDeploymentValue.builder().beanInfo(beanInfo).resources(resources).build());
   }
 
   @Override
   public void start(final ZeebeClient client) {
-    deploymentValues.forEach( deployment -> {
+    deploymentValues.forEach(
+        deployment -> {
+          DeployResourceCommandStep1 deployResourceCommand = client.newDeployResourceCommand();
 
-      DeployResourceCommandStep1 deployResourceCommand = client
-        .newDeployResourceCommand();
+          DeploymentEvent deploymentResult =
+              deployment.getResources().stream()
+                  .flatMap(resource -> Stream.of(getResources(resource)))
+                  .map(
+                      resource -> {
+                        try (InputStream inputStream = resource.getInputStream()) {
+                          return deployResourceCommand.addResourceStream(
+                              inputStream, resource.getFilename());
+                        } catch (IOException e) {
+                          throw new RuntimeException(e.getMessage());
+                        }
+                      })
+                  .filter(Objects::nonNull)
+                  .reduce((first, second) -> second)
+                  .orElseThrow(
+                      () ->
+                          new IllegalArgumentException("Requires at least one resource to deploy"))
+                  .send()
+                  .join();
 
-      DeploymentEvent deploymentResult = deployment.getResources()
-        .stream()
-        .flatMap(resource -> Stream.of(getResources(resource)))
-        .map(resource -> {
-          try (InputStream inputStream = resource.getInputStream()) {
-            return deployResourceCommand.addResourceStream(inputStream, resource.getFilename());
-          } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-          }
-        })
-        .filter(Objects::nonNull)
-        .reduce((first, second) -> second)
-        .orElseThrow(() -> new IllegalArgumentException("Requires at least one resource to deploy"))
-        .send()
-        .join();
-
-      LOGGER.info(
-        "Deployed: {}",
-        Stream.concat(deploymentResult
-              .getDecisionRequirements()
-              .stream()
-              .map(wf -> String.format("<%s:%d>", wf.getDmnDecisionRequirementsId(), wf.getVersion())),
-            deploymentResult
-              .getProcesses()
-              .stream()
-              .map(wf -> String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion())))
-          .collect(Collectors.joining(",")));
-
-    });
+          LOGGER.info(
+              "Deployed: {}",
+              Stream.concat(
+                      deploymentResult.getDecisionRequirements().stream()
+                          .map(
+                              wf ->
+                                  String.format(
+                                      "<%s:%d>",
+                                      wf.getDmnDecisionRequirementsId(), wf.getVersion())),
+                      deploymentResult.getProcesses().stream()
+                          .map(
+                              wf ->
+                                  String.format("<%s:%d>", wf.getBpmnProcessId(), wf.getVersion())))
+                  .collect(Collectors.joining(",")));
+        });
   }
 
   @Override

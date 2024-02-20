@@ -1,24 +1,23 @@
 package io.camunda.common.auth;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class JwtAuthentication implements Authentication {
-  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles
-    .lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final JwtConfig jwtConfig;
   private final Map<Product, JwtToken> tokens = new HashMap<>();
 
-  protected JwtAuthentication(JwtConfig jwtConfig) {this.jwtConfig = jwtConfig;}
+  protected JwtAuthentication(JwtConfig jwtConfig) {
+    this.jwtConfig = jwtConfig;
+  }
 
   public JwtConfig getJwtConfig() {
     return jwtConfig;
@@ -28,10 +27,11 @@ public abstract class JwtAuthentication implements Authentication {
   public final void resetToken(Product product) {
     tokens.remove(product);
   }
+
   @Override
   public final Entry<String, String> getTokenHeader(Product product) {
     if (!tokens.containsKey(product) || !isValid(tokens.get(product))) {
-      JwtToken newToken = generateToken(product,jwtConfig.getProduct(product));
+      JwtToken newToken = generateToken(product, jwtConfig.getProduct(product));
       tokens.put(product, newToken);
     }
     return authHeader(tokens.get(product).getToken());
@@ -39,7 +39,7 @@ public abstract class JwtAuthentication implements Authentication {
 
   protected abstract JwtToken generateToken(Product product, JwtCredential credential);
 
-  private Entry<String,String> authHeader(String token){
+  private Entry<String, String> authHeader(String token) {
     return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
   }
 
@@ -47,8 +47,6 @@ public abstract class JwtAuthentication implements Authentication {
     // a token is only counted valid if it is only valid for at least 30 seconds
     return jwtToken.getExpiry().isAfter(LocalDateTime.now().minusSeconds(30));
   }
-
-
 
   protected static class JwtToken {
     private final String token;

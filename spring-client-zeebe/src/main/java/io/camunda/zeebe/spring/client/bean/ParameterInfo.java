@@ -9,7 +9,7 @@ public class ParameterInfo {
   private Parameter parameterInfo;
 
   public ParameterInfo(Parameter param, String paramName) {
-    if (paramName==null) {
+    if (paramName == null) {
       parameterName = param.getName();
     } else {
       this.parameterName = paramName;
@@ -24,5 +24,4 @@ public class ParameterInfo {
   public String getParameterName() {
     return parameterName;
   }
-
 }

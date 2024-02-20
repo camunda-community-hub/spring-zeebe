@@ -1,5 +1,12 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
+import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
+import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -10,32 +17,23 @@ import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-@SpringBootTest(classes = {SmokeTest.class},
-  properties = { "zeebe.client.worker.default-type=DefaultType" })
+@SpringBootTest(
+    classes = {SmokeTest.class},
+    properties = {"zeebe.client.worker.default-type=DefaultType"})
 @ZeebeSpringTest
 public class SmokeTest {
 
-  @Autowired
-  private ZeebeClient client;
+  @Autowired private ZeebeClient client;
 
-  @Autowired
-  private ZeebeTestEngine engine;
+  @Autowired private ZeebeTestEngine engine;
 
   private static boolean calledTest1 = false;
 
@@ -43,22 +41,25 @@ public class SmokeTest {
   private static ComplexTypeDTO test2ComplexTypeDTO = null;
   private static String test2Var2 = null;
 
-  @JobWorker(name="test1", type = "test1") // autoComplete is true
+  @JobWorker(name = "test1", type = "test1") // autoComplete is true
   public void handleTest1(JobClient client, ActivatedJob job) {
     calledTest1 = true;
   }
 
   @Test
   public void testAutoComplete() {
-    BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess("test1")
-      .startEvent()
-      .serviceTask().zeebeJobType("test1")
-      .endEvent()
-      .done();
+    BpmnModelInstance bpmnModel =
+        Bpmn.createExecutableProcess("test1")
+            .startEvent()
+            .serviceTask()
+            .zeebeJobType("test1")
+            .endEvent()
+            .done();
 
     client.newDeployResourceCommand().addProcessModel(bpmnModel, "test1.bpmn").send().join();
 
-    final Map<String, Object> variables = Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
+    final Map<String, Object> variables =
+        Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
     ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
 
     assertThat(processInstance).isStarted();
@@ -67,7 +68,11 @@ public class SmokeTest {
   }
 
   @JobWorker(name = "test2", type = "test2", pollInterval = 10)
-  public void handleTest2(final JobClient client, final ActivatedJob job, @Variable ComplexTypeDTO dto, @Variable String var2) {
+  public void handleTest2(
+      final JobClient client,
+      final ActivatedJob job,
+      @Variable ComplexTypeDTO dto,
+      @Variable String var2) {
     calledTest2 = true;
     test2ComplexTypeDTO = dto;
     test2Var2 = var2;
@@ -76,7 +81,13 @@ public class SmokeTest {
   @Test
   void testShouldDeserializeComplexTypeZebeeVariable() {
     final String processId = "test2";
-    BpmnModelInstance bpmnModel = Bpmn.createExecutableProcess(processId).startEvent().serviceTask().zeebeJobType(processId).endEvent().done();
+    BpmnModelInstance bpmnModel =
+        Bpmn.createExecutableProcess(processId)
+            .startEvent()
+            .serviceTask()
+            .zeebeJobType(processId)
+            .endEvent()
+            .done();
     client.newDeployResourceCommand().addProcessModel(bpmnModel, processId + ".bpmn").send().join();
 
     ComplexTypeDTO dto = new ComplexTypeDTO();
@@ -103,8 +114,15 @@ public class SmokeTest {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
   }
 
-  private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId, Map<String, Object> variables) {
-    return client.newCreateInstanceCommand().bpmnProcessId(bpmnProcessId).latestVersion().variables(variables).send().join();
+  private ProcessInstanceEvent startProcessInstance(
+      ZeebeClient client, String bpmnProcessId, Map<String, Object> variables) {
+    return client
+        .newCreateInstanceCommand()
+        .bpmnProcessId(bpmnProcessId)
+        .latestVersion()
+        .variables(variables)
+        .send()
+        .join();
   }
 
   private static class ComplexTypeDTO {
@@ -127,5 +145,4 @@ public class SmokeTest {
       this.var2 = var2;
     }
   }
-
 }

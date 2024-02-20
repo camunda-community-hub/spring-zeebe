@@ -20,5 +20,4 @@ public class ChangeStatus {
   public void setDeleted(Long deleted) {
     this.deleted = deleted;
   }
-
 }
