@@ -7,9 +7,9 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final MeterRegistry meterRegistry;
-  private final Map<String, Counter> counters = new HashMap<>();
+  private final Map<String, Counter> counters = new ConcurrentHashMap<>();
 
   public MicrometerMetricsRecorder(final MeterRegistry meterRegistry) {
     LOGGER.info("Enabling Micrometer based metrics for spring-zeebe (available via Actuator)");
@@ -40,10 +40,8 @@ public class MicrometerMetricsRecorder implements MetricsRecorder {
   @Override
   public void increase(String metricName, String action, String type, int count) {
     String key = metricName + "#" + action + '#' + type;
-    if (!counters.containsKey(key)) {
-      counters.put(key, newCounter(metricName, action, type));
-    }
-    counters.get(key).increment(count);
+    Counter counter = counters.computeIfAbsent(key, k -> newCounter(metricName, action, type));
+    counter.increment(count);
   }
 
   @Override
