@@ -1,7 +1,10 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +15,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Duration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-  properties = {
-    "zeebe.client.broker.gatewayAddress=localhost12345",
-    "zeebe.client.requestTimeout=99s",
-    "zeebe.client.job.timeout=99s",
-    "zeebe.client.job.pollInterval=99s",
-    "zeebe.client.worker.maxJobsActive=99",
-    "zeebe.client.worker.threads=99",
-    "zeebe.client.worker.defaultName=testName",
-    "zeebe.client.worker.defaultType=testType",
-    "zeebe.client.worker.override.foo.enabled=false",
-    "zeebe.client.message.timeToLive=99s",
-    "zeebe.client.security.certpath=aPath",
-    "zeebe.client.security.plaintext=true"
-  }
-)
+    properties = {
+      "zeebe.client.broker.gatewayAddress=localhost12345",
+      "zeebe.client.requestTimeout=99s",
+      "zeebe.client.job.timeout=99s",
+      "zeebe.client.job.pollInterval=99s",
+      "zeebe.client.worker.maxJobsActive=99",
+      "zeebe.client.worker.threads=99",
+      "zeebe.client.worker.defaultName=testName",
+      "zeebe.client.worker.defaultType=testType",
+      "zeebe.client.worker.override.foo.enabled=false",
+      "zeebe.client.message.timeToLive=99s",
+      "zeebe.client.security.certpath=aPath",
+      "zeebe.client.security.plaintext=true"
+    })
 @ContextConfiguration(classes = ZeebeClientSpringConfigurationPropertiesTest.TestConfig.class)
 public class ZeebeClientSpringConfigurationPropertiesTest {
 
@@ -45,11 +43,9 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
     }
   }
 
-  @Autowired
-  private ZeebeClientConfigurationProperties properties;
+  @Autowired private ZeebeClientConfigurationProperties properties;
 
-  @Autowired
-  private JsonMapper jsonMapper;
+  @Autowired private JsonMapper jsonMapper;
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
@@ -79,7 +75,6 @@ public class ZeebeClientSpringConfigurationPropertiesTest {
   @Test
   public void hasWorkerMaxJobsActive() throws Exception {
     assertThat(properties.getWorker().getMaxJobsActive()).isEqualTo(99);
-
   }
 
   @Test

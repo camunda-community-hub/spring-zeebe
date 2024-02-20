@@ -2,12 +2,9 @@ package io.camunda.common.http;
 
 import com.google.common.reflect.TypeToken;
 import io.camunda.common.auth.Product;
-
 import java.util.Map;
 
-/**
- * Interface to enable swappable http client implementations
- */
+/** Interface to enable swappable http client implementations */
 public interface HttpClient {
 
   void init(String host, String basePath);
@@ -25,5 +22,4 @@ public interface HttpClient {
   <T, V, W, U> T post(Class<T> responseType, Class<V> parameterType, TypeToken<W> selector, U body);
 
   <T, V> T delete(Class<T> responseType, Class<V> selector, Long key);
-
 }

@@ -6,20 +6,18 @@ public class SimpleAuthenticationBuilder implements AuthenticationBuilder {
   private String simpleUrl;
   private SimpleConfig simpleConfig;
 
-  public SimpleAuthenticationBuilder withSimpleUrl(String simpleUrl){
+  public SimpleAuthenticationBuilder withSimpleUrl(String simpleUrl) {
     this.simpleUrl = simpleUrl;
     return this;
   }
 
-  public SimpleAuthenticationBuilder withSimpleConfig(SimpleConfig simpleConfig){
+  public SimpleAuthenticationBuilder withSimpleConfig(SimpleConfig simpleConfig) {
     this.simpleConfig = simpleConfig;
     return this;
   }
 
-
   @Override
   public Authentication build() {
-    return new SimpleAuthentication(simpleUrl,simpleConfig);
+    return new SimpleAuthentication(simpleUrl, simpleConfig);
   }
-
 }

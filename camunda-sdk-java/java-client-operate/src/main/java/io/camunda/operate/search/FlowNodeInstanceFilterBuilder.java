@@ -1,14 +1,15 @@
 package io.camunda.operate.search;
 
 import io.camunda.operate.model.FlowNodeInstanceState;
-
 import java.util.Date;
 
 public class FlowNodeInstanceFilterBuilder {
 
   FlowNodeInstanceFilter filter;
 
-  FlowNodeInstanceFilterBuilder() { filter = new FlowNodeInstanceFilter(); }
+  FlowNodeInstanceFilterBuilder() {
+    filter = new FlowNodeInstanceFilter();
+  }
 
   public FlowNodeInstanceFilterBuilder key(Long key) {
     filter.setKey(key);
@@ -70,6 +71,7 @@ public class FlowNodeInstanceFilterBuilder {
     return this;
   }
 
-  public FlowNodeInstanceFilter build() { return filter; }
-
+  public FlowNodeInstanceFilter build() {
+    return filter;
+  }
 }

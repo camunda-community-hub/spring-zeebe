@@ -12,14 +12,16 @@ public class ZeebeLifecycleEventProducer implements SmartLifecycle {
 
   private final ZeebeClient client;
 
-  public ZeebeLifecycleEventProducer(final ZeebeClient client, final ApplicationEventPublisher publisher) {
+  public ZeebeLifecycleEventProducer(
+      final ZeebeClient client, final ApplicationEventPublisher publisher) {
     this.client = client;
     this.publisher = publisher;
   }
 
   @Override
   public void start() {
-    publisher.publishEvent(new ClientStartedEvent()); // keep old deprecated event for a bit before delting it
+    publisher.publishEvent(
+        new ClientStartedEvent()); // keep old deprecated event for a bit before delting it
     publisher.publishEvent(new ZeebeClientCreatedEvent(this, client));
 
     this.running = true;
@@ -27,7 +29,8 @@ public class ZeebeLifecycleEventProducer implements SmartLifecycle {
 
   @Override
   public void stop() {
-    publisher.publishEvent(new ClientStoppedEvent()); // keep old deprecated event for a bit before delting it
+    publisher.publishEvent(
+        new ClientStoppedEvent()); // keep old deprecated event for a bit before delting it
     publisher.publishEvent(new ZeebeClientClosingEvent(this, client));
 
     this.running = false;
@@ -37,5 +40,4 @@ public class ZeebeLifecycleEventProducer implements SmartLifecycle {
   public boolean isRunning() {
     return running;
   }
-
 }

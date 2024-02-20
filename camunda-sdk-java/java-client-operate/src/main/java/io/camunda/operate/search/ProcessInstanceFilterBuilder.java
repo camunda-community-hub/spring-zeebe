@@ -1,14 +1,15 @@
 package io.camunda.operate.search;
 
 import io.camunda.operate.model.ProcessInstanceState;
-
 import java.util.Date;
 
 public class ProcessInstanceFilterBuilder {
 
   ProcessInstanceFilter filter;
 
-  ProcessInstanceFilterBuilder() { filter = new ProcessInstanceFilter(); }
+  ProcessInstanceFilterBuilder() {
+    filter = new ProcessInstanceFilter();
+  }
 
   public ProcessInstanceFilterBuilder key(Long key) {
     filter.setKey(key);
@@ -55,6 +56,7 @@ public class ProcessInstanceFilterBuilder {
     return this;
   }
 
-  public ProcessInstanceFilter build() { return filter; }
-
+  public ProcessInstanceFilter build() {
+    return filter;
+  }
 }

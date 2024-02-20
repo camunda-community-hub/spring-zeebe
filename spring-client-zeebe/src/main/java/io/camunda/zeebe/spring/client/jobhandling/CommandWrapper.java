@@ -3,9 +3,6 @@ package io.camunda.zeebe.spring.client.jobhandling;
 import io.camunda.zeebe.client.api.command.FinalCommandStep;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
-import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
-
 import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +18,10 @@ public class CommandWrapper {
   private int invocationCounter = 0;
   private int maxRetries = 20; // TODO: Make configurable
 
-  public CommandWrapper(FinalCommandStep<Void> command, ActivatedJob job, CommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
+  public CommandWrapper(
+      FinalCommandStep<Void> command,
+      ActivatedJob job,
+      CommandExceptionHandlingStrategy commandExceptionHandlingStrategy) {
     this.command = command;
     this.job = job;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
@@ -29,10 +29,13 @@ public class CommandWrapper {
 
   public void executeAsync() {
     invocationCounter++;
-    command.send().exceptionally(t -> {
-      commandExceptionHandlingStrategy.handleCommandError(this, t);
-      return null;
-    });
+    command
+        .send()
+        .exceptionally(
+            t -> {
+              commandExceptionHandlingStrategy.handleCommandError(this, t);
+              return null;
+            });
   }
 
   public void increaseBackoffUsing(BackoffSupplier backoffSupplier) {
@@ -45,16 +48,20 @@ public class CommandWrapper {
 
   @Override
   public String toString() {
-    return "{" +
-      "command=" + command.getClass() +
-      ", job=" + job +
-      ", currentRetryDelay=" + currentRetryDelay +
-      '}';
+    return "{"
+        + "command="
+        + command.getClass()
+        + ", job="
+        + job
+        + ", currentRetryDelay="
+        + currentRetryDelay
+        + '}';
   }
 
   public boolean hasMoreRetries() {
     if (jobDeadlineExceeded()) {
-      // it does not make much sense to retry if the deadline is over, the job will be assigned to an other worker anyway
+      // it does not make much sense to retry if the deadline is over, the job will be assigned to
+      // an other worker anyway
       return false;
     }
     return (invocationCounter < maxRetries);

@@ -9,26 +9,26 @@ public class OperateClientCondition extends AnyNestedCondition {
   }
 
   @ConditionalOnProperty(name = "camunda.operate.client.client-id")
-  static class ClientIdCondition { }
+  static class ClientIdCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.username")
-  static class UsernameCondition { }
+  static class UsernameCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.auth-url")
-  static class AuthUrlCondition { }
+  static class AuthUrlCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.base-url")
-  static class BaseUrlCondition { }
+  static class BaseUrlCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.keycloak-url")
-  static class KeycloakUrlCondition { }
+  static class KeycloakUrlCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.keycloak-token-url")
-  static class KeycloakTokenUrlCondition { }
+  static class KeycloakTokenUrlCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.url")
-  static class UrlCondition { }
+  static class UrlCondition {}
 
   @ConditionalOnProperty(name = "camunda.operate.client.enabled")
-  static class EnableCondition { }
+  static class EnableCondition {}
 }

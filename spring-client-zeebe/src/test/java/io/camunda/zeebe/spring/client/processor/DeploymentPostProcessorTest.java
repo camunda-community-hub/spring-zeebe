@@ -1,5 +1,10 @@
 package io.camunda.zeebe.spring.client.processor;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
@@ -8,8 +13,7 @@ import io.camunda.zeebe.client.api.response.Process;
 import io.camunda.zeebe.spring.client.annotation.Deployment;
 import io.camunda.zeebe.spring.client.annotation.processor.ZeebeDeploymentAnnotationProcessor;
 import io.camunda.zeebe.spring.client.bean.ClassInfo;
-import io.camunda.zeebe.spring.client.annotation.value.ZeebeDeploymentValue;
-import io.camunda.zeebe.spring.client.bean.value.factory.ReadZeebeDeploymentValueTest;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,30 +22,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class DeploymentPostProcessorTest {
 
-  @Mock
-  private ZeebeClient client;
+  @Mock private ZeebeClient client;
 
-  @Mock
-  private DeployResourceCommandStep1 deployStep1;
+  @Mock private DeployResourceCommandStep1 deployStep1;
 
-  @Mock
-  private DeployResourceCommandStep1.DeployResourceCommandStep2 deployStep2;
+  @Mock private DeployResourceCommandStep1.DeployResourceCommandStep2 deployStep2;
 
-  @Mock
-  private ZeebeFuture<DeploymentEvent> zeebeFuture;
+  @Mock private ZeebeFuture<DeploymentEvent> zeebeFuture;
 
-  @Mock
-  private DeploymentEvent deploymentEvent;
+  @Mock private DeploymentEvent deploymentEvent;
 
   private ZeebeDeploymentAnnotationProcessor deploymentPostProcessor;
 
@@ -52,15 +43,12 @@ public class DeploymentPostProcessorTest {
   }
 
   @Deployment(resources = "/1.bpmn")
-  private static class WithSingleClassPathResource {
-  }
+  private static class WithSingleClassPathResource {}
 
   @Test
   public void shouldDeploySingleResourceTest() {
-    //given
-    ClassInfo classInfo = ClassInfo.builder()
-      .bean(new WithSingleClassPathResource())
-      .build();
+    // given
+    ClassInfo classInfo = ClassInfo.builder().bean(new WithSingleClassPathResource()).build();
 
     Resource resource = Mockito.mock(FileSystemResource.class);
 
@@ -68,7 +56,7 @@ public class DeploymentPostProcessorTest {
 
     when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
-    when(deploymentPostProcessor.getResources(anyString())).thenReturn(new Resource[]{resource});
+    when(deploymentPostProcessor.getResources(anyString())).thenReturn(new Resource[] {resource});
 
     when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
@@ -78,37 +66,38 @@ public class DeploymentPostProcessorTest {
 
     when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
-    //when
+    // when
     deploymentPostProcessor.configureFor(classInfo);
     deploymentPostProcessor.start(client);
 
-    //then
+    // then
     verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
     verify(deployStep2).send();
     verify(zeebeFuture).join();
   }
 
   @Deployment(resources = {"classpath*:/1.bpmn", "classpath*:/2.bpmn"})
-  private static class WithDoubleClassPathResource {
-  }
+  private static class WithDoubleClassPathResource {}
 
   @Test
   public void shouldDeployMultipleResourcesTest() {
-    //given
-    ClassInfo classInfo = ClassInfo.builder()
-      .bean(new WithDoubleClassPathResource())
-      .build();
+    // given
+    ClassInfo classInfo = ClassInfo.builder().bean(new WithDoubleClassPathResource()).build();
 
-    Resource[] resources = {Mockito.mock(FileSystemResource.class), Mockito.mock(FileSystemResource.class)};
+    Resource[] resources = {
+      Mockito.mock(FileSystemResource.class), Mockito.mock(FileSystemResource.class)
+    };
 
     when(resources[0].getFilename()).thenReturn("1.bpmn");
     when(resources[1].getFilename()).thenReturn("2.bpmn");
 
     when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
-    when(deploymentPostProcessor.getResources("classpath*:/1.bpmn")).thenReturn(new Resource[]{resources[0]});
+    when(deploymentPostProcessor.getResources("classpath*:/1.bpmn"))
+        .thenReturn(new Resource[] {resources[0]});
 
-    when(deploymentPostProcessor.getResources("classpath*:/2.bpmn")).thenReturn(new Resource[]{resources[1]});
+    when(deploymentPostProcessor.getResources("classpath*:/2.bpmn"))
+        .thenReturn(new Resource[] {resources[1]});
 
     when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
@@ -118,11 +107,11 @@ public class DeploymentPostProcessorTest {
 
     when(deploymentEvent.getProcesses()).thenReturn(Collections.singletonList(getProcess()));
 
-    //when
+    // when
     deploymentPostProcessor.configureFor(classInfo);
     deploymentPostProcessor.start(client);
 
-    //then
+    // then
     verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
     verify(deployStep1).addResourceStream(any(), eq("1.bpmn"));
 
@@ -131,25 +120,24 @@ public class DeploymentPostProcessorTest {
   }
 
   @Deployment(resources = {})
-  private static class WithNoClassPathResource {
-  }
+  private static class WithNoClassPathResource {}
 
   @Test
   public void shouldThrowExceptionOnNoResourcesToDeploy() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      //given
-      ClassInfo classInfo = ClassInfo.builder()
-        .bean(new WithNoClassPathResource())
-        .build();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          // given
+          ClassInfo classInfo = ClassInfo.builder().bean(new WithNoClassPathResource()).build();
 
-      when(client.newDeployResourceCommand()).thenReturn(deployStep1);
+          when(client.newDeployResourceCommand()).thenReturn(deployStep1);
 
-      when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
+          when(deployStep1.addResourceStream(any(), anyString())).thenReturn(deployStep2);
 
-      //when
-      deploymentPostProcessor.configureFor(classInfo);
-      deploymentPostProcessor.start(client);
-    });
+          // when
+          deploymentPostProcessor.configureFor(classInfo);
+          deploymentPostProcessor.start(client);
+        });
   }
 
   private Process getProcess() {

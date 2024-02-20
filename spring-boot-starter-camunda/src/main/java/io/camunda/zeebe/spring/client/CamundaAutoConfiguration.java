@@ -47,7 +47,7 @@ public class CamundaAutoConfiguration {
   @ConditionalOnMissingBean(
       SpringZeebeTestContext
           .class) // only run if we are not running in a test case - as otherwise the the lifecycle
-                  // is controlled by the test
+  // is controlled by the test
   public ZeebeLifecycleEventProducer zeebeLifecycleEventProducer(
       final ZeebeClient client, final ApplicationEventPublisher publisher) {
     return new ZeebeLifecycleEventProducer(client, publisher);

@@ -8,7 +8,8 @@ public class ZeebeClientEventListener {
 
   private final ZeebeAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry;
 
-  public ZeebeClientEventListener(ZeebeAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
+  public ZeebeClientEventListener(
+      ZeebeAnnotationProcessorRegistry zeebeAnnotationProcessorRegistry) {
     this.zeebeAnnotationProcessorRegistry = zeebeAnnotationProcessorRegistry;
   }
 
@@ -21,5 +22,4 @@ public class ZeebeClientEventListener {
   public void handleStop(ZeebeClientClosingEvent evt) {
     zeebeAnnotationProcessorRegistry.stopAll(evt.getClient());
   }
-
 }

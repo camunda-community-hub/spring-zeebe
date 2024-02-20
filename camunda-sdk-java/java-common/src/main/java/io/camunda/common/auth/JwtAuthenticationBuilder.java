@@ -2,8 +2,8 @@ package io.camunda.common.auth;
 
 import io.camunda.common.auth.Authentication.AuthenticationBuilder;
 
-public abstract class JwtAuthenticationBuilder<
-    T extends JwtAuthenticationBuilder<?>> implements AuthenticationBuilder {
+public abstract class JwtAuthenticationBuilder<T extends JwtAuthenticationBuilder<?>>
+    implements AuthenticationBuilder {
   private JwtConfig jwtConfig;
 
   public final T withJwtConfig(JwtConfig jwtConfig) {
