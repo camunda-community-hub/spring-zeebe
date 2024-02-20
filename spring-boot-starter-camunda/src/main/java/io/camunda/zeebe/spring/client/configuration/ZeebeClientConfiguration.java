@@ -202,7 +202,6 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     return properties.getDefaultJobWorkerStreamEnabled();
   }
 
-  @Override
   public boolean useDefaultRetryPolicy() {
     return properties.useDefaultRetryPolicy();
   }
