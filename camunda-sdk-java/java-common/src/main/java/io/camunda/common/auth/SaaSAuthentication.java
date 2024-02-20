@@ -31,8 +31,25 @@ public class SaaSAuthentication extends JwtAuthentication {
       HttpPost request = buildRequest(jwtCredential);
       return client.execute(
           request,
-          response ->
-              jsonMapper.fromJson(EntityUtils.toString(response.getEntity()), TokenResponse.class));
+          response -> {
+            try {
+              return jsonMapper.fromJson(
+                  EntityUtils.toString(response.getEntity()), TokenResponse.class);
+            } catch (Exception e) {
+              var errorMessage =
+                  """
+              Token retrieval failed from: {}
+              Response code: {}
+              Audience: {}
+              """;
+              LOG.error(
+                  errorMessage,
+                  jwtCredential.getAuthUrl(),
+                  response.getCode(),
+                  jwtCredential.getAudience());
+              throw e;
+            }
+          });
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
