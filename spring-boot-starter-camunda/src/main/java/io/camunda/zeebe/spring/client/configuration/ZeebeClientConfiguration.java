@@ -41,6 +41,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   private List<ClientInterceptor> interceptors;
 
   @Lazy @Autowired private ZeebeClientExecutorService zeebeClientExecutorService;
+  private CredentialsProvider credentialsProvider;
 
   @PostConstruct
   public void applyLegacy() {
@@ -111,6 +112,13 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public CredentialsProvider getCredentialsProvider() {
+    if (credentialsProvider == null) {
+      credentialsProvider = initCredentialsProvider();
+    }
+    return credentialsProvider;
+  }
+
+  private CredentialsProvider initCredentialsProvider() {
     // TODO: Refactor when integrating Identity SDK
     if (commonConfigurationProperties.getEnabled()
         && !(authentication instanceof DefaultNoopAuthentication)) {
