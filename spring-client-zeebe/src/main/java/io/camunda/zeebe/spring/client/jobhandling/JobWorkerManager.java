@@ -1,11 +1,11 @@
 package io.camunda.zeebe.spring.client.jobhandling;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
+import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStrategy;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.metrics.ZeebeClientMetricsBridge;
 import java.lang.invoke.MethodHandles;
@@ -22,19 +22,19 @@ public class JobWorkerManager {
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
-  private final JsonMapper jsonMapper;
   private final MetricsRecorder metricsRecorder;
+  private final ParameterResolverStrategy parameterResolverStrategy;
 
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
 
   public JobWorkerManager(
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
-      JsonMapper jsonMapper,
-      MetricsRecorder metricsRecorder) {
+      MetricsRecorder metricsRecorder,
+      ParameterResolverStrategy parameterResolverStrategy) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
-    this.jsonMapper = jsonMapper;
     this.metricsRecorder = metricsRecorder;
+    this.parameterResolverStrategy = parameterResolverStrategy;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
@@ -42,7 +42,10 @@ public class JobWorkerManager {
         client,
         zeebeWorkerValue,
         new JobHandlerInvokingSpringBeans(
-            zeebeWorkerValue, commandExceptionHandlingStrategy, jsonMapper, metricsRecorder));
+            zeebeWorkerValue,
+            commandExceptionHandlingStrategy,
+            metricsRecorder,
+            parameterResolverStrategy));
   }
 
   public JobWorker openWorker(
