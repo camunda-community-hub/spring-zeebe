@@ -19,7 +19,7 @@ public class VariableResolver implements ParameterResolver {
   public Object resolve(JobClient jobClient, ActivatedJob job) {
     Object variableValue = job.getVariablesAsMap().get(variableName);
     try {
-      return mapZeebeVariable(variableValue, variableType);
+      return mapZeebeVariable(variableValue);
     } catch (ClassCastException | IllegalArgumentException ex) {
       throw new RuntimeException(
           "Cannot assign process variable '"
@@ -31,14 +31,11 @@ public class VariableResolver implements ParameterResolver {
     }
   }
 
-  private <T> T mapZeebeVariable(Object toMap, Class<T> clazz) {
-    if (toMap != null && !clazz.isInstance(toMap)) {
-      //      if (jsonMapper != null) {
-      return jsonMapper.fromJson(jsonMapper.toJson(toMap), clazz);
-      //      }
-      //      return DEFAULT_OBJECT_MAPPER.convertValue(toMap, clazz);
+  private Object mapZeebeVariable(Object variableValue) {
+    if (variableValue != null && !variableType.isInstance(variableValue)) {
+      return jsonMapper.fromJson(jsonMapper.toJson(variableValue), variableType);
     } else {
-      return clazz.cast(toMap);
+      return variableType.cast(variableValue);
     }
   }
 }
