@@ -36,7 +36,8 @@ public class SaaSAuthentication extends JwtAuthentication {
               return jsonMapper.fromJson(
                   EntityUtils.toString(response.getEntity()), TokenResponse.class);
             } catch (Exception e) {
-              String errorMessage = "Token retrieval failed from: {}\n" + "Response code: {}\n"  + "Audience: {}";
+              String errorMessage =
+                  "Token retrieval failed from: {}\n" + "Response code: {}\n" + "Audience: {}";
               LOG.error(
                   errorMessage,
                   jwtCredential.getAuthUrl(),
