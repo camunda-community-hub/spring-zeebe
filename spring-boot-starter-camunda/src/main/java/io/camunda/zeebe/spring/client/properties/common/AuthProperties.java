@@ -1,10 +1,7 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
-import io.camunda.zeebe.spring.client.properties.common.GlobalAuthProperties.AuthMode;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class AuthProperties {
 
@@ -12,12 +9,12 @@ public class AuthProperties {
   // simple
   private String username;
   private String password;
-  // oidc
+
   // oidc and saas
   private String clientId;
   private String clientSecret;
-  // saas
-  private String clusterId;
+
+
 
 
 
@@ -55,13 +52,6 @@ public class AuthProperties {
 
 
 
-  public String getClusterId() {
-    return clusterId;
-  }
-
-  public void setClusterId(String clusterId) {
-    this.clusterId = clusterId;
-  }
 
 
 }

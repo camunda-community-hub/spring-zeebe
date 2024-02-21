@@ -19,9 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
+@Deprecated
 public class ZeebeClientConfigurationProperties {
 
   // Used to read default config values
@@ -120,65 +122,31 @@ public class ZeebeClientConfigurationProperties {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
-    // Populate deprecated parameters to their new configuration positions and warn user about it
-    handleDeprecatedProperty(
-        defaultJobWorkerTenantIds,
-        () -> !defaultJobWorkerTenantIds.isEmpty(),
-        "zeebe.client.default-job-worker-tenant-ids",
-        "zeebe.client.worker.default-tenant-ids",
-        worker::setDefaultTenantIds);
-    handleDeprecatedProperty(
-        ownsJobWorkerExecutor,
-        this::ownsJobWorkerExecutor,
-        "zeebe.client.owns-job-worker-executor",
-        "zeebe.client.worker.owns-executor",
-        worker::setOwnsExecutor);
-    handleDeprecatedProperty(
-        defaultJobWorkerStreamEnabled,
-        this::getDefaultJobWorkerStreamEnabled,
-        "zeebe.client.default-job-worker-stream-enabled",
-        "zeebe.client.worker.default-stream-enabled",
-        worker::setDefaultStreamEnabled);
-    handleDeprecatedProperty(
-        broker.contactPoint,
-        () -> true,
-        "zeebe.client.broker.contact-point",
-        "zeebe.client.broker.gateway-address",
-        broker::setGatewayAddress);
-
     // Support default job worker tenant ids based on the default tenant id
     if (worker.getDefaultTenantIds() == null && defaultTenantId != null) {
       worker.setDefaultTenantIds(Collections.singletonList(defaultTenantId));
     }
   }
-
-  private <T> void handleDeprecatedProperty(
-      T property,
-      Supplier<Boolean> additionalTest,
-      String oldName,
-      String newName,
-      Consumer<T> newSetter) {
-    if (property != null && additionalTest.get()) {
-      LOGGER.warn("'{}' is deprecated, please use '{}' instead", oldName, newName);
-      newSetter.accept(property);
-    }
-  }
-
+@DeprecatedConfigurationProperty
   public Broker getBroker() {
     return broker;
   }
+  @DeprecatedConfigurationProperty
 
   public void setBroker(Broker broker) {
     this.broker = broker;
   }
+  @DeprecatedConfigurationProperty
 
   public Cloud getCloud() {
     return cloud;
   }
+  @DeprecatedConfigurationProperty
 
   public void setCloud(Cloud cloud) {
     this.cloud = cloud;
   }
+  @DeprecatedConfigurationProperty
 
   public Worker getWorker() {
     return worker;
@@ -493,6 +461,8 @@ public class ZeebeClientConfigurationProperties {
      * @deprecated use getGatewayAddress() instead
      */
     @Deprecated
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
+
     public String getContactPoint() {
       return contactPoint;
     }
@@ -501,21 +471,27 @@ public class ZeebeClientConfigurationProperties {
      * @deprecated use setGatewayAddress() instead
      */
     @Deprecated
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
+
     public void setContactPoint(String contactPoint) {
       this.contactPoint = contactPoint;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
 
     public String getGatewayAddress() {
       return gatewayAddress;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
 
     public void setGatewayAddress(String gatewayAddress) {
       this.gatewayAddress = gatewayAddress;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.keep-alive")
 
     public Duration getKeepAlive() {
       return keepAlive;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.keep-alive")
 
     public void setKeepAlive(Duration keepAlive) {
       this.keepAlive = keepAlive;
@@ -579,86 +555,107 @@ public class ZeebeClientConfigurationProperties {
           + '\''
           + '}';
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.cluster-id")
 
     public String getClusterId() {
       return clusterId;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.cluster-id")
 
     public void setClusterId(String clusterId) {
       this.clusterId = clusterId;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id or camunda.client.zeebe.client-id")
 
     public String getClientId() {
       return clientId;
     }
+    @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id")
 
     public void setClientId(String clientId) {
       this.clientId = clientId;
     }
+    @DeprecatedConfigurationProperty
 
     public String getClientSecret() {
       return clientSecret;
     }
+    @DeprecatedConfigurationProperty
 
     public void setClientSecret(String clientSecret) {
       this.clientSecret = clientSecret;
     }
+    @DeprecatedConfigurationProperty
 
     public String getRegion() {
       return region;
     }
+    @DeprecatedConfigurationProperty
 
     public void setRegion(final String region) {
       this.region = region;
     }
+    @DeprecatedConfigurationProperty
 
     public String getScope() {
       return scope;
     }
+    @DeprecatedConfigurationProperty
 
     public void setScope(String scope) {
       this.scope = scope;
     }
+    @DeprecatedConfigurationProperty
 
     public String getBaseUrl() {
       return baseUrl;
     }
+    @DeprecatedConfigurationProperty
 
     public void setBaseUrl(String baseUrl) {
       this.baseUrl = baseUrl;
     }
+    @DeprecatedConfigurationProperty
 
     public String getAuthUrl() {
       return authUrl;
     }
+    @DeprecatedConfigurationProperty
 
     public void setAuthUrl(String authUrl) {
       this.authUrl = authUrl;
     }
+    @DeprecatedConfigurationProperty
 
     public int getPort() {
       return port;
     }
+    @DeprecatedConfigurationProperty
 
     public void setPort(int port) {
       this.port = port;
     }
+    @DeprecatedConfigurationProperty
 
     public String getCredentialsCachePath() {
       return credentialsCachePath;
     }
+    @DeprecatedConfigurationProperty
 
     public void setCredentialsCachePath(String credentialsCachePath) {
       this.credentialsCachePath = credentialsCachePath;
     }
+    @DeprecatedConfigurationProperty
 
     public String getAudience() {
       return String.format("%s.%s.%s", clusterId, region, baseUrl);
     }
+    @DeprecatedConfigurationProperty
 
     public boolean isConfigured() {
       return (clusterId != null);
     }
+    @DeprecatedConfigurationProperty
 
     public String getGatewayAddress() {
       return String.format("%s.%s.%s:%d", clusterId, region, baseUrl, port);

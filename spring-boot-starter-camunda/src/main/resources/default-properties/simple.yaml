@@ -1,0 +1,23 @@
+camunda:
+  client:
+    mode: simple
+    auth:
+      username: demo
+      password: demo
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
+    optimize:
+      enabled: false
+    web-modeler:
+      enabled: false
+    console:
+      enabled: false
+    identity:
+      enabled: false

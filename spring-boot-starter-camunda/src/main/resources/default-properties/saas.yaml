@@ -1,0 +1,29 @@
+camunda:
+  client:
+    mode: saas
+    auth:
+      issuer: https://login.cloud.camunda.io/oauth/token
+    zeebe:
+      enabled: true
+      audience: zeebe.camunda.io
+    operate:
+      enabled: true
+      audience: operate.camunda.io
+    tasklist:
+      enabled: true
+      audience: tasklist.camunda.io
+    optimize:
+      enabled: true
+      audience: optimize.camunda.io
+    web-modeler:
+      enabled: false
+      base-url: https://modeler.cloud.camunda.io
+      audience: api.cloud.camunda.io
+    console:
+      enabled: false
+      audience: api.cloud.camunda.io
+      base-url: https://console.cloud.camunda.io
+    identity:
+      enabled: false
+
+

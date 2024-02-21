@@ -10,7 +10,6 @@ public class ZeebeGatewayProperties extends ApiProperties {
   private Duration jobPollInterval;
   private Duration messageTimeToLive;
   private Duration requestTimeout;
-  private Boolean plaintext;
   private String caCertificatePath;
   private Duration keepAlive;
   private String overrideAuthority;
@@ -70,14 +69,6 @@ public class ZeebeGatewayProperties extends ApiProperties {
 
   public void setRequestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
-  }
-
-  public Boolean getPlaintext() {
-    return plaintext;
-  }
-
-  public void setPlaintext(Boolean plaintext) {
-    this.plaintext = plaintext;
   }
 
   public String getCaCertificatePath() {

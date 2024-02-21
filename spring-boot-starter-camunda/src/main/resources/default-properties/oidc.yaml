@@ -1,0 +1,31 @@
+camunda:
+  client:
+    mode: oidc
+    auth:
+      oidc-type: keycloak
+      issuer: http://localhost:18080/auth/realms/camunda-platform
+      issuer-backend-url: http://localhost:18080/auth/realms/camunda-platform
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+      audience: zeebe-api
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+      audience: operate-api
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
+      audience: tasklist-api
+    optimize:
+      enabled: true
+      base-url: http://localhost:8083
+      audience: optimize-api
+    identity:
+      enabled: true
+      base-url: http://localhost:8084
+      audience: identity-api
+    console:
+      enabled: false
+    web-modeler:
+      enabled: false
