@@ -13,27 +13,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
-@Deprecated
 public class ZeebeClientConfigurationProperties {
+
+  private static final Logger LOGGER =
+    LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT =
-      (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+    (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+
+  private final org.springframework.core.env.Environment environment;
+
   public static final String CONNECTION_MODE_CLOUD = "CLOUD";
   public static final String CONNECTION_MODE_ADDRESS = "ADDRESS";
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private final org.springframework.core.env.Environment environment;
 
   /**
    * Connection mode can be set to "CLOUD" (connect to SaaS with properties), or "ADDRESS" (to use a
@@ -44,10 +43,10 @@ public class ZeebeClientConfigurationProperties {
 
   private String defaultTenantId = DEFAULT.getDefaultTenantId();
 
-  @Deprecated private List<String> defaultJobWorkerTenantIds;
+  private List<String> defaultJobWorkerTenantIds;
 
   private boolean applyEnvironmentVariableOverrides =
-      false; // the default is NOT to overwrite anything by environment variables in a Spring Boot
+    false; // the default is NOT to overwrite anything by environment variables in a Spring Boot
   // world - it is unintuitive
 
   private boolean enabled = true;
@@ -64,12 +63,9 @@ public class ZeebeClientConfigurationProperties {
 
   @NestedConfigurationProperty private Job job = new Job();
 
-  @Deprecated private boolean ownsJobWorkerExecutor;
+  private boolean ownsJobWorkerExecutor;
 
-  @Deprecated
   private boolean defaultJobWorkerStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
-
-  private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
 
   @Autowired
   public ZeebeClientConfigurationProperties(org.springframework.core.env.Environment environment) {
@@ -92,7 +88,7 @@ public class ZeebeClientConfigurationProperties {
       }
       if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
         broker.keepAlive =
-            Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
+          Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
       }
       if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
         security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
@@ -104,49 +100,47 @@ public class ZeebeClientConfigurationProperties {
       // Java Client has some name differences in properties - support those as well in case people
       // use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
       if (broker.gatewayAddress == null
-          || DEFAULT.getGatewayAddress().equals(broker.gatewayAddress)
-              && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+        && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
         broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
       }
       if (cloud.clientSecret == null
-          && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
+        && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
         cloud.clientSecret = environment.getProperty(ClientProperties.CLOUD_CLIENT_SECRET);
       }
       if (worker.defaultName == null
-          && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
+        && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
         worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
       }
       // Support environment based default tenant id override if value is client default fallback
       if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId()))
-          && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
+        && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
+
     // Support default job worker tenant ids based on the default tenant id
-    if (worker.getDefaultTenantIds() == null && defaultTenantId != null) {
-      worker.setDefaultTenantIds(Collections.singletonList(defaultTenantId));
+    if (defaultJobWorkerTenantIds == null && defaultTenantId != null) {
+      defaultJobWorkerTenantIds = Collections.singletonList(defaultTenantId);
     }
   }
-@DeprecatedConfigurationProperty
+
+  private Duration requestTimeout = DEFAULT.getDefaultRequestTimeout();
+
   public Broker getBroker() {
     return broker;
   }
-  @DeprecatedConfigurationProperty
 
   public void setBroker(Broker broker) {
     this.broker = broker;
   }
-  @DeprecatedConfigurationProperty
 
   public Cloud getCloud() {
     return cloud;
   }
-  @DeprecatedConfigurationProperty
 
   public void setCloud(Cloud cloud) {
     this.cloud = cloud;
   }
-  @DeprecatedConfigurationProperty
 
   public Worker getWorker() {
     return worker;
@@ -204,18 +198,10 @@ public class ZeebeClientConfigurationProperties {
     this.applyEnvironmentVariableOverrides = applyEnvironmentVariableOverrides;
   }
 
-  /**
-   * @deprecated use getWorker().setOwnsExecutor() instead
-   */
-  @Deprecated
   public void setOwnsJobWorkerExecutor(boolean ownsJobWorkerExecutor) {
     this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
   }
 
-  /**
-   * @deprecated use getWorker().isOwnsExecutor() instead
-   */
-  @Deprecated
   public boolean ownsJobWorkerExecutor() {
     return ownsJobWorkerExecutor;
   }
@@ -226,12 +212,12 @@ public class ZeebeClientConfigurationProperties {
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeClientConfigurationProperties that = (ZeebeClientConfigurationProperties) o;
     return Objects.equals(broker, that.broker)
-        && Objects.equals(cloud, that.cloud)
-        && Objects.equals(worker, that.worker)
-        && Objects.equals(message, that.message)
-        && Objects.equals(security, that.security)
-        && Objects.equals(job, that.job)
-        && Objects.equals(requestTimeout, that.requestTimeout);
+      && Objects.equals(cloud, that.cloud)
+      && Objects.equals(worker, that.worker)
+      && Objects.equals(message, that.message)
+      && Objects.equals(security, that.security)
+      && Objects.equals(job, that.job)
+      && Objects.equals(requestTimeout, that.requestTimeout);
   }
 
   @Override
@@ -242,256 +228,92 @@ public class ZeebeClientConfigurationProperties {
   @Override
   public String toString() {
     return "ZeebeClientConfigurationProperties{"
-        + "environment="
-        + environment
-        + ", connectionMode='"
-        + connectionMode
-        + '\''
-        + ", defaultTenantId='"
-        + defaultTenantId
-        + '\''
-        + ", defaultJobWorkerTenantIds="
-        + defaultJobWorkerTenantIds
-        + ", applyEnvironmentVariableOverrides="
-        + applyEnvironmentVariableOverrides
-        + ", enabled="
-        + enabled
-        + ", broker="
-        + broker
-        + ", cloud="
-        + cloud
-        + ", worker="
-        + worker
-        + ", message="
-        + message
-        + ", security="
-        + security
-        + ", job="
-        + job
-        + ", ownsJobWorkerExecutor="
-        + ownsJobWorkerExecutor
-        + ", defaultJobWorkerStreamEnabled="
-        + defaultJobWorkerStreamEnabled
-        + ", requestTimeout="
-        + requestTimeout
-        + '}';
-  }
-
-  /**
-   * @deprecated use PropertiesUtil.getZeebeGatewayAddress() instead
-   */
-  @Deprecated
-  public String getGatewayAddress() {
-    return PropertiesUtil.getZeebeGatewayAddress(this);
-  }
-
-  public String getDefaultTenantId() {
-    return defaultTenantId;
-  }
-
-  public void setDefaultTenantId(String defaultTenantId) {
-    this.defaultTenantId = defaultTenantId;
-  }
-
-  /**
-   * @deprecated use getWorker().getDefaultTenantIds() instead
-   */
-  @Deprecated
-  public List<String> getDefaultJobWorkerTenantIds() {
-    return defaultJobWorkerTenantIds;
-  }
-
-  /**
-   * @deprecated use getWorker().setDefaultTenantIds() instead
-   */
-  @Deprecated
-  public void setDefaultJobWorkerTenantIds(List<String> defaultJobWorkerTenantIds) {
-    this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
-  }
-
-  /**
-   * @deprecated use getWorker().isDefaultStreamEnabled() instead
-   */
-  @Deprecated
-  public boolean getDefaultJobWorkerStreamEnabled() {
-    return defaultJobWorkerStreamEnabled;
-  }
-
-  /**
-   * @deprecated use getWorker().setDefaultStreamEnabled() instead
-   */
-  @Deprecated
-  public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
-    this.defaultJobWorkerStreamEnabled = defaultJobWorkerStreamEnabled;
-  }
-
-  public boolean useDefaultRetryPolicy() {
-    return false;
-  }
-
-  public String getConnectionMode() {
-    return connectionMode;
-  }
-
-  public void setConnectionMode(String connectionMode) {
-    this.connectionMode = connectionMode;
-  }
-
-  /**
-   * @deprecated use getRequestTimeout() instead
-   */
-  @Deprecated
-  public Duration getDefaultRequestTimeout() {
-    return getRequestTimeout();
-  }
-
-  /**
-   * @deprecated use getWorker().getThreads() instead
-   */
-  @Deprecated
-  public int getNumJobWorkerExecutionThreads() {
-    return worker.getThreads();
-  }
-
-  /**
-   * @deprecated use getWorker().getMaxJobsActive() instead
-   */
-  @Deprecated
-  public int getDefaultJobWorkerMaxJobsActive() {
-    return worker.getMaxJobsActive();
-  }
-
-  /**
-   * @deprecated use getWorker().getDefaultName() instead
-   */
-  @Deprecated
-  public String getDefaultJobWorkerName() {
-    return worker.getDefaultName();
-  }
-
-  /**
-   * @deprecated use getWorker().getDefaultType() instead
-   */
-  @Deprecated
-  public String getDefaultJobWorkerType() {
-    return worker.getDefaultType();
-  }
-
-  /**
-   * @deprecated use getDuration().getTimeout() instead
-   */
-  @Deprecated
-  public Duration getDefaultJobTimeout() {
-    return job.getTimeout();
-  }
-
-  /**
-   * @deprecated use getJob().getPollInterval() instead
-   */
-  @Deprecated
-  public Duration getDefaultJobPollInterval() {
-    return job.getPollInterval();
-  }
-
-  /**
-   * @deprecated use getMessage().getTimeToLive() instead
-   */
-  @Deprecated
-  public Duration getDefaultMessageTimeToLive() {
-    return message.getTimeToLive();
-  }
-
-  /**
-   * @deprecated use getSecurity().isPlainText() instead
-   */
-  @Deprecated
-  public boolean isPlaintextConnectionEnabled() {
-    return security.isPlaintext();
-  }
-
-  /**
-   * @deprecated use getSecurity().getCertPath() instead
-   */
-  @Deprecated
-  public String getCaCertificatePath() {
-    return security.getCertPath();
-  }
-
-  /**
-   * @deprecated use getSecurity().getOverrideAuthority() instead
-   */
-  @Deprecated
-  public String getOverrideAuthority() {
-    return security.getOverrideAuthority();
-  }
-
-  /**
-   * @deprecated use getBroker().getKeepAlive() instead
-   */
-  @Deprecated
-  public Duration getKeepAlive() {
-    return broker.getKeepAlive();
-  }
-
-  /**
-   * @deprecated use getMessage().getMessageSize() instead
-   */
-  @Deprecated
-  public int getMaxMessageSize() {
-    return message.getMaxMessageSize();
+      + "environment="
+      + environment
+      + ", connectionMode='"
+      + connectionMode
+      + '\''
+      + ", defaultTenantId='"
+      + defaultTenantId
+      + '\''
+      + ", defaultJobWorkerTenantIds="
+      + defaultJobWorkerTenantIds
+      + ", applyEnvironmentVariableOverrides="
+      + applyEnvironmentVariableOverrides
+      + ", enabled="
+      + enabled
+      + ", broker="
+      + broker
+      + ", cloud="
+      + cloud
+      + ", worker="
+      + worker
+      + ", message="
+      + message
+      + ", security="
+      + security
+      + ", job="
+      + job
+      + ", ownsJobWorkerExecutor="
+      + ownsJobWorkerExecutor
+      + ", defaultJobWorkerStreamEnabled="
+      + defaultJobWorkerStreamEnabled
+      + ", requestTimeout="
+      + requestTimeout
+      + '}';
   }
 
   public static class Broker {
-    @Deprecated private String contactPoint;
-    private String gatewayAddress = DEFAULT.getGatewayAddress();
-    private Duration keepAlive = DEFAULT.getKeepAlive();
 
     @Override
     public String toString() {
       return "Broker{"
-          + "gatewayAddress='"
-          + gatewayAddress
-          + '\''
-          + ", keepAlive="
-          + keepAlive
-          + '}';
+        + "gatewayAddress='"
+        + gatewayAddress
+        + '\''
+        + ", keepAlive="
+        + keepAlive
+        + '}';
     }
 
+    private String gatewayAddress;
+    private Duration keepAlive = DEFAULT.getKeepAlive();
+
     /**
-     * @deprecated use getGatewayAddress() instead
+     * Use gatewayAddress. It's deprecated since 0.25.0, and will be removed in 0.26.0
+     *
+     * @return gatewayAddress
      */
     @Deprecated
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
-
     public String getContactPoint() {
-      return contactPoint;
+      return getGatewayAddress();
     }
 
     /**
-     * @deprecated use setGatewayAddress() instead
+     * Use gatewayAddress. It's deprecated since 0.25.0, and will be removed in 0.26.0
+     *
+     * @param contactPoint
      */
     @Deprecated
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
-
     public void setContactPoint(String contactPoint) {
-      this.contactPoint = contactPoint;
+      setGatewayAddress(contactPoint);
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
 
     public String getGatewayAddress() {
-      return gatewayAddress;
+      if (gatewayAddress != null) {
+        return gatewayAddress;
+      } else {
+        return DEFAULT.getGatewayAddress();
+      }
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.base-url, new property requires URI format")
 
     public void setGatewayAddress(String gatewayAddress) {
       this.gatewayAddress = gatewayAddress;
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.keep-alive")
 
     public Duration getKeepAlive() {
       return keepAlive;
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.zeebe.keep-alive")
 
     public void setKeepAlive(Duration keepAlive) {
       this.keepAlive = keepAlive;
@@ -503,7 +325,7 @@ public class ZeebeClientConfigurationProperties {
       if (o == null || getClass() != o.getClass()) return false;
       Broker broker = (Broker) o;
       return Objects.equals(gatewayAddress, broker.gatewayAddress)
-          && Objects.equals(keepAlive, broker.keepAlive);
+        && Objects.equals(keepAlive, broker.keepAlive);
     }
 
     @Override
@@ -514,148 +336,128 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Cloud {
 
+    @Override
+    public String toString() {
+      return "Cloud{"
+        + "clusterId='"
+        + clusterId
+        + '\''
+        + ", clientId='"
+        + "***"
+        + '\''
+        + ", clientSecret='"
+        + "***"
+        + '\''
+        + ", region='"
+        + region
+        + '\''
+        + ", scope='"
+        + scope
+        + '\''
+        + ", baseUrl='"
+        + baseUrl
+        + '\''
+        + ", authUrl='"
+        + authUrl
+        + '\''
+        + ", port="
+        + port
+        + ", credentialsCachePath='"
+        + credentialsCachePath
+        + '\''
+        + '}';
+    }
+
     private String clusterId;
     private String clientId;
     private String clientSecret;
     private String region = "bru-2";
     private String scope;
+
     private String baseUrl = "zeebe.camunda.io";
     private String authUrl = "https://login.cloud.camunda.io/oauth/token";
     private int port = 443;
     private String credentialsCachePath;
 
-    @Override
-    public String toString() {
-      return "Cloud{"
-          + "clusterId='"
-          + clusterId
-          + '\''
-          + ", clientId='"
-          + "***"
-          + '\''
-          + ", clientSecret='"
-          + "***"
-          + '\''
-          + ", region='"
-          + region
-          + '\''
-          + ", scope='"
-          + scope
-          + '\''
-          + ", baseUrl='"
-          + baseUrl
-          + '\''
-          + ", authUrl='"
-          + authUrl
-          + '\''
-          + ", port="
-          + port
-          + ", credentialsCachePath='"
-          + credentialsCachePath
-          + '\''
-          + '}';
-    }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.cluster-id")
-
     public String getClusterId() {
       return clusterId;
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.cluster-id")
 
     public void setClusterId(String clusterId) {
       this.clusterId = clusterId;
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id or camunda.client.zeebe.client-id")
 
     public String getClientId() {
       return clientId;
     }
-    @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id")
 
     public void setClientId(String clientId) {
       this.clientId = clientId;
     }
-    @DeprecatedConfigurationProperty
 
     public String getClientSecret() {
       return clientSecret;
     }
-    @DeprecatedConfigurationProperty
 
     public void setClientSecret(String clientSecret) {
       this.clientSecret = clientSecret;
     }
-    @DeprecatedConfigurationProperty
 
     public String getRegion() {
       return region;
     }
-    @DeprecatedConfigurationProperty
 
     public void setRegion(final String region) {
       this.region = region;
     }
-    @DeprecatedConfigurationProperty
 
     public String getScope() {
       return scope;
     }
-    @DeprecatedConfigurationProperty
 
     public void setScope(String scope) {
       this.scope = scope;
     }
-    @DeprecatedConfigurationProperty
 
     public String getBaseUrl() {
       return baseUrl;
     }
-    @DeprecatedConfigurationProperty
 
     public void setBaseUrl(String baseUrl) {
       this.baseUrl = baseUrl;
     }
-    @DeprecatedConfigurationProperty
 
     public String getAuthUrl() {
       return authUrl;
     }
-    @DeprecatedConfigurationProperty
 
     public void setAuthUrl(String authUrl) {
       this.authUrl = authUrl;
     }
-    @DeprecatedConfigurationProperty
 
     public int getPort() {
       return port;
     }
-    @DeprecatedConfigurationProperty
 
     public void setPort(int port) {
       this.port = port;
     }
-    @DeprecatedConfigurationProperty
 
     public String getCredentialsCachePath() {
       return credentialsCachePath;
     }
-    @DeprecatedConfigurationProperty
 
     public void setCredentialsCachePath(String credentialsCachePath) {
       this.credentialsCachePath = credentialsCachePath;
     }
-    @DeprecatedConfigurationProperty
 
     public String getAudience() {
       return String.format("%s.%s.%s", clusterId, region, baseUrl);
     }
-    @DeprecatedConfigurationProperty
 
     public boolean isConfigured() {
       return (clusterId != null);
     }
-    @DeprecatedConfigurationProperty
 
     public String getGatewayAddress() {
       return String.format("%s.%s.%s:%d", clusterId, region, baseUrl, port);
@@ -663,41 +465,30 @@ public class ZeebeClientConfigurationProperties {
   }
 
   public static class Worker {
-    private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
-    private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
-    private String defaultName =
-        null; // setting NO default in Spring, as bean/method name is used as default
-    private String defaultType = null;
-    private Map<String, ZeebeWorkerValue> override = new HashMap<>();
-    private List<String> defaultTenantIds;
-    private boolean defaultStreamEnabled = DEFAULT.getDefaultJobWorkerStreamEnabled();
-    private boolean ownsExecutor;
-
     @Override
     public String toString() {
       return "Worker{"
-          + "maxJobsActive="
-          + maxJobsActive
-          + ", threads="
-          + threads
-          + ", defaultName='"
-          + defaultName
-          + '\''
-          + ", defaultType='"
-          + defaultType
-          + '\''
-          + ", override="
-          + override
-          + '}';
+        + "maxJobsActive="
+        + maxJobsActive
+        + ", threads="
+        + threads
+        + ", defaultName='"
+        + defaultName
+        + '\''
+        + ", defaultType='"
+        + defaultType
+        + '\''
+        + ", override="
+        + override
+        + '}';
     }
 
-    public boolean isOwnsExecutor() {
-      return ownsExecutor;
-    }
-
-    public void setOwnsExecutor(boolean ownsExecutor) {
-      this.ownsExecutor = ownsExecutor;
-    }
+    private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
+    private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
+    private String defaultName =
+      null; // setting NO default in Spring, as bean/method name is used as default
+    private String defaultType = null;
+    private Map<String, ZeebeWorkerValue> override = new HashMap<>();
 
     public Map<String, ZeebeWorkerValue> getOverride() {
       return override;
@@ -739,32 +530,16 @@ public class ZeebeClientConfigurationProperties {
       this.defaultType = defaultType;
     }
 
-    public List<String> getDefaultTenantIds() {
-      return defaultTenantIds;
-    }
-
-    public void setDefaultTenantIds(List<String> defaultTenantIds) {
-      this.defaultTenantIds = defaultTenantIds;
-    }
-
-    public boolean isDefaultStreamEnabled() {
-      return defaultStreamEnabled;
-    }
-
-    public void setDefaultStreamEnabled(boolean defaultStreamEnabled) {
-      this.defaultStreamEnabled = defaultStreamEnabled;
-    }
-
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Worker worker = (Worker) o;
       return Objects.equals(maxJobsActive, worker.maxJobsActive)
-          && Objects.equals(threads, worker.threads)
-          && Objects.equals(defaultName, worker.defaultName)
-          && Objects.equals(defaultType, worker.defaultType)
-          && Objects.equals(override, worker.override);
+        && Objects.equals(threads, worker.threads)
+        && Objects.equals(defaultName, worker.defaultName)
+        && Objects.equals(defaultType, worker.defaultType)
+        && Objects.equals(override, worker.override);
     }
 
     @Override
@@ -775,13 +550,13 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Job {
 
-    private Duration timeout = DEFAULT.getDefaultJobTimeout();
-    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
-
     @Override
     public String toString() {
       return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
     }
+
+    private Duration timeout = DEFAULT.getDefaultJobTimeout();
+    private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
 
     public Duration getTimeout() {
       return timeout;
@@ -815,13 +590,13 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Message {
 
-    private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
-    private int maxMessageSize = DEFAULT.getMaxMessageSize();
-
     @Override
     public String toString() {
       return "Message{" + "timeToLive=" + timeToLive + ", maxMessageSize=" + maxMessageSize + '}';
     }
+
+    private Duration timeToLive = DEFAULT.getDefaultMessageTimeToLive();
+    private int maxMessageSize = DEFAULT.getMaxMessageSize();
 
     public Duration getTimeToLive() {
       return timeToLive;
@@ -854,6 +629,20 @@ public class ZeebeClientConfigurationProperties {
   }
 
   public static class Security {
+
+    @Override
+    public String toString() {
+      return "Security{"
+        + "plaintext="
+        + plaintext
+        + ", overrideAuthority='"
+        + overrideAuthority
+        + '\''
+        + ", certPath='"
+        + certPath
+        + '\''
+        + '}';
+    }
 
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
     private String overrideAuthority = DEFAULT.getOverrideAuthority();
@@ -889,27 +678,124 @@ public class ZeebeClientConfigurationProperties {
       if (o == null || getClass() != o.getClass()) return false;
       Security security = (Security) o;
       return plaintext == security.plaintext
-          && Objects.equals(overrideAuthority, security.overrideAuthority)
-          && Objects.equals(certPath, security.certPath);
+        && Objects.equals(overrideAuthority, security.overrideAuthority)
+        && Objects.equals(certPath, security.certPath);
     }
 
     @Override
     public int hashCode() {
       return Objects.hash(plaintext, overrideAuthority, certPath);
     }
+  }
 
-    @Override
-    public String toString() {
-      return "Security{"
-          + "plaintext="
-          + plaintext
-          + ", overrideAuthority='"
-          + overrideAuthority
-          + '\''
-          + ", certPath='"
-          + certPath
-          + '\''
-          + '}';
+  public String getGatewayAddress() {
+    if (connectionMode != null && connectionMode.length() > 0) {
+      LOGGER.info("Using connection mode '{}' to connect to Zeebe", connectionMode);
+      if (CONNECTION_MODE_CLOUD.equalsIgnoreCase(connectionMode)) {
+        return cloud.getGatewayAddress();
+      } else if (CONNECTION_MODE_ADDRESS.equalsIgnoreCase(connectionMode)) {
+        return broker.getGatewayAddress();
+      } else {
+        throw new RuntimeException(
+          "Value '"
+            + connectionMode
+            + "' for ConnectionMode is invalid, valid values are "
+            + CONNECTION_MODE_CLOUD
+            + " or "
+            + CONNECTION_MODE_ADDRESS);
+      }
+    } else if (cloud.isConfigured()) {
+      return cloud.getGatewayAddress();
+    } else {
+      return broker.getGatewayAddress();
     }
+  }
+
+  public String getDefaultTenantId() {
+    return defaultTenantId;
+  }
+
+  public void setDefaultTenantId(String defaultTenantId) {
+    this.defaultTenantId = defaultTenantId;
+  }
+
+  public List<String> getDefaultJobWorkerTenantIds() {
+    return defaultJobWorkerTenantIds;
+  }
+
+  public void setDefaultJobWorkerTenantIds(List<String> defaultJobWorkerTenantIds) {
+    this.defaultJobWorkerTenantIds = defaultJobWorkerTenantIds;
+  }
+
+  public boolean getDefaultJobWorkerStreamEnabled() {
+    return defaultJobWorkerStreamEnabled;
+  }
+
+  public boolean useDefaultRetryPolicy() {
+    return false;
+  }
+
+  public void setDefaultJobWorkerStreamEnabled(boolean defaultJobWorkerStreamEnabled) {
+    this.defaultJobWorkerStreamEnabled = defaultJobWorkerStreamEnabled;
+  }
+
+  public String getConnectionMode() {
+    return connectionMode;
+  }
+
+  public void setConnectionMode(String connectionMode) {
+    this.connectionMode = connectionMode;
+  }
+
+  public Duration getDefaultRequestTimeout() {
+    return getRequestTimeout();
+  }
+
+  public int getNumJobWorkerExecutionThreads() {
+    return worker.getThreads();
+  }
+
+  public int getDefaultJobWorkerMaxJobsActive() {
+    return worker.getMaxJobsActive();
+  }
+
+  public String getDefaultJobWorkerName() {
+    return worker.getDefaultName();
+  }
+
+  public String getDefaultJobWorkerType() {
+    return worker.getDefaultType();
+  }
+
+  public Duration getDefaultJobTimeout() {
+    return job.getTimeout();
+  }
+
+  public Duration getDefaultJobPollInterval() {
+    return job.getPollInterval();
+  }
+
+  public Duration getDefaultMessageTimeToLive() {
+    return message.getTimeToLive();
+  }
+
+  public boolean isPlaintextConnectionEnabled() {
+    return security.isPlaintext();
+  }
+
+  public String getCaCertificatePath() {
+    return security.getCertPath();
+  }
+
+  public String getOverrideAuthority() {
+    return security.getOverrideAuthority();
+  }
+
+  public Duration getKeepAlive() {
+    return broker.getKeepAlive();
+  }
+
+  public int getMaxMessageSize() {
+    return message.getMaxMessageSize();
   }
 }

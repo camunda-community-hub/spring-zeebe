@@ -63,7 +63,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public List<String> getDefaultJobWorkerTenantIds() {
-    return properties.getWorker().getDefaultTenantIds();
+    return properties.getDefaultJobWorkerTenantIds();
   }
 
   @Override
@@ -196,12 +196,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public boolean ownsJobWorkerExecutor() {
-    return properties.getWorker().isOwnsExecutor();
+    return properties.ownsJobWorkerExecutor();
   }
 
   @Override
   public boolean getDefaultJobWorkerStreamEnabled() {
-    return properties.getWorker().isDefaultStreamEnabled();
+    return properties.getDefaultJobWorkerStreamEnabled();
   }
 
   @Override

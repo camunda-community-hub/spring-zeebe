@@ -34,7 +34,7 @@ public class ExecutorServiceConfiguration {
               threadPool, "zeebe_client_thread_pool", Collections.emptyList());
       threadPoolMetrics.bindTo(meterRegistry);
     }
-    configurationProperties.getWorker().setOwnsExecutor(true);
+    configurationProperties.setOwnsJobWorkerExecutor(true);
     return new ZeebeClientExecutorService(threadPool);
   }
 }
