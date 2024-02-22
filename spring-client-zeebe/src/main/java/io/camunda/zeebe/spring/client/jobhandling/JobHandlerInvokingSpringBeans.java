@@ -38,23 +38,6 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
     this.parameterResolvers = createParameterResolvers(parameterResolverStrategy);
   }
 
-  public static FinalCommandStep createCompleteCommand(
-      JobClient jobClient, ActivatedJob job, Object result) {
-    CompleteJobCommandStep1 completeCommand = jobClient.newCompleteCommand(job.getKey());
-    if (result != null) {
-      if (result.getClass().isAssignableFrom(Map.class)) {
-        completeCommand = completeCommand.variables((Map) result);
-      } else if (result.getClass().isAssignableFrom(String.class)) {
-        completeCommand = completeCommand.variables((String) result);
-      } else if (result.getClass().isAssignableFrom(InputStream.class)) {
-        completeCommand = completeCommand.variables((InputStream) result);
-      } else {
-        completeCommand = completeCommand.variables(result);
-      }
-    }
-    return completeCommand;
-  }
-
   private List<ParameterResolver> createParameterResolvers(
       ParameterResolverStrategy parameterResolverStrategy) {
     return workerValue.getMethodInfo().getParameters().stream()
@@ -113,6 +96,23 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
 
   private List<Object> createParameters(JobClient jobClient, ActivatedJob job) {
     return parameterResolvers.stream().map(resolver -> resolver.resolve(jobClient, job)).toList();
+  }
+
+  private FinalCommandStep createCompleteCommand(
+      JobClient jobClient, ActivatedJob job, Object result) {
+    CompleteJobCommandStep1 completeCommand = jobClient.newCompleteCommand(job.getKey());
+    if (result != null) {
+      if (result.getClass().isAssignableFrom(Map.class)) {
+        completeCommand = completeCommand.variables((Map) result);
+      } else if (result.getClass().isAssignableFrom(String.class)) {
+        completeCommand = completeCommand.variables((String) result);
+      } else if (result.getClass().isAssignableFrom(InputStream.class)) {
+        completeCommand = completeCommand.variables((InputStream) result);
+      } else {
+        completeCommand = completeCommand.variables(result);
+      }
+    }
+    return completeCommand;
   }
 
   private FinalCommandStep<Void> createThrowErrorCommand(
