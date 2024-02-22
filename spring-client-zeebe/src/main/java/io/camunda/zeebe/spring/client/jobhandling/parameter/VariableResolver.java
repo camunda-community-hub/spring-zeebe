@@ -31,7 +31,7 @@ public class VariableResolver implements ParameterResolver {
     }
   }
 
-  private Object mapZeebeVariable(Object variableValue) {
+  protected Object mapZeebeVariable(Object variableValue) {
     if (variableValue != null && !variableType.isInstance(variableValue)) {
       return jsonMapper.fromJson(jsonMapper.toJson(variableValue), variableType);
     } else {
