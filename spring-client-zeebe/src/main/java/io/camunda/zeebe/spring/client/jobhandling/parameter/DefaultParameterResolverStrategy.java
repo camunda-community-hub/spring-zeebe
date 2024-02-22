@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultParameterResolverStrategy implements ParameterResolverStrategy {
   private static final Logger LOG = LoggerFactory.getLogger(DefaultParameterResolverStrategy.class);
-  private final JsonMapper jsonMapper;
+  protected final JsonMapper jsonMapper;
 
   public DefaultParameterResolverStrategy(JsonMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
@@ -29,22 +29,34 @@ public class DefaultParameterResolverStrategy implements ParameterResolverStrate
       return new JobClientParameterResolver();
     } else if (ActivatedJob.class.isAssignableFrom(parameterType)) {
       return new ActivatedJobParameterResolver();
-    } else if (parameterInfo.getParameterInfo().isAnnotationPresent(Variable.class)
-        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeVariable.class)) {
+    } else if (isVariable(parameterInfo)) {
       String variableName = getVariableName(parameterInfo);
       return new VariableResolver(variableName, parameterType, jsonMapper);
-    } else if (parameterInfo.getParameterInfo().isAnnotationPresent(VariablesAsType.class)
-        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class)) {
+    } else if (isVariablesAsType(parameterInfo)) {
       return new VariablesAsTypeResolver(parameterType);
-    } else if (parameterInfo.getParameterInfo().isAnnotationPresent(CustomHeaders.class)
-        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class)) {
+    } else if (isCustomHeaders(parameterInfo)) {
       return new CustomHeadersResolver();
     }
     throw new IllegalStateException(
         "Could not create parameter resolver for parameter " + parameterInfo);
   }
 
-  private String getVariableName(ParameterInfo param) {
+  protected boolean isVariable(ParameterInfo parameterInfo) {
+    return parameterInfo.getParameterInfo().isAnnotationPresent(Variable.class)
+        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeVariable.class);
+  }
+
+  protected boolean isVariablesAsType(ParameterInfo parameterInfo) {
+    return parameterInfo.getParameterInfo().isAnnotationPresent(VariablesAsType.class)
+        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeVariablesAsType.class);
+  }
+
+  protected boolean isCustomHeaders(ParameterInfo parameterInfo) {
+    return parameterInfo.getParameterInfo().isAnnotationPresent(CustomHeaders.class)
+        || parameterInfo.getParameterInfo().isAnnotationPresent(ZeebeCustomHeaders.class);
+  }
+
+  protected String getVariableName(ParameterInfo param) {
     if (param.getParameterInfo().isAnnotationPresent(Variable.class)) {
       String nameFromAnnotation = param.getParameterInfo().getAnnotation(Variable.class).name();
       if (!Objects.equals(nameFromAnnotation, Variable.DEFAULT_NAME)) {
