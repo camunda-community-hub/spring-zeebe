@@ -119,43 +119,104 @@ If using Intellij:
 Settings > Build, Execution, Deployment > Compiler > Java Compiler
 ```
 
-## Configuring Camunda 8 SaaS connection
+## Configuring Camunda 8 connection
 
-Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.properties`:
+The default properties for setting up all connection details are hidden in spring profiles. Each connection mode has a spring profile that will make your life easier.
 
-```properties
-zeebe.client.cloud.clusterId=xxx
-zeebe.client.cloud.clientId=xxx
-zeebe.client.cloud.clientSecret=xxx
-zeebe.client.cloud.region=bru-2
+>Zeebe will now also be configured with an URL (`http://localhost:26500` instead of `localhost:26500` + plaintext connection flag)
+
+### Saas
+
+Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.yaml`:
+
+```yaml
+spring:
+  profiles:
+    active: camunda-saas
+camunda:
+  client:
+    auth:
+      client-id: <your client id>
+      client-secret: <your client secret>
+    cluster-id: <your cluster id>
+    region: <your cluster region>
 ```
 
-You can also configure the connection to a Self-Managed Zeebe broker:
+### Simple
 
-```properties
-zeebe.client.broker.gateway-address=127.0.0.1:26500
-zeebe.client.security.plaintext=true
+If you set up a local dev cluster, your applications will use a cookie to authenticate. As long as the port config is default, there is nothing to configure rather than the according spring profile:
+
+```yaml
+spring:
+  profiles:
+    active: camunda-simple
 ```
 
-You can enforce the right connection mode, for example if multiple contradicting properties are set:
+If you have different endpoints for your applications, disable a client or adjust the username or password used, you can configure this:
 
-```properties
-zeebe.client.connection-mode=CLOUD
-zeebe.client.connection-mode=ADDRESS
+```yaml
+camunda:
+  client:
+    auth:
+      username: demo
+      password: demo
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
 ```
 
-You can also configure other components like Operate. If you use different credentials for different components:
+### Oidc
 
-```properties
-camunda.operate.client.clientId=xxx
-camunda.operate.client.clientSecret=xxx
+If you set up a self-managed cluster with identity, keycloak is used as default identity provider. As long as the port config (from docker-compose or port-forward with the helm charts) is default, you need to configure the according spring profile plus client credentials:
+
+```yaml
+spring:
+  profiles:
+    active: camunda-oidc
+camunda:
+  client:
+    auth:
+      client-id: <your client id>
+      client-secret: <your client secret>
 ```
 
-Otherwise, if you use same credentials across all components:
+If you have different endpoints for your applications or want to disable a client, you can configure this:
 
-```properties
-common.clientId=xxx
-common.clientSecret=xxx
+```yaml
+camunda:
+  client:
+    tenant-ids:
+    - <default>
+    auth:
+      oidc-type: keycloak
+      issuer: http://localhost:18080/auth/realms/camunda-platform
+      issuer-backend-url: ${camunda.client.auth.issuer}
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+      audience: zeebe-api
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+      audience: operate-api
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
+      audience: tasklist-api
+    optimize:
+      enabled: true
+      base-url: http://localhost:8083
+      audience: optimize-api
+    identity:
+      enabled: true
+      base-url: http://localhost:8084
+      audience: identity-api
 ```
 
 ## Connect to Zeebe
