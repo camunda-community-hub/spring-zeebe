@@ -4,4 +4,5 @@ import io.camunda.zeebe.spring.client.properties.common.Client;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "optimize.client")
+@Deprecated
 public class OptimizeClientConfigurationProperties extends Client {}

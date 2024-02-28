@@ -20,14 +20,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "zeebe.client")
+@Deprecated
 public class ZeebeClientConfigurationProperties {
 
   private static final Logger LOGGER =
-    LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+      LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Used to read default config values
   public static final ZeebeClientBuilderImpl DEFAULT =
-    (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
+      (ZeebeClientBuilderImpl) new ZeebeClientBuilderImpl().withProperties(new Properties());
 
   private final org.springframework.core.env.Environment environment;
 
@@ -46,7 +47,7 @@ public class ZeebeClientConfigurationProperties {
   private List<String> defaultJobWorkerTenantIds;
 
   private boolean applyEnvironmentVariableOverrides =
-    false; // the default is NOT to overwrite anything by environment variables in a Spring Boot
+      false; // the default is NOT to overwrite anything by environment variables in a Spring Boot
   // world - it is unintuitive
 
   private boolean enabled = true;
@@ -88,7 +89,7 @@ public class ZeebeClientConfigurationProperties {
       }
       if (Environment.system().isDefined("ZEEBE_KEEP_ALIVE")) {
         broker.keepAlive =
-          Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
+            Duration.ofMillis(Long.parseUnsignedLong(Environment.system().get("ZEEBE_KEEP_ALIVE")));
       }
       if (Environment.system().isDefined("ZEEBE_OVERRIDE_AUTHORITY")) {
         security.overrideAuthority = Environment.system().get("ZEEBE_OVERRIDE_AUTHORITY");
@@ -100,20 +101,20 @@ public class ZeebeClientConfigurationProperties {
       // Java Client has some name differences in properties - support those as well in case people
       // use those (https://github.com/camunda-community-hub/spring-zeebe/issues/350)
       if (broker.gatewayAddress == null
-        && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
+          && environment.containsProperty(ClientProperties.GATEWAY_ADDRESS)) {
         broker.gatewayAddress = environment.getProperty(ClientProperties.GATEWAY_ADDRESS);
       }
       if (cloud.clientSecret == null
-        && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
+          && environment.containsProperty(ClientProperties.CLOUD_CLIENT_SECRET)) {
         cloud.clientSecret = environment.getProperty(ClientProperties.CLOUD_CLIENT_SECRET);
       }
       if (worker.defaultName == null
-        && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
+          && environment.containsProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME)) {
         worker.defaultName = environment.getProperty(ClientProperties.DEFAULT_JOB_WORKER_NAME);
       }
       // Support environment based default tenant id override if value is client default fallback
       if ((defaultTenantId == null || defaultTenantId.equals(DEFAULT.getDefaultTenantId()))
-        && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
+          && environment.containsProperty(ClientProperties.DEFAULT_TENANT_ID)) {
         defaultTenantId = environment.getProperty(ClientProperties.DEFAULT_TENANT_ID);
       }
     }
@@ -212,12 +213,12 @@ public class ZeebeClientConfigurationProperties {
     if (o == null || getClass() != o.getClass()) return false;
     ZeebeClientConfigurationProperties that = (ZeebeClientConfigurationProperties) o;
     return Objects.equals(broker, that.broker)
-      && Objects.equals(cloud, that.cloud)
-      && Objects.equals(worker, that.worker)
-      && Objects.equals(message, that.message)
-      && Objects.equals(security, that.security)
-      && Objects.equals(job, that.job)
-      && Objects.equals(requestTimeout, that.requestTimeout);
+        && Objects.equals(cloud, that.cloud)
+        && Objects.equals(worker, that.worker)
+        && Objects.equals(message, that.message)
+        && Objects.equals(security, that.security)
+        && Objects.equals(job, that.job)
+        && Objects.equals(requestTimeout, that.requestTimeout);
   }
 
   @Override
@@ -228,39 +229,39 @@ public class ZeebeClientConfigurationProperties {
   @Override
   public String toString() {
     return "ZeebeClientConfigurationProperties{"
-      + "environment="
-      + environment
-      + ", connectionMode='"
-      + connectionMode
-      + '\''
-      + ", defaultTenantId='"
-      + defaultTenantId
-      + '\''
-      + ", defaultJobWorkerTenantIds="
-      + defaultJobWorkerTenantIds
-      + ", applyEnvironmentVariableOverrides="
-      + applyEnvironmentVariableOverrides
-      + ", enabled="
-      + enabled
-      + ", broker="
-      + broker
-      + ", cloud="
-      + cloud
-      + ", worker="
-      + worker
-      + ", message="
-      + message
-      + ", security="
-      + security
-      + ", job="
-      + job
-      + ", ownsJobWorkerExecutor="
-      + ownsJobWorkerExecutor
-      + ", defaultJobWorkerStreamEnabled="
-      + defaultJobWorkerStreamEnabled
-      + ", requestTimeout="
-      + requestTimeout
-      + '}';
+        + "environment="
+        + environment
+        + ", connectionMode='"
+        + connectionMode
+        + '\''
+        + ", defaultTenantId='"
+        + defaultTenantId
+        + '\''
+        + ", defaultJobWorkerTenantIds="
+        + defaultJobWorkerTenantIds
+        + ", applyEnvironmentVariableOverrides="
+        + applyEnvironmentVariableOverrides
+        + ", enabled="
+        + enabled
+        + ", broker="
+        + broker
+        + ", cloud="
+        + cloud
+        + ", worker="
+        + worker
+        + ", message="
+        + message
+        + ", security="
+        + security
+        + ", job="
+        + job
+        + ", ownsJobWorkerExecutor="
+        + ownsJobWorkerExecutor
+        + ", defaultJobWorkerStreamEnabled="
+        + defaultJobWorkerStreamEnabled
+        + ", requestTimeout="
+        + requestTimeout
+        + '}';
   }
 
   public static class Broker {
@@ -268,12 +269,12 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public String toString() {
       return "Broker{"
-        + "gatewayAddress='"
-        + gatewayAddress
-        + '\''
-        + ", keepAlive="
-        + keepAlive
-        + '}';
+          + "gatewayAddress='"
+          + gatewayAddress
+          + '\''
+          + ", keepAlive="
+          + keepAlive
+          + '}';
     }
 
     private String gatewayAddress;
@@ -325,7 +326,7 @@ public class ZeebeClientConfigurationProperties {
       if (o == null || getClass() != o.getClass()) return false;
       Broker broker = (Broker) o;
       return Objects.equals(gatewayAddress, broker.gatewayAddress)
-        && Objects.equals(keepAlive, broker.keepAlive);
+          && Objects.equals(keepAlive, broker.keepAlive);
     }
 
     @Override
@@ -339,33 +340,33 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public String toString() {
       return "Cloud{"
-        + "clusterId='"
-        + clusterId
-        + '\''
-        + ", clientId='"
-        + "***"
-        + '\''
-        + ", clientSecret='"
-        + "***"
-        + '\''
-        + ", region='"
-        + region
-        + '\''
-        + ", scope='"
-        + scope
-        + '\''
-        + ", baseUrl='"
-        + baseUrl
-        + '\''
-        + ", authUrl='"
-        + authUrl
-        + '\''
-        + ", port="
-        + port
-        + ", credentialsCachePath='"
-        + credentialsCachePath
-        + '\''
-        + '}';
+          + "clusterId='"
+          + clusterId
+          + '\''
+          + ", clientId='"
+          + "***"
+          + '\''
+          + ", clientSecret='"
+          + "***"
+          + '\''
+          + ", region='"
+          + region
+          + '\''
+          + ", scope='"
+          + scope
+          + '\''
+          + ", baseUrl='"
+          + baseUrl
+          + '\''
+          + ", authUrl='"
+          + authUrl
+          + '\''
+          + ", port="
+          + port
+          + ", credentialsCachePath='"
+          + credentialsCachePath
+          + '\''
+          + '}';
     }
 
     private String clusterId;
@@ -468,25 +469,25 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public String toString() {
       return "Worker{"
-        + "maxJobsActive="
-        + maxJobsActive
-        + ", threads="
-        + threads
-        + ", defaultName='"
-        + defaultName
-        + '\''
-        + ", defaultType='"
-        + defaultType
-        + '\''
-        + ", override="
-        + override
-        + '}';
+          + "maxJobsActive="
+          + maxJobsActive
+          + ", threads="
+          + threads
+          + ", defaultName='"
+          + defaultName
+          + '\''
+          + ", defaultType='"
+          + defaultType
+          + '\''
+          + ", override="
+          + override
+          + '}';
     }
 
     private Integer maxJobsActive = DEFAULT.getDefaultJobWorkerMaxJobsActive();
     private Integer threads = DEFAULT.getNumJobWorkerExecutionThreads();
     private String defaultName =
-      null; // setting NO default in Spring, as bean/method name is used as default
+        null; // setting NO default in Spring, as bean/method name is used as default
     private String defaultType = null;
     private Map<String, ZeebeWorkerValue> override = new HashMap<>();
 
@@ -536,10 +537,10 @@ public class ZeebeClientConfigurationProperties {
       if (o == null || getClass() != o.getClass()) return false;
       Worker worker = (Worker) o;
       return Objects.equals(maxJobsActive, worker.maxJobsActive)
-        && Objects.equals(threads, worker.threads)
-        && Objects.equals(defaultName, worker.defaultName)
-        && Objects.equals(defaultType, worker.defaultType)
-        && Objects.equals(override, worker.override);
+          && Objects.equals(threads, worker.threads)
+          && Objects.equals(defaultName, worker.defaultName)
+          && Objects.equals(defaultType, worker.defaultType)
+          && Objects.equals(override, worker.override);
     }
 
     @Override
@@ -633,15 +634,15 @@ public class ZeebeClientConfigurationProperties {
     @Override
     public String toString() {
       return "Security{"
-        + "plaintext="
-        + plaintext
-        + ", overrideAuthority='"
-        + overrideAuthority
-        + '\''
-        + ", certPath='"
-        + certPath
-        + '\''
-        + '}';
+          + "plaintext="
+          + plaintext
+          + ", overrideAuthority='"
+          + overrideAuthority
+          + '\''
+          + ", certPath='"
+          + certPath
+          + '\''
+          + '}';
     }
 
     private boolean plaintext = DEFAULT.isPlaintextConnectionEnabled();
@@ -678,8 +679,8 @@ public class ZeebeClientConfigurationProperties {
       if (o == null || getClass() != o.getClass()) return false;
       Security security = (Security) o;
       return plaintext == security.plaintext
-        && Objects.equals(overrideAuthority, security.overrideAuthority)
-        && Objects.equals(certPath, security.certPath);
+          && Objects.equals(overrideAuthority, security.overrideAuthority)
+          && Objects.equals(certPath, security.certPath);
     }
 
     @Override
@@ -697,12 +698,12 @@ public class ZeebeClientConfigurationProperties {
         return broker.getGatewayAddress();
       } else {
         throw new RuntimeException(
-          "Value '"
-            + connectionMode
-            + "' for ConnectionMode is invalid, valid values are "
-            + CONNECTION_MODE_CLOUD
-            + " or "
-            + CONNECTION_MODE_ADDRESS);
+            "Value '"
+                + connectionMode
+                + "' for ConnectionMode is invalid, valid values are "
+                + CONNECTION_MODE_CLOUD
+                + " or "
+                + CONNECTION_MODE_ADDRESS);
       }
     } else if (cloud.isConfigured()) {
       return cloud.getGatewayAddress();

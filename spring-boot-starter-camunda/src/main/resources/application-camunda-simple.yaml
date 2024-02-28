@@ -1,6 +1,8 @@
 camunda:
   client:
     mode: simple
+    tenant-ids:
+    - <default>
     auth:
       username: demo
       password: demo
@@ -14,10 +16,6 @@ camunda:
       enabled: true
       base-url: http://localhost:8082
     optimize:
-      enabled: false
-    web-modeler:
-      enabled: false
-    console:
       enabled: false
     identity:
       enabled: false

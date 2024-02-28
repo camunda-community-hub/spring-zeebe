@@ -4,10 +4,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.common.json.SdkObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.JsonMapper;
-import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.configuration.*;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
@@ -27,11 +24,12 @@ import org.springframework.context.annotation.Configuration;
 @ImportAutoConfiguration({
   ZeebeClientProdAutoConfiguration.class,
   ZeebeClientAllAutoConfiguration.class,
-  CommonClientConfiguration.class,
   OperateClientConfiguration.class,
   ZeebeActuatorConfiguration.class,
   MetricsDefaultConfiguration.class,
-  AuthenticationConfiguration.class
+  AuthenticationConfiguration.class,
+  CommonClientConfiguration.class,
+  JsonMapperConfiguration.class
 })
 @AutoConfigureAfter(
     JacksonAutoConfiguration
@@ -53,29 +51,5 @@ public class CamundaAutoConfiguration {
   public ZeebeLifecycleEventProducer zeebeLifecycleEventProducer(
       final ZeebeClient client, final ApplicationEventPublisher publisher) {
     return new ZeebeLifecycleEventProducer(client, publisher);
-  }
-
-  /**
-   * Registering a JsonMapper bean when there is none already exists in {@link
-   * org.springframework.beans.factory.BeanFactory}.
-   *
-   * <p>NOTE: This method SHOULD NOT be explicitly called as it might lead to unexpected behaviour
-   * due to the {@link ConditionalOnMissingBean} annotation. i.e. Calling this method when another
-   * JsonMapper bean is defined in the context might throw {@link
-   * org.springframework.beans.factory.NoSuchBeanDefinitionException}
-   *
-   * @return a new JsonMapper bean if none already exists in {@link
-   *     org.springframework.beans.factory.BeanFactory}
-   */
-  @Bean(name = "zeebeJsonMapper")
-  @ConditionalOnMissingBean
-  public JsonMapper jsonMapper(ObjectMapper objectMapper) {
-    return new ZeebeObjectMapper(objectMapper);
-  }
-
-  @Bean(name = "commonJsonMapper")
-  @ConditionalOnMissingBean
-  public io.camunda.common.json.JsonMapper commonJsonMapper(ObjectMapper objectMapper) {
-    return new SdkObjectMapper(objectMapper);
   }
 }

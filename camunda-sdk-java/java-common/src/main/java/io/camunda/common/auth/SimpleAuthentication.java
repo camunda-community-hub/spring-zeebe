@@ -19,8 +19,7 @@ public class SimpleAuthentication implements Authentication {
   private final SimpleConfig simpleConfig;
   private final Map<Product, String> tokens = new HashMap<>();
 
-
-  public SimpleAuthentication( SimpleConfig simpleConfig) {
+  public SimpleAuthentication(SimpleConfig simpleConfig) {
     this.simpleConfig = simpleConfig;
   }
 

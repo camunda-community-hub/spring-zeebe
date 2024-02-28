@@ -22,18 +22,20 @@ import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties.ClientMode;
 import io.camunda.zeebe.spring.client.properties.common.ApiProperties;
 import io.camunda.zeebe.spring.client.properties.common.AuthProperties;
-import io.camunda.zeebe.spring.client.properties.common.GlobalAuthProperties;
+import java.net.URL;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(CamundaClientProperties.class)
+@ConditionalOnProperty(prefix = "camunda.client", name = "mode")
 public class AuthenticationConfiguration {
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationConfiguration.class);
   private final CamundaClientProperties camundaClientProperties;
@@ -47,12 +49,13 @@ public class AuthenticationConfiguration {
   }
 
   @Bean
-  public Authentication camundaAuthentication(ClientMode clientMode) {
+  public Authentication camundaAuthentication() {
+    ClientMode clientMode = camundaClientProperties.getMode();
     // check which kind of authentication is used
     // simple: configure tasklist and operate only
     if (ClientMode.simple.equals(clientMode)) {
       SimpleConfig config = new SimpleConfig();
-      for (Product p : Product.values()) {
+      for (Product p : Product.coveredProducts()) {
         simpleCredentialForProduct(config, p);
       }
       return SimpleAuthentication.builder().withSimpleConfig(config).build();
@@ -61,7 +64,7 @@ public class AuthenticationConfiguration {
     if (ClientMode.oidc.equals(clientMode)) {
       IdentityConfig identityConfig = new IdentityConfig();
       JwtConfig jwtConfig = new JwtConfig();
-      for (Product p : Product.values()) {
+      for (Product p : Product.coveredProducts()) {
         oidcCredentialForProduct(identityConfig, jwtConfig, p);
       }
       return SelfManagedAuthentication.builder()
@@ -72,7 +75,9 @@ public class AuthenticationConfiguration {
     // saas: configure all
     if (ClientMode.saas.equals(clientMode)) {
       JwtConfig jwtConfig = new JwtConfig();
-      // TODO add all applications
+      for (Product p : Product.coveredProducts()) {
+        saasCredentialForProduct(jwtConfig, p);
+      }
       return SaaSAuthentication.builder()
           .withJwtConfig(jwtConfig)
           .withJsonMapper(jsonMapper)
@@ -82,85 +87,12 @@ public class AuthenticationConfiguration {
     }
   }
 
-  @Bean
-  public ClientMode camundaClientMode() {
-    // check if auth mode is given
-    if (hasAuthModeSet()) {
-      return camundaClientProperties.getMode();
-    }
-    // if not, check if properties allow for an explicit detection
-    // client id, client secret, cluster id -> saas
-    if (hasClusterIdSet()) {
-      return ClientMode.saas;
-    } else
-    // issuer, audience, client id, client secret -> oidc
-    if (hasOidcCredentialSet()) {
-      return ClientMode.oidc;
-    } else
-    // username, password -> simple
-    if (hasSimpleCredentialSet()) {
-      return ClientMode.simple;
-    } else {
-      throw new IllegalStateException("Could not detect auth mode");
-    }
-  }
-
-  private boolean hasAuthModeSet() {
-    return ofNullable(camundaClientProperties)
-        .map(CamundaClientProperties::getMode)
-        .isPresent();
-  }
-
-  private boolean hasClusterIdSet() {
-    return ofNullable(camundaClientProperties.getClusterId())
-        .isPresent();
-  }
-
-  private boolean hasOidcCredentialSet() {
-    for (Product p : Product.values()) {
-      if (enabledForProduct(p, ClientMode.oidc)) {
-        boolean clientCredentialsPresent =
-            ofNullable(authPropertiesForProduct(p).get())
-                    .map(AuthProperties::getClientId)
-                    .isPresent()
-                && ofNullable(authPropertiesForProduct(p).get())
-                    .map(AuthProperties::getClientSecret)
-                    .isPresent();
-        if (clientCredentialsPresent) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean hasSimpleCredentialSet() {
-    for (Product p : Product.values()) {
-      if (enabledForProduct(p, ClientMode.simple)) {
-        boolean clientCredentialsPresent =
-            ofNullable(authPropertiesForProduct(p).get())
-                    .map(AuthProperties::getUsername)
-                    .isPresent()
-                && ofNullable(authPropertiesForProduct(p).get())
-                    .map(AuthProperties::getPassword)
-                    .isPresent();
-        if (clientCredentialsPresent) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   private void simpleCredentialForProduct(SimpleConfig config, Product product) {
-    if (enabledForProduct(product, ClientMode.simple)) {
+    if (enabledForProduct(product)) {
       LOG.debug("{} is enabled", product);
       config.addProduct(
           product,
-          new SimpleCredential(
-              baseUrlForProduct(product, ClientMode.simple),
-              usernameForProduct(product),
-              passwordForProduct(product)));
+          new SimpleCredential(baseUrlForProduct(product).toString(), username(), password()));
     } else {
       LOG.debug("{} is disabled", product);
     }
@@ -168,17 +100,17 @@ public class AuthenticationConfiguration {
 
   private void oidcCredentialForProduct(
       IdentityConfig identityConfig, JwtConfig jwtConfig, Product product) {
-    if (enabledForProduct(product, ClientMode.oidc)) {
+    if (enabledForProduct(product)) {
       LOG.debug("{} is enabled", product);
       String issuer = globalIssuer();
       String issuerBackendUrl = globalIssuerBackendUrl();
-      String clientId = clientIdForProduct(product, ClientMode.oidc);
-      String clientSecret = clientSecretForProduct(product, ClientMode.oidc);
-      String audience = audienceForProduct(product, ClientMode.oidc);
+      String clientId = clientId();
+      String clientSecret = clientSecret();
+      String audience = audienceForProduct(product);
       jwtConfig.addProduct(product, new JwtCredential(clientId, clientSecret, audience, issuer));
       IdentityConfiguration identityCfg =
           new IdentityConfiguration(
-              baseUrlForProduct(Product.IDENTITY, ClientMode.oidc),
+              baseUrlForProduct(Product.IDENTITY).toString(),
               issuer,
               issuerBackendUrl,
               clientId,
@@ -193,34 +125,31 @@ public class AuthenticationConfiguration {
   }
 
   private void saasCredentialForProduct(JwtConfig jwtConfig, Product product) {
-    if (enabledForProduct(product, ClientMode.saas)) {
+    if (enabledForProduct(product)) {
       LOG.debug("{} is enabled", product);
-      jwtConfig.addProduct(
-          product,
-          new JwtCredential(
-              clientIdForProduct(product, ClientMode.saas),
-              clientSecretForProduct(product, ClientMode.saas),
-              audienceForProduct(product, ClientMode.saas),
-              globalIssuer()));
+      String issuer = globalIssuer();
+      String clientId = clientId();
+      String clientSecret = clientSecret();
+      String audience = audienceForProduct(product);
+      jwtConfig.addProduct(product, new JwtCredential(clientId, clientSecret, audience, issuer));
     } else {
       LOG.debug("{} is disabled", product);
     }
   }
 
   private String globalIssuer() {
-    return getGlobalAuthProperty("issuer", GlobalAuthProperties::getIssuer);
+    return getGlobalAuthProperty("issuer", AuthProperties::getIssuer);
   }
 
   private String globalIssuerBackendUrl() {
-    return getGlobalAuthProperty("issuer backend url", GlobalAuthProperties::getIssuerBackendUrl);
+    return getGlobalAuthProperty("issuer backend url", AuthProperties::getIssuerBackendUrl);
   }
 
   private Type globalOidcType() {
-    return getGlobalAuthProperty("oidc type", GlobalAuthProperties::getOidcType);
+    return getGlobalAuthProperty("oidc type", AuthProperties::getOidcType);
   }
 
-  private <T> T getGlobalAuthProperty(
-      String propertyName, Function<GlobalAuthProperties, T> getter) {
+  private <T> T getGlobalAuthProperty(String propertyName, Function<AuthProperties, T> getter) {
     return ofNullable(camundaClientProperties.getAuth())
         .map(getter)
         .orElseThrow(
@@ -229,93 +158,64 @@ public class AuthenticationConfiguration {
                     "Could not detect required auth property " + propertyName));
   }
 
-  private Boolean enabledForProduct(Product product, ClientMode clientMode) {
-    return getApiProperty("enabled", product, ApiProperties::getEnabled, clientMode);
+  private Boolean enabledForProduct(Product product) {
+    return getApiProperty("enabled", product, ApiProperties::getEnabled);
   }
 
-  private String baseUrlForProduct(Product product, ClientMode clientMode) {
-    return getApiProperty("base url", product, ApiProperties::getBaseUrl, clientMode);
+  private URL baseUrlForProduct(Product product) {
+    return getApiProperty("base url", product, ApiProperties::getBaseUrl);
   }
 
-  private String usernameForProduct(Product product) {
-    return getAuthProperty("username", product, AuthProperties::getUsername, ClientMode.simple);
+  private String username() {
+    return getAuthProperty("username", AuthProperties::getUsername);
   }
 
-  private String passwordForProduct(Product product) {
-    return getAuthProperty("password", product, AuthProperties::getPassword, ClientMode.simple);
+  private String password() {
+    return getAuthProperty("password", AuthProperties::getPassword);
   }
 
-  private String clientIdForProduct(Product product, ClientMode clientMode) {
-    return getAuthProperty("client id", product, AuthProperties::getClientId, clientMode);
+  private String clientId() {
+    return getAuthProperty("client id", AuthProperties::getClientId);
   }
 
-  private String clientSecretForProduct(Product product, ClientMode clientMode) {
-    return getAuthProperty("client secret", product, AuthProperties::getClientSecret, clientMode);
+  private String clientSecret() {
+    return getAuthProperty("client secret", AuthProperties::getClientSecret);
   }
 
-  private String audienceForProduct(Product product, ClientMode clientMode) {
-    return getApiProperty("audience", product, ApiProperties::getAudience, clientMode);
+  private String audienceForProduct(Product product) {
+    return getApiProperty("audience", product, ApiProperties::getAudience);
   }
 
   private <T> T getApiProperty(
-      String propertyName, Product product, Function<ApiProperties, T> getter, ClientMode clientMode
-  ) {
-    return getApiProperty(
-        product + " " + propertyName,
-        getter,
-        apiPropertiesForProduct(product),
-        defaultApiPropertiesForProductAndMode(product, clientMode));
+      String propertyName, Product product, Function<ApiProperties, T> getter) {
+    return getApiProperty(product + " " + propertyName, getter, apiPropertiesForProduct(product));
   }
 
-  private ApiPropertiesSupplier defaultApiPropertiesForProductAndMode(Product product, ClientMode clientMode) {
-    return apiPropertiesForProduct(CamundaClientProperties.DEFAULT_CLIENT_PROPERTIES.get(clientMode),product);
-  }
-
-  private <T> T getAuthProperty(
-      String propertyName, Product product, Function<AuthProperties, T> getter, ClientMode clientMode
-  ) {
-    return getAuthProperty(
-        product + " " + propertyName,
-        getter,
-        authPropertiesForProduct(product),
-        camundaClientProperties::getAuth,
-        defaultAuthPropertiesForProductAndMode(product, clientMode));
-  }
-
-  private AuthPropertiesSupplier defaultAuthPropertiesForProductAndMode(Product product, ClientMode clientMode) {
-    return authPropertiesForProduct(CamundaClientProperties.DEFAULT_CLIENT_PROPERTIES.get(clientMode),product);
+  private <T> T getAuthProperty(String propertyName, Function<AuthProperties, T> getter) {
+    return getAuthProperty(propertyName, getter, camundaClientProperties::getAuth);
   }
 
   private ApiPropertiesSupplier apiPropertiesForProduct(Product product) {
-    return apiPropertiesForProduct(camundaClientProperties,product);
+    return apiPropertiesForProduct(camundaClientProperties, product);
   }
 
-  private ApiPropertiesSupplier apiPropertiesForProduct(CamundaClientProperties properties, Product product){
-    switch (product) {
-    case OPERATE -> {
-      return properties::getOperate;
-    }
-    case TASKLIST -> {
-      return properties::getTasklist;
-    }
-    default -> {
-      throw new IllegalStateException(
-        "Could not detect auth properties supplier for product " + product);
-    }
-    }
-  }
-
-  private AuthPropertiesSupplier authPropertiesForProduct(Product product) {
-    return authPropertiesForProduct(camundaClientProperties,product);
-  }
-
-  private AuthPropertiesSupplier authPropertiesForProduct(CamundaClientProperties properties,Product product) {
+  private ApiPropertiesSupplier apiPropertiesForProduct(
+      CamundaClientProperties properties, Product product) {
     switch (product) {
       case OPERATE -> {
-        return camundaClientProperties::getOperate;
+        return properties::getOperate;
       }
       case TASKLIST -> {
-        return camundaClientProperties::getTasklist;
+        return properties::getTasklist;
+      }
+      case ZEEBE -> {
+        return properties::getZeebe;
+      }
+      case OPTIMIZE -> {
+        return properties::getOptimize;
+      }
+      case IDENTITY -> {
+        return properties::getIdentity;
       }
       default -> {
         throw new IllegalStateException(

@@ -9,11 +9,13 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.spring.client.CamundaAutoConfiguration;
 import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import java.time.Duration;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -46,6 +48,7 @@ import org.springframework.test.util.ReflectionTestUtils;
     })
 public class ZeebeClientStarterAutoConfigurationCustomJsonMapperTest {
 
+  @EnableConfigurationProperties(CamundaClientProperties.class)
   public static class TestConfig {
     @Bean
     public io.camunda.common.json.JsonMapper commonJsonMapper() {

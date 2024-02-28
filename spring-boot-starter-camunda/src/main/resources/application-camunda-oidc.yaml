@@ -1,10 +1,12 @@
 camunda:
   client:
     mode: oidc
+    tenant-ids:
+    - <default>
     auth:
       oidc-type: keycloak
       issuer: http://localhost:18080/auth/realms/camunda-platform
-      issuer-backend-url: http://localhost:18080/auth/realms/camunda-platform
+      issuer-backend-url: ${camunda.client.auth.issuer}
     zeebe:
       enabled: true
       base-url: http://localhost:26500
@@ -25,7 +27,3 @@ camunda:
       enabled: true
       base-url: http://localhost:8084
       audience: identity-api
-    console:
-      enabled: false
-    web-modeler:
-      enabled: false

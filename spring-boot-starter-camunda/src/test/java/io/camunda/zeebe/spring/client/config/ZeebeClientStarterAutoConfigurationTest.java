@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.spring.client.CamundaAutoConfiguration;
+import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
@@ -37,10 +40,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ContextConfiguration(
     classes = {
       CamundaAutoConfiguration.class,
-      ZeebeClientStarterAutoConfigurationTest.TestConfig.class
+      ZeebeClientStarterAutoConfigurationTest.TestConfig.class,
+      JsonMapperConfiguration.class
     })
 public class ZeebeClientStarterAutoConfigurationTest {
 
+  @EnableConfigurationProperties(CamundaClientProperties.class)
   public static class TestConfig {
 
     @Bean

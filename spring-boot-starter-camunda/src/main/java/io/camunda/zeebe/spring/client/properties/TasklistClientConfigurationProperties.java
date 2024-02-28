@@ -4,4 +4,5 @@ import io.camunda.zeebe.spring.client.properties.common.Client;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "tasklist.client")
+@Deprecated
 public class TasklistClientConfigurationProperties extends Client {}

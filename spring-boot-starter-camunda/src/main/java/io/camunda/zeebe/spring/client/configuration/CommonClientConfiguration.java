@@ -11,6 +11,7 @@ import io.camunda.identity.sdk.Identity;
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.zeebe.spring.client.properties.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Bean;
   CommonConfigurationProperties.class,
   ZeebeSelfManagedProperties.class
 })
+@Deprecated
 public class CommonClientConfiguration {
 
   @Autowired(required = false)
@@ -45,6 +47,7 @@ public class CommonClientConfiguration {
   private IdentityConfiguration identityConfigurationFromProperties;
 
   @Bean
+  @ConditionalOnMissingBean
   public Authentication authentication(JsonMapper jsonMapper) {
 
     // TODO: Refactor
@@ -77,9 +80,7 @@ public class CommonClientConfiguration {
                     operateClientConfigurationProperties.getUsername(),
                     operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
-            return SimpleAuthentication.builder()
-                .withSimpleConfig(simpleConfig)
-                .build();
+            return SimpleAuthentication.builder().withSimpleConfig(simpleConfig).build();
           }
         }
 
@@ -120,9 +121,7 @@ public class CommonClientConfiguration {
                     commonConfigurationProperties.getUsername(),
                     commonConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
-            return SimpleAuthentication.builder()
-                .withSimpleConfig(simpleConfig)
-                .build();
+            return SimpleAuthentication.builder().withSimpleConfig(simpleConfig).build();
           }
         }
       }

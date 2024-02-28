@@ -9,11 +9,14 @@ public class ZeebeGatewayProperties extends ApiProperties {
   private Duration jobTimeout;
   private Duration jobPollInterval;
   private Duration messageTimeToLive;
+  private Integer maxMessageSize;
   private Duration requestTimeout;
   private String caCertificatePath;
   private Duration keepAlive;
   private String overrideAuthority;
-
+  private Boolean ownsJobWorkerExecutor;
+  private Boolean jobWorkerStreamEnabled;
+  private Boolean defaultRetryPolicy;
 
   public Integer getExecutionThreads() {
     return executionThreads;
@@ -93,5 +96,37 @@ public class ZeebeGatewayProperties extends ApiProperties {
 
   public void setOverrideAuthority(String overrideAuthority) {
     this.overrideAuthority = overrideAuthority;
+  }
+
+  public Integer getMaxMessageSize() {
+    return maxMessageSize;
+  }
+
+  public void setMaxMessageSize(Integer maxMessageSize) {
+    this.maxMessageSize = maxMessageSize;
+  }
+
+  public Boolean getOwnsJobWorkerExecutor() {
+    return ownsJobWorkerExecutor;
+  }
+
+  public void setOwnsJobWorkerExecutor(Boolean ownsJobWorkerExecutor) {
+    this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
+  }
+
+  public Boolean getJobWorkerStreamEnabled() {
+    return jobWorkerStreamEnabled;
+  }
+
+  public void setJobWorkerStreamEnabled(Boolean jobWorkerStreamEnabled) {
+    this.jobWorkerStreamEnabled = jobWorkerStreamEnabled;
+  }
+
+  public Boolean getDefaultRetryPolicy() {
+    return defaultRetryPolicy;
+  }
+
+  public void setDefaultRetryPolicy(Boolean defaultRetryPolicy) {
+    this.defaultRetryPolicy = defaultRetryPolicy;
   }
 }

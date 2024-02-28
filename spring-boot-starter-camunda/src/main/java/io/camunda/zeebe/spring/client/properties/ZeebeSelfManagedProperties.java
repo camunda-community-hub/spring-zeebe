@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "zeebe")
+@Deprecated
 public class ZeebeSelfManagedProperties {
 
   @Value("${zeebe.authorization.server.url:#{null}}")
