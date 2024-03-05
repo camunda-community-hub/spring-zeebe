@@ -11,6 +11,7 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import java.lang.invoke.MethodHandles;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +86,9 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
               annotation.enabled(),
               methodInfo,
               Arrays.asList(annotation.tenantIds()),
-              annotation.fetchAllVariables()));
+              annotation.fetchAllVariables(),
+              annotation.autoExtendTimeout(),
+              Duration.ofSeconds(annotation.extendTimeoutPeriodSeconds())));
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
@@ -103,7 +106,9 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
                 annotation.enabled(),
                 methodInfo,
                 Arrays.asList(annotation.tenantIds()),
-                annotation.forceFetchAllVariables()));
+                annotation.forceFetchAllVariables(),
+                annotation.autoExtendTimeout(),
+                Duration.ofSeconds(annotation.extendTimeoutPeriodSeconds())));
       }
     }
     return Optional.empty();

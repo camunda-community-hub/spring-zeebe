@@ -41,6 +41,7 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
     applyDefaultWorkerName(zeebeWorker);
     applyDefaultJobWorkerType(zeebeWorker);
     applyFetchVariables(zeebeWorker);
+    applyAutoExtendTimeout(zeebeWorker);
     applyOverrides(zeebeWorker);
   }
 
@@ -153,6 +154,17 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
             generatedJobWorkerType);
         zeebeWorker.setType(generatedJobWorkerType);
       }
+    }
+  }
+
+  private void applyAutoExtendTimeout(ZeebeWorkerValue workerValue) {
+    if (!workerValue.isAutoExtendTimeout()) {
+      workerValue.setAutoExtendTimeout(
+          zeebeClientConfigurationProperties.getJob().isAutoExtendTimeout());
+    }
+    if (workerValue.getExtendTimeoutPeriod() == null) {
+      workerValue.setExtendTimeoutPeriod(
+          zeebeClientConfigurationProperties.getJob().getExtendTimeoutPeriod());
     }
   }
 }

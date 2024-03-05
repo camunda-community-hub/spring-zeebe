@@ -81,5 +81,9 @@ public @interface JobWorker {
 
   boolean enabled() default true;
 
+  boolean autoExtendTimeout() default false;
+
+  long extendTimeoutPeriodSeconds() default -1;
+
   String[] tenantIds() default {};
 }

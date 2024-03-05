@@ -550,13 +550,26 @@ public class ZeebeClientConfigurationProperties {
 
   public static class Job {
 
-    @Override
-    public String toString() {
-      return "Job{" + "timeout=" + timeout + ", pollInterval=" + pollInterval + '}';
-    }
-
     private Duration timeout = DEFAULT.getDefaultJobTimeout();
     private Duration pollInterval = DEFAULT.getDefaultJobPollInterval();
+    private boolean autoExtendTimeout;
+    private Duration extendTimeoutPeriod = Duration.ofSeconds(30);
+
+    public Duration getExtendTimeoutPeriod() {
+      return extendTimeoutPeriod;
+    }
+
+    public void setExtendTimeoutPeriod(Duration extendTimeoutPeriod) {
+      this.extendTimeoutPeriod = extendTimeoutPeriod;
+    }
+
+    public boolean isAutoExtendTimeout() {
+      return autoExtendTimeout;
+    }
+
+    public void setAutoExtendTimeout(boolean autoExtendTimeout) {
+      this.autoExtendTimeout = autoExtendTimeout;
+    }
 
     public Duration getTimeout() {
       return timeout;
@@ -575,16 +588,33 @@ public class ZeebeClientConfigurationProperties {
     }
 
     @Override
+    public String toString() {
+      return "Job{"
+          + "timeout="
+          + timeout
+          + ", pollInterval="
+          + pollInterval
+          + ", autoExtendTimeout="
+          + autoExtendTimeout
+          + ", extendTimeoutPeriod="
+          + extendTimeoutPeriod
+          + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       Job job = (Job) o;
-      return Objects.equals(timeout, job.timeout) && Objects.equals(pollInterval, job.pollInterval);
+      return autoExtendTimeout == job.autoExtendTimeout
+          && Objects.equals(timeout, job.timeout)
+          && Objects.equals(pollInterval, job.pollInterval)
+          && Objects.equals(extendTimeoutPeriod, job.extendTimeoutPeriod);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(timeout, pollInterval);
+      return Objects.hash(timeout, pollInterval, autoExtendTimeout, extendTimeoutPeriod);
     }
   }
 
