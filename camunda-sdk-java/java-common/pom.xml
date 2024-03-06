@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda.spring</groupId>
     <artifactId>camunda-sdk-java</artifactId>
-    <version>8.5.0-alpha2</version>
+    <version>8.5.0-alpha3-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-common</artifactId>
