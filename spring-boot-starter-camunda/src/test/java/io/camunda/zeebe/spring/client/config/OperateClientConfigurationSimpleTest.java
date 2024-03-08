@@ -8,10 +8,12 @@ import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = {OperateClientConfiguration.class, AuthenticationConfiguration.class})
-@ActiveProfiles("camunda-simple")
+@SpringBootTest(
+    classes = {OperateClientConfiguration.class, AuthenticationConfiguration.class},
+    properties = {
+      "camunda.client.mode=simple",
+    })
 public class OperateClientConfigurationSimpleTest {
   @Autowired CamundaOperateClient camundaOperateClient;
 

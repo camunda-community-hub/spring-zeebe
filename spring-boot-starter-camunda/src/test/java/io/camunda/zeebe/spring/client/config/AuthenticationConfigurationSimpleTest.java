@@ -11,15 +11,14 @@ import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
     classes = {AuthenticationConfiguration.class},
     properties = {
+      "camunda.client.mode=simple",
       "camunda.client.operate.base-url=http://localhost:15864",
       "camunda.client.tasklist.base-url=http://localhost:15864"
     })
-@ActiveProfiles("camunda-simple")
 @WireMockTest(httpPort = 15864)
 public class AuthenticationConfigurationSimpleTest {
   @Autowired Authentication authentication;

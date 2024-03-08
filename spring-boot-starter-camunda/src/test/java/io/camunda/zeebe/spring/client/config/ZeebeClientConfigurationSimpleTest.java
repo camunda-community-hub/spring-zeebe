@@ -11,11 +11,10 @@ import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
-    classes = {ZeebeClientAllAutoConfiguration.class, ZeebeClientProdAutoConfiguration.class})
-@ActiveProfiles("camunda-simple")
+    classes = {ZeebeClientAllAutoConfiguration.class, ZeebeClientProdAutoConfiguration.class},
+    properties = "camunda.client.mode=simple")
 public class ZeebeClientConfigurationSimpleTest {
   @Autowired ZeebeClientConfiguration zeebeClientConfiguration;
   @Autowired JsonMapper jsonMapper;

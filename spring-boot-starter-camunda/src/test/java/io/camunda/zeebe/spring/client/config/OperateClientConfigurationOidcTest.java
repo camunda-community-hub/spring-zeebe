@@ -8,15 +8,14 @@ import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
     classes = {OperateClientConfiguration.class, AuthenticationConfiguration.class},
     properties = {
+      "camunda.client.mode=oidc",
       "camunda.client.auth.client-id=my-client-id",
       "camunda.client.auth.client-secret=my-client-secret"
     })
-@ActiveProfiles("camunda-oidc")
 public class OperateClientConfigurationOidcTest {
   @Autowired CamundaOperateClient camundaOperateClient;
 

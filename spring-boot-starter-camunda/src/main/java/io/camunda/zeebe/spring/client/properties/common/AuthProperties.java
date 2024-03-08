@@ -2,7 +2,6 @@ package io.camunda.zeebe.spring.client.properties.common;
 
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.identity.sdk.IdentityConfiguration.Type;
-import jakarta.annotation.PostConstruct;
 
 public class AuthProperties {
 
@@ -32,8 +31,6 @@ public class AuthProperties {
   public void setIssuer(String issuer) {
     this.issuer = issuer;
   }
-
-
 
   public String getUsername() {
     return username;

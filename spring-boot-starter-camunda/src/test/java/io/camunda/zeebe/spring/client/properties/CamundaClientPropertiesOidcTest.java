@@ -6,10 +6,10 @@ import io.camunda.zeebe.spring.client.properties.CamundaClientProperties.ClientM
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = CamundaClientPropertiesTestConfig.class)
-@ActiveProfiles("camunda-oidc")
+@SpringBootTest(
+    classes = CamundaClientPropertiesTestConfig.class,
+    properties = "camunda.client.mode=oidc")
 public class CamundaClientPropertiesOidcTest {
   @Autowired CamundaClientProperties properties;
 

@@ -142,7 +142,6 @@ public class AuthenticationConfiguration {
     return getGlobalAuthProperty("issuer", AuthProperties::getIssuer);
   }
 
-
   private Type globalOidcType() {
     return getGlobalAuthProperty("oidc type", AuthProperties::getOidcType);
   }

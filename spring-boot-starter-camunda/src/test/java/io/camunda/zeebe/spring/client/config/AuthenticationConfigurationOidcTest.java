@@ -14,17 +14,16 @@ import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
     classes = {AuthenticationConfiguration.class},
     properties = {
+      "camunda.client.mode=oidc",
       "camunda.client.auth.client-id=my-client-id",
       "camunda.client.auth.client-secret=my-client-secret",
       "camunda.client.auth.issuer=http://localhost:14682/auth-server"
     })
-@ActiveProfiles("camunda-oidc")
 @WireMockTest(httpPort = 14682)
 public class AuthenticationConfigurationOidcTest {
   private static final String ACCESS_TOKEN =

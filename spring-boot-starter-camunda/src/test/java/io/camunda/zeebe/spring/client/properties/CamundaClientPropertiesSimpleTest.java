@@ -6,10 +6,10 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = CamundaClientPropertiesTestConfig.class)
-@ActiveProfiles("camunda-simple")
+@SpringBootTest(
+    classes = CamundaClientPropertiesTestConfig.class,
+    properties = "camunda.client.mode=simple")
 public class CamundaClientPropertiesSimpleTest {
   @Autowired CamundaClientProperties properties;
 

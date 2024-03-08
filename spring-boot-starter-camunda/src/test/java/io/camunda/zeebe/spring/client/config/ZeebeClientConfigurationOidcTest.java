@@ -12,15 +12,14 @@ import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
     classes = {ZeebeClientAllAutoConfiguration.class, ZeebeClientProdAutoConfiguration.class},
     properties = {
+      "camunda.client.mode=oidc",
       "camunda.client.auth.client-id=my-client-id",
       "camunda.client.auth.client-secret=my-client-secret"
     })
-@ActiveProfiles("camunda-oidc")
 public class ZeebeClientConfigurationOidcTest {
   @Autowired ZeebeClientConfiguration zeebeClientConfiguration;
   @Autowired JsonMapper jsonMapper;

@@ -11,19 +11,18 @@ import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
     classes = {AuthenticationConfiguration.class},
     properties = {
+      "camunda.client.mode=saas",
       "camunda.client.cluster-id=12345",
       "camunda.client.region=bru-2",
       "camunda.client.auth.client-id=my-client-id",
       "camunda.client.auth.client-secret=my-client-secret",
       "camunda.client.auth.issuer=http://localhost:14682/auth-server"
     })
-@ActiveProfiles("camunda-saas")
 @WireMockTest(httpPort = 14682)
 public class AuthenticationConfigurationSaasTest {
   private static final String ACCESS_TOKEN =
