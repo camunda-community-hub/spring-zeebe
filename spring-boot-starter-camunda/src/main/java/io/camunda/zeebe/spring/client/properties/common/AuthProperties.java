@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties.common;
 
 import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.identity.sdk.IdentityConfiguration.Type;
+import jakarta.annotation.PostConstruct;
 
 public class AuthProperties {
 
@@ -15,7 +16,6 @@ public class AuthProperties {
 
   private IdentityConfiguration.Type oidcType;
   private String issuer;
-  private String issuerBackendUrl;
 
   public Type getOidcType() {
     return oidcType;
@@ -33,13 +33,7 @@ public class AuthProperties {
     this.issuer = issuer;
   }
 
-  public String getIssuerBackendUrl() {
-    return issuerBackendUrl;
-  }
 
-  public void setIssuerBackendUrl(String issuerBackendUrl) {
-    this.issuerBackendUrl = issuerBackendUrl;
-  }
 
   public String getUsername() {
     return username;

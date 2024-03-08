@@ -121,7 +121,7 @@ Settings > Build, Execution, Deployment > Compiler > Java Compiler
 
 ## Configuring Camunda 8 connection
 
-The default properties for setting up all connection details are hidden in spring profiles. Each connection mode has a spring profile that will make your life easier.
+The default properties for setting up all connection details are hidden in modes. Each connection mode has meaningful defaults that will make your life easier.
 
 >Zeebe will now also be configured with an URL (`http://localhost:26500` instead of `localhost:26500` + plaintext connection flag)
 
@@ -130,11 +130,9 @@ The default properties for setting up all connection details are hidden in sprin
 Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.yaml`:
 
 ```yaml
-spring:
-  profiles:
-    active: camunda-saas
 camunda:
   client:
+    mode: saas
     auth:
       client-id: <your client id>
       client-secret: <your client secret>
@@ -147,9 +145,9 @@ camunda:
 If you set up a local dev cluster, your applications will use a cookie to authenticate. As long as the port config is default, there is nothing to configure rather than the according spring profile:
 
 ```yaml
-spring:
-  profiles:
-    active: camunda-simple
+camunda:
+  client:
+    mode: simple
 ```
 
 If you have different endpoints for your applications, disable a client or adjust the username or password used, you can configure this:
@@ -157,6 +155,7 @@ If you have different endpoints for your applications, disable a client or adjus
 ```yaml
 camunda:
   client:
+    mode: simple
     auth:
       username: demo
       password: demo
@@ -176,11 +175,9 @@ camunda:
 If you set up a self-managed cluster with identity, keycloak is used as default identity provider. As long as the port config (from docker-compose or port-forward with the helm charts) is default, you need to configure the according spring profile plus client credentials:
 
 ```yaml
-spring:
-  profiles:
-    active: camunda-oidc
 camunda:
   client:
+    mode: oidc
     auth:
       client-id: <your client id>
       client-secret: <your client secret>
@@ -191,6 +188,7 @@ If you have different endpoints for your applications or want to disable a clien
 ```yaml
 camunda:
   client:
+    mode: oidc
     tenant-ids:
     - <default>
     auth:

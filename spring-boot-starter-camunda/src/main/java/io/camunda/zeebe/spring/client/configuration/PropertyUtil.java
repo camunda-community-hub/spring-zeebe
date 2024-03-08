@@ -30,7 +30,9 @@ public class PropertyUtil {
     if (configCache != null) {
       try {
         LOG.debug("Property {}: Loading from cache", propertyName);
-        property = (T) configCache.get(propertyName);
+        if(configCache.containsKey(propertyName)){
+          return (T) configCache.get(propertyName);
+        }
       } catch (Exception e) {
         LOG.debug("Error while loading cached property " + propertyName, e);
       }
@@ -72,6 +74,6 @@ public class PropertyUtil {
         // ignore
       }
     }
-    return null;
+    return () -> defaultProperty;
   }
 }

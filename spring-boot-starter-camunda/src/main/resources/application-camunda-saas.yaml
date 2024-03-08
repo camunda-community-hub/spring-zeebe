@@ -5,7 +5,6 @@ camunda:
     - <default>
     auth:
       issuer: https://login.cloud.camunda.io/oauth/token
-      issuer-backend-url: ${camunda.client.auth.issuer}
     zeebe:
       enabled: true
       audience: zeebe.camunda.io

@@ -105,7 +105,6 @@ public class AuthenticationConfiguration {
     if (enabledForProduct(product)) {
       LOG.debug("{} is enabled", product);
       String issuer = globalIssuer();
-      String issuerBackendUrl = globalIssuerBackendUrl();
       String clientId = clientId();
       String clientSecret = clientSecret();
       String audience = audienceForProduct(product);
@@ -114,7 +113,7 @@ public class AuthenticationConfiguration {
           new IdentityConfiguration(
               baseUrlForProduct(Product.IDENTITY).toString(),
               issuer,
-              issuerBackendUrl,
+              issuer,
               clientId,
               clientSecret,
               audience,
@@ -143,9 +142,6 @@ public class AuthenticationConfiguration {
     return getGlobalAuthProperty("issuer", AuthProperties::getIssuer);
   }
 
-  private String globalIssuerBackendUrl() {
-    return getGlobalAuthProperty("issuer backend url", AuthProperties::getIssuerBackendUrl);
-  }
 
   private Type globalOidcType() {
     return getGlobalAuthProperty("oidc type", AuthProperties::getOidcType);
