@@ -1,8 +1,11 @@
-package io.camunda.zeebe.spring.client.config.authentication;
+package io.camunda.zeebe.spring.client.config.legacy.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.common.auth.*;
+import io.camunda.common.auth.Authentication;
+import io.camunda.common.auth.JwtCredential;
+import io.camunda.common.auth.Product;
+import io.camunda.common.auth.SelfManagedAuthentication;
 import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
@@ -26,16 +29,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
       "zeebe.client.id=client-id",
       "zeebe.client.secret=client-secret",
       "zeebe.token.audience=sample-audience",
-      "camunda.operate.client.url=http://localhost:8081",
-      "camunda.identity.issuer=http://some-oidc-issuer",
-      "camunda.identity.issuer-backend-url=http://some-oidc-issuer-backend-url",
-      "camunda.identity.type=MICROSOFT",
-      "camunda.identity.client-id=client-id2",
-      "camunda.identity.client-secret=client-secret2",
-      "camunda.identity.audience=sample-audience2"
+      "camunda.operate.client.keycloak-url=https://local-keycloak",
+      "camunda.operate.client.url=http://localhost:8081"
     })
-@ContextConfiguration(classes = OperateSelfManagedIdentityTest.TestConfig.class)
-public class OperateSelfManagedIdentityTest {
+@ContextConfiguration(classes = OperateSelfManagedKeycloakUrlTest.TestConfig.class)
+public class OperateSelfManagedKeycloakUrlTest {
 
   @ImportAutoConfiguration({
     CommonClientConfiguration.class,
@@ -63,7 +61,7 @@ public class OperateSelfManagedIdentityTest {
     JwtCredential jwtCredential =
         selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
 
-    assertThat(jwtCredential.getClientId()).isEqualTo("client-id2");
-    assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret2");
+    assertThat(jwtCredential.getClientId()).isEqualTo("client-id");
+    assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret");
   }
 }

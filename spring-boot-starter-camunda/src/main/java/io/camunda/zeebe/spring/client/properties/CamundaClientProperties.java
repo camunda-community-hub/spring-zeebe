@@ -2,7 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import io.camunda.zeebe.spring.client.properties.common.ApiProperties;
 import io.camunda.zeebe.spring.client.properties.common.AuthProperties;
-import io.camunda.zeebe.spring.client.properties.common.ZeebeGatewayProperties;
+import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -20,7 +20,7 @@ public class CamundaClientProperties {
   @NestedConfigurationProperty private ApiProperties tasklist;
   @NestedConfigurationProperty private ApiProperties optimize;
   @NestedConfigurationProperty private ApiProperties identity;
-  @NestedConfigurationProperty private ZeebeGatewayProperties zeebe;
+  @NestedConfigurationProperty private ZeebeClientProperties zeebe;
 
   public ClientMode getMode() {
     return mode;
@@ -62,11 +62,11 @@ public class CamundaClientProperties {
     this.optimize = optimize;
   }
 
-  public ZeebeGatewayProperties getZeebe() {
+  public ZeebeClientProperties getZeebe() {
     return zeebe;
   }
 
-  public void setZeebe(ZeebeGatewayProperties zeebe) {
+  public void setZeebe(ZeebeClientProperties zeebe) {
     this.zeebe = zeebe;
   }
 

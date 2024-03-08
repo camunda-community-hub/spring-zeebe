@@ -355,8 +355,12 @@ public void foo() {
 
 As a third possibility, you can set a default job type:
 
-```properties
-zeebe.client.worker.default-type=foo
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        type: foo
 ```
 
 This is used for all workers that do **not** set a task type via the annoation.
@@ -387,7 +391,7 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variab
 }
 ```
 
-With `@Variable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
+With `@Variable`, `@VariablesAsType` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
 
 ```java
 @JobWorker(type = "foo", fetchAllVariables = true)
@@ -510,7 +514,7 @@ public void handleFoo(@CustomHeaders Map<String, String> headers){
 }
 ```
 
-Of course you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
+Of course, you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
 
 ```java
 @JobWorker
@@ -544,46 +548,37 @@ public void handleJobFoo() {
 
 If you don't want to use a ZeebeClient for certain scenarios, you can switch it off by setting:
 
-```properties
-zeebe.client.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      enabled: false
 ```
-
-### Configuring Self-managed Zeebe Connection
-
-```properties
-zeebe.client.broker.gateway-address=127.0.0.1:26500
-zeebe.client.security.plaintext=true
-```
-
-### Configure different cloud environments
-
-If you don't connect to the Camunda SaaS production environment you might have to also adjust these properties:
-
-```properties
-zeebe.client.cloud.base-url=zeebe.camunda.io
-zeebe.client.cloud.port=443
-zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
-```
-
-As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping).
-
 
 ### Default task type
 
 
 If you build a worker that only serves one thing, it might also be handy to define the worker job type globally - and not in the annotation:
 
-```properties
-zeebe.client.worker.defaultType=foo
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        type: foo
 ```
 
 ### Configure jobs in flight and thread pool
 
 Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
 
-```properties
-zeebe.client.worker.max-jobs-active=32
-zeebe.client.worker.threads=1
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        max-jobs-active: 32
+      execution-threads: 1
 ```
 
 For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](spring-boot-starter-camunda/src/main/java/io/camunda/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
@@ -620,10 +615,15 @@ class SomeClass {
 }
 ```
 
-You can also override this setting via your `application.properties` file:
+You can also override this setting via your `application.yaml` file:
 
-```properties
-zeebe.client.worker.override.foo.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          enabled: false
 ```
 
 This is especially useful, if you have a bigger code base including many workers, but want to start only some of them. Typical use cases are
@@ -632,21 +632,40 @@ This is especially useful, if you have a bigger code base including many workers
 * Load Balancing: You want to control which workers run on which instance of cluster nodes
 * Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new.
 
+To disable all workers, but still have the zeebe client available, you can use:
+
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        enabled: false
+```
 
 ### Overriding `JobWorker` values via configuration file
 
 You can override the `JobWorker` annotation's values, as you could see in the example above where the `enabled` property is overridden:
 
-```properties
-zeebe.client.worker.override.foo.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          enabled: false
 ```
 
 In this case, `foo` is the type of the worker that we want to customize.
 
 You can override all supported configuration options for a worker, e.g.:
 
-```properties
-zeebe.client.worker.override.foo.timeout=10000
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          timeout: PT10S
 ```
 
 You could also provide a custom class that can customize the `JobWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
@@ -655,18 +674,37 @@ You could also provide a custom class that can customize the `JobWorker` configu
 
 >Please read aboutt this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
 
-To enable job streaming on the zeebe client, you can configure it:
+To control job streaming on the zeebe client, you can configure it:
 
-```properties
-zeebe.client.default-job-worker-stream-enabled=true
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        stream-enabled: true
+```
+
+This also works for every worker individual:
+
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          stream-enabled: true
 ```
 
 ### Control tenant usage
 
 When using multi-tenancy, the zeebe client will connect to the `<default>` tenant. To control this, you can configure:
 
-```properties
-zeebe.client.default-job-worker-tenant-ids=myTenant
+```yaml
+camunda:
+  client:
+    tenant-ids:
+    - <default>
+    - foo
 ```
 
 Additionally, you can set tenant ids on job worker level by using the annotation:
@@ -677,8 +715,15 @@ Additionally, you can set tenant ids on job worker level by using the annotation
 
 You can override this property as well:
 
-```properties
-zeebe.client.worker.override.tenant-ids=myThirdTenant
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          tenants-ids:
+          - <default>
+          - foo
 ```
 
 ## Observing metrics
@@ -698,8 +743,12 @@ For all of those metrics, the following actions are recorded:
 
 In a default setup, you can can enable metrics to be served via http:
 
-```properties
-management.endpoints.web.exposure.include=metrics
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics
 ```
 
 And then access them via http://localhost:8080/actuator/metrics/.

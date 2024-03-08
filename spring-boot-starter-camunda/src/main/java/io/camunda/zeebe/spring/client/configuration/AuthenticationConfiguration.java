@@ -32,10 +32,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
 @EnableConfigurationProperties(CamundaClientProperties.class)
 @ConditionalOnProperty(prefix = "camunda.client", name = "mode")
+@Import(JsonMapperConfiguration.class)
 public class AuthenticationConfiguration {
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationConfiguration.class);
   private final CamundaClientProperties camundaClientProperties;

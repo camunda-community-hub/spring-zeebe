@@ -1,13 +1,11 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
+import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import java.time.Duration;
+import java.util.Map;
 
-public class ZeebeGatewayProperties extends ApiProperties {
+public class ZeebeClientProperties extends ApiProperties {
   private Integer executionThreads;
-  private Integer maxJobsActive;
-  private String jobWorkerName;
-  private Duration jobTimeout;
-  private Duration jobPollInterval;
   private Duration messageTimeToLive;
   private Integer maxMessageSize;
   private Duration requestTimeout;
@@ -15,8 +13,25 @@ public class ZeebeGatewayProperties extends ApiProperties {
   private Duration keepAlive;
   private String overrideAuthority;
   private Boolean ownsJobWorkerExecutor;
-  private Boolean jobWorkerStreamEnabled;
   private Boolean defaultRetryPolicy;
+  private ZeebeWorkerValue defaults;
+  private Map<String, ZeebeWorkerValue> override;
+
+  public ZeebeWorkerValue getDefaults() {
+    return defaults;
+  }
+
+  public void setDefaults(ZeebeWorkerValue defaults) {
+    this.defaults = defaults;
+  }
+
+  public Map<String, ZeebeWorkerValue> getOverride() {
+    return override;
+  }
+
+  public void setOverride(Map<String, ZeebeWorkerValue> override) {
+    this.override = override;
+  }
 
   public Integer getExecutionThreads() {
     return executionThreads;
@@ -24,38 +39,6 @@ public class ZeebeGatewayProperties extends ApiProperties {
 
   public void setExecutionThreads(Integer executionThreads) {
     this.executionThreads = executionThreads;
-  }
-
-  public Integer getMaxJobsActive() {
-    return maxJobsActive;
-  }
-
-  public void setMaxJobsActive(Integer maxJobsActive) {
-    this.maxJobsActive = maxJobsActive;
-  }
-
-  public String getJobWorkerName() {
-    return jobWorkerName;
-  }
-
-  public void setJobWorkerName(String jobWorkerName) {
-    this.jobWorkerName = jobWorkerName;
-  }
-
-  public Duration getJobTimeout() {
-    return jobTimeout;
-  }
-
-  public void setJobTimeout(Duration jobTimeout) {
-    this.jobTimeout = jobTimeout;
-  }
-
-  public Duration getJobPollInterval() {
-    return jobPollInterval;
-  }
-
-  public void setJobPollInterval(Duration jobPollInterval) {
-    this.jobPollInterval = jobPollInterval;
   }
 
   public Duration getMessageTimeToLive() {
@@ -112,14 +95,6 @@ public class ZeebeGatewayProperties extends ApiProperties {
 
   public void setOwnsJobWorkerExecutor(Boolean ownsJobWorkerExecutor) {
     this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
-  }
-
-  public Boolean getJobWorkerStreamEnabled() {
-    return jobWorkerStreamEnabled;
-  }
-
-  public void setJobWorkerStreamEnabled(Boolean jobWorkerStreamEnabled) {
-    this.jobWorkerStreamEnabled = jobWorkerStreamEnabled;
   }
 
   public Boolean getDefaultRetryPolicy() {

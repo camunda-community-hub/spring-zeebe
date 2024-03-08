@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config;
+package io.camunda.zeebe.spring.client.config.legacy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package io.camunda.zeebe.spring.client.config.authentication;
+package io.camunda.zeebe.spring.client.config.legacy.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,28 +25,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @TestPropertySource(
     properties = {
       "zeebe.client.broker.gatewayAddress=localhost12345",
-      "zeebe.authorization.server.url=http://zeebe-authorization-server",
-      "zeebe.client.id=client-id",
-      "zeebe.client.secret=client-secret",
-      "zeebe.token.audience=sample-audience",
       "camunda.operate.client.url=http://localhost:8081",
       "camunda.operate.client.username=username",
       "camunda.operate.client.password=password"
     })
-@ContextConfiguration(classes = OperateSelfManagedBasicWithZeebeCredentialsTest.TestConfig.class)
-public class OperateSelfManagedBasicWithZeebeCredentialsTest {
-
-  @ImportAutoConfiguration({
-    CommonClientConfiguration.class,
-    OperateClientConfiguration.class,
-    IdentityAutoConfiguration.class,
-    JsonMapperConfiguration.class
-  })
-  @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {}
+@ContextConfiguration(classes = OperateSelfManagedBasicTest.TestConfig.class)
+public class OperateSelfManagedBasicTest {
 
   @Autowired private Authentication authentication;
-
   @Autowired private CamundaOperateClient operateClient;
 
   @Test
@@ -64,4 +50,13 @@ public class OperateSelfManagedBasicWithZeebeCredentialsTest {
     assertThat(simpleCredential.getUser()).isEqualTo("username");
     assertThat(simpleCredential.getPassword()).isEqualTo("password");
   }
+
+  @ImportAutoConfiguration({
+    CommonClientConfiguration.class,
+    OperateClientConfiguration.class,
+    IdentityAutoConfiguration.class,
+    JsonMapperConfiguration.class
+  })
+  @EnableConfigurationProperties({ZeebeClientConfigurationProperties.class})
+  public static class TestConfig {}
 }

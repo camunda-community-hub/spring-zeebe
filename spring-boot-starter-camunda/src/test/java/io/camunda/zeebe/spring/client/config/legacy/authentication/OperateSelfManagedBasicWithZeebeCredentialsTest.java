@@ -1,13 +1,13 @@
-package io.camunda.zeebe.spring.client.config.authentication;
+package io.camunda.zeebe.spring.client.config.legacy.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.common.auth.Authentication;
-import io.camunda.common.auth.JwtCredential;
 import io.camunda.common.auth.Product;
-import io.camunda.common.auth.SaaSAuthentication;
+import io.camunda.common.auth.SimpleAuthentication;
+import io.camunda.common.auth.SimpleCredential;
+import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
-import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
 import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
@@ -24,22 +24,23 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
     properties = {
-      "zeebe.client.cloud.region=syd-1",
-      "zeebe.client.cloud.clusterId=cluster-id",
-      "zeebe.client.cloud.clientId=client-id",
-      "zeebe.client.cloud.clientSecret=client-secret",
-      "camunda.operate.client.enabled=true",
-      "camunda.operate.client.client-id=operate-client-id",
-      "camunda.operate.client.client-secret=operate-client-secret"
+      "zeebe.client.broker.gatewayAddress=localhost12345",
+      "zeebe.authorization.server.url=http://zeebe-authorization-server",
+      "zeebe.client.id=client-id",
+      "zeebe.client.secret=client-secret",
+      "zeebe.token.audience=sample-audience",
+      "camunda.operate.client.url=http://localhost:8081",
+      "camunda.operate.client.username=username",
+      "camunda.operate.client.password=password"
     })
-@ContextConfiguration(classes = OperateSaasOperateCredentialTest.TestConfig.class)
-public class OperateSaasOperateCredentialTest {
+@ContextConfiguration(classes = OperateSelfManagedBasicWithZeebeCredentialsTest.TestConfig.class)
+public class OperateSelfManagedBasicWithZeebeCredentialsTest {
 
   @ImportAutoConfiguration({
     CommonClientConfiguration.class,
     OperateClientConfiguration.class,
-    JsonMapperConfiguration.class,
-    AuthenticationConfiguration.class
+    IdentityAutoConfiguration.class,
+    JsonMapperConfiguration.class
   })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
   public static class TestConfig {}
@@ -50,16 +51,17 @@ public class OperateSaasOperateCredentialTest {
 
   @Test
   public void testAuthentication() {
-    assertThat(authentication).isInstanceOf(SaaSAuthentication.class);
+    assertThat(authentication).isInstanceOf(SimpleAuthentication.class);
     assertThat(operateClient).isNotNull();
   }
 
   @Test
   public void testCredential() {
-    SaaSAuthentication saaSAuthentication = (SaaSAuthentication) authentication;
-    JwtCredential jwtCredential = saaSAuthentication.getJwtConfig().getProduct(Product.OPERATE);
+    SimpleAuthentication simpleAuthentication = (SimpleAuthentication) authentication;
+    SimpleCredential simpleCredential =
+        simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
 
-    assertThat(jwtCredential.getClientId()).isEqualTo("operate-client-id");
-    assertThat(jwtCredential.getClientSecret()).isEqualTo("operate-client-secret");
+    assertThat(simpleCredential.getUser()).isEqualTo("username");
+    assertThat(simpleCredential.getPassword()).isEqualTo("password");
   }
 }

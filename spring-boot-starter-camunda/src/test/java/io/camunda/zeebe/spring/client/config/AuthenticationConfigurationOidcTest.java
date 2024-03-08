@@ -10,7 +10,6 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SelfManagedAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
-import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
-    classes = {AuthenticationConfiguration.class, JsonMapperConfiguration.class},
+    classes = {AuthenticationConfiguration.class},
     properties = {
       "camunda.client.auth.client-id=my-client-id",
       "camunda.client.auth.client-secret=my-client-secret",
@@ -51,6 +50,9 @@ public class AuthenticationConfigurationOidcTest {
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
+            .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
   }
 
   @Test
@@ -67,6 +69,9 @@ public class AuthenticationConfigurationOidcTest {
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
+            .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
   }
 
   @Test
@@ -83,6 +88,9 @@ public class AuthenticationConfigurationOidcTest {
     assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
+            .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
   }
 
   @Test
@@ -96,8 +104,11 @@ public class AuthenticationConfigurationOidcTest {
                             .objectNode()
                             .put("access_token", accessToken)
                             .put("expires_in", 300))));
-    assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
+    assertThat(authentication.getTokenHeader(Product.ZEEBE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
+            .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
   }
 }

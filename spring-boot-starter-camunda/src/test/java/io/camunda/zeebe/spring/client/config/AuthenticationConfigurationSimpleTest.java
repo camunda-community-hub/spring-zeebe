@@ -8,14 +8,13 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SimpleAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
-import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(
-    classes = {AuthenticationConfiguration.class, JsonMapperConfiguration.class},
+    classes = {AuthenticationConfiguration.class},
     properties = {
       "camunda.client.operate.base-url=http://localhost:15864",
       "camunda.client.tasklist.base-url=http://localhost:15864"
@@ -39,6 +38,10 @@ public class AuthenticationConfigurationSimpleTest {
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(entry("Cookie", "OPERATE-SESSION=3205A03818447100591792E774DB8AF6"));
+    verify(
+        postRequestedFor(urlEqualTo("/api/login"))
+            .withHeader(
+                "Content-Type", equalTo("application/x-www-form-urlencoded; charset=ISO-8859-1")));
   }
 
   @Test
@@ -51,5 +54,9 @@ public class AuthenticationConfigurationSimpleTest {
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
         .isEqualTo(entry("Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6"));
+    verify(
+        postRequestedFor(urlEqualTo("/api/login"))
+            .withHeader(
+                "Content-Type", equalTo("application/x-www-form-urlencoded; charset=ISO-8859-1")));
   }
 }

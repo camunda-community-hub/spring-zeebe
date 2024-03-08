@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -58,5 +59,19 @@ public class PropertyUtil {
       configCache.put(propertyName, property);
     }
     return property;
+  }
+
+  public static <T> Supplier<T> prioritized(T defaultProperty, List<Supplier<T>> suppliers) {
+    for (Supplier<T> supplier : suppliers) {
+      try {
+        T property = supplier.get();
+        if (property != null && !property.equals(defaultProperty)) {
+          return supplier;
+        }
+      } catch (Exception e) {
+        // ignore
+      }
+    }
+    return null;
   }
 }

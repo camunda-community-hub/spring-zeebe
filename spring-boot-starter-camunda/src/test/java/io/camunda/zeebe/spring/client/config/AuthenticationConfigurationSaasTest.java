@@ -8,7 +8,6 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SaaSAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
-import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import wiremock.com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SpringBootTest(
-    classes = {AuthenticationConfiguration.class, JsonMapperConfiguration.class},
+    classes = {AuthenticationConfiguration.class},
     properties = {
       "camunda.client.cluster-id=12345",
       "camunda.client.region=bru-2",
@@ -49,6 +48,9 @@ public class AuthenticationConfigurationSaasTest {
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + ACCESS_TOKEN));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server"))
+            .withHeader("Content-Type", equalTo("application/json")));
   }
 
   @Test
@@ -64,6 +66,9 @@ public class AuthenticationConfigurationSaasTest {
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + ACCESS_TOKEN));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server"))
+            .withHeader("Content-Type", equalTo("application/json")));
   }
 
   @Test
@@ -79,6 +84,9 @@ public class AuthenticationConfigurationSaasTest {
     assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + ACCESS_TOKEN));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server"))
+            .withHeader("Content-Type", equalTo("application/json")));
   }
 
   @Test
@@ -91,8 +99,11 @@ public class AuthenticationConfigurationSaasTest {
                             .objectNode()
                             .put("access_token", ACCESS_TOKEN)
                             .put("expires_in", 300))));
-    assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
+    assertThat(authentication.getTokenHeader(Product.ZEEBE))
         .isNotNull()
         .isEqualTo(entry("Authorization", "Bearer " + ACCESS_TOKEN));
+    verify(
+        postRequestedFor(urlEqualTo("/auth-server"))
+            .withHeader("Content-Type", equalTo("application/json")));
   }
 }

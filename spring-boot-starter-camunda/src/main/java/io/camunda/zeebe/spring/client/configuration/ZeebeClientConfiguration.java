@@ -26,27 +26,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeClientConfiguration {
+  private static final Logger LOG = LoggerFactory.getLogger(ZeebeClientConfiguration.class);
   private final Map<String, Object> configCache = new HashMap<>();
+  private final ZeebeClientConfigurationProperties properties;
+  private final CamundaClientProperties camundaClientProperties;
+  private final Authentication authentication;
+  private final JsonMapper jsonMapper;
+  private final List<ClientInterceptor> interceptors;
+  private final ZeebeClientExecutorService zeebeClientExecutorService;
 
-  @Autowired private ZeebeClientConfigurationProperties properties;
-
-  @Autowired private CamundaClientProperties camundaClientProperties;
-
-  @Autowired private Authentication authentication;
-
-  @Lazy // Must be lazy, otherwise we get circular dependencies on beans
   @Autowired
-  private JsonMapper jsonMapper;
-
-  @Lazy
-  @Autowired(required = false)
-  private List<ClientInterceptor> interceptors;
-
-  @Lazy @Autowired private ZeebeClientExecutorService zeebeClientExecutorService;
+  public ZeebeClientConfiguration(
+      ZeebeClientConfigurationProperties properties,
+      CamundaClientProperties camundaClientProperties,
+      Authentication authentication,
+      JsonMapper jsonMapper,
+      List<ClientInterceptor> interceptors,
+      ZeebeClientExecutorService zeebeClientExecutorService) {
+    this.properties = properties;
+    this.camundaClientProperties = camundaClientProperties;
+    this.authentication = authentication;
+    this.jsonMapper = jsonMapper;
+    this.interceptors = interceptors;
+    this.zeebeClientExecutorService = zeebeClientExecutorService;
+  }
 
   @PostConstruct
   public void applyLegacy() {
@@ -59,18 +67,48 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public String getGatewayAddress() {
     return getOrLegacyOrDefault(
         "GatewayAddress",
-        () -> camundaClientProperties.getZeebe().getBaseUrl().getHost(),
+        this::composeGatewayAddress,
         () -> PropertiesUtil.getZeebeGatewayAddress(properties),
         DEFAULT.getGatewayAddress(),
         configCache);
+  }
+
+  private String composeGatewayAddress() {
+    // check if port is set
+    if (camundaClientProperties.getZeebe().getBaseUrl().getPort() != -1) {
+      String gatewayAddress =
+          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+              + ":"
+              + camundaClientProperties.getZeebe().getBaseUrl().getPort();
+      LOG.debug("Gateway port is set, address will be '{}'", gatewayAddress);
+      return gatewayAddress;
+    }
+    // check if default port can be applied
+    if (camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort() != -1) {
+      String gatewayAddress =
+          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+              + ":"
+              + camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort();
+      LOG.debug("Gateway port has default, address will be '{}'", gatewayAddress);
+      return gatewayAddress;
+    }
+    LOG.debug(
+        "Gateway cannot be determined, address will be '{}'",
+        camundaClientProperties.getZeebe().getBaseUrl().getHost());
+    // do not use any port
+    return camundaClientProperties.getZeebe().getBaseUrl().getHost();
   }
 
   @Override
   public String getDefaultTenantId() {
     return getOrLegacyOrDefault(
         "DefaultTenantId",
-        () -> camundaClientProperties.getTenantIds().get(0),
-        () -> properties.getDefaultTenantId(),
+        prioritized(
+            DEFAULT.getDefaultTenantId(),
+            List.of(
+                () -> camundaClientProperties.getTenantIds().get(0),
+                () -> camundaClientProperties.getZeebe().getDefaults().getTenantIds().get(0))),
+        properties::getDefaultTenantId,
         DEFAULT.getDefaultTenantId(),
         configCache);
   }
@@ -79,8 +117,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public List<String> getDefaultJobWorkerTenantIds() {
     return getOrLegacyOrDefault(
         "DefaultJobWorkerTenantIds",
-        () -> camundaClientProperties.getTenantIds(),
-        () -> properties.getDefaultJobWorkerTenantIds(),
+        prioritized(
+            DEFAULT.getDefaultJobWorkerTenantIds(),
+            List.of(
+                camundaClientProperties::getTenantIds,
+                () -> camundaClientProperties.getZeebe().getDefaults().getTenantIds())),
+        properties::getDefaultJobWorkerTenantIds,
         DEFAULT.getDefaultJobWorkerTenantIds(),
         configCache);
   }
@@ -99,7 +141,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public int getDefaultJobWorkerMaxJobsActive() {
     return getOrLegacyOrDefault(
         "DefaultJobWorkerMaxJobsActive",
-        () -> camundaClientProperties.getZeebe().getMaxJobsActive(),
+        () -> camundaClientProperties.getZeebe().getDefaults().getMaxJobsActive(),
         () -> properties.getWorker().getMaxJobsActive(),
         DEFAULT.getDefaultJobWorkerMaxJobsActive(),
         configCache);
@@ -109,7 +151,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public String getDefaultJobWorkerName() {
     return getOrLegacyOrDefault(
         "DefaultJobWorkerName",
-        () -> camundaClientProperties.getZeebe().getJobWorkerName(),
+        () -> camundaClientProperties.getZeebe().getDefaults().getName(),
         () -> properties.getWorker().getDefaultName(),
         DEFAULT.getDefaultJobWorkerName(),
         configCache);
@@ -119,7 +161,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public Duration getDefaultJobTimeout() {
     return getOrLegacyOrDefault(
         "DefaultJobTimeout",
-        () -> camundaClientProperties.getZeebe().getJobTimeout(),
+        () -> camundaClientProperties.getZeebe().getDefaults().getTimeout(),
         () -> properties.getJob().getTimeout(),
         DEFAULT.getDefaultJobTimeout(),
         configCache);
@@ -129,7 +171,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public Duration getDefaultJobPollInterval() {
     return getOrLegacyOrDefault(
         "DefaultJobPollInterval",
-        () -> camundaClientProperties.getZeebe().getJobPollInterval(),
+        () -> camundaClientProperties.getZeebe().getDefaults().getPollInterval(),
         () -> properties.getJob().getPollInterval(),
         DEFAULT.getDefaultJobPollInterval(),
         configCache);
@@ -149,8 +191,12 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public Duration getDefaultRequestTimeout() {
     return getOrLegacyOrDefault(
         "DefaultRequestTimeout",
-        () -> camundaClientProperties.getZeebe().getRequestTimeout(),
-        () -> properties.getRequestTimeout(),
+        prioritized(
+            DEFAULT.getDefaultRequestTimeout(),
+            List.of(
+                () -> camundaClientProperties.getZeebe().getRequestTimeout(),
+                () -> camundaClientProperties.getZeebe().getDefaults().getRequestTimeout())),
+        properties::getRequestTimeout,
         DEFAULT.getDefaultRequestTimeout(),
         configCache);
   }
@@ -159,10 +205,24 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public boolean isPlaintextConnectionEnabled() {
     return getOrLegacyOrDefault(
         "PlaintextConnectionEnabled",
-        () -> camundaClientProperties.getZeebe().getBaseUrl().getProtocol().contains("https"),
+        this::composePlaintext,
         () -> properties.getSecurity().isPlaintext(),
         DEFAULT.isPlaintextConnectionEnabled(),
         configCache);
+  }
+
+  private boolean composePlaintext() {
+    String protocol = camundaClientProperties.getZeebe().getBaseUrl().getProtocol();
+    if (protocol.equals("http")) {
+      return true;
+    }
+    if (protocol.equals("https")) {
+      return false;
+    }
+    throw new IllegalStateException(
+        String.format(
+            "Unrecognized zeebe protocol '%s'",
+            camundaClientProperties.getZeebe().getBaseUrl().getProtocol()));
   }
 
   @Override
@@ -189,20 +249,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     if (authentication instanceof SimpleAuthentication) {
       return null;
     } else if (!(authentication instanceof DefaultNoopAuthentication)) {
-      return new CredentialsProvider() {
-        @Override
-        public void applyCredentials(Metadata headers) {
-          final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-          final Metadata.Key<String> authHeaderKey =
-              Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
-          headers.put(authHeaderKey, authHeader.getValue());
-        }
-
-        @Override
-        public boolean shouldRetryRequest(Throwable throwable) {
-          return ((StatusRuntimeException) throwable).getStatus() == Status.DEADLINE_EXCEEDED;
-        }
-      };
+      return new IdentityCredentialsProvider(authentication);
     }
     return null;
   }
@@ -283,7 +330,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     return getOrLegacyOrDefault(
         "ownsJobWorkerExecutor",
         () -> camundaClientProperties.getZeebe().getOwnsJobWorkerExecutor(),
-        () -> properties.ownsJobWorkerExecutor(),
+        properties::ownsJobWorkerExecutor,
         DEFAULT.ownsJobWorkerExecutor(),
         configCache);
   }
@@ -292,8 +339,8 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public boolean getDefaultJobWorkerStreamEnabled() {
     return getOrLegacyOrDefault(
         "DefaultJobWorkerStreamEnabled",
-        () -> camundaClientProperties.getZeebe().getJobWorkerStreamEnabled(),
-        () -> properties.getDefaultJobWorkerStreamEnabled(),
+        () -> camundaClientProperties.getZeebe().getDefaults().getStreamEnabled(),
+        properties::getDefaultJobWorkerStreamEnabled,
         DEFAULT.getDefaultJobWorkerStreamEnabled(),
         configCache);
   }
@@ -303,7 +350,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     return getOrLegacyOrDefault(
         "useDefaultRetryPolicy",
         () -> camundaClientProperties.getZeebe().getDefaultRetryPolicy(),
-        () -> properties.useDefaultRetryPolicy(),
+        properties::useDefaultRetryPolicy,
         DEFAULT.useDefaultRetryPolicy(),
         configCache);
   }
@@ -324,5 +371,26 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         + ", zeebeClientExecutorService="
         + zeebeClientExecutorService
         + '}';
+  }
+
+  public static class IdentityCredentialsProvider implements CredentialsProvider {
+    private final Authentication authentication;
+
+    public IdentityCredentialsProvider(Authentication authentication) {
+      this.authentication = authentication;
+    }
+
+    @Override
+    public void applyCredentials(Metadata headers) {
+      final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
+      final Metadata.Key<String> authHeaderKey =
+          Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
+      headers.put(authHeaderKey, authHeader.getValue());
+    }
+
+    @Override
+    public boolean shouldRetryRequest(Throwable throwable) {
+      return ((StatusRuntimeException) throwable).getStatus() == Status.DEADLINE_EXCEEDED;
+    }
   }
 }
