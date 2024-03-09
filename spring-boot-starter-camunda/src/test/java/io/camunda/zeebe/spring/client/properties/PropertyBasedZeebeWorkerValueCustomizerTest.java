@@ -335,6 +335,31 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
     assertThat(zeebeWorkerValue.getEnabled()).isFalse();
   }
 
+  @Test
+  void shouldApplyWorkerOverridesOverGlobalOverrides() {
+    // given
+    CamundaClientProperties properties = properties();
+    ZeebeClientProperties zeebeClientProperties = new ZeebeClientProperties();
+    ZeebeWorkerValue override = new ZeebeWorkerValue();
+    override.setEnabled(false);
+    Map<String, ZeebeWorkerValue> overrideMap = new HashMap<>();
+    overrideMap.put("sampleWorker", override);
+    zeebeClientProperties.setOverride(overrideMap);
+    ZeebeWorkerValue globalOverride = new ZeebeWorkerValue();
+    globalOverride.setEnabled(true);
+    zeebeClientProperties.setDefaults(globalOverride);
+    properties.setZeebe(zeebeClientProperties);
+    PropertyBasedZeebeWorkerValueCustomizer customizer =
+        new PropertyBasedZeebeWorkerValueCustomizer(legacyProperties(), properties);
+    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue();
+    zeebeWorkerValue.setMethodInfo(methodInfo(this, "testBean", "sampleWorker"));
+    assertThat(zeebeWorkerValue.getEnabled()).isNull();
+    // when
+    customizer.customize(zeebeWorkerValue);
+    // then
+    assertThat(zeebeWorkerValue.getEnabled()).isFalse();
+  }
+
   private static class ComplexProcessVariable {
     private String var3;
     private String var4;

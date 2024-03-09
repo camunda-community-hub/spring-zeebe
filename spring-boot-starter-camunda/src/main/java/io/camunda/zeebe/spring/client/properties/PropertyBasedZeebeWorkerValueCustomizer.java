@@ -116,17 +116,6 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
             () -> zeebeClientConfigurationProperties.getWorker().getOverride(),
             new HashMap<>(),
             null);
-    final String workerType = zeebeWorker.getType();
-    if (workerConfigurationMap.containsKey(workerType)) {
-      final ZeebeWorkerValue zeebeWorkerValue = workerConfigurationMap.get(workerType);
-      LOG.debug("Worker '{}': Applying overrides {}", workerType, zeebeWorkerValue);
-      try {
-        BEAN_UTILS_BEAN.copyProperties(zeebeWorker, zeebeWorkerValue);
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new RuntimeException(
-            "Error while copying properties from " + zeebeWorkerValue + " to " + zeebeWorker, e);
-      }
-    }
     try {
       if (ofNullable(camundaClientProperties.getZeebe())
           .map(ZeebeClientProperties::getDefaults)
@@ -141,6 +130,17 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
               + " to "
               + zeebeWorker,
           e);
+    }
+    final String workerType = zeebeWorker.getType();
+    if (workerConfigurationMap.containsKey(workerType)) {
+      final ZeebeWorkerValue zeebeWorkerValue = workerConfigurationMap.get(workerType);
+      LOG.debug("Worker '{}': Applying overrides {}", workerType, zeebeWorkerValue);
+      try {
+        BEAN_UTILS_BEAN.copyProperties(zeebeWorker, zeebeWorkerValue);
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException(
+            "Error while copying properties from " + zeebeWorkerValue + " to " + zeebeWorker, e);
+      }
     }
   }
 
