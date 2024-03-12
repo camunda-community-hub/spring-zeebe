@@ -1,5 +1,8 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+
+@Deprecated
 public class Client {
 
   @Override
@@ -40,6 +43,7 @@ public class Client {
   private String authUrl;
   private String baseUrl;
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id")
   public String getClientId() {
     return clientId;
   }
@@ -48,6 +52,7 @@ public class Client {
     this.clientId = clientId;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-secret")
   public String getClientSecret() {
     return clientSecret;
   }
@@ -56,6 +61,7 @@ public class Client {
     this.clientSecret = clientSecret;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.username")
   public String getUsername() {
     return username;
   }
@@ -64,6 +70,7 @@ public class Client {
     this.username = username;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.password")
   public String getPassword() {
     return password;
   }
