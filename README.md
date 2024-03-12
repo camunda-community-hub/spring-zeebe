@@ -677,7 +677,7 @@ You could also provide a custom class that can customize the `JobWorker` configu
 
 ### Enable job streaming
 
->Please read aboutt this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
+>Please read about this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
 
 To control job streaming on the zeebe client, you can configure it:
 
