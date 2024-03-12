@@ -362,7 +362,7 @@ camunda:
         type: foo
 ```
 
-This is used for all workers that do **not** set a task type via the annoation.
+This is used for all workers that do **not** set a task type via the annotation.
 
 
 ### Define variables to fetch
