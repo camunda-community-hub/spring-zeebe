@@ -739,7 +739,7 @@ For all of those metrics, the following actions are recorded:
 * `failed`: The processing failed with some exception
 * `bpmn-error`: The processing completed by throwing an BpmnError (which means there was no technical problem)
 
-In a default setup, you can can enable metrics to be served via http:
+In a default setup, you can enable metrics to be served via http:
 
 ```yaml
 management:
