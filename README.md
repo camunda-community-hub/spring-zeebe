@@ -390,17 +390,11 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variab
 }
 ```
 
-With `@Variable`, `@VariablesAsType` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
 
-```java
-@JobWorker(type = "foo", fetchAllVariables = true)
-public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variable String variable1) {
-}
-```
 
 ### Using `@VariablesAsType`
 
-You can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the Java Client API). Therefore use the `@VariablesAsType` annotation. In the below example, `MyProcessVariables` refers to your own class:
+You can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the Java Client API). Therefore, use the `@VariablesAsType` annotation. In the below example, `MyProcessVariables` refers to your own class:
 
 ```java
 @JobWorker(type = "foo")
@@ -426,6 +420,18 @@ public void handleJobFoo(final ActivatedJob job) {
   // ...
 }
 ```
+
+### Variable fetching behaviour
+
+With `@Variable`, `@VariablesAsType` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
+
+```java
+@JobWorker(type = "foo", fetchAllVariables = true)
+public void handleJobFoo(@Variable String variable1) {
+}
+```
+
+Implicit `fetchVariables` (with `@Variable` or `@VariablesAsType`) will be disabled as soon as you inject yourself the `ActivatedJob`.
 
 ### Auto-completing jobs
 
