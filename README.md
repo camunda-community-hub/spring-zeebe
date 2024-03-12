@@ -123,6 +123,8 @@ Settings > Build, Execution, Deployment > Compiler > Java Compiler
 
 The default properties for setting up all connection details are hidden in modes. Each connection mode has meaningful defaults that will make your life easier.
 
+The mode is set on `camunda.client.mode` and can be `simple`, `oidc` or `saas`. Further usage of each mode is explained below.
+
 >Zeebe will now also be configured with an URL (`http://localhost:26500` instead of `localhost:26500` + plaintext connection flag)
 
 ### Saas
