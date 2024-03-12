@@ -463,7 +463,7 @@ When using `autoComplete` you can:
 
 * Return a `Map`, `String`, `InputStream`, or `Object`, which then will be added to the process variables
 * Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
-* Throw any other `Exception` that leads in an failure handed over to Zeebe
+* Throw any other `Exception` that leads in a failure handed over to Zeebe
 
 ```java
 @JobWorker(type = "foo")
