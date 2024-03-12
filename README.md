@@ -196,7 +196,6 @@ camunda:
     auth:
       oidc-type: keycloak
       issuer: http://localhost:18080/auth/realms/camunda-platform
-      issuer-backend-url: ${camunda.client.auth.issuer}
     zeebe:
       enabled: true
       base-url: http://localhost:26500
