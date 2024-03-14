@@ -4,5 +4,15 @@
     "config:recommended",
     ":automergeMinor",
     ":automergePatch"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "description" : "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
+      "matchPackagePatterns": [".*"],
+      "allowedVersions": "!/-SNAPSHOT$/"
+    }
   ]
 }
