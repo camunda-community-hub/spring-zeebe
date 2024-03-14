@@ -12,8 +12,6 @@ public class ZeebeClientProperties extends ApiProperties {
   private String caCertificatePath;
   private Duration keepAlive;
   private String overrideAuthority;
-  private Boolean ownsJobWorkerExecutor;
-  private Boolean defaultRetryPolicy;
   private ZeebeWorkerValue defaults;
   private Map<String, ZeebeWorkerValue> override;
 
@@ -87,21 +85,5 @@ public class ZeebeClientProperties extends ApiProperties {
 
   public void setMaxMessageSize(Integer maxMessageSize) {
     this.maxMessageSize = maxMessageSize;
-  }
-
-  public Boolean getOwnsJobWorkerExecutor() {
-    return ownsJobWorkerExecutor;
-  }
-
-  public void setOwnsJobWorkerExecutor(Boolean ownsJobWorkerExecutor) {
-    this.ownsJobWorkerExecutor = ownsJobWorkerExecutor;
-  }
-
-  public Boolean getDefaultRetryPolicy() {
-    return defaultRetryPolicy;
-  }
-
-  public void setDefaultRetryPolicy(Boolean defaultRetryPolicy) {
-    this.defaultRetryPolicy = defaultRetryPolicy;
   }
 }

@@ -329,7 +329,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   public boolean ownsJobWorkerExecutor() {
     return getOrLegacyOrDefault(
         "ownsJobWorkerExecutor",
-        () -> camundaClientProperties.getZeebe().getOwnsJobWorkerExecutor(),
+        zeebeClientExecutorService::isOwnedByZeebeClient,
         properties::ownsJobWorkerExecutor,
         DEFAULT.ownsJobWorkerExecutor(),
         configCache);
@@ -347,12 +347,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public boolean useDefaultRetryPolicy() {
-    return getOrLegacyOrDefault(
-        "useDefaultRetryPolicy",
-        () -> camundaClientProperties.getZeebe().getDefaultRetryPolicy(),
-        properties::useDefaultRetryPolicy,
-        DEFAULT.useDefaultRetryPolicy(),
-        configCache);
+    return false;
   }
 
   @Override

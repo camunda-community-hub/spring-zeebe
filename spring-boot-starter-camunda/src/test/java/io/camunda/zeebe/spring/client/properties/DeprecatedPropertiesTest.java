@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DynamicContainer;
@@ -12,16 +13,19 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 public class DeprecatedPropertiesTest {
-  private static final List<String> IRRELEVANT_METHODS = List.of("toString", "equals", "hashcode");
+  private static final List<String> IRRELEVANT_METHODS = List.of("toString", "equals", "hashCode");
 
   @TestFactory
   Stream<DynamicContainer> shouldDeprecate() {
     return ReflectionSupport.findAllClassesInPackage(
             "io.camunda.zeebe.spring.client.properties",
-            c -> c.isAnnotationPresent(Deprecated.class),
+            c ->
+                c.isAnnotationPresent(Deprecated.class)
+                    && c.isAnnotationPresent(ConfigurationProperties.class),
             n -> true)
         .stream()
         .flatMap(this::unwrap)
@@ -45,6 +49,9 @@ public class DeprecatedPropertiesTest {
     if (IRRELEVANT_METHODS.contains(method.getName())) {
       return false;
     }
+    if (Modifier.isPrivate(method.getModifiers())) {
+      return false;
+    }
     return true;
   }
 
@@ -64,5 +71,9 @@ public class DeprecatedPropertiesTest {
         getter.getAnnotation(DeprecatedConfigurationProperty.class);
     assertThat(annotation)
         .matches(a -> isNotEmpty(a.replacement()), "There is a replacement mentioned");
+    assertThat(getter)
+        .matches(
+            g -> g.isAnnotationPresent(Deprecated.class),
+            "Getter is annotated with deprecation annotation");
   }
 }

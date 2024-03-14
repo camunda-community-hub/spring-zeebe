@@ -143,8 +143,7 @@ public class ZeebeClientConfigurationSaasTest {
 
   @Test
   void shouldHaveOwnsJobWorkerExecutor() {
-    assertThat(zeebeClientConfiguration.ownsJobWorkerExecutor())
-        .isEqualTo(DEFAULT.ownsJobWorkerExecutor());
+    assertThat(zeebeClientConfiguration.ownsJobWorkerExecutor()).isEqualTo(true);
   }
 
   @Test

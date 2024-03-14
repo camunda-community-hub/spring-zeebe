@@ -44,6 +44,7 @@ public class Client {
   private String baseUrl;
 
   @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id")
+  @Deprecated
   public String getClientId() {
     return clientId;
   }
@@ -53,6 +54,7 @@ public class Client {
   }
 
   @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-secret")
+  @Deprecated
   public String getClientSecret() {
     return clientSecret;
   }
@@ -62,6 +64,7 @@ public class Client {
   }
 
   @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.username")
+  @Deprecated
   public String getUsername() {
     return username;
   }
@@ -71,6 +74,7 @@ public class Client {
   }
 
   @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.password")
+  @Deprecated
   public String getPassword() {
     return password;
   }
@@ -95,6 +99,8 @@ public class Client {
     this.url = url;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.issuer")
+  @Deprecated
   public String getAuthUrl() {
     return authUrl;
   }
