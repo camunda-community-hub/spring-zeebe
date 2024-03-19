@@ -1,16 +1,12 @@
-package io.camunda.zeebe.spring.client.config.authentication;
+package io.camunda.zeebe.spring.client.config.legacy.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.common.auth.Authentication;
-import io.camunda.common.auth.Product;
-import io.camunda.common.auth.SimpleAuthentication;
-import io.camunda.common.auth.SimpleCredential;
-import io.camunda.common.json.JsonMapper;
-import io.camunda.common.json.SdkObjectMapper;
+import io.camunda.common.auth.*;
 import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
+import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.junit.jupiter.api.Test;
@@ -18,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,24 +27,24 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
       "zeebe.client.secret=client-secret",
       "zeebe.token.audience=sample-audience",
       "camunda.operate.client.url=http://localhost:8081",
-      "camunda.operate.client.username=username",
-      "camunda.operate.client.password=password"
+      "camunda.identity.issuer=http://some-oidc-issuer",
+      "camunda.identity.issuer-backend-url=http://some-oidc-issuer-backend-url",
+      "camunda.identity.type=MICROSOFT",
+      "camunda.identity.client-id=client-id2",
+      "camunda.identity.client-secret=client-secret2",
+      "camunda.identity.audience=sample-audience2"
     })
-@ContextConfiguration(classes = OperateSelfManagedBasicWithZeebeCredentialsTest.TestConfig.class)
-public class OperateSelfManagedBasicWithZeebeCredentialsTest {
+@ContextConfiguration(classes = OperateSelfManagedIdentityTest.TestConfig.class)
+public class OperateSelfManagedIdentityTest {
 
   @ImportAutoConfiguration({
     CommonClientConfiguration.class,
     OperateClientConfiguration.class,
-    IdentityAutoConfiguration.class
+    IdentityAutoConfiguration.class,
+    JsonMapperConfiguration.class
   })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {
-    @Bean
-    public JsonMapper jsonMapper() {
-      return new SdkObjectMapper();
-    }
-  }
+  public static class TestConfig {}
 
   @Autowired private Authentication authentication;
 
@@ -57,17 +52,18 @@ public class OperateSelfManagedBasicWithZeebeCredentialsTest {
 
   @Test
   public void testAuthentication() {
-    assertThat(authentication).isInstanceOf(SimpleAuthentication.class);
+    assertThat(authentication).isInstanceOf(SelfManagedAuthentication.class);
     assertThat(operateClient).isNotNull();
   }
 
   @Test
   public void testCredential() {
-    SimpleAuthentication simpleAuthentication = (SimpleAuthentication) authentication;
-    SimpleCredential simpleCredential =
-        simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
+    SelfManagedAuthentication selfManagedAuthentication =
+        (SelfManagedAuthentication) authentication;
+    JwtCredential jwtCredential =
+        selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
 
-    assertThat(simpleCredential.getUser()).isEqualTo("username");
-    assertThat(simpleCredential.getPassword()).isEqualTo("password");
+    assertThat(jwtCredential.getClientId()).isEqualTo("client-id2");
+    assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret2");
   }
 }

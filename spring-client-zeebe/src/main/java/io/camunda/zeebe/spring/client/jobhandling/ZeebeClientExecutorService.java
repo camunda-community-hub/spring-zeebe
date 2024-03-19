@@ -12,10 +12,17 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class ZeebeClientExecutorService {
 
-  private ScheduledExecutorService scheduledExecutorService;
+  private final ScheduledExecutorService scheduledExecutorService;
+  private final boolean ownedByZeebeClient;
 
-  public ZeebeClientExecutorService(ScheduledExecutorService scheduledExecutorService) {
+  public ZeebeClientExecutorService(
+      ScheduledExecutorService scheduledExecutorService, boolean ownedByZeebeClient) {
     this.scheduledExecutorService = scheduledExecutorService;
+    this.ownedByZeebeClient = ownedByZeebeClient;
+  }
+
+  public boolean isOwnedByZeebeClient() {
+    return ownedByZeebeClient;
   }
 
   public ScheduledExecutorService get() {
@@ -28,7 +35,7 @@ public class ZeebeClientExecutorService {
 
   public static ZeebeClientExecutorService createDefault(int threads) {
     ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(threads);
-    return new ZeebeClientExecutorService(threadPool);
+    return new ZeebeClientExecutorService(threadPool, true);
   }
 
   /*
