@@ -1,6 +1,10 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import static io.camunda.zeebe.spring.client.configuration.PropertyUtil.*;
+import static io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties.*;
+
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -18,23 +22,32 @@ import org.springframework.context.annotation.Bean;
 public class ExecutorServiceConfiguration {
 
   private final ZeebeClientConfigurationProperties configurationProperties;
+  private final CamundaClientProperties camundaClientProperties;
 
-  public ExecutorServiceConfiguration(ZeebeClientConfigurationProperties configurationProperties) {
+  public ExecutorServiceConfiguration(
+      ZeebeClientConfigurationProperties configurationProperties,
+      CamundaClientProperties camundaClientProperties) {
     this.configurationProperties = configurationProperties;
+    this.camundaClientProperties = camundaClientProperties;
   }
 
   @Bean
   public ZeebeClientExecutorService zeebeClientThreadPool(
       @Autowired(required = false) MeterRegistry meterRegistry) {
     ScheduledExecutorService threadPool =
-        Executors.newScheduledThreadPool(configurationProperties.getNumJobWorkerExecutionThreads());
+        Executors.newScheduledThreadPool(
+            getOrLegacyOrDefault(
+                "NumJobWorkerExecutionThreads",
+                () -> camundaClientProperties.getZeebe().getExecutionThreads(),
+                configurationProperties::getNumJobWorkerExecutionThreads,
+                DEFAULT.getNumJobWorkerExecutionThreads(),
+                null));
     if (meterRegistry != null) {
       MeterBinder threadPoolMetrics =
           new ExecutorServiceMetrics(
               threadPool, "zeebe_client_thread_pool", Collections.emptyList());
       threadPoolMetrics.bindTo(meterRegistry);
     }
-    configurationProperties.setOwnsJobWorkerExecutor(true);
-    return new ZeebeClientExecutorService(threadPool);
+    return new ZeebeClientExecutorService(threadPool, true);
   }
 }

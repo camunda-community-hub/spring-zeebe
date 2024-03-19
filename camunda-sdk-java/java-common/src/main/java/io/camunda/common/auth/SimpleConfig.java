@@ -6,7 +6,7 @@ import java.util.Map;
 /** Contains mapping between products and their Simple credentials */
 public class SimpleConfig {
 
-  private Map<Product, SimpleCredential> map;
+  private final Map<Product, SimpleCredential> map;
 
   public SimpleConfig() {
     map = new HashMap<>();

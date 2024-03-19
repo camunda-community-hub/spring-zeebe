@@ -1,5 +1,6 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
+@Deprecated
 public class Keycloak {
 
   @Override

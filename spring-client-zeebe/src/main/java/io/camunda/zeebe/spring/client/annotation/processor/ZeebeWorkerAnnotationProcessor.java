@@ -11,6 +11,8 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import java.lang.invoke.MethodHandles;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,16 +78,18 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
           new ZeebeWorkerValue(
               annotation.type(),
               annotation.name(),
-              annotation.timeout(),
+              Duration.of(annotation.timeout(), ChronoUnit.MILLIS),
               annotation.maxJobsActive(),
-              annotation.requestTimeout(),
-              annotation.pollInterval(),
+              Duration.of(annotation.requestTimeout(), ChronoUnit.SECONDS),
+              Duration.of(annotation.pollInterval(), ChronoUnit.MILLIS),
               annotation.autoComplete(),
-              annotation.fetchVariables(),
+              Arrays.asList(annotation.fetchVariables()),
               annotation.enabled(),
               methodInfo,
               Arrays.asList(annotation.tenantIds()),
-              annotation.fetchAllVariables()));
+              annotation.fetchAllVariables(),
+              annotation.streamEnabled(),
+              Duration.of(annotation.streamTimeout(), ChronoUnit.MILLIS)));
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
@@ -94,16 +98,18 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
             new ZeebeWorkerValue(
                 annotation.type(),
                 annotation.name(),
-                annotation.timeout(),
+                Duration.of(annotation.timeout(), ChronoUnit.MILLIS),
                 annotation.maxJobsActive(),
-                annotation.requestTimeout(),
-                annotation.pollInterval(),
+                Duration.of(annotation.requestTimeout(), ChronoUnit.SECONDS),
+                Duration.of(annotation.pollInterval(), ChronoUnit.MILLIS),
                 annotation.autoComplete(),
-                annotation.fetchVariables(),
+                Arrays.asList(annotation.fetchVariables()),
                 annotation.enabled(),
                 methodInfo,
                 Arrays.asList(annotation.tenantIds()),
-                annotation.forceFetchAllVariables()));
+                annotation.forceFetchAllVariables(),
+                false,
+                Duration.ZERO));
       }
     }
     return Optional.empty();

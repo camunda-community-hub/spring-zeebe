@@ -45,16 +45,16 @@ What to expect in the coming months:
 ## Version compatibility
 
 | Spring Zeebe version | JDK   | Camunda version | Bundled Spring Boot version | Compatible Spring Boot versions |
-|----------------------|-------|-----------------|-----------------------------|-----------------------------|
-| >= 8.4.0             | >= 17 | 8.4.0           | 3.2.0                       | >= 2.7.x, 3.x.x             |
-| >= 8.3.4             | >= 17 | 8.3.4           | 3.2.0                       | >= 2.7.x, 3.x.x             |
-| >= 8.3.0             | >= 17 | 8.3.1           | 2.7.7                       | >= 2.7.x, 3.x.x             |
-| >= 8.3.0             | >= 8  | 8.3.1           | 2.7.7                       | >= 2.7.x                    |
-| >= 8.2.4             | >= 17 | 8.2.4           | 2.7.7                       | >= 2.7.x, 3.x.x             |
-| >= 8.2.4             | >= 8  | 8.2.4           | 2.7.7                       | >= 2.7.x                    |
-| >= 8.1.15            | >= 17 | 8.1.x           | 2.7.7                       | >= 2.7.6, 3.x.x             |
-| >= 8.1.15            | >= 8  | 8.1.x           | 2.7.7                       | >= 2.7.6                    |
-| <= 8.1.14            | >= 8  | 8.1.x           | 2.7.5                       | = 2.7.x                     |
+|----------------------|-------|-----------------|-----------------------------|---------------------------------|
+| >= 8.4.0             | >= 17 | 8.4.0           | 3.2.0                       | >= 2.7.x, 3.x.x                 |
+| >= 8.3.4             | >= 17 | 8.3.4           | 3.2.0                       | >= 2.7.x, 3.x.x                 |
+| >= 8.3.0             | >= 17 | 8.3.1           | 2.7.7                       | >= 2.7.x, 3.x.x                 |
+| >= 8.3.0             | >= 8  | 8.3.1           | 2.7.7                       | >= 2.7.x                        |
+| >= 8.2.4             | >= 17 | 8.2.4           | 2.7.7                       | >= 2.7.x, 3.x.x                 |
+| >= 8.2.4             | >= 8  | 8.2.4           | 2.7.7                       | >= 2.7.x                        |
+| >= 8.1.15            | >= 17 | 8.1.x           | 2.7.7                       | >= 2.7.6, 3.x.x                 |
+| >= 8.1.15            | >= 8  | 8.1.x           | 2.7.7                       | >= 2.7.6                        |
+| <= 8.1.14            | >= 8  | 8.1.x           | 2.7.5                       | = 2.7.x                         |
 
 ## Examples
 
@@ -119,43 +119,103 @@ If using Intellij:
 Settings > Build, Execution, Deployment > Compiler > Java Compiler
 ```
 
-## Configuring Camunda 8 SaaS connection
+## Configuring Camunda 8 connection
 
-Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.properties`:
+The default properties for setting up all connection details are hidden in modes. Each connection mode has meaningful defaults that will make your life easier.
 
-```properties
-zeebe.client.cloud.clusterId=xxx
-zeebe.client.cloud.clientId=xxx
-zeebe.client.cloud.clientSecret=xxx
-zeebe.client.cloud.region=bru-2
+The mode is set on `camunda.client.mode` and can be `simple`, `oidc` or `saas`. Further usage of each mode is explained below.
+
+>Zeebe will now also be configured with an URL (`http://localhost:26500` instead of `localhost:26500` + plaintext connection flag)
+
+### Saas
+
+Connections to Camunda SaaS can be configured by creating the following entries in your `src/main/resources/application.yaml`:
+
+```yaml
+camunda:
+  client:
+    mode: saas
+    auth:
+      client-id: <your client id>
+      client-secret: <your client secret>
+    cluster-id: <your cluster id>
+    region: <your cluster region>
 ```
 
-You can also configure the connection to a Self-Managed Zeebe broker:
+### Simple
 
-```properties
-zeebe.client.broker.gateway-address=127.0.0.1:26500
-zeebe.client.security.plaintext=true
+If you set up a local dev cluster, your applications will use a cookie to authenticate. As long as the port config is default, there is nothing to configure rather than the according spring profile:
+
+```yaml
+camunda:
+  client:
+    mode: simple
 ```
 
-You can enforce the right connection mode, for example if multiple contradicting properties are set:
+If you have different endpoints for your applications, disable a client or adjust the username or password used, you can configure this:
 
-```properties
-zeebe.client.connection-mode=CLOUD
-zeebe.client.connection-mode=ADDRESS
+```yaml
+camunda:
+  client:
+    mode: simple
+    auth:
+      username: demo
+      password: demo
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
 ```
 
-You can also configure other components like Operate. If you use different credentials for different components:
+### Oidc
 
-```properties
-camunda.operate.client.clientId=xxx
-camunda.operate.client.clientSecret=xxx
+If you set up a self-managed cluster with identity, keycloak is used as default identity provider. As long as the port config (from docker-compose or port-forward with the helm charts) is default, you need to configure the according spring profile plus client credentials:
+
+```yaml
+camunda:
+  client:
+    mode: oidc
+    auth:
+      client-id: <your client id>
+      client-secret: <your client secret>
 ```
 
-Otherwise, if you use same credentials across all components:
+If you have different endpoints for your applications or want to disable a client, you can configure this:
 
-```properties
-common.clientId=xxx
-common.clientSecret=xxx
+```yaml
+camunda:
+  client:
+    mode: oidc
+    tenant-ids:
+    - <default>
+    auth:
+      oidc-type: keycloak
+      issuer: http://localhost:18080/auth/realms/camunda-platform
+    zeebe:
+      enabled: true
+      base-url: http://localhost:26500
+      audience: zeebe-api
+    operate:
+      enabled: true
+      base-url: http://localhost:8081
+      audience: operate-api
+    tasklist:
+      enabled: true
+      base-url: http://localhost:8082
+      audience: tasklist-api
+    optimize:
+      enabled: true
+      base-url: http://localhost:8083
+      audience: optimize-api
+    identity:
+      enabled: true
+      base-url: http://localhost:8084
+      audience: identity-api
 ```
 
 ## Connect to Zeebe
@@ -294,11 +354,15 @@ public void foo() {
 
 As a third possibility, you can set a default job type:
 
-```properties
-zeebe.client.worker.default-type=foo
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        type: foo
 ```
 
-This is used for all workers that do **not** set a task type via the annoation.
+This is used for all workers that do **not** set a task type via the annotation.
 
 
 ### Define variables to fetch
@@ -326,17 +390,11 @@ public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variab
 }
 ```
 
-With `@Variable` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
 
-```java
-@JobWorker(type = "foo", fetchAllVariables = true)
-public void handleJobFoo(final JobClient client, final ActivatedJob job, @Variable String variable1) {
-}
-```
 
 ### Using `@VariablesAsType`
 
-You can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the Java Client API). Therefore use the `@VariablesAsType` annotation. In the below example, `MyProcessVariables` refers to your own class:
+You can also use your own class into which the process variables are mapped to (comparable to `getVariablesAsType()` in the Java Client API). Therefore, use the `@VariablesAsType` annotation. In the below example, `MyProcessVariables` refers to your own class:
 
 ```java
 @JobWorker(type = "foo")
@@ -362,6 +420,18 @@ public void handleJobFoo(final ActivatedJob job) {
   // ...
 }
 ```
+
+### Variable fetching behaviour
+
+With `@Variable`, `@VariablesAsType` or `fetchVariables` you limit which variables are loaded from the workflow engine. You can also override this and force that all variables are loaded anyway:
+
+```java
+@JobWorker(type = "foo", fetchAllVariables = true)
+public void handleJobFoo(@Variable String variable1) {
+}
+```
+
+Implicit `fetchVariables` (with `@Variable` or `@VariablesAsType`) will be disabled as soon as you inject yourself the `ActivatedJob`.
 
 ### Auto-completing jobs
 
@@ -393,7 +463,7 @@ When using `autoComplete` you can:
 
 * Return a `Map`, `String`, `InputStream`, or `Object`, which then will be added to the process variables
 * Throw a `ZeebeBpmnError` which results in a BPMN error being sent to Zeebe
-* Throw any other `Exception` that leads in an failure handed over to Zeebe
+* Throw any other `Exception` that leads in a failure handed over to Zeebe
 
 ```java
 @JobWorker(type = "foo")
@@ -449,7 +519,7 @@ public void handleFoo(@CustomHeaders Map<String, String> headers){
 }
 ```
 
-Of course you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
+Of course, you can combine annotations, for example `@VariablesAsType` and `@CustomHeaders`
 
 ```java
 @JobWorker
@@ -483,49 +553,40 @@ public void handleJobFoo() {
 
 If you don't want to use a ZeebeClient for certain scenarios, you can switch it off by setting:
 
-```properties
-zeebe.client.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      enabled: false
 ```
-
-### Configuring Self-managed Zeebe Connection
-
-```properties
-zeebe.client.broker.gateway-address=127.0.0.1:26500
-zeebe.client.security.plaintext=true
-```
-
-### Configure different cloud environments
-
-If you don't connect to the Camunda SaaS production environment you might have to also adjust these properties:
-
-```properties
-zeebe.client.cloud.base-url=zeebe.camunda.io
-zeebe.client.cloud.port=443
-zeebe.client.cloud.auth-url=https://login.cloud.camunda.io/oauth/token
-```
-
-As an alternative you can use the [Zeebe Client environment variables](https://docs.camunda.io/docs/components/clients/java-client/index/#bootstrapping).
-
 
 ### Default task type
 
 
 If you build a worker that only serves one thing, it might also be handy to define the worker job type globally - and not in the annotation:
 
-```properties
-zeebe.client.worker.defaultType=foo
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        type: foo
 ```
 
 ### Configure jobs in flight and thread pool
 
 Number of jobs that are polled from the broker to be worked on in this client and thread pool size to handle the jobs:
 
-```properties
-zeebe.client.worker.max-jobs-active=32
-zeebe.client.worker.threads=1
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        max-jobs-active: 32
+      execution-threads: 1
 ```
 
-For a full set of configuration options please see [ZeebeClientConfigurationProperties.java](spring-boot-starter-camunda/src/main/java/io/camunda/zeebe/spring/client/properties/ZeebeClientConfigurationProperties.java)
+For a full set of configuration options please see [CamundaClientProperties.java](spring-boot-starter-camunda/src/main/java/io/camunda/zeebe/spring/client/properties/CamundaClientProperties.java)
 
 Note that we generally do not advise to use a thread pool for workers, but rather implement asynchronous code, see [Writing Good Workers](https://docs.camunda.io/docs/components/best-practices/development/writing-good-workers/).
 
@@ -559,10 +620,15 @@ class SomeClass {
 }
 ```
 
-You can also override this setting via your `application.properties` file:
+You can also override this setting via your `application.yaml` file:
 
-```properties
-zeebe.client.worker.override.foo.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          enabled: false
 ```
 
 This is especially useful, if you have a bigger code base including many workers, but want to start only some of them. Typical use cases are
@@ -571,41 +637,79 @@ This is especially useful, if you have a bigger code base including many workers
 * Load Balancing: You want to control which workers run on which instance of cluster nodes
 * Migration: There are two applications, and you want to migrate a worker from one to another. With this switch, you can simply disable workers via configuration in the old application once they are available within the new.
 
+To disable all workers, but still have the zeebe client available, you can use:
+
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        enabled: false
+```
 
 ### Overriding `JobWorker` values via configuration file
 
 You can override the `JobWorker` annotation's values, as you could see in the example above where the `enabled` property is overridden:
 
-```properties
-zeebe.client.worker.override.foo.enabled=false
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          enabled: false
 ```
 
 In this case, `foo` is the type of the worker that we want to customize.
 
 You can override all supported configuration options for a worker, e.g.:
 
-```properties
-zeebe.client.worker.override.foo.timeout=10000
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          timeout: PT10S
 ```
 
 You could also provide a custom class that can customize the `JobWorker` configuration values by implementing the `io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer` interface.
 
 ### Enable job streaming
 
->Please read aboutt this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
+>Please read about this feature in the [docs](https://docs.camunda.io/docs/apis-tools/java-client/job-worker/#job-streaming) upfront.
 
-To enable job streaming on the zeebe client, you can configure it:
+To control job streaming on the zeebe client, you can configure it:
 
-```properties
-zeebe.client.default-job-worker-stream-enabled=true
+```yaml
+camunda:
+  client:
+    zeebe:
+      defaults:
+        stream-enabled: true
+```
+
+This also works for every worker individual:
+
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          stream-enabled: true
 ```
 
 ### Control tenant usage
 
 When using multi-tenancy, the zeebe client will connect to the `<default>` tenant. To control this, you can configure:
 
-```properties
-zeebe.client.default-job-worker-tenant-ids=myTenant
+```yaml
+camunda:
+  client:
+    tenant-ids:
+    - <default>
+    - foo
 ```
 
 Additionally, you can set tenant ids on job worker level by using the annotation:
@@ -616,8 +720,15 @@ Additionally, you can set tenant ids on job worker level by using the annotation
 
 You can override this property as well:
 
-```properties
-zeebe.client.worker.override.tenant-ids=myThirdTenant
+```yaml
+camunda:
+  client:
+    zeebe:
+      override:
+        foo:
+          tenants-ids:
+          - <default>
+          - foo
 ```
 
 ## Observing metrics
@@ -635,10 +746,14 @@ For all of those metrics, the following actions are recorded:
 * `failed`: The processing failed with some exception
 * `bpmn-error`: The processing completed by throwing an BpmnError (which means there was no technical problem)
 
-In a default setup, you can can enable metrics to be served via http:
+In a default setup, you can enable metrics to be served via http:
 
-```properties
-management.endpoints.web.exposure.include=metrics
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics
 ```
 
 And then access them via http://localhost:8080/actuator/metrics/.

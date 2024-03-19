@@ -46,7 +46,7 @@
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>identity-spring-boot-starter</artifactId>
+      <artifactId>identity-spring-boot-autoconfigure</artifactId>
     </dependency>
     <!-- Make sure slf4j (transitive dependency of resilience4j is on the classpath in the version compatible with Spring boot
     (not specifying a version here means it is taken from the Spring BOM pulled in on root level
@@ -61,6 +61,13 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>3.4.1</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
