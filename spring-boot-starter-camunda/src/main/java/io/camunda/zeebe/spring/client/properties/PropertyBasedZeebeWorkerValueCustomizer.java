@@ -1,5 +1,8 @@
 package io.camunda.zeebe.spring.client.properties;
 
+import static io.camunda.zeebe.spring.client.configuration.PropertyUtil.*;
+import static io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties.*;
+import static java.util.Optional.*;
 import static org.apache.commons.lang3.StringUtils.*;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -12,14 +15,14 @@ import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.bean.ParameterInfo;
+import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
@@ -30,10 +33,13 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   private static final CopyNotNullBeanUtilsBean BEAN_UTILS_BEAN = new CopyNotNullBeanUtilsBean();
 
   private final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties;
+  private final CamundaClientProperties camundaClientProperties;
 
   public PropertyBasedZeebeWorkerValueCustomizer(
-      final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties) {
+      final ZeebeClientConfigurationProperties zeebeClientConfigurationProperties,
+      CamundaClientProperties camundaClientProperties) {
     this.zeebeClientConfigurationProperties = zeebeClientConfigurationProperties;
+    this.camundaClientProperties = camundaClientProperties;
   }
 
   @Override
@@ -49,20 +55,21 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
       LOG.debug(
           "Worker '{}': ActivatedJob is injected, no variable filtering possible",
           zeebeWorkerValue.getName());
-    } else if (zeebeWorkerValue.isForceFetchAllVariables()) {
+    } else if (zeebeWorkerValue.getForceFetchAllVariables() != null
+        && zeebeWorkerValue.getForceFetchAllVariables()) {
       LOG.debug("Worker '{}': Force fetch all variables is enabled", zeebeWorkerValue.getName());
-      zeebeWorkerValue.setFetchVariables(new String[0]);
+      zeebeWorkerValue.setFetchVariables(List.of());
     } else {
       Set<String> variables = new HashSet<>();
       if (zeebeWorkerValue.getFetchVariables() != null) {
-        variables.addAll(Arrays.asList(zeebeWorkerValue.getFetchVariables()));
+        variables.addAll(zeebeWorkerValue.getFetchVariables());
       }
       variables.addAll(
           readZeebeVariableParameters(zeebeWorkerValue.getMethodInfo()).stream()
               .map(this::extractVariableName)
-              .collect(Collectors.toList()));
+              .toList());
       variables.addAll(readVariablesAsTypeParameters(zeebeWorkerValue.getMethodInfo()));
-      zeebeWorkerValue.setFetchVariables(variables.toArray(new String[0]));
+      zeebeWorkerValue.setFetchVariables(variables.stream().toList());
       LOG.debug(
           "Worker '{}': Fetching only required variables {}",
           zeebeWorkerValue.getName(),
@@ -103,7 +110,27 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
 
   private void applyOverrides(ZeebeWorkerValue zeebeWorker) {
     final Map<String, ZeebeWorkerValue> workerConfigurationMap =
-        zeebeClientConfigurationProperties.getWorker().getOverride();
+        getOrLegacyOrDefault(
+            "Override",
+            () -> camundaClientProperties.getZeebe().getOverride(),
+            () -> zeebeClientConfigurationProperties.getWorker().getOverride(),
+            new HashMap<>(),
+            null);
+    try {
+      if (ofNullable(camundaClientProperties.getZeebe())
+          .map(ZeebeClientProperties::getDefaults)
+          .isPresent()) {
+        BEAN_UTILS_BEAN.copyProperties(
+            zeebeWorker, camundaClientProperties.getZeebe().getDefaults());
+      }
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException(
+          "Error while copying properties from "
+              + camundaClientProperties.getZeebe().getDefaults()
+              + " to "
+              + zeebeWorker,
+          e);
+    }
     final String workerType = zeebeWorker.getType();
     if (workerConfigurationMap.containsKey(workerType)) {
       final ZeebeWorkerValue zeebeWorkerValue = workerConfigurationMap.get(workerType);
@@ -118,7 +145,13 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   }
 
   private void applyDefaultWorkerName(ZeebeWorkerValue zeebeWorker) {
-    String defaultJobWorkerName = zeebeClientConfigurationProperties.getDefaultJobWorkerName();
+    String defaultJobWorkerName =
+        getOrLegacyOrDefault(
+            "DefaultJobWorkerName",
+            () -> camundaClientProperties.getZeebe().getDefaults().getName(),
+            zeebeClientConfigurationProperties::getDefaultJobWorkerName,
+            null,
+            null);
     if (isBlank(zeebeWorker.getName())) {
       if (isNotBlank(defaultJobWorkerName)) {
         LOG.debug(
@@ -139,7 +172,13 @@ public class PropertyBasedZeebeWorkerValueCustomizer implements ZeebeWorkerValue
   }
 
   private void applyDefaultJobWorkerType(ZeebeWorkerValue zeebeWorker) {
-    String defaultJobWorkerType = zeebeClientConfigurationProperties.getDefaultJobWorkerType();
+    String defaultJobWorkerType =
+        getOrLegacyOrDefault(
+            "DefaultJobWorkerType",
+            () -> camundaClientProperties.getZeebe().getDefaults().getType(),
+            zeebeClientConfigurationProperties::getDefaultJobWorkerType,
+            null,
+            null);
     if (isBlank(zeebeWorker.getType())) {
       if (isNotBlank(defaultJobWorkerType)) {
         LOG.debug(

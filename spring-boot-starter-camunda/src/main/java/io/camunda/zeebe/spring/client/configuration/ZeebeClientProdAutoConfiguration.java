@@ -1,12 +1,19 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import io.camunda.common.auth.Authentication;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeClientImpl;
 import io.camunda.zeebe.client.impl.util.ExecutorResource;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
+import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
+import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
+import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +32,32 @@ import org.springframework.context.annotation.Bean;
     havingValue = "true",
     matchIfMissing = true)
 @ConditionalOnMissingBean(SpringZeebeTestContext.class)
-@ImportAutoConfiguration({ExecutorServiceConfiguration.class, ZeebeActuatorConfiguration.class})
+@ImportAutoConfiguration({
+  ExecutorServiceConfiguration.class,
+  ZeebeActuatorConfiguration.class,
+  JsonMapperConfiguration.class,
+  AuthenticationConfiguration.class
+})
 @AutoConfigureBefore(ZeebeClientAllAutoConfiguration.class)
 public class ZeebeClientProdAutoConfiguration {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Bean
-  public ZeebeClientConfiguration zeebeClientConfiguration() {
-    return new ZeebeClientConfiguration();
+  public ZeebeClientConfiguration zeebeClientConfiguration(
+      ZeebeClientConfigurationProperties properties,
+      CamundaClientProperties camundaClientProperties,
+      Authentication authentication,
+      JsonMapper jsonMapper,
+      List<ClientInterceptor> interceptors,
+      ZeebeClientExecutorService zeebeClientExecutorService) {
+    return new ZeebeClientConfiguration(
+        properties,
+        camundaClientProperties,
+        authentication,
+        jsonMapper,
+        interceptors,
+        zeebeClientExecutorService);
   }
 
   @Bean(destroyMethod = "close")
