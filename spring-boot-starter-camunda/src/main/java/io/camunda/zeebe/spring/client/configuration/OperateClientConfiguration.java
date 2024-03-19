@@ -4,41 +4,47 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.CamundaOperateClientBuilder;
 import io.camunda.zeebe.spring.client.configuration.condition.OperateClientCondition;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationProperties;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
 @Conditional(OperateClientCondition.class)
-@ConditionalOnProperty(
-    prefix = "camunda.operate.client",
-    name = "enabled",
-    havingValue = "true",
-    matchIfMissing = true)
 @ConditionalOnMissingBean(SpringZeebeTestContext.class)
-@EnableConfigurationProperties(OperateClientConfigurationProperties.class)
+@EnableConfigurationProperties({
+  OperateClientConfigurationProperties.class,
+  CamundaClientProperties.class
+})
 public class OperateClientConfiguration {
-
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private final OperateClientConfigurationProperties legacyProperties;
+  private final CamundaClientProperties properties;
+  private final Authentication authentication;
 
-  @Autowired Authentication authentication;
+  public OperateClientConfiguration(
+      OperateClientConfigurationProperties legacyProperties,
+      CamundaClientProperties properties,
+      Authentication authentication) {
+    this.legacyProperties = legacyProperties;
+    this.properties = properties;
+    this.authentication = authentication;
+  }
 
   @Bean
   @ConditionalOnMissingBean
-  public CamundaOperateClient camundaOperateClient(OperateClientConfigurationProperties props) {
+  public CamundaOperateClient camundaOperateClient() {
     CamundaOperateClient client;
     try {
       client =
           new CamundaOperateClientBuilder()
               .authentication(authentication)
-              .operateUrl(props.getOperateUrl())
+              .operateUrl(operateUrl())
               .setup()
               .build();
     } catch (Exception e) {
@@ -46,5 +52,14 @@ public class OperateClientConfiguration {
       throw new RuntimeException(e);
     }
     return client;
+  }
+
+  private String operateUrl() {
+    return PropertyUtil.getOrLegacyOrDefault(
+        "OperateUrl",
+        () -> properties.getOperate().getBaseUrl().toString(),
+        legacyProperties::getOperateUrl,
+        null,
+        null);
   }
 }
