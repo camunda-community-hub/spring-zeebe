@@ -272,11 +272,11 @@ You can start up an in-memory test engine and do assertions by adding this Maven
 </dependency>
 ```
 
-Note that **the test engines requires Java version >= 17**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a Docker installation locally available on the developer machine. Use this dependency:
+Note that **the test engines requires Java version >= 21**. If you cannot run on this Java version, you can use [Testcontainers](https://www.testcontainers.org/) **instead**. Testcontainers require that you have a Docker installation locally available on the developer machine. Use this dependency:
 
 ```xml
 <!--
-  Alternative dependency if you cannot run Java 17, so you will leverage Testcontainer
+  Alternative dependency if you cannot run Java 21, so you will leverage Testcontainer
   Make sure NOT to have spring-zeebe-test on the classpath in parallel!
 -->
 <dependency>
