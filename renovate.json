@@ -1,11 +1,13 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    ":automergeMinor",
-    ":automergePatch"
+    "config:base"
   ],
+  "labels": ["dependencies"],
   "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
     {
       "matchManagers": [
         "maven"
@@ -14,5 +16,6 @@
       "matchPackagePatterns": [".*"],
       "allowedVersions": "!/-SNAPSHOT$/"
     }
-  ]
+  ],
+  "baseBranches": ["main", "release/8.3", "release/8.4"]
 }
