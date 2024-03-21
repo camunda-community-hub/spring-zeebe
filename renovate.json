@@ -8,7 +8,7 @@
       "matchBaseBranches": ["main"],
       "matchUpdateTypes": ["minor"],
       "automerge": true
-    }
+    },
     {
       "matchUpdateTypes": ["patch", "pin", "digest"],
       "automerge": true
