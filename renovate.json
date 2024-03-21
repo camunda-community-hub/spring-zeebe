@@ -5,7 +5,12 @@
   "labels": ["dependencies"],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchBaseBranches": ["main"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    }
+    {
+      "matchUpdateTypes": ["patch", "pin", "digest"],
       "automerge": true
     },
     {
@@ -17,5 +22,5 @@
       "allowedVersions": "!/-SNAPSHOT$/"
     }
   ],
-  "baseBranches": ["main", "release/8.3", "release/8.4"]
+  "baseBranches": ["main", "/^release/.*/"]
 }
