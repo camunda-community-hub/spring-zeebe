@@ -10,6 +10,11 @@
       "automerge": true
     },
     {
+      "matchBaseBranches": ["/^release/.*/"],
+      "matchUpdateTypes": ["minor"],
+      "enabled": false
+    },
+    {
       "matchUpdateTypes": ["patch", "pin", "digest"],
       "automerge": true
     },
