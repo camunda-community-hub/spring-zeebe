@@ -10,8 +10,9 @@
       "automerge": true
     },
     {
+      "matchManagers": ["maven"],
       "matchBaseBranches": ["/^release/.*/"],
-      "matchUpdateTypes": ["minor"],
+      "matchUpdateTypes": ["major", "minor"],
       "enabled": false
     },
     {
