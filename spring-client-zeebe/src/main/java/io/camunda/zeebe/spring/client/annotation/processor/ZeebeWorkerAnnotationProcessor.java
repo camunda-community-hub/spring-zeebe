@@ -11,7 +11,10 @@ import io.camunda.zeebe.spring.client.bean.ClassInfo;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import java.lang.invoke.MethodHandles;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -22,7 +25,8 @@ import org.springframework.util.ReflectionUtils;
  * Always created by {@link AnnotationProcessorConfiguration}
  *
  * <p>Triggered by {@link ZeebeAnnotationProcessorRegistry#postProcessAfterInitialization(Object,
- * String)} to add Handler subscriptions for {@link ZeebeWorker} method-annotations.
+ * String)} to add Handler subscriptions for {@link ZeebeWorker} and {@link JobWorker}
+ * method-annotations.
  */
 public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProcessor {
 
@@ -33,18 +37,12 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
 
   private final List<ZeebeWorkerValue> zeebeWorkerValues = new ArrayList<>();
   private final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers;
-  private String defaultWorkerType;
-  private String defaultWorkerName;
 
   public ZeebeWorkerAnnotationProcessor(
       final JobWorkerManager jobWorkerFactory,
-      final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers,
-      final String defaultWorkerType,
-      final String defaultJobWorkerName) {
+      final List<ZeebeWorkerValueCustomizer> zeebeWorkerValueCustomizers) {
     this.jobWorkerManager = jobWorkerFactory;
     this.zeebeWorkerValueCustomizers = zeebeWorkerValueCustomizers;
-    this.defaultWorkerType = defaultWorkerType;
-    this.defaultWorkerName = defaultJobWorkerName;
   }
 
   @Override
@@ -77,43 +75,41 @@ public class ZeebeWorkerAnnotationProcessor extends AbstractZeebeAnnotationProce
     if (methodAnnotation.isPresent()) {
       JobWorker annotation = methodAnnotation.get();
       return Optional.of(
-          new ZeebeWorkerValue()
-              .methodInfo(methodInfo)
-              .type(annotation.type())
-              .timeout(annotation.timeout())
-              .maxJobsActive(annotation.maxJobsActive())
-              .pollInterval(annotation.pollInterval())
-              .autoComplete(annotation.autoComplete())
-              .requestTimeout(annotation.requestTimeout())
-              .enabled(annotation.enabled())
-
-              // TODO Get rid of those initialize methods but add the attributes as values onto the
-              // worker and then auto-initialize stuff when opening the worker
-              .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-              .initializeFetchVariables(
-                  annotation.fetchAllVariables(), annotation.fetchVariables(), methodInfo)
-              .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+          new ZeebeWorkerValue(
+              annotation.type(),
+              annotation.name(),
+              Duration.of(annotation.timeout(), ChronoUnit.MILLIS),
+              annotation.maxJobsActive(),
+              Duration.of(annotation.requestTimeout(), ChronoUnit.SECONDS),
+              Duration.of(annotation.pollInterval(), ChronoUnit.MILLIS),
+              annotation.autoComplete(),
+              Arrays.asList(annotation.fetchVariables()),
+              annotation.enabled(),
+              methodInfo,
+              Arrays.asList(annotation.tenantIds()),
+              annotation.fetchAllVariables(),
+              annotation.streamEnabled(),
+              Duration.of(annotation.streamTimeout(), ChronoUnit.MILLIS)));
     } else {
       Optional<ZeebeWorker> legacyAnnotation = methodInfo.getAnnotation(ZeebeWorker.class);
       if (legacyAnnotation.isPresent()) {
         ZeebeWorker annotation = legacyAnnotation.get();
         return Optional.of(
-            new ZeebeWorkerValue()
-                .methodInfo(methodInfo)
-                .type(annotation.type())
-                .timeout(annotation.timeout())
-                .maxJobsActive(annotation.maxJobsActive())
-                .pollInterval(annotation.pollInterval())
-                .autoComplete(annotation.autoComplete())
-                .requestTimeout(annotation.requestTimeout())
-                .enabled(annotation.enabled())
-
-                // TODO Get rid of those initialize methods but add the attributes as values onto
-                // the worker and then auto-initialize stuff when opening the worker
-                .initializeName(annotation.name(), methodInfo, defaultWorkerName)
-                .initializeFetchVariables(
-                    annotation.forceFetchAllVariables(), annotation.fetchVariables(), methodInfo)
-                .initializeJobType(annotation.type(), methodInfo, defaultWorkerType));
+            new ZeebeWorkerValue(
+                annotation.type(),
+                annotation.name(),
+                Duration.of(annotation.timeout(), ChronoUnit.MILLIS),
+                annotation.maxJobsActive(),
+                Duration.of(annotation.requestTimeout(), ChronoUnit.SECONDS),
+                Duration.of(annotation.pollInterval(), ChronoUnit.MILLIS),
+                annotation.autoComplete(),
+                Arrays.asList(annotation.fetchVariables()),
+                annotation.enabled(),
+                methodInfo,
+                Arrays.asList(annotation.tenantIds()),
+                annotation.forceFetchAllVariables(),
+                false,
+                Duration.ZERO));
       }
     }
     return Optional.empty();

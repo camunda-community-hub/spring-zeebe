@@ -13,6 +13,11 @@ public class ClassInfoTest {
 
   public static class WithoutDeploymentAnnotation {}
 
+  public static class TenantBound {
+    @JobWorker(tenantIds = {"tenant-1"})
+    public void handle() {}
+  }
+
   public static class WithZeebeWorker {
 
     @JobWorker(type = "bar", timeout = 100L, name = "kermit", autoComplete = false)

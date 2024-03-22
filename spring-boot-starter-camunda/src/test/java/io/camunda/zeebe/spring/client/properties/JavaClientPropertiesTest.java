@@ -39,12 +39,12 @@ public class JavaClientPropertiesTest {
 
   @Test
   public void hasBrokerContactPoint() throws Exception {
-    assertThat(properties.getGatewayAddress()).isEqualTo("localhost12345");
+    assertThat(PropertiesUtil.getZeebeGatewayAddress(properties)).isEqualTo("localhost12345");
   }
 
   @Test
   public void hasWorkerName() throws Exception {
-    assertThat(properties.getDefaultJobWorkerName()).isEqualTo("testName");
+    assertThat(properties.getWorker().getDefaultName()).isEqualTo("testName");
   }
 
   @Test

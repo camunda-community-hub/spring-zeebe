@@ -31,4 +31,7 @@ public class OperateClientCondition extends AnyNestedCondition {
 
   @ConditionalOnProperty(name = "camunda.operate.client.enabled")
   static class EnableCondition {}
+
+  @ConditionalOnProperty(name = "camunda.client.operate.enabled")
+  static class EnableNewCondition {}
 }

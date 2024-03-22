@@ -80,4 +80,11 @@ public @interface JobWorker {
   boolean autoComplete() default true;
 
   boolean enabled() default true;
+
+  String[] tenantIds() default {};
+
+  boolean streamEnabled() default true;
+
+  /** Stream timeout in ms */
+  long streamTimeout() default -1L;
 }

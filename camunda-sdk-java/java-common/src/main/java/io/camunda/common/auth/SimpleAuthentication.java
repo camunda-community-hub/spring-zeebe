@@ -19,11 +19,8 @@ public class SimpleAuthentication implements Authentication {
   private final SimpleConfig simpleConfig;
   private final Map<Product, String> tokens = new HashMap<>();
 
-  private final String authUrl;
-
-  public SimpleAuthentication(String simpleUrl, SimpleConfig simpleConfig) {
+  public SimpleAuthentication(SimpleConfig simpleConfig) {
     this.simpleConfig = simpleConfig;
-    this.authUrl = simpleUrl + "/api/login";
   }
 
   public static SimpleAuthenticationBuilder builder() {
@@ -64,7 +61,7 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
-    HttpPost httpPost = new HttpPost(authUrl);
+    HttpPost httpPost = new HttpPost(simpleCredential.getBaseUrl() + "/api/login");
     List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("username", simpleCredential.getUser()));
     params.add(new BasicNameValuePair("password", simpleCredential.getPassword()));

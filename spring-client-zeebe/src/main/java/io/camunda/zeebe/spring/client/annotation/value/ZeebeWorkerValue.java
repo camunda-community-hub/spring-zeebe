@@ -1,57 +1,43 @@
 package io.camunda.zeebe.spring.client.annotation.value;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.Variable;
-import io.camunda.zeebe.spring.client.annotation.ZeebeVariable;
-import io.camunda.zeebe.spring.client.bean.CopyNotNullBeanUtilsBean;
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
-import io.camunda.zeebe.spring.client.bean.ParameterInfo;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
-
-  private static final CopyNotNullBeanUtilsBean BEAN_UTILS_BEAN = new CopyNotNullBeanUtilsBean();
   private String type;
-
   private String name;
-
-  private Long timeout;
-
+  private Duration timeout;
   private Integer maxJobsActive;
-
-  private Long requestTimeout;
-
-  private Long pollInterval;
-
+  private Duration requestTimeout;
+  private Duration pollInterval;
   private Boolean autoComplete;
-
-  private String[] fetchVariables;
-
+  private List<String> fetchVariables;
   private Boolean enabled;
-
   private MethodInfo methodInfo;
+  private List<String> tenantIds;
+  private Boolean forceFetchAllVariables;
+  private Boolean streamEnabled;
+  private Duration streamTimeout;
 
   public ZeebeWorkerValue() {}
 
-  private ZeebeWorkerValue(
+  public ZeebeWorkerValue(
       String type,
       String name,
-      long timeout,
-      int maxJobsActive,
-      long requestTimeout,
-      long pollInterval,
-      String[] fetchVariables,
-      boolean forceFetchAllVariables,
-      List<ParameterInfo> variableParameters,
-      boolean autoComplete,
+      Duration timeout,
+      Integer maxJobsActive,
+      Duration requestTimeout,
+      Duration pollInterval,
+      Boolean autoComplete,
+      List<String> fetchVariables,
+      Boolean enabled,
       MethodInfo methodInfo,
-      final boolean enabled) {
+      List<String> tenantIds,
+      Boolean forceFetchAllVariables,
+      Boolean streamEnabled,
+      Duration streamTimeout) {
     this.type = type;
     this.name = name;
     this.timeout = timeout;
@@ -59,156 +45,130 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
     this.requestTimeout = requestTimeout;
     this.pollInterval = pollInterval;
     this.autoComplete = autoComplete;
-    this.methodInfo = methodInfo;
+    this.fetchVariables = fetchVariables;
     this.enabled = enabled;
+    this.methodInfo = methodInfo;
+    this.tenantIds = tenantIds;
+    this.forceFetchAllVariables = forceFetchAllVariables;
+    this.streamEnabled = streamEnabled;
+    this.streamTimeout = streamTimeout;
   }
 
   public String getType() {
     return type;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public Long getTimeout() {
-    return timeout;
-  }
-
-  public Integer getMaxJobsActive() {
-    return maxJobsActive;
-  }
-
-  public Long getRequestTimeout() {
-    return requestTimeout;
-  }
-
-  public Long getPollInterval() {
-    return pollInterval;
-  }
-
-  public String[] getFetchVariables() {
-    return fetchVariables;
-  }
-
-  public Boolean getAutoComplete() {
-    return autoComplete;
-  }
-
-  public MethodInfo getMethodInfo() {
-    return methodInfo;
-  }
-
-  @Override
-  public MethodInfo getBeanInfo() {
-    return getMethodInfo();
-  }
-
-  public Boolean getEnabled() {
-    return enabled;
-  }
-
   public void setType(String type) {
     this.type = type;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public void setName(String name) {
     this.name = name;
   }
 
-  public void setTimeout(Long timeout) {
+  public Duration getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(Duration timeout) {
     this.timeout = timeout;
+  }
+
+  public Integer getMaxJobsActive() {
+    return maxJobsActive;
   }
 
   public void setMaxJobsActive(Integer maxJobsActive) {
     this.maxJobsActive = maxJobsActive;
   }
 
-  public void setRequestTimeout(Long requestTimeout) {
+  public Duration getRequestTimeout() {
+    return requestTimeout;
+  }
+
+  public void setRequestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
   }
 
-  public void setPollInterval(Long pollInterval) {
+  public Duration getPollInterval() {
+    return pollInterval;
+  }
+
+  public void setPollInterval(Duration pollInterval) {
     this.pollInterval = pollInterval;
+  }
+
+  public Boolean getAutoComplete() {
+    return autoComplete;
   }
 
   public void setAutoComplete(Boolean autoComplete) {
     this.autoComplete = autoComplete;
   }
 
-  public void setFetchVariables(String[] fetchVariables) {
+  public List<String> getFetchVariables() {
+    return fetchVariables;
+  }
+
+  public void setFetchVariables(List<String> fetchVariables) {
     this.fetchVariables = fetchVariables;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
   }
 
   public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
 
+  public MethodInfo getMethodInfo() {
+    return methodInfo;
+  }
+
   public void setMethodInfo(MethodInfo methodInfo) {
     this.methodInfo = methodInfo;
   }
 
-  public ZeebeWorkerValue enabled(Boolean enabled) {
-    this.enabled = enabled;
-    return this;
+  public List<String> getTenantIds() {
+    return tenantIds;
   }
 
-  public ZeebeWorkerValue type(String type) {
-    this.type = type;
-    // You can only set a type of a worker - in this case the name is set equals to the type
-    if (name == null) {
-      setName(type);
-    }
-    return this;
+  public void setTenantIds(List<String> tenantIds) {
+    this.tenantIds = tenantIds;
   }
 
-  public ZeebeWorkerValue name(String name) {
-    this.name = name;
-    return this;
+  public Boolean getForceFetchAllVariables() {
+    return forceFetchAllVariables;
   }
 
-  public ZeebeWorkerValue timeout(Long timeout) {
-    this.timeout = timeout;
-    return this;
+  public void setForceFetchAllVariables(Boolean forceFetchAllVariables) {
+    this.forceFetchAllVariables = forceFetchAllVariables;
   }
 
-  public ZeebeWorkerValue maxJobsActive(Integer maxJobsActive) {
-    this.maxJobsActive = maxJobsActive;
-    return this;
+  public Boolean getStreamEnabled() {
+    return streamEnabled;
   }
 
-  public ZeebeWorkerValue requestTimeout(Long requestTimeout) {
-    this.requestTimeout = requestTimeout;
-    return this;
+  public void setStreamEnabled(Boolean streamEnabled) {
+    this.streamEnabled = streamEnabled;
   }
 
-  public ZeebeWorkerValue pollInterval(Long pollInterval) {
-    this.pollInterval = pollInterval;
-    return this;
+  public Duration getStreamTimeout() {
+    return streamTimeout;
   }
 
-  public ZeebeWorkerValue autoComplete(Boolean autoComplete) {
-    this.autoComplete = autoComplete;
-    return this;
+  public void setStreamTimeout(Duration streamTimeout) {
+    this.streamTimeout = streamTimeout;
   }
 
-  public ZeebeWorkerValue fetchVariables(String[] fetchVariables) {
-    this.fetchVariables = fetchVariables;
-    return this;
-  }
-
-  public ZeebeWorkerValue methodInfo(MethodInfo methodInfo) {
-    this.methodInfo = methodInfo;
-    return this;
-  }
-
-  public ZeebeWorkerValue merge(ZeebeWorkerValue other) {
-    try {
-      BEAN_UTILS_BEAN.copyProperties(this, other);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
-    return this;
+  @Override
+  public MethodInfo getBeanInfo() {
+    return methodInfo;
   }
 
   @Override
@@ -231,11 +191,19 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
         + ", autoComplete="
         + autoComplete
         + ", fetchVariables="
-        + Arrays.toString(fetchVariables)
+        + fetchVariables
         + ", enabled="
         + enabled
         + ", methodInfo="
         + methodInfo
+        + ", tenantIds="
+        + tenantIds
+        + ", forceFetchAllVariables="
+        + forceFetchAllVariables
+        + ", streamEnabled="
+        + streamEnabled
+        + ", streamTimeout="
+        + streamTimeout
         + '}';
   }
 
@@ -251,101 +219,31 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
         && Objects.equals(requestTimeout, that.requestTimeout)
         && Objects.equals(pollInterval, that.pollInterval)
         && Objects.equals(autoComplete, that.autoComplete)
-        && Arrays.equals(fetchVariables, that.fetchVariables)
+        && Objects.equals(fetchVariables, that.fetchVariables)
         && Objects.equals(enabled, that.enabled)
-        && Objects.equals(methodInfo, that.methodInfo);
+        && Objects.equals(methodInfo, that.methodInfo)
+        && Objects.equals(tenantIds, that.tenantIds)
+        && Objects.equals(forceFetchAllVariables, that.forceFetchAllVariables)
+        && Objects.equals(streamEnabled, that.streamEnabled)
+        && Objects.equals(streamTimeout, that.streamTimeout);
   }
 
   @Override
   public int hashCode() {
-    int result =
-        Objects.hash(
-            type,
-            name,
-            timeout,
-            maxJobsActive,
-            requestTimeout,
-            pollInterval,
-            autoComplete,
-            enabled,
-            methodInfo);
-    result = 31 * result + Arrays.hashCode(fetchVariables);
-    return result;
-  }
-
-  // TODO Get rid of those initialize methods but add the attributes as values onto the worker and
-  // then auto-initialize stuff when opening the worker maybe via one method
-  public ZeebeWorkerValue initializeName(
-      String name, MethodInfo methodInfo, String defaultJobWorkerName) {
-    // Set name only if configured (default from Java Client library is used only if null - not if
-    // empty string)
-    if (name != null && name.length() > 0) {
-      this.name = name;
-    } else if (null != defaultJobWorkerName) {
-      // otherwise, default name from Spring config if set ([would be done automatically anyway])
-      this.name = defaultJobWorkerName;
-    } else {
-      // otherwise, bean/method name combo
-      this.name = methodInfo.getBeanName() + "#" + methodInfo.getMethodName();
-    }
-    return this;
-  }
-
-  public ZeebeWorkerValue initializeFetchVariables(
-      boolean forceFetchAllVariables, String[] fetchVariables, MethodInfo methodInfo) {
-    if (hasActivatedJobInjected(methodInfo)) {
-      // do nothing
-    } else if (forceFetchAllVariables) {
-      // this overwrites any other setting
-      setFetchVariables(new String[0]);
-    } else {
-      // make sure variables configured and annotated parameters are both fetched, use a set to
-      // avoid duplicates
-      Set<String> variables = new HashSet<>();
-      variables.addAll(Arrays.asList(fetchVariables));
-      variables.addAll(
-          readZeebeVariableParameters(methodInfo).stream()
-              .map(this::extractVariableName)
-              .collect(Collectors.toList()));
-      setFetchVariables(variables.toArray(new String[0]));
-    }
-    return this;
-  }
-
-  private boolean hasActivatedJobInjected(MethodInfo methodInfo) {
-    return methodInfo.getParameters().stream()
-        .anyMatch(p -> p.getParameterInfo().getType().equals(ActivatedJob.class));
-  }
-
-  private String extractVariableName(ParameterInfo parameterInfo) {
-    Variable annotation = parameterInfo.getParameterInfo().getAnnotation(Variable.class);
-    if (annotation != null) {
-      if (Variable.DEFAULT_NAME.equals(annotation.name())) {
-        return parameterInfo.getParameterName();
-      } else {
-        return annotation.name();
-      }
-    } else {
-      return parameterInfo.getParameterName();
-    }
-  }
-
-  private List<ParameterInfo> readZeebeVariableParameters(MethodInfo methodInfo) {
-    List<ParameterInfo> result = methodInfo.getParametersFilteredByAnnotation(Variable.class);
-    result.addAll(methodInfo.getParametersFilteredByAnnotation(ZeebeVariable.class));
-    return result;
-  }
-
-  public ZeebeWorkerValue initializeJobType(
-      String jobType, MethodInfo methodInfo, String defaultWorkerType) {
-    if (jobType != null && jobType.length() > 0) {
-      setType(jobType);
-    } else if (defaultWorkerType != null) {
-      setType(defaultWorkerType);
-    } else {
-      setType(methodInfo.getMethodName());
-    }
-
-    return this;
+    return Objects.hash(
+        type,
+        name,
+        timeout,
+        maxJobsActive,
+        requestTimeout,
+        pollInterval,
+        autoComplete,
+        fetchVariables,
+        enabled,
+        methodInfo,
+        tenantIds,
+        forceFetchAllVariables,
+        streamEnabled,
+        streamTimeout);
   }
 }

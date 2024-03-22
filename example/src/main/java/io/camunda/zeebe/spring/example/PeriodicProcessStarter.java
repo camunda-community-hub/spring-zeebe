@@ -1,8 +1,13 @@
 package io.camunda.zeebe.spring.example;
 
+import io.camunda.operate.CamundaOperateClient;
+import io.camunda.operate.exception.OperateException;
+import io.camunda.operate.model.ProcessDefinition;
+import io.camunda.operate.search.SearchQuery;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +20,14 @@ public class PeriodicProcessStarter {
 
   private static Logger log = LoggerFactory.getLogger(ExampleApplication.class);
 
-  @Autowired private ZeebeClient client;
+  private final ZeebeClient client;
+  private final CamundaOperateClient operateClient;
+
+  @Autowired
+  public PeriodicProcessStarter(ZeebeClient client, CamundaOperateClient operateClient) {
+    this.client = client;
+    this.operateClient = operateClient;
+  }
 
   @Scheduled(fixedRate = 5000L)
   public void startProcesses() {
@@ -39,5 +51,19 @@ public class PeriodicProcessStarter {
         event.getBpmnProcessId(),
         event.getVersion(),
         event.getProcessInstanceKey());
+  }
+
+  @Scheduled(fixedRate = 5000L)
+  public void listProcesses() throws OperateException {
+    SearchQuery query = new SearchQuery();
+    List<ProcessDefinition> processDefinitions = operateClient.searchProcessDefinitions(query);
+    processDefinitions.forEach(
+        processDefinition ->
+            log.info(
+                "Process Definition: Key: {}, BPMN process Id: {}, Name: {}, Tenant: {}",
+                processDefinition.getKey(),
+                processDefinition.getBpmnProcessId(),
+                processDefinition.getName(),
+                processDefinition.getTenantId()));
   }
 }

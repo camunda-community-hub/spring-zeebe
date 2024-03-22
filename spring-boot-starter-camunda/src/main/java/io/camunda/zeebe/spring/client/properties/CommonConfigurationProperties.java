@@ -5,16 +5,26 @@ import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "common")
 public class CommonConfigurationProperties extends Client {
+
+  @Override
+  public String toString() {
+    return "CommonConfigurationProperties{" + "keycloak=" + keycloak + "} " + super.toString();
+  }
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @NestedConfigurationProperty private Keycloak keycloak = new Keycloak();
 
+  @DeprecatedConfigurationProperty(
+      replacement = "not required",
+      reason = "Please use 'camunda.client.auth'")
+  @Deprecated
   public Keycloak getKeycloak() {
     return keycloak;
   }

@@ -1,13 +1,15 @@
-package io.camunda.zeebe.spring.client.config.authentication;
+package io.camunda.zeebe.spring.client.config.legacy.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.common.auth.*;
-import io.camunda.common.json.JsonMapper;
-import io.camunda.common.json.SdkObjectMapper;
+import io.camunda.common.auth.Authentication;
+import io.camunda.common.auth.Product;
+import io.camunda.common.auth.SimpleAuthentication;
+import io.camunda.common.auth.SimpleCredential;
 import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
+import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
 import io.camunda.zeebe.spring.client.configuration.OperateClientConfiguration;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,24 +29,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
       "zeebe.client.id=client-id",
       "zeebe.client.secret=client-secret",
       "zeebe.token.audience=sample-audience",
-      "camunda.operate.client.keycloak-token-url=https://local-keycloak/auth/realms/camunda-platform/protocol/openid-connect/token",
-      "camunda.operate.client.url=http://localhost:8081"
+      "camunda.operate.client.url=http://localhost:8081",
+      "camunda.operate.client.username=username",
+      "camunda.operate.client.password=password"
     })
-@ContextConfiguration(classes = OperateSelfManagedKeycloakTokenUrlTest.TestConfig.class)
-public class OperateSelfManagedKeycloakTokenUrlTest {
+@ContextConfiguration(classes = OperateSelfManagedBasicWithZeebeCredentialsTest.TestConfig.class)
+public class OperateSelfManagedBasicWithZeebeCredentialsTest {
 
   @ImportAutoConfiguration({
     CommonClientConfiguration.class,
     OperateClientConfiguration.class,
-    IdentityAutoConfiguration.class
+    IdentityAutoConfiguration.class,
+    JsonMapperConfiguration.class
   })
   @EnableConfigurationProperties(ZeebeClientConfigurationProperties.class)
-  public static class TestConfig {
-    @Bean
-    public JsonMapper commonJsonMapper() {
-      return new SdkObjectMapper();
-    }
-  }
+  public static class TestConfig {}
 
   @Autowired private Authentication authentication;
 
@@ -53,18 +51,17 @@ public class OperateSelfManagedKeycloakTokenUrlTest {
 
   @Test
   public void testAuthentication() {
-    assertThat(authentication).isInstanceOf(SelfManagedAuthentication.class);
+    assertThat(authentication).isInstanceOf(SimpleAuthentication.class);
     assertThat(operateClient).isNotNull();
   }
 
   @Test
   public void testCredential() {
-    SelfManagedAuthentication selfManagedAuthentication =
-        (SelfManagedAuthentication) authentication;
-    JwtCredential jwtCredential =
-        selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
+    SimpleAuthentication simpleAuthentication = (SimpleAuthentication) authentication;
+    SimpleCredential simpleCredential =
+        simpleAuthentication.getSimpleConfig().getProduct(Product.OPERATE);
 
-    assertThat(jwtCredential.getClientId()).isEqualTo("client-id");
-    assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret");
+    assertThat(simpleCredential.getUser()).isEqualTo("username");
+    assertThat(simpleCredential.getPassword()).isEqualTo("password");
   }
 }

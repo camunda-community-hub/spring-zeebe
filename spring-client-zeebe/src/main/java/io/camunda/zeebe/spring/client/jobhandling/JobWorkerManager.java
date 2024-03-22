@@ -61,18 +61,27 @@ public class JobWorkerManager {
     if (zeebeWorkerValue.getMaxJobsActive() != null && zeebeWorkerValue.getMaxJobsActive() > 0) {
       builder.maxJobsActive(zeebeWorkerValue.getMaxJobsActive());
     }
-    if (zeebeWorkerValue.getTimeout() != null && zeebeWorkerValue.getTimeout() > 0) {
+    if (isValidDuration(zeebeWorkerValue.getTimeout())) {
       builder.timeout(zeebeWorkerValue.getTimeout());
     }
-    if (zeebeWorkerValue.getPollInterval() != null && zeebeWorkerValue.getPollInterval() > 0) {
-      builder.pollInterval(Duration.ofMillis(zeebeWorkerValue.getPollInterval()));
+    if (isValidDuration(zeebeWorkerValue.getPollInterval())) {
+      builder.pollInterval(zeebeWorkerValue.getPollInterval());
     }
-    if (zeebeWorkerValue.getRequestTimeout() != null && zeebeWorkerValue.getRequestTimeout() > 0) {
-      builder.requestTimeout(Duration.ofSeconds(zeebeWorkerValue.getRequestTimeout()));
+    if (isValidDuration(zeebeWorkerValue.getRequestTimeout())) {
+      builder.requestTimeout(zeebeWorkerValue.getRequestTimeout());
     }
     if (zeebeWorkerValue.getFetchVariables() != null
-        && zeebeWorkerValue.getFetchVariables().length > 0) {
+        && !zeebeWorkerValue.getFetchVariables().isEmpty()) {
       builder.fetchVariables(zeebeWorkerValue.getFetchVariables());
+    }
+    if (zeebeWorkerValue.getTenantIds() != null && !zeebeWorkerValue.getTenantIds().isEmpty()) {
+      builder.tenantIds(zeebeWorkerValue.getTenantIds());
+    }
+    if (zeebeWorkerValue.getStreamEnabled() != null) {
+      builder.streamEnabled(zeebeWorkerValue.getStreamEnabled());
+    }
+    if (isValidDuration(zeebeWorkerValue.getStreamTimeout())) {
+      builder.streamTimeout(zeebeWorkerValue.getStreamTimeout());
     }
 
     JobWorker jobWorker = builder.open();
@@ -80,6 +89,10 @@ public class JobWorkerManager {
     workerValues.add(zeebeWorkerValue);
     LOGGER.info(". Starting Zeebe worker: {}", zeebeWorkerValue);
     return jobWorker;
+  }
+
+  private boolean isValidDuration(Duration duration) {
+    return duration != null && !duration.isNegative();
   }
 
   public void closeAllOpenWorkers() {

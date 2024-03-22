@@ -5,8 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "camunda.operate.client")
+@Deprecated
 public class OperateClientConfigurationProperties {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -33,6 +35,8 @@ public class OperateClientConfigurationProperties {
 
   private String authUrl;
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-id")
+  @Deprecated
   public String getClientId() {
     return clientId;
   }
@@ -41,6 +45,8 @@ public class OperateClientConfigurationProperties {
     this.clientId = clientId;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.client-secret")
+  @Deprecated
   public String getClientSecret() {
     return clientSecret;
   }
@@ -49,6 +55,8 @@ public class OperateClientConfigurationProperties {
     this.clientSecret = clientSecret;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.username")
+  @Deprecated
   public String getUsername() {
     return username;
   }
@@ -57,6 +65,8 @@ public class OperateClientConfigurationProperties {
     this.username = username;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.password")
+  @Deprecated
   public String getPassword() {
     return password;
   }
@@ -65,6 +75,8 @@ public class OperateClientConfigurationProperties {
     this.password = password;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.operate.enabled")
+  @Deprecated
   public Boolean getEnabled() {
     return enabled;
   }
@@ -73,6 +85,8 @@ public class OperateClientConfigurationProperties {
     this.enabled = enabled;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.operate.base-url")
+  @Deprecated
   public String getUrl() {
     return url;
   }
@@ -81,6 +95,11 @@ public class OperateClientConfigurationProperties {
     this.url = url;
   }
 
+  @DeprecatedConfigurationProperty(
+      replacement = "camunda.client.auth.issuer",
+      reason =
+          "There is no more specific keycloak config, the issuer is ${keycloakUrl}/auth/realms/${keycloakRealm}")
+  @Deprecated
   public String getKeycloakUrl() {
     return keycloakUrl;
   }
@@ -89,6 +108,11 @@ public class OperateClientConfigurationProperties {
     this.keycloakUrl = keycloakUrl;
   }
 
+  @DeprecatedConfigurationProperty(
+      replacement = "camunda.client.auth.issuer",
+      reason =
+          "There is no more specific keycloak config, the issuer is ${keycloakUrl}/auth/realms/${keycloakRealm}")
+  @Deprecated
   public String getKeycloakRealm() {
     return keycloakRealm;
   }
@@ -97,6 +121,11 @@ public class OperateClientConfigurationProperties {
     this.keycloakRealm = keycloakRealm;
   }
 
+  @DeprecatedConfigurationProperty(
+      replacement = "camunda.client.auth.issuer",
+      reason =
+          "There is no more specific keycloak config, the issuer is ${keycloakUrl}/auth/realms/${keycloakRealm}")
+  @Deprecated
   public String getKeycloakTokenUrl() {
     return keycloakTokenUrl;
   }
@@ -105,6 +134,8 @@ public class OperateClientConfigurationProperties {
     this.keycloakTokenUrl = keycloakTokenUrl;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.operate.base-url")
+  @Deprecated
   public String getBaseUrl() {
     return baseUrl;
   }
@@ -113,6 +144,8 @@ public class OperateClientConfigurationProperties {
     this.baseUrl = baseUrl;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.auth.issuer")
+  @Deprecated
   public String getAuthUrl() {
     return authUrl;
   }
@@ -121,6 +154,8 @@ public class OperateClientConfigurationProperties {
     this.authUrl = authUrl;
   }
 
+  @DeprecatedConfigurationProperty(replacement = "camunda.client.operate.base-url")
+  @Deprecated
   public String getOperateUrl() {
     if (url != null) {
       LOG.debug("Connecting to Camunda Operate on URL: " + url);
