@@ -5,7 +5,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-Spring-Zeebe (this repository) will evolve into Spring Zeebe SDK in the [Zeebe repository](https://github.com/camunda/zeebe) that will be officially supported. 
+Spring-Zeebe (this repository) will evolve into Spring Zeebe SDK in the [Zeebe repository](https://github.com/camunda/zeebe) that will be officially supported.
 
 Later on, Camunda will expand Spring Zeebe SDK to deliver a Camunda Spring SDK providing a unified experience for interacting with all Camunda APIs in the automation cluster (Operate, Tasklist, Optimize and Identity) in Java Spring. We recommend migrating to the officially supported Spring Zeebe and Camunda Spring SDK.
 
