@@ -5,7 +5,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > This is the community maintained version of the Spring Zeebe SDK. For the officially Camunda supported version of this SDK, please refer to the [Zeebe repository](https://github.com/camunda/zeebe).
 
 
