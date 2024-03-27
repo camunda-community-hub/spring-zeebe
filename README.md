@@ -1,19 +1,20 @@
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community) ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce) [![](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#stable-)
 
-# Spring Zeebe -> Camunda Spring SDK
+# Spring-Zeebe -> Camunda Spring Zeebe SDK
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-Spring Zeebe will slowly evolve towards Camunda Spring SDK.
+> [!IMPORTANT]
+> This is the community maintained version of the Spring Zeebe SDK. For the officially Camunda supported version of this SDK, please refer to the [Zeebe repository](https://github.com/camunda/zeebe).
 
-This project allows you to leverage Zeebe, Operate, Optimize, Tasklist, Console, and Modeler within your Spring or Spring Boot environment.
+
+
 
 ## Table of Contents
 
 **Getting Started**
 
--   [ Exciting news ](#exciting-news-evolution-of-spring-zeebe-into-a-camunda-spring-sdk)
 -   [ Version compatibility ](#version-compatibility)
 -   [ Examples ](#examples)
 -   [ Quickstart ](#quickstart)
@@ -32,15 +33,7 @@ This project allows you to leverage Zeebe, Operate, Optimize, Tasklist, Console,
 -   [ Observing metrics ](#observing-metrics)
 
 # Getting started
-
-## Exciting news: Evolution of Spring-Zeebe into a Camunda Spring SDK
-
-This SDK will support all Camunda Products (Zeebe, Operate, Tasklist, etc) in a unified way.
-
-What to expect in the coming months:
-
-- Each product will be slowly added
-- Documentation resources and examples
+This project allows you to leverage Zeebe and Operate within your Spring or Spring Boot environment.
 
 ## Version compatibility
 
