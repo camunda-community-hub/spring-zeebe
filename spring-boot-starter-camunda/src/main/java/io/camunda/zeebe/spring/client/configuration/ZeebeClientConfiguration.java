@@ -17,10 +17,9 @@ import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.PropertiesUtil;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
-import io.grpc.Metadata;
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PostConstruct;
+import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +70,16 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         () -> PropertiesUtil.getZeebeGatewayAddress(properties),
         DEFAULT.getGatewayAddress(),
         configCache);
+  }
+
+  @Override
+  public URI getRestAddress() {
+    return URI.create(camundaClientProperties.getZeebe().getRestAddress().toString());
+  }
+
+  @Override
+  public URI getGrpcAddress() {
+    return URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString());
   }
 
   private String composeGatewayAddress() {
@@ -351,6 +360,11 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   }
 
   @Override
+  public boolean preferRestOverGrpc() {
+    return false;
+  }
+
+  @Override
   public String toString() {
     return "ZeebeClientConfiguration{"
         + "properties="
@@ -376,16 +390,14 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     }
 
     @Override
-    public void applyCredentials(Metadata headers) {
+    public void applyCredentials(CredentialsApplier applier) {
       final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-      final Metadata.Key<String> authHeaderKey =
-          Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
-      headers.put(authHeaderKey, authHeader.getValue());
+      applier.put(authHeader.getKey(), authHeader.getValue());
     }
 
     @Override
-    public boolean shouldRetryRequest(Throwable throwable) {
-      return ((StatusRuntimeException) throwable).getStatus() == Status.DEADLINE_EXCEEDED;
+    public boolean shouldRetryRequest(StatusCode statusCode) {
+      return statusCode.code() == Status.Code.DEADLINE_EXCEEDED.value();
     }
   }
 }

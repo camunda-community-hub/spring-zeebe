@@ -157,6 +157,7 @@ camunda:
     zeebe:
       enabled: true
       base-url: http://localhost:26500
+      rest-address: http://localhost:8080
     operate:
       enabled: true
       base-url: http://localhost:8081
@@ -192,6 +193,7 @@ camunda:
     zeebe:
       enabled: true
       base-url: http://localhost:26500
+      rest-address: http://localhost:8080
       audience: zeebe-api
     operate:
       enabled: true
