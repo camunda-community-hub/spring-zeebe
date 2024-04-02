@@ -1,19 +1,14 @@
 package io.camunda.common.auth;
 
 import io.camunda.common.json.JsonMapper;
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SaaSAuthentication extends JwtAuthentication {
-
-  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final JsonMapper jsonMapper;
 
@@ -37,22 +32,19 @@ public class SaaSAuthentication extends JwtAuthentication {
                   EntityUtils.toString(response.getEntity()), TokenResponse.class);
             } catch (Exception e) {
               var errorMessage =
-                  """
-              Token retrieval failed from: {}
-              Response code: {}
-              Audience: {}
-              """;
-              LOG.error(
-                  errorMessage,
-                  jwtCredential.getAuthUrl(),
-                  response.getCode(),
-                  jwtCredential.getAudience());
-              throw e;
+                  String.format(
+                      """
+              Token retrieval failed from: %s
+              Response code: %s
+              Audience: %s
+              """,
+                      jwtCredential.getAuthUrl(), response.getCode(), jwtCredential.getAudience());
+              throw new RuntimeException(errorMessage, e);
             }
           });
     } catch (Exception e) {
-      LOG.error("Authenticating for " + product + " failed due to " + e);
-      throw new RuntimeException("Unable to authenticate", e);
+      throw new RuntimeException(
+          "Authenticating for " + product + " failed due to " + e.getMessage(), e);
     }
   }
 
