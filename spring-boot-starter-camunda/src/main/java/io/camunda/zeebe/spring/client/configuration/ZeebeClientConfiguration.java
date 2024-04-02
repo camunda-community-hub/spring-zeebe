@@ -74,38 +74,38 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public URI getRestAddress() {
-    return URI.create(camundaClientProperties.getZeebe().getRestAddress().toString());
+    return URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString());
   }
 
   @Override
   public URI getGrpcAddress() {
-    return URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString());
+    return URI.create(camundaClientProperties.getZeebe().getGatewayUrl().toString());
   }
 
   private String composeGatewayAddress() {
     // check if port is set
-    if (camundaClientProperties.getZeebe().getBaseUrl().getPort() != -1) {
+    if (camundaClientProperties.getZeebe().getGatewayUrl().getPort() != -1) {
       String gatewayAddress =
-          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+          camundaClientProperties.getZeebe().getGatewayUrl().getHost()
               + ":"
-              + camundaClientProperties.getZeebe().getBaseUrl().getPort();
+              + camundaClientProperties.getZeebe().getGatewayUrl().getPort();
       LOG.debug("Gateway port is set, address will be '{}'", gatewayAddress);
       return gatewayAddress;
     }
     // check if default port can be applied
-    if (camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort() != -1) {
+    if (camundaClientProperties.getZeebe().getGatewayUrl().getDefaultPort() != -1) {
       String gatewayAddress =
-          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+          camundaClientProperties.getZeebe().getGatewayUrl().getHost()
               + ":"
-              + camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort();
+              + camundaClientProperties.getZeebe().getGatewayUrl().getDefaultPort();
       LOG.debug("Gateway port has default, address will be '{}'", gatewayAddress);
       return gatewayAddress;
     }
     LOG.debug(
         "Gateway cannot be determined, address will be '{}'",
-        camundaClientProperties.getZeebe().getBaseUrl().getHost());
+        camundaClientProperties.getZeebe().getGatewayUrl().getHost());
     // do not use any port
-    return camundaClientProperties.getZeebe().getBaseUrl().getHost();
+    return camundaClientProperties.getZeebe().getGatewayUrl().getHost();
   }
 
   @Override
@@ -221,7 +221,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   }
 
   private boolean composePlaintext() {
-    String protocol = camundaClientProperties.getZeebe().getBaseUrl().getProtocol();
+    String protocol = camundaClientProperties.getZeebe().getGatewayUrl().getProtocol();
     if (protocol.equals("http")) {
       return true;
     }
@@ -231,7 +231,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     throw new IllegalStateException(
         String.format(
             "Unrecognized zeebe protocol '%s'",
-            camundaClientProperties.getZeebe().getBaseUrl().getProtocol()));
+            camundaClientProperties.getZeebe().getGatewayUrl().getProtocol()));
   }
 
   @Override
@@ -361,7 +361,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public boolean preferRestOverGrpc() {
-    return false;
+    return camundaClientProperties.getZeebe().isPreferRestOverGrpc();
   }
 
   @Override

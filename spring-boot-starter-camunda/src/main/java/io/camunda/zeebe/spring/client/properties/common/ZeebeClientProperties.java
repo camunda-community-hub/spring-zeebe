@@ -15,8 +15,8 @@ public class ZeebeClientProperties extends ApiProperties {
   private String overrideAuthority;
   private ZeebeWorkerValue defaults;
   private Map<String, ZeebeWorkerValue> override;
-
-  private URL restAddress;
+  private URL gatewayUrl;
+  private boolean preferRestOverGrpc;
 
   public ZeebeWorkerValue getDefaults() {
     return defaults;
@@ -90,11 +90,19 @@ public class ZeebeClientProperties extends ApiProperties {
     this.maxMessageSize = maxMessageSize;
   }
 
-  public URL getRestAddress() {
-    return restAddress;
+  public URL getGatewayUrl() {
+    return gatewayUrl;
   }
 
-  public void setRestAddress(URL restAddress) {
-    this.restAddress = restAddress;
+  public void setGatewayUrl(URL gatewayUrl) {
+    this.gatewayUrl = gatewayUrl;
+  }
+
+  public boolean isPreferRestOverGrpc() {
+    return preferRestOverGrpc;
+  }
+
+  public void setPreferRestOverGrpc(boolean preferRestOverGrpc) {
+    this.preferRestOverGrpc = preferRestOverGrpc;
   }
 }

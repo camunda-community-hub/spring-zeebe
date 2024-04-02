@@ -25,7 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestPropertySource(
     properties = {
       "camunda.client.zeebe.base-url=http://localhost:12345",
-      "camunda.client.zeebe.rest-address=http://localhost:8080",
+      "camunda.client.zeebe.gateway-url=http://localhost:12346",
       "zeebe.client.broker.gatewayAddress=localhost12345",
       "zeebe.client.requestTimeout=99s",
       "zeebe.client.job.timeout=99s",
