@@ -21,7 +21,7 @@
 
     <zeebe.version>8.5.0-RC2</zeebe.version>
     <version.zeebe-process-test-extension>8.5.0-alpha2</version.zeebe-process-test-extension>
-    <identity.version>8.5.0-alpha2</identity.version>
+    <identity.version>8.5.0</identity.version>
 
     <spring-boot.version>3.2.4</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -287,7 +287,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.11</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
             <goals>
