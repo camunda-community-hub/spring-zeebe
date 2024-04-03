@@ -19,8 +19,8 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.5.0-RC2</zeebe.version>
-    <version.zeebe-process-test-extension>8.5.0-alpha2</version.zeebe-process-test-extension>
+    <zeebe.version>8.5.0</zeebe.version>
+    <zeebe-process-test-extension.version>8.5.0-alpha2</zeebe-process-test-extension.version>
     <identity.version>8.5.0</identity.version>
 
     <spring-boot.version>3.2.4</spring-boot.version>
@@ -84,12 +84,12 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
-        <version>${version.zeebe-process-test-extension}</version>
+        <version>${zeebe-process-test-extension.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-        <version>${version.zeebe-process-test-extension}</version>
+        <version>${zeebe-process-test-extension.version}</version>
       </dependency>
       <dependency>
         <groupId>io.camunda.spring</groupId>
