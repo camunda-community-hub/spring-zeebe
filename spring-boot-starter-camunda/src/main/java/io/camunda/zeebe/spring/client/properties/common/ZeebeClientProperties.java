@@ -1,6 +1,7 @@
 package io.camunda.zeebe.spring.client.properties.common;
 
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
+import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ public class ZeebeClientProperties extends ApiProperties {
   private String overrideAuthority;
   private ZeebeWorkerValue defaults;
   private Map<String, ZeebeWorkerValue> override;
+  private URL gatewayUrl;
+  private boolean preferRestOverGrpc;
 
   public ZeebeWorkerValue getDefaults() {
     return defaults;
@@ -85,5 +88,21 @@ public class ZeebeClientProperties extends ApiProperties {
 
   public void setMaxMessageSize(Integer maxMessageSize) {
     this.maxMessageSize = maxMessageSize;
+  }
+
+  public URL getGatewayUrl() {
+    return gatewayUrl;
+  }
+
+  public void setGatewayUrl(URL gatewayUrl) {
+    this.gatewayUrl = gatewayUrl;
+  }
+
+  public boolean isPreferRestOverGrpc() {
+    return preferRestOverGrpc;
+  }
+
+  public void setPreferRestOverGrpc(boolean preferRestOverGrpc) {
+    this.preferRestOverGrpc = preferRestOverGrpc;
   }
 }

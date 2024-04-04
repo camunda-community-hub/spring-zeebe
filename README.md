@@ -156,7 +156,9 @@ camunda:
       password: demo
     zeebe:
       enabled: true
-      base-url: http://localhost:26500
+      gateway-url: http://localhost:26500
+      base-url: http://localhost:8080
+      prefer-rest-over-grpc: false
     operate:
       enabled: true
       base-url: http://localhost:8081
@@ -191,7 +193,9 @@ camunda:
       issuer: http://localhost:18080/auth/realms/camunda-platform
     zeebe:
       enabled: true
-      base-url: http://localhost:26500
+      gateway-url: http://localhost:26500
+      base-url: http://localhost:8080
+      prefer-rest-over-grpc: false
       audience: zeebe-api
     operate:
       enabled: true
