@@ -8,7 +8,7 @@ camunda:
       issuer: http://localhost:18080/auth/realms/camunda-platform
     zeebe:
       enabled: true
-      base-url: http://localhost:8086
+      base-url: http://localhost:8088
       gateway-url: http://localhost:26500
       audience: zeebe-api
       prefer-rest-over-grpc: false
