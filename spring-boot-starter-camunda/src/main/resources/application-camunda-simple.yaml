@@ -8,7 +8,9 @@ camunda:
       password: demo
     zeebe:
       enabled: true
-      base-url: http://localhost:26500
+      base-url: http://localhost:8088
+      gateway-url: http://localhost:26500
+      prefer-rest-over-grpc: false
     operate:
       enabled: true
       base-url: http://localhost:8081
