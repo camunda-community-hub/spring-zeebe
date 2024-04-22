@@ -18,7 +18,10 @@ public class CamundaClientPropertiesSimpleTest {
     assertThat(properties.getMode()).isEqualTo(simple);
     assertThat(properties.getAuth().getUsername()).isEqualTo("demo");
     assertThat(properties.getAuth().getPassword()).isEqualTo("demo");
-    assertThat(properties.getZeebe().getBaseUrl().toString()).isEqualTo("http://localhost:26500");
+    assertThat(properties.getZeebe().getGatewayUrl().toString())
+        .isEqualTo("http://localhost:26500");
+    assertThat(properties.getZeebe().getBaseUrl().toString()).isEqualTo("http://localhost:8088");
+    assertThat(properties.getZeebe().isPreferRestOverGrpc()).isEqualTo(false);
     assertThat(properties.getZeebe().getEnabled()).isEqualTo(true);
     assertThat(properties.getOperate().getBaseUrl().toString()).isEqualTo("http://localhost:8081");
     assertThat(properties.getOperate().getEnabled()).isEqualTo(true);
