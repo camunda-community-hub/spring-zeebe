@@ -74,12 +74,22 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
   @Override
   public URI getRestAddress() {
-    return URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString());
+    return getOrLegacyOrDefault(
+        "RestAddress",
+        () -> URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString()),
+        this::composeRestAddress,
+        DEFAULT.getRestAddress(),
+        configCache);
   }
 
   @Override
   public URI getGrpcAddress() {
-    return URI.create(camundaClientProperties.getZeebe().getGatewayUrl().toString());
+    return getOrLegacyOrDefault(
+        "GrpcAddress",
+        () -> URI.create(camundaClientProperties.getZeebe().getGatewayUrl().toString()),
+        this::composeGrpcAddress,
+        DEFAULT.getGrpcAddress(),
+        configCache);
   }
 
   private String composeGatewayAddress() {
@@ -106,6 +116,17 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         camundaClientProperties.getZeebe().getGatewayUrl().getHost());
     // do not use any port
     return camundaClientProperties.getZeebe().getGatewayUrl().getHost();
+  }
+
+  private URI composeGrpcAddress() {
+    String protocol = properties.getSecurity().isPlaintext() ? "http" : "https";
+    String gatewayAddress = PropertiesUtil.getZeebeGatewayAddress(properties);
+    return URI.create(String.format("%s://%s", protocol, gatewayAddress));
+  }
+
+  private URI composeRestAddress() {
+    throw new IllegalStateException(
+        "Cannot compose rest address from legacy ZeebeClientConfiguration");
   }
 
   @Override
@@ -221,7 +242,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   }
 
   private boolean composePlaintext() {
-    String protocol = camundaClientProperties.getZeebe().getGatewayUrl().getProtocol();
+    String protocol = camundaClientProperties.getZeebe().getBaseUrl().getProtocol();
     if (protocol.equals("http")) {
       return true;
     }
@@ -231,7 +252,7 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     throw new IllegalStateException(
         String.format(
             "Unrecognized zeebe protocol '%s'",
-            camundaClientProperties.getZeebe().getGatewayUrl().getProtocol()));
+            camundaClientProperties.getZeebe().getBaseUrl().getProtocol()));
   }
 
   @Override
