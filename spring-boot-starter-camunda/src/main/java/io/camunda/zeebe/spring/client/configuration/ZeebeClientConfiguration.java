@@ -17,10 +17,9 @@ import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.PropertiesUtil;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
-import io.grpc.Metadata;
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PostConstruct;
+import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -73,30 +72,61 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         configCache);
   }
 
+  @Override
+  public URI getRestAddress() {
+    return getOrLegacyOrDefault(
+        "RestAddress",
+        () -> URI.create(camundaClientProperties.getZeebe().getBaseUrl().toString()),
+        this::composeRestAddress,
+        DEFAULT.getRestAddress(),
+        configCache);
+  }
+
+  @Override
+  public URI getGrpcAddress() {
+    return getOrLegacyOrDefault(
+        "GrpcAddress",
+        () -> URI.create(camundaClientProperties.getZeebe().getGatewayUrl().toString()),
+        this::composeGrpcAddress,
+        DEFAULT.getGrpcAddress(),
+        configCache);
+  }
+
   private String composeGatewayAddress() {
     // check if port is set
-    if (camundaClientProperties.getZeebe().getBaseUrl().getPort() != -1) {
+    if (camundaClientProperties.getZeebe().getGatewayUrl().getPort() != -1) {
       String gatewayAddress =
-          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+          camundaClientProperties.getZeebe().getGatewayUrl().getHost()
               + ":"
-              + camundaClientProperties.getZeebe().getBaseUrl().getPort();
+              + camundaClientProperties.getZeebe().getGatewayUrl().getPort();
       LOG.debug("Gateway port is set, address will be '{}'", gatewayAddress);
       return gatewayAddress;
     }
     // check if default port can be applied
-    if (camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort() != -1) {
+    if (camundaClientProperties.getZeebe().getGatewayUrl().getDefaultPort() != -1) {
       String gatewayAddress =
-          camundaClientProperties.getZeebe().getBaseUrl().getHost()
+          camundaClientProperties.getZeebe().getGatewayUrl().getHost()
               + ":"
-              + camundaClientProperties.getZeebe().getBaseUrl().getDefaultPort();
+              + camundaClientProperties.getZeebe().getGatewayUrl().getDefaultPort();
       LOG.debug("Gateway port has default, address will be '{}'", gatewayAddress);
       return gatewayAddress;
     }
     LOG.debug(
         "Gateway cannot be determined, address will be '{}'",
-        camundaClientProperties.getZeebe().getBaseUrl().getHost());
+        camundaClientProperties.getZeebe().getGatewayUrl().getHost());
     // do not use any port
-    return camundaClientProperties.getZeebe().getBaseUrl().getHost();
+    return camundaClientProperties.getZeebe().getGatewayUrl().getHost();
+  }
+
+  private URI composeGrpcAddress() {
+    String protocol = properties.getSecurity().isPlaintext() ? "http" : "https";
+    String gatewayAddress = PropertiesUtil.getZeebeGatewayAddress(properties);
+    return URI.create(String.format("%s://%s", protocol, gatewayAddress));
+  }
+
+  private URI composeRestAddress() {
+    throw new IllegalStateException(
+        "Cannot compose rest address from legacy ZeebeClientConfiguration");
   }
 
   @Override
@@ -351,6 +381,11 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   }
 
   @Override
+  public boolean preferRestOverGrpc() {
+    return camundaClientProperties.getZeebe().isPreferRestOverGrpc();
+  }
+
+  @Override
   public String toString() {
     return "ZeebeClientConfiguration{"
         + "properties="
@@ -376,16 +411,14 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
     }
 
     @Override
-    public void applyCredentials(Metadata headers) {
+    public void applyCredentials(CredentialsApplier applier) {
       final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-      final Metadata.Key<String> authHeaderKey =
-          Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
-      headers.put(authHeaderKey, authHeader.getValue());
+      applier.put(authHeader.getKey(), authHeader.getValue());
     }
 
     @Override
-    public boolean shouldRetryRequest(Throwable throwable) {
-      return ((StatusRuntimeException) throwable).getStatus() == Status.DEADLINE_EXCEEDED;
+    public boolean shouldRetryRequest(StatusCode statusCode) {
+      return statusCode.code() == Status.Code.DEADLINE_EXCEEDED.value();
     }
   }
 }

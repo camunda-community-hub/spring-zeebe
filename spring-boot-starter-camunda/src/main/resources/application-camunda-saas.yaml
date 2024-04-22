@@ -8,7 +8,8 @@ camunda:
     zeebe:
       enabled: true
       audience: zeebe.camunda.io
-      base-url: https://${camunda.client.cluster-id}.${camunda.client.region}.zeebe.camunda.io
+      gateway-url: https://${camunda.client.cluster-id}.${camunda.client.region}.zeebe.camunda.io
+      base-url: https://${camunda.client.region}.zeebe.camunda.io/${camunda.client.cluster-id}
     operate:
       enabled: true
       audience: operate.camunda.io
