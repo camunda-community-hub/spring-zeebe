@@ -6,7 +6,7 @@
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
 > [!IMPORTANT]
-> This is a community maintained project. For the fully supported Camunda Spring SDK, refer to the [Zeebe repository](https://github.com/camunda/zeebe). For public information about the SDK, see [this issue](https://github.com/camunda/issues/issues/711).
+> This is a community maintained project. For the fully supported Camunda Spring SDK, refer to the [Zeebe repository](https://github.com/camunda/zeebe). For public information about the first version of Camunda Spring SDK (Spring-Zeebe SDK), see [this issue](https://github.com/camunda/issues/issues/711).
 
 ## Table of Contents
 
