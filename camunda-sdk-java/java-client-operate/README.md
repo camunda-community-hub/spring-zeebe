@@ -1,48 +1,10 @@
 # Java Operate client
 
-## Usage in your project
-
-This client is part of the Spring Zeebe project. If you intend to use it outside of this project, you can add a dependency to io.camunda.spring:java-client-operate
-```xml
-<dependency>
-  <groupId>io.camunda.spring</groupId>
-  <artifactId>java-client-operate</artifactId>
-  <version>8.3.4</version>
-</dependency>
-```
-
-## Build the client
-
-### SaaS Authentication
+The Spring Boot Starter contains the Operate client which becomes injectable as a bean.
 
 ```java
-  JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.OPERATE, new JwtCredential(clientId, clientSecret));
-  targetOperateUrl = "https://" + region + ".operate.camunda.io/" + clusterId;
-  auth = SaaSAuthentication.builder().jwtConfig(jwtConfig).build();
-
-  client = CamundaOperateClient.builder()
-              .operateUrl(targetOperateUrl)
-              .authentication(auth)
-              .setup()
-              .build();
+@Autowired CamundaOperateClient operateClient;
 ```
-
-### SelfManaged Authentication
-
-```java
-  JwtConfig jwtConfig = new JwtConfig();
-  jwtConfig.addProduct(Product.OPERATE, new JwtCredential(clientId, clientSecret));
-  auth = SelfManagedAuthentication.builder().jwtConfig(jwtConfig).keycloakUrl(keycloakUrl).build();
-
-  client = CamundaOperateClient.builder()
-              .operateUrl(operateUrl)
-              .authentication(auth)
-              .setup()
-              .build();
-```
-
-## Use the client
 
 ### List deployed process definitions
 
