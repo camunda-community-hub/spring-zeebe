@@ -76,7 +76,7 @@ public class CommonClientConfiguration {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential =
                 new SimpleCredential(
-                    operateClientConfigurationProperties.getBaseUrl(),
+                    operateClientConfigurationProperties.getOperateUrl(),
                     operateClientConfigurationProperties.getUsername(),
                     operateClientConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
@@ -117,7 +117,7 @@ public class CommonClientConfiguration {
             SimpleConfig simpleConfig = new SimpleConfig();
             SimpleCredential simpleCredential =
                 new SimpleCredential(
-                    commonConfigurationProperties.getBaseUrl(),
+                    getUrl(commonConfigurationProperties),
                     commonConfigurationProperties.getUsername(),
                     commonConfigurationProperties.getPassword());
             simpleConfig.addProduct(Product.OPERATE, simpleCredential);
@@ -127,6 +127,16 @@ public class CommonClientConfiguration {
       }
     }
     return new DefaultNoopAuthentication();
+  }
+
+  private String getUrl(CommonConfigurationProperties commonConfigurationProperties) {
+    if (commonConfigurationProperties.getUrl() != null) {
+      return commonConfigurationProperties.getUrl();
+    }
+    if (commonConfigurationProperties.getBaseUrl() != null) {
+      return commonConfigurationProperties.getBaseUrl();
+    }
+    return null;
   }
 
   private JwtConfig configureJwtConfig() {
