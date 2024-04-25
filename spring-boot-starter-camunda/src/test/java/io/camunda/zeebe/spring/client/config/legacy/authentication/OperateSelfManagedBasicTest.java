@@ -49,6 +49,7 @@ public class OperateSelfManagedBasicTest {
 
     assertThat(simpleCredential.getUser()).isEqualTo("username");
     assertThat(simpleCredential.getPassword()).isEqualTo("password");
+    assertThat(simpleCredential.getBaseUrl()).isEqualTo("http://localhost:8081");
   }
 
   @ImportAutoConfiguration({
