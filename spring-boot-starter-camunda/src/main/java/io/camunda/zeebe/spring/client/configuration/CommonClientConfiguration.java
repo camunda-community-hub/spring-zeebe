@@ -169,6 +169,16 @@ public class CommonClientConfiguration {
               commonConfigurationProperties.getClientSecret(),
               zeebeClientConfigurationProperties.getCloud().getAudience(),
               zeebeClientConfigurationProperties.getCloud().getAuthUrl()));
+    } else if (identityConfigurationFromProperties != null
+        && hasText(identityConfigurationFromProperties.getClientId())
+        && hasText(identityConfigurationFromProperties.getClientSecret())) {
+      jwtConfig.addProduct(
+          Product.ZEEBE,
+          new JwtCredential(
+              identityConfigurationFromProperties.getClientId(),
+              identityConfigurationFromProperties.getClientSecret(),
+              identityConfigurationFromProperties.getAudience(),
+              identityConfigurationFromProperties.getIssuerBackendUrl()));
     }
 
     // OPERATE
@@ -253,7 +263,41 @@ public class CommonClientConfiguration {
       IdentityContainer operateIdentityContainer = configureOperateIdentityContainer(jwtConfig);
       identityConfig.addProduct(Product.OPERATE, operateIdentityContainer);
     }
+    // ZEEBE
+    if(zeebeClientConfigurationProperties != null){
+      IdentityContainer zeebeIdentityContainer = configureZeebeIdentityContainer(jwtConfig);
+      identityConfig.addProduct(Product.ZEEBE, zeebeIdentityContainer);
+    }
     return identityConfig;
+  }
+
+  private IdentityContainer configureZeebeIdentityContainer(JwtConfig jwtConfig) {
+    JwtCredential jwtCredential = jwtConfig.getProduct(Product.ZEEBE);
+    String issuer;
+    String issuerBackendUrl;
+    if (hasText(identityConfigurationFromProperties.getIssuer())) {
+      issuer = identityConfigurationFromProperties.getIssuer();
+    } else {
+      issuer = jwtCredential.getAuthUrl();
+    }
+
+    if (hasText(identityConfigurationFromProperties.getIssuerBackendUrl())) {
+      issuerBackendUrl = identityConfigurationFromProperties.getIssuerBackendUrl();
+    } else {
+      issuerBackendUrl = jwtCredential.getAuthUrl();
+    }
+    IdentityConfiguration operateIdentityConfiguration =
+      new IdentityConfiguration.Builder()
+        .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
+        .withIssuer(issuer)
+        .withIssuerBackendUrl(issuerBackendUrl)
+        .withClientId(jwtCredential.getClientId())
+        .withClientSecret(jwtCredential.getClientSecret())
+        .withAudience(jwtCredential.getAudience())
+        .withType(identityConfigurationFromProperties.getType().name())
+        .build();
+    Identity operateIdentity = new Identity(operateIdentityConfiguration);
+    return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
   }
 
   /**
