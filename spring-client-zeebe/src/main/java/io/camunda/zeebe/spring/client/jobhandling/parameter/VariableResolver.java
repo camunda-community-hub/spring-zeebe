@@ -18,6 +18,9 @@ public class VariableResolver implements ParameterResolver {
   @Override
   public Object resolve(JobClient jobClient, ActivatedJob job) {
     Object variableValue = getVariable(job);
+    if (variableValue == null) {
+      return null;
+    }
     try {
       return mapZeebeVariable(variableValue);
     } catch (ClassCastException | IllegalArgumentException ex) {
@@ -32,7 +35,7 @@ public class VariableResolver implements ParameterResolver {
   }
 
   protected Object getVariable(ActivatedJob job) {
-    return job.getVariable(variableName);
+    return job.getVariablesAsMap().get(variableName);
   }
 
   protected Object mapZeebeVariable(Object variableValue) {
