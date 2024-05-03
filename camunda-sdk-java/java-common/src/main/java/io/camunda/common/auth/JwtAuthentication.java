@@ -44,8 +44,8 @@ public abstract class JwtAuthentication implements Authentication {
   }
 
   private boolean isValid(JwtToken jwtToken) {
-    // a token is only counted valid if it is only valid for at least 30 seconds
-    return jwtToken.getExpiry().isAfter(LocalDateTime.now().minusSeconds(30));
+    // a token is only counted valid if the expiry is later than in 30 seconds
+    return jwtToken.getExpiry().isAfter(LocalDateTime.now().plusSeconds(30));
   }
 
   protected static class JwtToken {
