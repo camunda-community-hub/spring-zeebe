@@ -52,7 +52,23 @@ Create a new Spring Boot project (e.g. using [Spring initializr](https://start.s
 
 ## Add Spring Boot Starter to your project
 
-Add the following Maven dependency to your Spring Boot Starter project:
+Add the following Maven repository and dependency to your Spring Boot Starter project:
+
+```xml
+<repositories>
+    <repository>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>identity</id>
+        <name>Camunda Identity</name>
+        <url>https://artifacts.camunda.com/artifactory/camunda-identity/</url>
+    </repository>
+</repositories>
+```
 
 ```xml
 <dependency>
