@@ -53,4 +53,6 @@ public @interface ZeebeWorker {
   boolean autoComplete() default false;
 
   boolean enabled() default true;
+
+  String[] tenantIds() default {};
 }

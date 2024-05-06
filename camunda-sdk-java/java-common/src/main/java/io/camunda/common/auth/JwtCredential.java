@@ -10,10 +10,10 @@ public class JwtCredential {
     this.authUrl = authUrl;
   }
 
-  private String clientId;
-  private String clientSecret;
-  private String audience;
-  private String authUrl;
+  private final String clientId;
+  private final String clientSecret;
+  private final String audience;
+  private final String authUrl;
 
   public String getClientId() {
     return clientId;
