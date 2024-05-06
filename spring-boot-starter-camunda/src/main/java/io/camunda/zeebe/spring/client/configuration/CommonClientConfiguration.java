@@ -67,10 +67,7 @@ public class CommonClientConfiguration {
               || hasText(operateClientConfigurationProperties.getKeycloakTokenUrl())) {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
-            return SelfManagedAuthentication.builder()
-                .withJwtConfig(jwtConfig)
-                .withIdentityConfig(identityConfig)
-                .build();
+            return SelfManagedAuthentication.builder().withIdentityConfig(identityConfig).build();
           } else if (operateClientConfigurationProperties.getUsername() != null
               && operateClientConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();
@@ -89,10 +86,7 @@ public class CommonClientConfiguration {
           if (hasText(identityConfigurationFromProperties.getClientId())) {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
-            return SelfManagedAuthentication.builder()
-                .withJwtConfig(jwtConfig)
-                .withIdentityConfig(identityConfig)
-                .build();
+            return SelfManagedAuthentication.builder().withIdentityConfig(identityConfig).build();
           }
         }
 
@@ -101,17 +95,11 @@ public class CommonClientConfiguration {
           if (commonConfigurationProperties.getKeycloak().getUrl() != null) {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
-            return SelfManagedAuthentication.builder()
-                .withJwtConfig(jwtConfig)
-                .withIdentityConfig(identityConfig)
-                .build();
+            return SelfManagedAuthentication.builder().withIdentityConfig(identityConfig).build();
           } else if (commonConfigurationProperties.getKeycloak().getTokenUrl() != null) {
             JwtConfig jwtConfig = configureJwtConfig();
             IdentityConfig identityConfig = configureIdentities(jwtConfig);
-            return SelfManagedAuthentication.builder()
-                .withJwtConfig(jwtConfig)
-                .withIdentityConfig(identityConfig)
-                .build();
+            return SelfManagedAuthentication.builder().withIdentityConfig(identityConfig).build();
           } else if (commonConfigurationProperties.getUsername() != null
               && commonConfigurationProperties.getPassword() != null) {
             SimpleConfig simpleConfig = new SimpleConfig();

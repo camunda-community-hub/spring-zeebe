@@ -65,14 +65,10 @@ public class AuthenticationConfiguration {
     // oidc: configure zeebe, tasklist, operate, optimize
     if (ClientMode.oidc.equals(clientMode)) {
       IdentityConfig identityConfig = new IdentityConfig();
-      JwtConfig jwtConfig = new JwtConfig();
       for (Product p : Product.coveredProducts()) {
-        oidcCredentialForProduct(identityConfig, jwtConfig, p);
+        oidcCredentialForProduct(identityConfig, p);
       }
-      return SelfManagedAuthentication.builder()
-          .withJwtConfig(jwtConfig)
-          .withIdentityConfig(identityConfig)
-          .build();
+      return SelfManagedAuthentication.builder().withIdentityConfig(identityConfig).build();
     } else
     // saas: configure all
     if (ClientMode.saas.equals(clientMode)) {
@@ -100,15 +96,13 @@ public class AuthenticationConfiguration {
     }
   }
 
-  private void oidcCredentialForProduct(
-      IdentityConfig identityConfig, JwtConfig jwtConfig, Product product) {
+  private void oidcCredentialForProduct(IdentityConfig identityConfig, Product product) {
     if (enabledForProduct(product)) {
       LOG.debug("{} is enabled", product);
       String issuer = globalIssuer();
       String clientId = clientId();
       String clientSecret = clientSecret();
       String audience = audienceForProduct(product);
-      jwtConfig.addProduct(product, new JwtCredential(clientId, clientSecret, audience, issuer));
       IdentityConfiguration identityCfg =
           new IdentityConfiguration(
               baseUrlForProduct(Product.IDENTITY).toString(),

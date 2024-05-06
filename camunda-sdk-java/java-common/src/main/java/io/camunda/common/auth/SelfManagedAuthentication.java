@@ -1,17 +1,21 @@
 package io.camunda.common.auth;
 
 import io.camunda.common.auth.identity.IdentityConfig;
-import io.camunda.identity.sdk.Identity;
+import io.camunda.common.auth.identity.IdentityContainer;
 import io.camunda.identity.sdk.authentication.Tokens;
-import java.time.LocalDateTime;
+import java.util.AbstractMap;
+import java.util.Map.Entry;
 
-public class SelfManagedAuthentication extends JwtAuthentication {
+public class SelfManagedAuthentication implements Authentication {
 
   private final IdentityConfig identityConfig;
 
-  public SelfManagedAuthentication(JwtConfig jwtConfig, IdentityConfig identityConfig) {
-    super(jwtConfig);
+  public SelfManagedAuthentication(IdentityConfig identityConfig) {
     this.identityConfig = identityConfig;
+  }
+
+  public IdentityConfig getIdentityConfig() {
+    return identityConfig;
   }
 
   public static SelfManagedAuthenticationBuilder builder() {
@@ -19,15 +23,24 @@ public class SelfManagedAuthentication extends JwtAuthentication {
   }
 
   @Override
-  protected JwtToken generateToken(Product product, JwtCredential credential) {
-    Tokens token = getIdentityToken(product, credential);
-    return new JwtToken(
-        token.getAccessToken(), LocalDateTime.now().plusSeconds(token.getExpiresIn()));
+  public Entry<String, String> getTokenHeader(Product product) {
+    Tokens tokens = getToken(product);
+    return authHeader(tokens.getAccessToken());
   }
 
-  private Tokens getIdentityToken(Product product, JwtCredential credential) {
-    Identity identity = identityConfig.get(product).getIdentity();
-    String audience = credential.getAudience();
-    return identity.authentication().requestToken(audience);
+  private Tokens getToken(Product product) {
+    IdentityContainer identityContainer = identityConfig.get(product);
+    String audience = identityContainer.getIdentityConfiguration().getAudience();
+    return identityContainer.getIdentity().authentication().requestToken(audience);
+  }
+
+  @Override
+  public void resetToken(Product product) {
+    Tokens token = getToken(product);
+    identityConfig.get(product).getIdentity().authentication().revokeToken(token.getRefreshToken());
+  }
+
+  private Entry<String, String> authHeader(String token) {
+    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
   }
 }

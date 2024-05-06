@@ -3,10 +3,10 @@ package io.camunda.zeebe.spring.client.config.legacy.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.common.auth.Authentication;
-import io.camunda.common.auth.JwtCredential;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SelfManagedAuthentication;
 import io.camunda.identity.autoconfigure.IdentityAutoConfiguration;
+import io.camunda.identity.sdk.IdentityConfiguration;
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.zeebe.spring.client.configuration.CommonClientConfiguration;
 import io.camunda.zeebe.spring.client.configuration.JsonMapperConfiguration;
@@ -58,8 +58,11 @@ public class OperateSelfManagedKeycloakUrlTest {
   public void testCredential() {
     SelfManagedAuthentication selfManagedAuthentication =
         (SelfManagedAuthentication) authentication;
-    JwtCredential jwtCredential =
-        selfManagedAuthentication.getJwtConfig().getProduct(Product.OPERATE);
+    IdentityConfiguration jwtCredential =
+        selfManagedAuthentication
+            .getIdentityConfig()
+            .get(Product.OPERATE)
+            .getIdentityConfiguration();
 
     assertThat(jwtCredential.getClientId()).isEqualTo("client-id");
     assertThat(jwtCredential.getClientSecret()).isEqualTo("client-secret");

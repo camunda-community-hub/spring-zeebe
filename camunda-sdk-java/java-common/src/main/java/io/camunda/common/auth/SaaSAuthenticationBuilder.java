@@ -1,9 +1,16 @@
 package io.camunda.common.auth;
 
+import io.camunda.common.auth.Authentication.AuthenticationBuilder;
 import io.camunda.common.json.JsonMapper;
 
-public class SaaSAuthenticationBuilder extends JwtAuthenticationBuilder<SaaSAuthenticationBuilder> {
+public class SaaSAuthenticationBuilder implements AuthenticationBuilder {
   private JsonMapper jsonMapper;
+  private JwtConfig jwtConfig;
+
+  public SaaSAuthenticationBuilder withJwtConfig(JwtConfig jwtConfig) {
+    this.jwtConfig = jwtConfig;
+    return this;
+  }
 
   public SaaSAuthenticationBuilder withJsonMapper(JsonMapper jsonMapper) {
     this.jsonMapper = jsonMapper;
@@ -11,12 +18,7 @@ public class SaaSAuthenticationBuilder extends JwtAuthenticationBuilder<SaaSAuth
   }
 
   @Override
-  protected SaaSAuthenticationBuilder self() {
-    return this;
-  }
-
-  @Override
-  protected SaaSAuthentication build(JwtConfig jwtConfig) {
+  public Authentication build() {
     return new SaaSAuthentication(jwtConfig, jsonMapper);
   }
 }
