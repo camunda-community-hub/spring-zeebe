@@ -27,7 +27,7 @@ public abstract class JwtAuthentication implements Authentication {
   @Override
   public final Entry<String, String> getTokenHeader(Product product) {
     JwtCredential jwtCredential = jwtConfig.getProduct(product);
-    if(jwtCredential == null) {
+    if (jwtCredential == null) {
       throw new IllegalStateException("No jwt credentials found for product " + product);
     }
     if (!tokens.containsKey(product) || !isValid(tokens.get(product))) {

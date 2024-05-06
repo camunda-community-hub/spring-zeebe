@@ -264,7 +264,7 @@ public class CommonClientConfiguration {
       identityConfig.addProduct(Product.OPERATE, operateIdentityContainer);
     }
     // ZEEBE
-    if(zeebeClientConfigurationProperties != null){
+    if (zeebeClientConfigurationProperties != null) {
       IdentityContainer zeebeIdentityContainer = configureZeebeIdentityContainer(jwtConfig);
       identityConfig.addProduct(Product.ZEEBE, zeebeIdentityContainer);
     }
@@ -287,15 +287,15 @@ public class CommonClientConfiguration {
       issuerBackendUrl = jwtCredential.getAuthUrl();
     }
     IdentityConfiguration operateIdentityConfiguration =
-      new IdentityConfiguration.Builder()
-        .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
-        .withIssuer(issuer)
-        .withIssuerBackendUrl(issuerBackendUrl)
-        .withClientId(jwtCredential.getClientId())
-        .withClientSecret(jwtCredential.getClientSecret())
-        .withAudience(jwtCredential.getAudience())
-        .withType(identityConfigurationFromProperties.getType().name())
-        .build();
+        new IdentityConfiguration.Builder()
+            .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
+            .withIssuer(issuer)
+            .withIssuerBackendUrl(issuerBackendUrl)
+            .withClientId(jwtCredential.getClientId())
+            .withClientSecret(jwtCredential.getClientSecret())
+            .withAudience(jwtCredential.getAudience())
+            .withType(identityConfigurationFromProperties.getType().name())
+            .build();
     Identity operateIdentity = new Identity(operateIdentityConfiguration);
     return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
   }
