@@ -6,6 +6,7 @@ import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.result.ResultEnricher;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.metrics.ZeebeClientMetricsBridge;
 import java.lang.invoke.MethodHandles;
@@ -25,16 +26,20 @@ public class JobWorkerManager {
   private final MetricsRecorder metricsRecorder;
   private final ParameterResolverStrategy parameterResolverStrategy;
 
+  private final ResultEnricher resultEnricher;
+
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
 
   public JobWorkerManager(
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       MetricsRecorder metricsRecorder,
-      ParameterResolverStrategy parameterResolverStrategy) {
+      ParameterResolverStrategy parameterResolverStrategy,
+      ResultEnricher resultEnricher) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.metricsRecorder = metricsRecorder;
     this.parameterResolverStrategy = parameterResolverStrategy;
+    this.resultEnricher = resultEnricher;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
@@ -45,7 +50,8 @@ public class JobWorkerManager {
             zeebeWorkerValue,
             commandExceptionHandlingStrategy,
             metricsRecorder,
-            parameterResolverStrategy));
+            parameterResolverStrategy,
+            resultEnricher));
   }
 
   public JobWorker openWorker(
