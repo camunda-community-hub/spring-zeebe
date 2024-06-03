@@ -4,6 +4,7 @@ import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 public class ZeebeClientProperties extends ApiProperties {
   private Integer executionThreads;
@@ -13,7 +14,7 @@ public class ZeebeClientProperties extends ApiProperties {
   private String caCertificatePath;
   private Duration keepAlive;
   private String overrideAuthority;
-  private ZeebeWorkerValue defaults;
+  @NestedConfigurationProperty private ZeebeWorkerValue defaults;
   private Map<String, ZeebeWorkerValue> override;
   private URL gatewayUrl;
   private boolean preferRestOverGrpc;
