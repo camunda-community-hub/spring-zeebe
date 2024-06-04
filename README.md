@@ -305,6 +305,8 @@ public class TestMyProcess {
 
 An example test case is [available here](https://github.com/camunda-community-hub/camunda-cloud-examples/blob/main/twitter-review-java-springboot/src/test/java/org/camunda/community/examples/twitter/TestTwitterProcess.java).
 
+>Please do not use `zeebeTestEngine.waitForBusyState(...)` to wait for a timer. This will not work as this is also triggered by an incoming job activation.
+
 ## Run Connectors
 
 Spring Zeebe project previously included the Runtime for Camunda 8 Connectors. It has been moved to a separate [Connectors](https://github.com/camunda/connectors) project.
