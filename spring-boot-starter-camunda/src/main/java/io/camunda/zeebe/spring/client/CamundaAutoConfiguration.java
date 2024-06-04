@@ -6,6 +6,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.spring.client.configuration.*;
+import io.camunda.zeebe.spring.client.configuration.condition.ZeebeClientCondition;
 import io.camunda.zeebe.spring.client.event.ZeebeLifecycleEventProducer;
 import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import java.lang.invoke.MethodHandles;
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /** Enabled by META-INF of Spring Boot Starter to provide beans for Camunda Clients */
@@ -44,6 +46,7 @@ public class CamundaAutoConfiguration {
           .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
 
   @Bean
+  @Conditional(ZeebeClientCondition.class)
   @ConditionalOnMissingBean(
       SpringZeebeTestContext
           .class) // only run if we are not running in a test case - as otherwise the the lifecycle
