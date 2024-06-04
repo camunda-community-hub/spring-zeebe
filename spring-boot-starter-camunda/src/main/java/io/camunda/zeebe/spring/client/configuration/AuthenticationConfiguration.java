@@ -81,6 +81,7 @@ public class AuthenticationConfiguration {
           .withJsonMapper(jsonMapper)
           .build();
     } else {
+      LOG.warn("Unknown client mode {}, using noop authentication", clientMode);
       return new DefaultNoopAuthentication();
     }
   }
