@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.annotation.value;
 
 import io.camunda.zeebe.spring.client.bean.MethodInfo;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -245,5 +246,12 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
         forceFetchAllVariables,
         streamEnabled,
         streamTimeout);
+  }
+
+  // old methods
+
+  @Deprecated
+  public void setFetchVariables(String[] fetchVariables) {
+    this.fetchVariables = Arrays.asList(fetchVariables);
   }
 }
