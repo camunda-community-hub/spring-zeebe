@@ -258,6 +258,8 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
   /** set timeout in millis */
   @Deprecated
   public void setTimeout(Long timeout) {
-    this.timeout = Duration.ofMillis(timeout);
+    if (timeout != null) {
+      this.timeout = Duration.ofMillis(timeout);
+    }
   }
 }
