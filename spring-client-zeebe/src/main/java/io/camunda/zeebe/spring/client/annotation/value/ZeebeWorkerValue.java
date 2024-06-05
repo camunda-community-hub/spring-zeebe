@@ -252,6 +252,16 @@ public class ZeebeWorkerValue implements ZeebeAnnotationValue<MethodInfo> {
 
   @Deprecated
   public void setFetchVariables(String[] fetchVariables) {
-    this.fetchVariables = Arrays.asList(fetchVariables);
+    if (fetchVariables != null) {
+      this.fetchVariables = Arrays.asList(fetchVariables);
+    }
+  }
+
+  /** set timeout in millis */
+  @Deprecated
+  public void setTimeout(Long timeout) {
+    if (timeout != null) {
+      this.timeout = Duration.ofMillis(timeout);
+    }
   }
 }
