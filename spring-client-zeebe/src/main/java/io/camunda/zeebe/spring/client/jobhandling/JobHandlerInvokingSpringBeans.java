@@ -11,7 +11,8 @@ import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolver;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStrategy;
-import io.camunda.zeebe.spring.client.jobhandling.result.ResultEnricher;
+import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessor;
+import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessorStrategy;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import java.io.InputStream;
 import java.util.List;
@@ -26,19 +27,23 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
   private final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy;
   private final MetricsRecorder metricsRecorder;
   private final List<ParameterResolver> parameterResolvers;
-  private final ResultEnricher resultEnricher;
+  private final ResultProcessor resultProcessor;
 
   public JobHandlerInvokingSpringBeans(
       ZeebeWorkerValue workerValue,
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       MetricsRecorder metricsRecorder,
       ParameterResolverStrategy parameterResolverStrategy,
-      ResultEnricher resultEnricher) {
+      ResultProcessorStrategy resultProcessorStrategy) {
     this.workerValue = workerValue;
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.metricsRecorder = metricsRecorder;
     this.parameterResolvers = createParameterResolvers(parameterResolverStrategy);
-    this.resultEnricher = resultEnricher;
+    this.resultProcessor = createResultProcessor(resultProcessorStrategy);
+  }
+
+  private ResultProcessor createResultProcessor(ResultProcessorStrategy resultProcessorStrategy) {
+    return resultProcessorStrategy.createProcessor(workerValue.getMethodInfo().getReturnType());
   }
 
   private List<ParameterResolver> createParameterResolvers(
@@ -60,7 +65,7 @@ public class JobHandlerInvokingSpringBeans implements JobHandler {
       Object result = null;
       try {
         result = workerValue.getMethodInfo().invoke(args.toArray());
-        result = resultEnricher.enrich(result);
+        result = resultProcessor.process(result);
       } catch (Throwable t) {
         metricsRecorder.increase(
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, job.getType());

@@ -14,8 +14,8 @@ import io.camunda.zeebe.spring.client.jobhandling.JobWorkerManager;
 import io.camunda.zeebe.spring.client.jobhandling.ZeebeClientExecutorService;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.DefaultParameterResolverStrategy;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStrategy;
-import io.camunda.zeebe.spring.client.jobhandling.result.DefaultResultEnricher;
-import io.camunda.zeebe.spring.client.jobhandling.result.ResultEnricher;
+import io.camunda.zeebe.spring.client.jobhandling.result.DefaultResultProcessorStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessorStrategy;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.PropertyBasedZeebeWorkerValueCustomizer;
@@ -76,8 +76,8 @@ public class ZeebeClientAllAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ResultEnricher resultEnricher() {
-    return new DefaultResultEnricher();
+  public ResultProcessorStrategy resultProcessorStrategy() {
+    return new DefaultResultProcessorStrategy();
   }
 
   @Bean
@@ -85,12 +85,12 @@ public class ZeebeClientAllAutoConfiguration {
       final CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       final MetricsRecorder metricsRecorder,
       final ParameterResolverStrategy parameterResolverStrategy,
-      final ResultEnricher resultEnricher) {
+      final ResultProcessorStrategy resultProcessorStrategy) {
     return new JobWorkerManager(
         commandExceptionHandlingStrategy,
         metricsRecorder,
         parameterResolverStrategy,
-        resultEnricher);
+        resultProcessorStrategy);
   }
 
   @Bean
