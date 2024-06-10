@@ -10,6 +10,7 @@ import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,9 @@ public class OperateClientConfiguration {
   private final OperateClientConfigurationProperties legacyProperties;
   private final CamundaClientProperties properties;
   private final Authentication authentication;
+  @Autowired Authentication legacyAuthentication;
 
+  @Autowired
   public OperateClientConfiguration(
       OperateClientConfigurationProperties legacyProperties,
       CamundaClientProperties properties,
@@ -34,6 +37,31 @@ public class OperateClientConfiguration {
     this.legacyProperties = legacyProperties;
     this.properties = properties;
     this.authentication = authentication;
+  }
+
+  @Deprecated
+  public OperateClientConfiguration() {
+    this.legacyProperties = null;
+    this.properties = null;
+    this.authentication = null;
+  }
+
+  @Deprecated
+  public CamundaOperateClient camundaOperateClient(
+      OperateClientConfigurationProperties properties) {
+    CamundaOperateClient client;
+    try {
+      client =
+          new CamundaOperateClientBuilder()
+              .authentication(legacyAuthentication)
+              .operateUrl(properties.getOperateUrl())
+              .setup()
+              .build();
+    } catch (Exception e) {
+      LOG.warn("An attempt to connect to Operate failed: " + e);
+      throw new RuntimeException(e);
+    }
+    return client;
   }
 
   @Bean
