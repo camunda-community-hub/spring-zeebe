@@ -83,7 +83,7 @@ public @interface JobWorker {
 
   String[] tenantIds() default {};
 
-  boolean streamEnabled() default true;
+  boolean streamEnabled() default false;
 
   /** Stream timeout in ms */
   long streamTimeout() default -1L;

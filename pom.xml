@@ -19,16 +19,16 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <zeebe.version>8.5.1</zeebe.version>
-    <identity.version>8.5.1</identity.version>
+    <zeebe.version>8.5.2</zeebe.version>
+    <identity.version>8.5.2</identity.version>
 
-    <spring-boot.version>3.2.5</spring-boot.version>
+    <spring-boot.version>3.3.0</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <resilience4j.version>2.2.0</resilience4j.version>
     <jackson.version>2.17.1</jackson.version>
     <commons-lang.version>3.14.0</commons-lang.version>
 
-    <plugin.version.maven-enforcer-plugin>3.4.1</plugin.version.maven-enforcer-plugin>
+    <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
