@@ -6,15 +6,17 @@ import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1;
 import io.camunda.zeebe.spring.client.annotation.value.ZeebeWorkerValue;
 import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStrategy;
+import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessorStrategy;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
 import io.camunda.zeebe.spring.client.metrics.ZeebeClientMetricsBridge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JobWorkerManager {
 
@@ -25,16 +27,20 @@ public class JobWorkerManager {
   private final MetricsRecorder metricsRecorder;
   private final ParameterResolverStrategy parameterResolverStrategy;
 
+  private final ResultProcessorStrategy resultProcessorStrategy;
+
   private List<JobWorker> openedWorkers = new ArrayList<>();
   private List<ZeebeWorkerValue> workerValues = new ArrayList<>();
 
   public JobWorkerManager(
       CommandExceptionHandlingStrategy commandExceptionHandlingStrategy,
       MetricsRecorder metricsRecorder,
-      ParameterResolverStrategy parameterResolverStrategy) {
+      ParameterResolverStrategy parameterResolverStrategy,
+      ResultProcessorStrategy resultProcessorStrategy) {
     this.commandExceptionHandlingStrategy = commandExceptionHandlingStrategy;
     this.metricsRecorder = metricsRecorder;
     this.parameterResolverStrategy = parameterResolverStrategy;
+    this.resultProcessorStrategy = resultProcessorStrategy;
   }
 
   public JobWorker openWorker(ZeebeClient client, ZeebeWorkerValue zeebeWorkerValue) {
@@ -45,7 +51,8 @@ public class JobWorkerManager {
             zeebeWorkerValue,
             commandExceptionHandlingStrategy,
             metricsRecorder,
-            parameterResolverStrategy));
+            parameterResolverStrategy,
+            resultProcessorStrategy));
   }
 
   public JobWorker openWorker(
