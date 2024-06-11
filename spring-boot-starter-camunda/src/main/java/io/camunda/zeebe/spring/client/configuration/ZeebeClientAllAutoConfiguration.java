@@ -1,5 +1,8 @@
 package io.camunda.zeebe.spring.client.configuration;
 
+import static io.camunda.zeebe.spring.client.configuration.PropertyUtil.getOrLegacyOrDefault;
+import static io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties.DEFAULT;
+
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.api.worker.BackoffSupplier;
 import io.camunda.zeebe.client.impl.worker.ExponentialBackoffBuilderImpl;
@@ -23,9 +26,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
-
-import static io.camunda.zeebe.spring.client.configuration.PropertyUtil.getOrLegacyOrDefault;
-import static io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties.DEFAULT;
 
 @Conditional(ZeebeClientCondition.class)
 @Import({AnnotationProcessorConfiguration.class, JsonMapperConfiguration.class})

@@ -5,14 +5,17 @@ import org.junit.jupiter.api.Test;
 
 class DefaultResultProcessorStrategyTest {
 
-  private final DefaultResultProcessorStrategy resultProcessorStrategy = new DefaultResultProcessorStrategy();
+  private final DefaultResultProcessorStrategy resultProcessorStrategy =
+      new DefaultResultProcessorStrategy();
+
   @Test
   void createProcessorShouldReturnDefaultProcessor() {
-    //Given
+    // Given
     String inputValue = "input";
-    //When
-    ResultProcessor resultProcessor = resultProcessorStrategy.createProcessor(inputValue.getClass());
-    //Then
+    // When
+    ResultProcessor resultProcessor =
+        resultProcessorStrategy.createProcessor(inputValue.getClass());
+    // Then
     Assertions.assertTrue(resultProcessor instanceof DefaultResultProcessor);
   }
 }

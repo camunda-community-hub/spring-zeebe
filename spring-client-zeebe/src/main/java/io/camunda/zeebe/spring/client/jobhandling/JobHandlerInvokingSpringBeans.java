@@ -14,11 +14,10 @@ import io.camunda.zeebe.spring.client.jobhandling.parameter.ParameterResolverStr
 import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessor;
 import io.camunda.zeebe.spring.client.jobhandling.result.ResultProcessorStrategy;
 import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import org.slf4j.Logger;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
 
 /** Zeebe JobHandler that invokes a Spring bean */
 public class JobHandlerInvokingSpringBeans implements JobHandler {

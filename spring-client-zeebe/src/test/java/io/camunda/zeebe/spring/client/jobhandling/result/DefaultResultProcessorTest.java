@@ -9,12 +9,11 @@ class DefaultResultProcessorTest {
 
   @Test
   public void testProcessMethodShouldReturnResult() {
-    //Given
+    // Given
     String inputValue = "input";
-    //When
+    // When
     Object resultValue = defaultResultProcessor.process(inputValue);
-    //Then
+    // Then
     Assertions.assertEquals(inputValue, resultValue);
   }
-
 }

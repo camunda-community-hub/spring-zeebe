@@ -1,6 +1,6 @@
 package io.camunda.zeebe.spring.client.bean;
 
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -9,8 +9,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 
 public class MethodInfo implements BeanInfo {
 
