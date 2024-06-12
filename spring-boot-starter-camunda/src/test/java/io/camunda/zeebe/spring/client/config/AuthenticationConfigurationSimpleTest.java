@@ -33,7 +33,10 @@ public class AuthenticationConfigurationSimpleTest {
     stubFor(
         post("/api/login")
             .willReturn(
-                ok().withHeader("Set-Cookie", "OPERATE-SESSION=3205A03818447100591792E774DB8AF6").withHeader("Set-Cookie", "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785")));
+                ok().withHeader("Set-Cookie", "OPERATE-SESSION=3205A03818447100591792E774DB8AF6")
+                    .withHeader(
+                        "Set-Cookie",
+                        "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785")));
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(entry("Cookie", "OPERATE-SESSION=3205A03818447100591792E774DB8AF6"));
@@ -48,8 +51,10 @@ public class AuthenticationConfigurationSimpleTest {
     stubFor(
         post("/api/login")
             .willReturn(
-                ok().withHeader(
-                        "Set-Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6").withHeader("Set-Cookie", "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785")));
+                ok().withHeader("Set-Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6")
+                    .withHeader(
+                        "Set-Cookie",
+                        "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785")));
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
         .isEqualTo(entry("Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6"));
