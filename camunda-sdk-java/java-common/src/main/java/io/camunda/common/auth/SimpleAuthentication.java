@@ -43,7 +43,7 @@ public class SimpleAuthentication implements Authentication {
                 String cookiePrefix = product.toString().toUpperCase() + "-SESSION";
                 for (Header cookieHeader : cookieHeaders) {
                   if (cookieHeader.getValue().startsWith(cookiePrefix)) {
-                    cookieCandidate = response.getHeader("Set-Cookie").getValue();
+                    cookieCandidate = cookieHeader.getValue();
                     break;
                   }
                 }
