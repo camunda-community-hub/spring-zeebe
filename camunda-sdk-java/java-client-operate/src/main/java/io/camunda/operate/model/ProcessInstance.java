@@ -7,6 +7,7 @@ public class ProcessInstance {
   private Long processVersion;
   private String bpmnProcessId;
   private Long parentKey;
+  private Long parentFlowNodeInstanceKey;
   private Date startDate;
   private Date endDate;
   private ProcessInstanceState state;
@@ -43,6 +44,14 @@ public class ProcessInstance {
 
   public void setParentKey(Long parentKey) {
     this.parentKey = parentKey;
+  }
+
+  public Long getParentFlowNodeInstanceKey() {
+    return parentFlowNodeInstanceKey;
+  }
+
+  public void setParentFlowNodeInstanceKey(Long parentFlowNodeInstanceKey) {
+    this.parentFlowNodeInstanceKey = parentFlowNodeInstanceKey;
   }
 
   public Date getStartDate() {
