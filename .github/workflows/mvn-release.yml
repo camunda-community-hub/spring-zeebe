@@ -37,8 +37,8 @@ jobs:
           maven-url: s01.oss.sonatype.org
           nexus-usr: ${{ secrets.NEXUS_USR }}
           nexus-psw: ${{ secrets.NEXUS_PSW }}
-          maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-          maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+          maven-usr: ${{ secrets.COMMUNITY_HUB_MAVEN_CENTRAL_S01_USR }}
+          maven-psw: ${{ secrets.COMMUNITY_HUB_MAVEN_CENTRAL_S01_PSW }}
           maven-additional-options: -U
           maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
           maven-auto-release-after-close: true
