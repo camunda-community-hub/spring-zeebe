@@ -417,8 +417,8 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
     @Override
     public void applyCredentials(CredentialsApplier applier) {
-      final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-      applier.put(authHeader.getKey(), authHeader.getValue());
+      final Map<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
+      authHeader.forEach(applier::put);
     }
 
     @Override
