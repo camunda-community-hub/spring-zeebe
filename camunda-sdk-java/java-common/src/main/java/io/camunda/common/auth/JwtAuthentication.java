@@ -1,10 +1,8 @@
 package io.camunda.common.auth;
 
 import java.time.LocalDateTime;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public abstract class JwtAuthentication implements Authentication {
 
@@ -25,7 +23,7 @@ public abstract class JwtAuthentication implements Authentication {
   }
 
   @Override
-  public final Entry<String, String> getTokenHeader(Product product) {
+  public final Map<String, String> getTokenHeader(Product product) {
     if (!tokens.containsKey(product) || !isValid(tokens.get(product))) {
       JwtToken newToken = generateToken(product, jwtConfig.getProduct(product));
       tokens.put(product, newToken);
@@ -35,8 +33,8 @@ public abstract class JwtAuthentication implements Authentication {
 
   protected abstract JwtToken generateToken(Product product, JwtCredential credential);
 
-  private Entry<String, String> authHeader(String token) {
-    return new AbstractMap.SimpleEntry<>("Authorization", "Bearer " + token);
+  private Map<String, String> authHeader(String token) {
+    return Map.of("Authorization", "Bearer " + token);
   }
 
   private boolean isValid(JwtToken jwtToken) {

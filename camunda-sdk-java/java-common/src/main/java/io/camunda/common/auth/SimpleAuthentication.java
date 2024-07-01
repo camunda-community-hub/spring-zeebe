@@ -17,47 +17,53 @@ public class SimpleAuthentication implements Authentication {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final SimpleConfig simpleConfig;
-  private final Map<Product, String> tokens = new HashMap<>();
+  private final Map<Product, Map<String, String>> tokens = new HashMap<>();
 
   public SimpleAuthentication(SimpleConfig simpleConfig) {
     this.simpleConfig = simpleConfig;
-  }
-
-  public SimpleConfig getSimpleConfig() {
-    return simpleConfig;
   }
 
   public static SimpleAuthenticationBuilder builder() {
     return new SimpleAuthenticationBuilder();
   }
 
-  private String retrieveToken(Product product, SimpleCredential simpleCredential) {
+  public SimpleConfig getSimpleConfig() {
+    return simpleConfig;
+  }
+
+  private Map<String, String> retrieveToken(Product product, SimpleCredential simpleCredential) {
     try (CloseableHttpClient client = HttpClients.createDefault()) {
       HttpPost request = buildRequest(simpleCredential);
-      String cookie =
-          client.execute(
-              request,
-              response -> {
-                Header[] cookieHeaders = response.getHeaders("Set-Cookie");
-                String cookieCandidate = null;
-                String cookiePrefix = product.toString().toUpperCase() + "-SESSION";
-                for (Header cookieHeader : cookieHeaders) {
-                  if (cookieHeader.getValue().startsWith(cookiePrefix)) {
-                    cookieCandidate = cookieHeader.getValue();
-                    break;
-                  }
-                }
-                return cookieCandidate;
-              });
-      if (cookie == null) {
+
+      Map<String, String> headers =
+          client.execute(request, response -> List.of(response.getHeaders())).stream()
+              .reduce(
+                  new HashMap<>(),
+                  (map, header) -> insertHeader(map, header, product),
+                  (pMap, cMap) -> {
+                    pMap.putAll(cMap);
+                    return pMap;
+                  });
+
+      if (headers.get("Cookie") == null) {
         throw new RuntimeException("Unable to authenticate due to missing Set-Cookie");
       }
-      tokens.put(product, cookie);
+      tokens.put(product, headers);
     } catch (Exception e) {
       LOG.error("Authenticating for " + product + " failed due to " + e);
       throw new RuntimeException("Unable to authenticate", e);
     }
     return tokens.get(product);
+  }
+
+  private HashMap<String, String> insertHeader(
+      HashMap<String, String> map, Header header, Product product) {
+    if (header.getValue().startsWith(product.toString().toUpperCase())) {
+      map.merge("Cookie", header.getValue(), (s, s2) -> s.concat("; ".concat(s2)));
+    } else if (header.getName().equals(product.toString().toUpperCase() + "-X-CSRF-TOKEN")) {
+      map.put(header.getName(), header.getValue());
+    }
+    return map;
   }
 
   private HttpPost buildRequest(SimpleCredential simpleCredential) {
@@ -70,16 +76,13 @@ public class SimpleAuthentication implements Authentication {
   }
 
   @Override
-  public Map.Entry<String, String> getTokenHeader(Product product) {
-    String token;
+  public Map<String, String> getTokenHeader(Product product) {
     if (tokens.containsKey(product)) {
-      token = tokens.get(product);
+      return tokens.get(product);
     } else {
       SimpleCredential simpleCredential = simpleConfig.getProduct(product);
-      token = retrieveToken(product, simpleCredential);
+      return retrieveToken(product, simpleCredential);
     }
-
-    return new AbstractMap.SimpleEntry<>("Cookie", token);
   }
 
   @Override

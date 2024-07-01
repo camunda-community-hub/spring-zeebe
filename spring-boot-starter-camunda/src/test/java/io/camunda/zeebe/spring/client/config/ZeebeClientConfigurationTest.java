@@ -13,7 +13,7 @@ import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.ZeebeClientConfigurationProperties;
 import io.grpc.ClientInterceptor;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -40,7 +40,7 @@ public class ZeebeClientConfigurationTest {
   private static Authentication authentication() {
     return new Authentication() {
       @Override
-      public Entry<String, String> getTokenHeader(Product product) {
+      public Map<String, String> getTokenHeader(Product product) {
         return null;
       }
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -31,14 +32,12 @@ import org.slf4j.LoggerFactory;
 public class DefaultHttpClient implements HttpClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private String host = "";
-  private String basePath = "";
   private final Map<Product, Map<Class<?>, String>> productMap;
   private final CloseableHttpClient httpClient;
   private final Authentication authentication;
-
   private final JsonMapper jsonMapper;
+  private String host = "";
+  private String basePath = "";
 
   public DefaultHttpClient(Authentication authentication) {
     this.authentication = authentication;
@@ -78,7 +77,7 @@ public class DefaultHttpClient implements HttpClient {
   public <T> T get(Class<T> responseType, String id) {
     String url = host + basePath + retrievePath(responseType) + "/" + id;
     HttpGet httpGet = new HttpGet(url);
-    httpGet.addHeader(retrieveToken(responseType));
+    retrieveToken(responseType).forEach(httpGet::addHeader);
     T resp;
     try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       resp = parseAndRetry(response, responseType);
@@ -107,7 +106,7 @@ public class DefaultHttpClient implements HttpClient {
     }
     String url = host + basePath + resourcePath;
     HttpGet httpGet = new HttpGet(url);
-    httpGet.addHeader(retrieveToken(selector.getClass()));
+    retrieveToken(selector.getClass()).forEach(httpGet::addHeader);
     T resp;
     try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       resp = parseAndRetry(response, responseType, parameterType, selector);
@@ -128,7 +127,7 @@ public class DefaultHttpClient implements HttpClient {
   public <T> String getXml(Class<T> selector, Long key) {
     String url = host + basePath + retrievePath(selector) + "/" + key + "/xml";
     HttpGet httpGet = new HttpGet(url);
-    httpGet.addHeader(retrieveToken(selector));
+    retrieveToken(selector).forEach(httpGet::addHeader);
     String xml;
     try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
       xml = parseXMLAndRetry(response, selector);
@@ -145,7 +144,7 @@ public class DefaultHttpClient implements HttpClient {
     String url = host + basePath + retrievePath(selector.getClass());
     HttpPost httpPost = new HttpPost(url);
     httpPost.addHeader("Content-Type", "application/json");
-    httpPost.addHeader(retrieveToken(selector.getClass()));
+    retrieveToken(selector.getClass()).forEach(httpPost::addHeader);
     T resp;
     String data = jsonMapper.toJson(body);
     httpPost.setEntity(new StringEntity(data));
@@ -169,7 +168,7 @@ public class DefaultHttpClient implements HttpClient {
     String resourcePath = retrievePath(selector) + "/" + key;
     String url = host + basePath + resourcePath;
     HttpDelete httpDelete = new HttpDelete(url);
-    httpDelete.addHeader(retrieveToken(selector));
+    retrieveToken(selector).forEach(httpDelete::addHeader);
     T resp = null;
     try (CloseableHttpResponse response = httpClient.execute(httpDelete)) {
       resp = parseAndRetry(response, responseType, selector);
@@ -196,7 +195,7 @@ public class DefaultHttpClient implements HttpClient {
     return path.get();
   }
 
-  private <T> Header retrieveToken(Class<T> clazz) {
+  private <T> List<? extends Header> retrieveToken(Class<T> clazz) {
     AtomicReference<Product> currentProduct = new AtomicReference<>();
     productMap.forEach(
         (product, map) -> {
@@ -204,8 +203,10 @@ public class DefaultHttpClient implements HttpClient {
             currentProduct.set(product);
           }
         });
-    Map.Entry<String, String> header = authentication.getTokenHeader(currentProduct.get());
-    return new BasicHeader(header.getKey(), header.getValue());
+    Map<String, String> tokens = authentication.getTokenHeader(currentProduct.get());
+    return tokens.entrySet().stream()
+        .map(keyValueHeader -> new BasicHeader(keyValueHeader.getKey(), keyValueHeader.getValue()))
+        .toList();
   }
 
   private <T> Product getProduct(Class<T> clazz) {
