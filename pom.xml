@@ -42,7 +42,6 @@
   <modules>
     <!-- Spring dependent modules -->
     <module>spring-client-annotations</module>
-    <module>spring-client-common</module>
     <module>spring-client-zeebe</module>
 
     <!-- Spring Boot dependent modules -->
