@@ -2,10 +2,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -20,7 +17,6 @@ import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -101,7 +97,7 @@ public class SmokeTest {
     ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
     waitForProcessInstanceCompleted(processInstance);
 
-    Assertions.assertTrue(calledTest2);
+    assertTrue(calledTest2);
     assertNotNull(test2ComplexTypeDTO);
     assertNotEquals(new ComplexTypeDTO(), test2ComplexTypeDTO);
     assertEquals("value1", test2ComplexTypeDTO.getVar1());
