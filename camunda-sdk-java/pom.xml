@@ -10,18 +10,6 @@
   <artifactId>camunda-sdk-java</artifactId>
   <packaging>pom</packaging>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.camunda.spring</groupId>
-        <artifactId>java-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-  </dependencies>
-
   <modules>
     <module>java-client-operate</module>
     <module>java-common</module>
