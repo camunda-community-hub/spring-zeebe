@@ -97,7 +97,7 @@ public class SmokeTest {
     ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
     waitForProcessInstanceCompleted(processInstance);
 
-    Assertions.assertTrue(calledTest2);
+    assertTrue(calledTest2);
     assertNotNull(test2ComplexTypeDTO);
     assertNotEquals(new ComplexTypeDTO(), test2ComplexTypeDTO);
     assertEquals("value1", test2ComplexTypeDTO.getVar1());
