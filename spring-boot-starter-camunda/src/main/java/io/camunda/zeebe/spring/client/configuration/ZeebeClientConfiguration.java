@@ -321,6 +321,15 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         configCache);
   }
 
+  public int getMaxMetadataSize() {
+    return getOrLegacyOrDefault(
+        "MaxMetadataSize",
+        () -> camundaClientProperties.getZeebe().getMaxMetadataSize(),
+        null,
+        DEFAULT.getMaxMetadataSize(),
+        configCache);
+  }
+
   @Override
   public ScheduledExecutorService jobWorkerExecutor() {
     return zeebeClientExecutorService.get();
