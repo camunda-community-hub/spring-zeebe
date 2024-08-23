@@ -34,9 +34,11 @@ This project allows you to leverage Zeebe and Operate within your Spring or Spri
 
 ## Version compatibility
 
+>This client does not set any dependency version. If you are facing dependency version issues, please manage the dependency version in your project. In case this client is not compatible with a required dependency version, please open an issue.
+
 | Spring Zeebe version | JDK   | Camunda version | Bundled Spring Boot version | Compatible Spring Boot versions |
 |----------------------|-------|-----------------|-----------------------------|---------------------------------|
-| >= 8.5.0             | >= 17 | 8.5.0           | 3.2.5                       | >= 3.x.x                 |
+| >= 8.5.0             | >= 17 | 8.5.0           | 3.2.5                       | >= 3.x.x                        |
 | >= 8.4.0             | >= 17 | 8.4.0           | 3.2.0                       | >= 2.7.x, 3.x.x                 |
 | >= 8.3.4             | >= 17 | 8.3.4           | 3.2.0                       | >= 2.7.x, 3.x.x                 |
 | >= 8.3.0             | >= 17 | 8.3.1           | 2.7.7                       | >= 2.7.x, 3.x.x                 |
