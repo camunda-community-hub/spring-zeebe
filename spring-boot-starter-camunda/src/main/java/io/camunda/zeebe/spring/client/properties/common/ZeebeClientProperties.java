@@ -10,6 +10,7 @@ public class ZeebeClientProperties extends ApiProperties {
   private Integer executionThreads;
   private Duration messageTimeToLive;
   private Integer maxMessageSize;
+  private Integer maxMetadataSize;
   private Duration requestTimeout;
   private String caCertificatePath;
   private Duration keepAlive;
@@ -105,5 +106,13 @@ public class ZeebeClientProperties extends ApiProperties {
 
   public void setPreferRestOverGrpc(boolean preferRestOverGrpc) {
     this.preferRestOverGrpc = preferRestOverGrpc;
+  }
+
+  public Integer getMaxMetadataSize() {
+    return maxMetadataSize;
+  }
+
+  public void setMaxMetadataSize(Integer maxMetadataSize) {
+    this.maxMetadataSize = maxMetadataSize;
   }
 }
