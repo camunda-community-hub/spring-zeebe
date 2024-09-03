@@ -20,7 +20,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <zeebe.version>8.5.6</zeebe.version>
-    <identity.version>8.5.4</identity.version>
+    <identity.version>8.5.5</identity.version>
 
     <spring-boot.version>3.2.5</spring-boot.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
