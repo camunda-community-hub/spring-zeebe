@@ -1,6 +1,7 @@
 package io.camunda.common.auth;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public abstract class JwtAuthentication implements Authentication {
   protected abstract JwtToken generateToken(Product product, JwtCredential credential);
 
   private Map<String, String> authHeader(String token) {
-    return Map.of("Authorization", "Bearer " + token);
+    return Collections.singletonMap("Authorization", "Bearer " + token);
   }
 
   private boolean isValid(JwtToken jwtToken) {

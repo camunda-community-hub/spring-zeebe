@@ -36,7 +36,7 @@ public class SimpleAuthentication implements Authentication {
       HttpPost request = buildRequest(simpleCredential);
 
       Map<String, String> headers =
-          client.execute(request, response -> List.of(response.getHeaders())).stream()
+          client.execute(request, response -> Arrays.asList(response.getHeaders())).stream()
               .reduce(
                   new HashMap<>(),
                   (map, header) -> insertHeader(map, header, product),

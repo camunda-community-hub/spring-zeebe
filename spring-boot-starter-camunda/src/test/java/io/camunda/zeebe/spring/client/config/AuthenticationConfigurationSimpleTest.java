@@ -8,6 +8,8 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SimpleAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,7 @@ public class AuthenticationConfigurationSimpleTest {
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(
-            Map.of(
+            Collections.singletonMap(
                 "Cookie",
                 "OPERATE-SESSION=3205A03818447100591792E774DB8AF6; OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785"));
     verify(
@@ -67,7 +69,9 @@ public class AuthenticationConfigurationSimpleTest {
                         "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785")));
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
-        .isEqualTo(Map.of("Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6"));
+        .isEqualTo(
+            Collections.singletonMap(
+                "Cookie", "TASKLIST-SESSION=3205A03818447100591792E774DB8AF6"));
     verify(
         postRequestedFor(urlEqualTo("/api/login"))
             .withHeader(
@@ -88,7 +92,7 @@ public class AuthenticationConfigurationSimpleTest {
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
         .isEqualTo(
-            Map.of(
+            mapOf(
                 "Cookie",
                 "OPERATE-X-CSRF-TOKEN=139196d4-7768-451c-aa66-078e1ed74785",
                 "OPERATE-X-CSRF-TOKEN",
@@ -97,5 +101,12 @@ public class AuthenticationConfigurationSimpleTest {
         postRequestedFor(urlEqualTo("/api/login"))
             .withHeader(
                 "Content-Type", equalTo("application/x-www-form-urlencoded; charset=ISO-8859-1")));
+  }
+
+  private static Map<String, String> mapOf(String key1, String value1, String key2, String value2) {
+    Map<String, String> map = new HashMap<>();
+    map.put(key1, value1);
+    map.put(key2, value2);
+    return map;
   }
 }

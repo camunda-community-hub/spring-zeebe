@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -206,7 +207,7 @@ public class DefaultHttpClient implements HttpClient {
     Map<String, String> tokens = authentication.getTokenHeader(currentProduct.get());
     return tokens.entrySet().stream()
         .map(keyValueHeader -> new BasicHeader(keyValueHeader.getKey(), keyValueHeader.getValue()))
-        .toList();
+        .collect(Collectors.toList());
   }
 
   private <T> Product getProduct(Class<T> clazz) {

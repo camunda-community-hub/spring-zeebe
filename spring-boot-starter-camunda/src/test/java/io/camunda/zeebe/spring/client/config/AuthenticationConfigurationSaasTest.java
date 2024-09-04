@@ -8,7 +8,7 @@ import io.camunda.common.auth.Authentication;
 import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SaaSAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
-import java.util.Map;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,7 +47,7 @@ public class AuthenticationConfigurationSaasTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
-        .isEqualTo(Map.of("Authorization", "Bearer " + ACCESS_TOKEN));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + ACCESS_TOKEN));
     verify(
         postRequestedFor(urlEqualTo("/auth-server"))
             .withHeader("Content-Type", equalTo("application/json")));
@@ -65,7 +65,7 @@ public class AuthenticationConfigurationSaasTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
-        .isEqualTo(Map.of("Authorization", "Bearer " + ACCESS_TOKEN));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + ACCESS_TOKEN));
     verify(
         postRequestedFor(urlEqualTo("/auth-server"))
             .withHeader("Content-Type", equalTo("application/json")));
@@ -83,7 +83,7 @@ public class AuthenticationConfigurationSaasTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
         .isNotNull()
-        .isEqualTo(Map.of("Authorization", "Bearer " + ACCESS_TOKEN));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + ACCESS_TOKEN));
     verify(
         postRequestedFor(urlEqualTo("/auth-server"))
             .withHeader("Content-Type", equalTo("application/json")));
@@ -101,7 +101,7 @@ public class AuthenticationConfigurationSaasTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.ZEEBE))
         .isNotNull()
-        .isEqualTo(Map.of("Authorization", "Bearer " + ACCESS_TOKEN));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + ACCESS_TOKEN));
     verify(
         postRequestedFor(urlEqualTo("/auth-server"))
             .withHeader("Content-Type", equalTo("application/json")));
