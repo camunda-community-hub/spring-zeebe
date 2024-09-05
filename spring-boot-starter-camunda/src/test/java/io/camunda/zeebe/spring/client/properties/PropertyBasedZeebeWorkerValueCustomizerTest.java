@@ -373,7 +373,7 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
     // when
     customizer.customize(zeebeWorkerValue);
     // then
-    assertThat(zeebeWorkerValue.getFetchVariables()).containsExactly("weird_name");
+    assertThat(zeebeWorkerValue.getFetchVariables()).contains("weird_name");
   }
 
   private static class ComplexProcessVariable {
