@@ -27,7 +27,7 @@ public class DefaultNoopAuthentication implements Authentication {
   }
 
   @Override
-  public Map.Entry<String, String> getTokenHeader(Product product) {
+  public Map<String, String> getTokenHeader(Product product) {
     throw new UnsupportedOperationException("Unable to determine authentication");
   }
 }

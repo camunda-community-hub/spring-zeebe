@@ -11,6 +11,7 @@ import io.camunda.common.auth.Product;
 import io.camunda.common.auth.SelfManagedAuthentication;
 import io.camunda.zeebe.spring.client.configuration.AuthenticationConfiguration;
 import java.time.Instant;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,7 +49,7 @@ public class AuthenticationConfigurationOidcTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.OPERATE))
         .isNotNull()
-        .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + accessToken));
     verify(
         postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
             .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
@@ -67,7 +68,7 @@ public class AuthenticationConfigurationOidcTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.TASKLIST))
         .isNotNull()
-        .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + accessToken));
     verify(
         postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
             .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
@@ -86,7 +87,7 @@ public class AuthenticationConfigurationOidcTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.OPTIMIZE))
         .isNotNull()
-        .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + accessToken));
     verify(
         postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
             .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));
@@ -105,7 +106,7 @@ public class AuthenticationConfigurationOidcTest {
                             .put("expires_in", 300))));
     assertThat(authentication.getTokenHeader(Product.ZEEBE))
         .isNotNull()
-        .isEqualTo(entry("Authorization", "Bearer " + accessToken));
+        .isEqualTo(Collections.singletonMap("Authorization", "Bearer " + accessToken));
     verify(
         postRequestedFor(urlEqualTo("/auth-server/protocol/openid-connect/token"))
             .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded")));

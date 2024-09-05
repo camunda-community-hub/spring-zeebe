@@ -387,10 +387,13 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
 
     @Override
     public void applyCredentials(Metadata headers) {
-      final Map.Entry<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
-      final Metadata.Key<String> authHeaderKey =
-          Metadata.Key.of(authHeader.getKey(), Metadata.ASCII_STRING_MARSHALLER);
-      headers.put(authHeaderKey, authHeader.getValue());
+      final Map<String, String> authHeader = authentication.getTokenHeader(Product.ZEEBE);
+      authHeader.forEach(
+          (key, value) -> {
+            final Metadata.Key<String> authHeaderKey =
+                Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER);
+            headers.put(authHeaderKey, value);
+          });
     }
 
     @Override

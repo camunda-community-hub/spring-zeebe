@@ -44,8 +44,7 @@ public class DefaultHttpClientTest {
     // when
     when(chClient.execute(any(HttpGet.class))).thenReturn(response);
     when(response.getCode()).thenReturn(200);
-    when(authentication.getTokenHeader(any()))
-        .thenReturn(new AbstractMap.SimpleEntry<>("key", "value"));
+    when(authentication.getTokenHeader(any())).thenReturn(Collections.singletonMap("key", "value"));
     when(response.getEntity().getContent())
         .thenReturn(new ByteArrayInputStream("{\"name\" : \"test-name\"}".getBytes()));
     MyResponseClass parsedResponse = defaultHttpClient.get(MyResponseClass.class, "123");
@@ -69,8 +68,7 @@ public class DefaultHttpClientTest {
     // when
     when(chClient.execute(any(HttpPost.class))).thenReturn(response);
     when(response.getCode()).thenReturn(200);
-    when(authentication.getTokenHeader(any()))
-        .thenReturn(new AbstractMap.SimpleEntry<>("key", "value"));
+    when(authentication.getTokenHeader(any())).thenReturn(Collections.singletonMap("key", "value"));
     when(response.getEntity().getContent())
         .thenReturn(new ByteArrayInputStream("[{\"name\" : \"test-name\"}]".getBytes()));
     List parsedResponse =
@@ -95,8 +93,7 @@ public class DefaultHttpClientTest {
     // when
     when(chClient.execute(any(HttpDelete.class))).thenReturn(response);
     when(response.getCode()).thenReturn(200);
-    when(authentication.getTokenHeader(any()))
-        .thenReturn(new AbstractMap.SimpleEntry<>("key", "value"));
+    when(authentication.getTokenHeader(any())).thenReturn(Collections.singletonMap("key", "value"));
     when(response.getEntity().getContent())
         .thenReturn(new ByteArrayInputStream("{\"name\" : \"test-name\"}".getBytes()));
     MyResponseClass parsedResponse =
