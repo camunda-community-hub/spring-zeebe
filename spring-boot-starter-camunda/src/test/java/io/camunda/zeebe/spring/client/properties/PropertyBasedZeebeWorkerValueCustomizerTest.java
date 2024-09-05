@@ -2,6 +2,7 @@ package io.camunda.zeebe.spring.client.properties;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
@@ -45,6 +46,9 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
 
   @JobWorker
   void sampleWorker(@Variable String var1, @VariablesAsType ComplexProcessVariable var2) {}
+
+  @JobWorker
+  void sampleWorkerWithJsonProperty(@VariablesAsType PropertyAnnotatedClass var2) {}
 
   @JobWorker
   void activatedJobWorker(@Variable String var1, ActivatedJob activatedJob) {}
@@ -359,6 +363,19 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
     assertThat(zeebeWorkerValue.getEnabled()).isFalse();
   }
 
+  @Test
+  void shouldApplyPropertyAnnotationOnVariableFiltering() {
+    // given
+    PropertyBasedZeebeWorkerValueCustomizer customizer =
+        new PropertyBasedZeebeWorkerValueCustomizer(legacyProperties(), properties());
+    ZeebeWorkerValue zeebeWorkerValue = new ZeebeWorkerValue();
+    zeebeWorkerValue.setMethodInfo(methodInfo(this, "testBean", "sampleWorkerWithJsonProperty"));
+    // when
+    customizer.customize(zeebeWorkerValue);
+    // then
+    assertThat(zeebeWorkerValue.getFetchVariables()).containsExactly("weird_name");
+  }
+
   private static class ComplexProcessVariable {
     private String var3;
     private String var4;
@@ -378,5 +395,10 @@ public class PropertyBasedZeebeWorkerValueCustomizerTest {
     public void setVar4(String var4) {
       this.var4 = var4;
     }
+  }
+
+  private static class PropertyAnnotatedClass {
+    @JsonProperty("weird_name")
+    private String value;
   }
 }
