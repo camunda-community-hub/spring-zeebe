@@ -32,7 +32,7 @@ public class SimpleAuthentication implements Authentication {
   }
 
   private Map<String, String> retrieveToken(Product product, SimpleCredential simpleCredential) {
-    try (CloseableHttpClient client = HttpClients.createDefault()) {
+    try (CloseableHttpClient client = HttpClients.createSystem()) {
       HttpPost request = buildRequest(simpleCredential);
 
       Map<String, String> headers =
