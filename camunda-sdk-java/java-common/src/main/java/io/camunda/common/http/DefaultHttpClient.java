@@ -42,7 +42,7 @@ public class DefaultHttpClient implements HttpClient {
 
   public DefaultHttpClient(Authentication authentication) {
     this.authentication = authentication;
-    this.httpClient = HttpClients.createDefault();
+    this.httpClient = HttpClients.createSystem();
     this.jsonMapper = new SdkObjectMapper();
     this.productMap = new HashMap<>();
   }
