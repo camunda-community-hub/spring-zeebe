@@ -27,7 +27,7 @@ public class SaaSAuthentication extends JwtAuthentication {
   }
 
   private TokenResponse retrieveToken(Product product, JwtCredential jwtCredential) {
-    try (CloseableHttpClient client = HttpClients.createDefault()) {
+    try (CloseableHttpClient client = HttpClients.createSystem()) {
       HttpPost request = buildRequest(jwtCredential);
       return client.execute(
           request,
