@@ -77,7 +77,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-bom</artifactId>
-        <version>3.25.5</version>
+        <version>4.28.2</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
