@@ -45,7 +45,7 @@ public class DefaultCommandExceptionHandlingStrategy implements CommandException
   }
 
   public void handleCommandError(CommandWrapper command, Throwable throwable) {
-    if (StatusRuntimeException.class.isAssignableFrom(throwable.getClass())) {
+    if (throwable instanceof StatusRuntimeException) {
       StatusRuntimeException exception = (StatusRuntimeException) throwable;
       Status.Code code = exception.getStatus().getCode();
 
