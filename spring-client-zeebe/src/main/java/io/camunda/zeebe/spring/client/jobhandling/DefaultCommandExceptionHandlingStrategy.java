@@ -44,6 +44,7 @@ public class DefaultCommandExceptionHandlingStrategy implements CommandException
     this.scheduledExecutorService = scheduledExecutorService;
   }
 
+  @Override
   public void handleCommandError(CommandWrapper command, Throwable throwable) {
     if (StatusRuntimeException.class.isAssignableFrom(throwable.getClass())) {
       StatusRuntimeException exception = (StatusRuntimeException) throwable;
