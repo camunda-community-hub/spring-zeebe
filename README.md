@@ -1,3 +1,8 @@
+# Deprecation Notice
+
+> [!CAUTION]
+> This community maintained project will be archived. For the fully supported Camunda Spring SDK, refer to the [docs](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/).
+
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community) ![Compatible with: Camunda Platform 8](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%208-0072Ce) [![](https://img.shields.io/badge/Lifecycle-Stable-brightgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#stable-)
 
 # Spring-Zeebe
@@ -5,8 +10,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.camunda/spring-zeebe)
 [![Project Stats](https://www.openhub.net/p/spring-zeebe/widgets/project_thin_badge.gif)](https://www.openhub.net/p/spring-zeebe)
 
-> [!IMPORTANT]
-> This is a community maintained project. For the fully supported Camunda Spring SDK, refer to the [docs](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/). For public information about the first version of Camunda Spring SDK (Spring-Zeebe SDK), see [this issue](https://github.com/camunda/issues/issues/711).
+
 
 ## Table of Contents
 
