@@ -339,6 +339,9 @@
               <ignoredUnusedDeclaredDependency>
                 io.camunda.spring:spring-boot-starter-camunda
               </ignoredUnusedDeclaredDependency>
+              <ignoredUnusedDeclaredDependency>
+                org.springframework.boot:spring-boot-configuration-processor
+              </ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
