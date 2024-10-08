@@ -90,7 +90,7 @@ Although Spring Zeebe has a transitive dependency to the [Zeebe Java client](htt
 </dependency>
 ```
 
-Note that if you are using [@Variables](https://github.com/camunda-community-hub/spring-zeebe#using-variable), compiler flag `-parameters` is required for Spring-Zeebe versions higher than 8.3.1.
+Note that if you are using [@Variable](https://github.com/camunda-community-hub/spring-zeebe#using-variable), compiler flag `-parameters` is required for Spring-Zeebe versions higher than 8.3.1.
 
 If using Maven:
 ```xml
