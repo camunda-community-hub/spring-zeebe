@@ -7,7 +7,7 @@
       <version>8.4.13-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-client-operate</artifactId>
+    <artifactId>java-client-operate-legacy</artifactId>
 
     <dependencies>
       <dependency>
@@ -34,5 +34,10 @@
         <artifactId>zeebe-bpmn-model</artifactId>
       </dependency>
     </dependencies>
-
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>java-client-operate</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
