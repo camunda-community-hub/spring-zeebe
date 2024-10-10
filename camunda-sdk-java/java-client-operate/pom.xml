@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.camunda.spring</groupId>
+    <artifactId>camunda-sdk-java</artifactId>
+    <version>8.6.0-alpha1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>java-client-operate-legacy</artifactId>
+
+  <dependencies>
+    <dependency>
       <groupId>io.camunda.spring</groupId>
-      <artifactId>camunda-sdk-java</artifactId>
-      <version>8.6.0-alpha1-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>java-client-operate-legacy</artifactId>
-
-    <dependencies>
-      <dependency>
-        <groupId>io.camunda.spring</groupId>
-        <artifactId>java-common</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda</groupId>
-        <artifactId>zeebe-bpmn-model</artifactId>
-      </dependency>
-    </dependencies>
-
+      <artifactId>java-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-bpmn-model</artifactId>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>java-client-operate</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
