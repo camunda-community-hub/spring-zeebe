@@ -7,7 +7,7 @@
       <version>8.4.13-SNAPSHOT</version>
     </parent>
 
-    <artifactId>java-client-operate-legacy</artifactId>
+    <artifactId>java-client-operate</artifactId>
 
     <dependencies>
       <dependency>
