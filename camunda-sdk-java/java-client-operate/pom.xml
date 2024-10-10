@@ -9,21 +9,26 @@
 
     <artifactId>java-client-operate</artifactId>
 
-    <dependencies>
-      <dependency>
-        <groupId>io.camunda.spring</groupId>
-        <artifactId>java-common</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>io.camunda</groupId>
-        <artifactId>zeebe-bpmn-model</artifactId>
-      </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>java-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-bpmn-model</artifactId>
+    </dependency>
+  </dependencies>
 
-    <properties>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
+  <properties>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda.spring</groupId>
+      <artifactId>java-client-operate</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>

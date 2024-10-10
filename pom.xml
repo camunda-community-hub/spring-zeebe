@@ -424,4 +424,11 @@
     <developerConnection>scm:git:git@github.com:camunda-community-hub/spring-zeebe.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda</groupId>
+      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
