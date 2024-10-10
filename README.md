@@ -1,4 +1,4 @@
-# Deprecation Notice
+**Deprecation Notice**
 
 > [!CAUTION]
 > This community-maintained project will be archived. 
