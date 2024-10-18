@@ -8,5 +8,11 @@
   </parent>
 
   <artifactId>spring-client-annotations</artifactId>
-
+  <name>[legacy] Spring client annotations</name>
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda</groupId>
+      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
