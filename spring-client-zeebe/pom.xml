@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>spring-client-zeebe</artifactId>
+  <name>[legacy] Spring client zeebe</name>
 
   <dependencies>
     <dependency>
@@ -91,4 +92,11 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <relocation>
+      <groupId>io.camunda</groupId>
+      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+    </relocation>
+  </distributionManagement>
 </project>
