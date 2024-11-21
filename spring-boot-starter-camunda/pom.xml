@@ -44,7 +44,6 @@
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>identity-sdk</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -91,12 +90,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-gateway-protocol-impl</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -116,17 +113,14 @@
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-client-java</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.camunda.spring</groupId>
       <artifactId>spring-client-annotations</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.camunda.spring</groupId>
       <artifactId>java-common</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
