@@ -343,6 +343,11 @@
                 org.springframework.boot:spring-boot-configuration-processor
               </ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
+            <ignoredNonTestScopedDependencies>
+              <ignoredNonTestScopedDependency>
+                com.fasterxml.jackson.core:jackson-core
+              </ignoredNonTestScopedDependency>
+            </ignoredNonTestScopedDependencies>
           </configuration>
         </plugin>
         <plugin>
@@ -600,6 +605,7 @@
     <relocation>
       <groupId>io.camunda</groupId>
       <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+      <version>8.5.9</version>
     </relocation>
   </distributionManagement>
 </project>
