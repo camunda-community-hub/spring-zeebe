@@ -257,7 +257,7 @@
       <dependency>
         <groupId>org.wiremock</groupId>
         <artifactId>wiremock-standalone</artifactId>
-        <version>3.9.1</version>
+        <version>3.9.2</version>
       </dependency>
       <dependency>
         <groupId>io.camunda.spring</groupId>
