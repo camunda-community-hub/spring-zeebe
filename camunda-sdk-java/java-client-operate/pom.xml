@@ -35,6 +35,7 @@
     <relocation>
       <groupId>io.camunda.spring</groupId>
       <artifactId>java-client-operate</artifactId>
+      <version>8.5.16</version>
     </relocation>
   </distributionManagement>
 </project>
