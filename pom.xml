@@ -343,6 +343,11 @@
                 org.springframework.boot:spring-boot-configuration-processor
               </ignoredUnusedDeclaredDependency>
             </ignoredUnusedDeclaredDependencies>
+            <ignoredNonTestScopedDependencies>
+              <ignoredNonTestScopedDependency>
+                com.fasterxml.jackson.core:jackson-core
+              </ignoredNonTestScopedDependency>
+            </ignoredNonTestScopedDependencies>
           </configuration>
         </plugin>
         <plugin>
