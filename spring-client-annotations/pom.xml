@@ -9,11 +9,4 @@
 
   <artifactId>spring-client-annotations</artifactId>
   <name>[legacy] Spring client annotations</name>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
-      <version>8.5.9</version>
-    </relocation>
-  </distributionManagement>
 </project>
