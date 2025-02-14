@@ -23,7 +23,7 @@
     <identity.version>8.6.8</identity.version>
 
     <spring-boot.version>3.4.2</spring-boot.version>
-    <commons-beanutils.version>1.10.0</commons-beanutils.version>
+    <commons-beanutils.version>1.10.1</commons-beanutils.version>
     <resilience4j.version>2.3.0</resilience4j.version>
     <jackson.version>2.18.2</jackson.version>
     <commons-lang.version>3.17.0</commons-lang.version>
