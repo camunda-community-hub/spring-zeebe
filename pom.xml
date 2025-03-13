@@ -372,7 +372,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-                <source>8</source>
+                <source>${java.version}</source>
             </configuration>
         </plugin>
         <plugin>
