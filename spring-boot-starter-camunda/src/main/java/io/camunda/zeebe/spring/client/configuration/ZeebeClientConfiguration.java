@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import org.apache.hc.client5.http.async.AsyncExecChainHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -323,6 +324,10 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   @Override
   public List<ClientInterceptor> getInterceptors() {
     return interceptors;
+  }
+
+  public List<AsyncExecChainHandler> getChainHandlers() {
+    return List.of();
   }
 
   @Override
