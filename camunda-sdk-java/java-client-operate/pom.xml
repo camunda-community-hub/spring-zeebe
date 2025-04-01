@@ -34,10 +34,4 @@
         <artifactId>zeebe-bpmn-model</artifactId>
       </dependency>
     </dependencies>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda.spring</groupId>
-      <artifactId>java-client-operate</artifactId>
-    </relocation>
-  </distributionManagement>
 </project>
