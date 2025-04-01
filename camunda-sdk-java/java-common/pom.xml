@@ -9,13 +9,6 @@
 
   <artifactId>java-common</artifactId>
   <name>[legacy] Java common</name>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
-      <version>8.5.9</version>
-    </relocation>
-  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>

@@ -188,6 +188,11 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
   }
 
   @Override
+  public int getMaxMetadataSize() {
+    return properties.getMaxMetadataSize();
+  }
+
+  @Override
   public ScheduledExecutorService jobWorkerExecutor() {
     return zeebeClientExecutorService.get();
   }

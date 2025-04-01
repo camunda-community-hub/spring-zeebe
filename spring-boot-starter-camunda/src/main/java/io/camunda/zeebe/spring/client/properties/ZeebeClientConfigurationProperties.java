@@ -247,6 +247,10 @@ public class ZeebeClientConfigurationProperties {
         + '}';
   }
 
+  public int getMaxMetadataSize() {
+    return DEFAULT.getMaxMetadataSize();
+  }
+
   public static class Broker {
 
     private String gatewayAddress;
