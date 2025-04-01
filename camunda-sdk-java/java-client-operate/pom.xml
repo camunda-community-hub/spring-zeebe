@@ -25,10 +25,4 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda.spring</groupId>
-      <artifactId>java-client-operate</artifactId>
-    </relocation>
-  </distributionManagement>
 </project>
