@@ -222,7 +222,7 @@
       <dependency>
         <groupId>org.camunda.bpm.model</groupId>
         <artifactId>camunda-xml-model</artifactId>
-        <version>7.22.0</version>
+        <version>7.23.0</version>
       </dependency>
       <dependency>
         <groupId>org.camunda.bpm.model</groupId>
