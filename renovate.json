@@ -1,37 +1,61 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     "schedule:automergeNonOfficeHours"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["io.camunda.spring"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "io.camunda.spring{/,}**"
+      ]
     },
     {
-      "matchBaseBranches": ["main"],
-      "matchUpdateTypes": ["minor"],
-      "automerge": true
-    },
-    {
-      "matchManagers": ["maven"],
-      "matchBaseBranches": ["/^release/.*/"],
-      "matchUpdateTypes": ["major", "minor"],
-      "enabled": false
-    },
-    {
-      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "matchBaseBranches": [
+        "main"
+      ],
+      "matchUpdateTypes": [
+        "minor"
+      ],
       "automerge": true
     },
     {
       "matchManagers": [
         "maven"
       ],
-      "description" : "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
-      "matchPackagePatterns": [".*"],
-      "allowedVersions": "!/-SNAPSHOT$/"
+      "matchBaseBranches": [
+        "/^release/.*/"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "enabled": false
+    },
+    {
+      "matchUpdateTypes": [
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "description": "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
+      "allowedVersions": "!/-SNAPSHOT$/",
+      "matchPackageNames": [
+        "/.*/"
+      ]
     }
   ],
-  "baseBranches": ["main", "/^release/.*/"]
+  "baseBranches": [
+    "main",
+    "/^release/.*/"
+  ]
 }
