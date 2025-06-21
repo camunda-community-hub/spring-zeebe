@@ -22,7 +22,7 @@
     <zeebe.version>8.5.7</zeebe.version>
     <identity.version>8.7.3</identity.version>
 
-    <spring-boot.version>3.5.2</spring-boot.version>
+    <spring-boot.version>3.5.3</spring-boot.version>
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
     <resilience4j.version>2.3.0</resilience4j.version>
     <jackson.version>2.19.1</jackson.version>
