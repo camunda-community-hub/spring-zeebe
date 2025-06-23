@@ -108,7 +108,8 @@ public class AuthenticationConfiguration {
       String clientId = clientId();
       String clientSecret = clientSecret();
       String audience = audienceForProduct(product);
-      jwtConfig.addProduct(product, new JwtCredential(clientId, clientSecret, audience, issuer));
+      jwtConfig.addProduct(
+          product, new JwtCredential(clientId, clientSecret, audience, issuer, null, null));
       IdentityConfiguration identityCfg =
           new IdentityConfiguration(
               baseUrlForProduct(Product.IDENTITY).toString(),
@@ -132,7 +133,8 @@ public class AuthenticationConfiguration {
       String clientId = clientId();
       String clientSecret = clientSecret();
       String audience = audienceForProduct(product);
-      jwtConfig.addProduct(product, new JwtCredential(clientId, clientSecret, audience, issuer));
+      jwtConfig.addProduct(
+          product, new JwtCredential(clientId, clientSecret, audience, issuer, null, null));
     } else {
       LOG.debug("{} is disabled", product);
     }
