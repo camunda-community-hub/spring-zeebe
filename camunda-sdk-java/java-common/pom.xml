@@ -4,17 +4,12 @@
   <parent>
     <groupId>io.camunda.spring</groupId>
     <artifactId>camunda-sdk-java</artifactId>
-    <version>8.6.0-alpha1-SNAPSHOT</version>
+    <version>8.6.0-alpha2-pavel2</version>
   </parent>
 
   <artifactId>java-common</artifactId>
   <name>[legacy] Java common</name>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
-    </relocation>
-  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -4,15 +4,10 @@
   <parent>
     <groupId>io.camunda.spring</groupId>
     <artifactId>spring-client-root</artifactId>
-    <version>8.6.0-alpha1-SNAPSHOT</version>
+    <version>8.6.0-alpha2-pavel2</version>
   </parent>
 
   <artifactId>spring-client-annotations</artifactId>
   <name>[legacy] Spring client annotations</name>
-  <distributionManagement>
-    <relocation>
-      <groupId>io.camunda</groupId>
-      <artifactId>spring-boot-starter-camunda-sdk</artifactId>
-    </relocation>
-  </distributionManagement>
+
 </project>
