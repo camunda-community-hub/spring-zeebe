@@ -10,6 +10,7 @@
 
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda-test</artifactId>
+  <name>spring-boot-starter-camunda-test</name>
 
   <properties>
     <version.java>21</version.java>
