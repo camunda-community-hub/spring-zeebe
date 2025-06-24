@@ -287,6 +287,8 @@ public class CommonClientConfiguration {
             .withClientSecret(jwtConfig.getProduct(Product.OPERATE).getClientSecret())
             .withAudience(jwtConfig.getProduct(Product.OPERATE).getAudience())
             .withType(identityConfigurationFromProperties.getType().name())
+            .withCertPath(identityConfigurationFromProperties.getCertPath())
+            .withCertStorePassword(identityConfigurationFromProperties.getCertStorePassword())
             .build();
     Identity operateIdentity = new Identity(operateIdentityConfiguration);
     return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
