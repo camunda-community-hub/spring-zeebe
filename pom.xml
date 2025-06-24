@@ -9,7 +9,7 @@
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-client-root</artifactId>
   <name>spring-client-root</name>
-  <version>8.5.19-SNAPSHOT</version>
+  <version>8.5.19</version>
   <packaging>pom</packaging>
 
   <properties>
