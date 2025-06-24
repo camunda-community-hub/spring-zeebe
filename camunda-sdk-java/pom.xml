@@ -9,6 +9,7 @@
 
   <artifactId>camunda-sdk-java</artifactId>
   <packaging>pom</packaging>
+  <name>camunda-sdk-java</name>
 
   <modules>
     <module>java-client-operate</module>

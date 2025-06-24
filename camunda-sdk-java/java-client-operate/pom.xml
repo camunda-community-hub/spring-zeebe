@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>java-client-operate-legacy</artifactId>
+    <name>java-client-operate-legacy</name>
 
     <dependencies>
       <dependency>

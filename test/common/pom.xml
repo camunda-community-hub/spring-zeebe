@@ -10,6 +10,7 @@
 
   <groupId>io.camunda.spring</groupId>
   <artifactId>spring-boot-starter-camunda-test-common</artifactId>
+  <name>spring-boot-starter-camunda-test-common</name>
 
   <dependencies>
     <dependency>

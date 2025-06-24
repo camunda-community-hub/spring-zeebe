@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>spring-boot-starter-camunda-example</artifactId>
+  <name>spring-boot-starter-camunda-example</name>
 
   <dependencies>
     <dependency>
