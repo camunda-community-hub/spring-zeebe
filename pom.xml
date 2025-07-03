@@ -28,7 +28,7 @@
     <jackson.version>2.19.1</jackson.version>
     <commons-lang.version>3.17.0</commons-lang.version>
 
-    <plugin.version.maven-enforcer-plugin>3.5.0</plugin.version.maven-enforcer-plugin>
+    <plugin.version.maven-enforcer-plugin>3.6.0</plugin.version.maven-enforcer-plugin>
 
     <plugin.version.javadoc>3.1.1</plugin.version.javadoc>
     <!-- disable jdk8 javadoc checks on release build -->
