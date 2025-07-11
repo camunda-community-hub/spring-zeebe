@@ -26,7 +26,7 @@
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
     <resilience4j.version>2.3.0</resilience4j.version>
     <jackson.version>2.19.1</jackson.version>
-    <commons-lang.version>3.17.0</commons-lang.version>
+    <commons-lang.version>3.18.0</commons-lang.version>
 
     <plugin.version.maven-enforcer-plugin>3.6.0</plugin.version.maven-enforcer-plugin>
 
