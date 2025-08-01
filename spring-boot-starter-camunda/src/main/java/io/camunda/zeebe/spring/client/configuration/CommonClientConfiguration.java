@@ -289,6 +289,7 @@ public class CommonClientConfiguration {
             .withType(identityConfigurationFromProperties.getType().name())
             .withCertPath(identityConfigurationFromProperties.getCertPath())
             .withCertStorePassword(identityConfigurationFromProperties.getCertStorePassword())
+            .withResource(identityConfigurationFromProperties.getResource())
             .build();
     Identity operateIdentity = new Identity(operateIdentityConfiguration);
     return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
