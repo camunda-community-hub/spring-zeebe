@@ -278,7 +278,7 @@ public class CommonClientConfiguration {
       issuerBackendUrl = jwtConfig.getProduct(Product.OPERATE).getAuthUrl();
     }
 
-    IdentityConfiguration operateIdentityConfiguration =
+    var builder =
         new IdentityConfiguration.Builder()
             .withBaseUrl(identityConfigurationFromProperties.getBaseUrl())
             .withIssuer(issuer)
@@ -286,12 +286,18 @@ public class CommonClientConfiguration {
             .withClientId(jwtConfig.getProduct(Product.OPERATE).getClientId())
             .withClientSecret(jwtConfig.getProduct(Product.OPERATE).getClientSecret())
             .withAudience(jwtConfig.getProduct(Product.OPERATE).getAudience())
-            .withType(identityConfigurationFromProperties.getType().name())
-            .withCertPath(identityConfigurationFromProperties.getCertPath())
-            .withCertStorePassword(identityConfigurationFromProperties.getCertStorePassword())
-            .withResource(identityConfigurationFromProperties.getResource())
-            .build();
-    Identity operateIdentity = new Identity(operateIdentityConfiguration);
-    return new IdentityContainer(operateIdentity, operateIdentityConfiguration);
+            .withType(identityConfigurationFromProperties.getType().name());
+
+    if (identityConfigurationFromProperties.getCertPath() != null) {
+      builder.withCertPath(identityConfigurationFromProperties.getCertPath());
+    }
+    if (identityConfigurationFromProperties.getCertStorePassword() != null) {
+      builder.withCertStorePassword(identityConfigurationFromProperties.getCertStorePassword());
+    }
+    if (identityConfigurationFromProperties.getResource() != null) {
+      builder.withResource(identityConfigurationFromProperties.getResource());
+    }
+    Identity operateIdentity = new Identity(builder.build());
+    return new IdentityContainer(operateIdentity, builder.build());
   }
 }
