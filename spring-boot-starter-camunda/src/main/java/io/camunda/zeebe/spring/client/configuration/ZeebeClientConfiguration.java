@@ -232,6 +232,10 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         configCache);
   }
 
+  public Duration getDefaultRequestTimeoutOffset() {
+    return Duration.ofSeconds(1);
+  }
+
   @Override
   public boolean isPlaintextConnectionEnabled() {
     return getOrLegacyOrDefault(
