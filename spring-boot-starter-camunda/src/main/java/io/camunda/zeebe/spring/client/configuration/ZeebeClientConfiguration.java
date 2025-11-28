@@ -408,6 +408,10 @@ public class ZeebeClientConfiguration implements io.camunda.zeebe.client.ZeebeCl
         configCache);
   }
 
+  public int getMaxHttpConnections() {
+    return 100;
+  }
+
   @Override
   public String toString() {
     return "ZeebeClientConfiguration{"
